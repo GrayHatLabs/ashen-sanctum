@@ -34,6 +34,8 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Monsters: zombie (slow/tough), skeleton (fast/fragile); idle wander, LOS aggro, pack aggro, A* chase, wind-up swings | H S | |
 | Loot: gold, health/mana potions; HUD globes, potions, skill slot, D2 monster name bar | H S | |
 | Level cleared → descend (harder, bigger packs); death → restart | H | |
+| Ember Bolt: free fallback when out of mana (3–5 dmg, single target, 0.4 s cast, no burn/stun) | H S | Unit test: fires with no mana, costs nothing, fireball returns with mana |
+| Dash: 3.5 tiles, 0.18 s, invulnerable, 1.2 s cooldown, afterimage trail, HUD cooldown | H S | Unit test: distance, dodge, cooldown. Space / pad B (B no longer confirms; START does) |
 | Automap (Tab / SELECT) | H S | Explored walls + seen foes; every foe shows once 5 or fewer remain |
 | Controls: mouse click-to-move / right-click cast; twin-stick pad with auto-aim | H (bot uses the stick path) | Mouse path needs a D check |
 | Synth SFX (cast, boom, hit, hurt, death, swing, pickup, drink, descend) | built | Not listened to yet |

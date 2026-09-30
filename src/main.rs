@@ -101,7 +101,7 @@ fn main() -> Result<(), String> {
     let mut acc = Duration::ZERO;
     let mut back_held = false;
     // One-shot presses, cleared after each simulated tick.
-    let (mut confirm, mut pot_hp, mut pot_mp, mut map) = (false, false, false, false);
+    let (mut confirm, mut pot_hp, mut pot_mp, mut map, mut dash) = (false, false, false, false, false);
 
     'main: loop {
         for ev in events.poll_iter() {
@@ -114,7 +114,8 @@ fn main() -> Result<(), String> {
                         S | Down => keys.down = true,
                         A | Left => keys.left = true,
                         D | Right => keys.right = true,
-                        Space => keys.cast = true,
+                        F => keys.cast = true,
+                        Space if !repeat => dash = true,
                         LShift | RShift => keys.shift = true,
                         Return | KpEnter if !repeat => confirm = true,
                         Q | Num1 if !repeat => pot_hp = true,
@@ -131,7 +132,7 @@ fn main() -> Result<(), String> {
                         S | Down => keys.down = false,
                         A | Left => keys.left = false,
                         D | Right => keys.right = false,
-                        Space => keys.cast = false,
+                        F => keys.cast = false,
                         LShift | RShift => keys.shift = false,
                         _ => {}
                     }
@@ -166,7 +167,7 @@ fn main() -> Result<(), String> {
                         Button::Start if back_held => break 'main,
                         Button::Start => confirm = true,
                         Button::A | Button::X | Button::RightShoulder => pad.cast = true,
-                        Button::B => confirm = true,
+                        Button::B => dash = true,
                         Button::LeftShoulder => pot_hp = true,
                         Button::Y => pot_mp = true,
                         Button::DPadUp => pad.dup = true,
@@ -234,11 +235,13 @@ fn main() -> Result<(), String> {
             inp.potion_hp = pot_hp;
             inp.potion_mp = pot_mp;
             inp.map = map;
+            inp.dash = dash;
             game.update(&inp);
             confirm = false;
             pot_hp = false;
             pot_mp = false;
             map = false;
+            dash = false;
             for s in game.sfx.drain(..) {
                 if let Some(a) = audio.as_mut() {
                     a.play(s);

@@ -18,6 +18,13 @@ const PLAYER_SPEED: f32 = 3.6;
 const FIREBALL_COST: f32 = 5.0;
 const FIREBALL_SPEED: f32 = 10.0;
 const CAST_TIME: f32 = 0.32;
+/// Free fallback bolt when out of mana.
+const EMBER_SPEED: f32 = 13.0;
+const EMBER_CAST_TIME: f32 = 0.4;
+/// Dash: distance in tiles, duration, cooldown (seconds).
+const DASH_DIST: f32 = 3.5;
+const DASH_TIME: f32 = 0.18;
+const DASH_CD: f32 = 1.2;
 /// Face height (pixels) of cut-down front walls.
 const LOW_WALL: i32 = 8;
 
@@ -43,6 +50,8 @@ pub struct Input {
     pub potion_mp: bool,
     /// Toggle the automap (one-shot).
     pub map: bool,
+    /// Dash (one-shot).
+    pub dash: bool,
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
@@ -56,6 +65,7 @@ pub enum Sfx {
     Pickup,
     Drink,
     Descend,
+    Dash,
 }
 
 #[derive(Clone, Copy, PartialEq)]
@@ -118,6 +128,17 @@ struct Fireball {
     vy: f32,
     life: f32,
     dmg: f32,
+    /// Ember bolt (free, weak, single target, no burn).
+    ember: bool,
+}
+
+/// Fading afterimage left behind by a dash.
+struct Ghost {
+    x: f32,
+    y: f32,
+    dir: usize,
+    anim_t: f32,
+    life: f32,
 }
 
 #[derive(Clone, Copy)]
@@ -192,6 +213,11 @@ pub struct Player {
     moving: bool,
     cast_t: f32,
     cast_cd: f32,
+    /// Length of the current cast animation (fireball or ember).
+    cast_len: f32,
+    dash_t: f32,
+    dash_cd: f32,
+    dash_v: (f32, f32),
     path: Vec<(f32, f32)>,
     goal: Option<(f32, f32)>,
     repath: f32,
@@ -215,6 +241,7 @@ pub struct Game {
     pub p: Player,
     mobs: Vec<Mob>,
     balls: Vec<Fireball>,
+    ghosts: Vec<Ghost>,
     parts: Vec<Particle>,
     floaters: Vec<Floater>,
     pickups: Vec<Pickup>,
@@ -246,6 +273,9 @@ pub struct Stats {
     pub hits: u32,
     pub damage_taken: f32,
     pub descents: u32,
+    pub embers: u32,
+    pub dashes: u32,
+    pub dodged: u32,
 }
 
 impl Game {
@@ -264,6 +294,10 @@ impl Game {
             moving: false,
             cast_t: 0.0,
             cast_cd: 0.0,
+            cast_len: CAST_TIME,
+            dash_t: 0.0,
+            dash_cd: 0.0,
+            dash_v: (0.0, 0.0),
             path: vec![],
             goal: None,
             repath: 0.0,
@@ -279,6 +313,7 @@ impl Game {
             p,
             mobs: vec![],
             balls: vec![],
+            ghosts: vec![],
             parts: vec![],
             floaters: vec![],
             pickups: vec![],
@@ -316,6 +351,8 @@ impl Game {
         self.explored = vec![false; (self.d.w * self.d.h) as usize];
         self.mobs.clear();
         self.balls.clear();
+        self.ghosts.clear();
+        self.p.dash_t = 0.0;
         self.pickups.clear();
         self.decals.clear();
         self.parts.clear();
@@ -449,6 +486,7 @@ impl Game {
         p.flash = (p.flash - DT).max(0.0);
         p.cast_cd = (p.cast_cd - DT).max(0.0);
         p.cast_t = (p.cast_t - DT).max(0.0);
+        p.dash_cd = (p.dash_cd - DT).max(0.0);
         p.mana = (p.mana + 2.2 * DT).min(p.max_mana);
         p.hp = (p.hp + 0.4 * DT).min(p.max_hp);
 
@@ -467,6 +505,64 @@ impl Game {
 
         // Hovered monster (mouse picking against sprite boxes).
         self.hover = inp.mouse.and_then(|m| self.pick_mob(m));
+
+        // ---- dash ----
+        if inp.dash && self.p.dash_cd <= 0.0 && self.p.dash_t <= 0.0 {
+            let key = inp.move_x * inp.move_x + inp.move_y * inp.move_y;
+            let (dx, dy) = if key > 0.04 {
+                iso::screen_dir_to_world(inp.move_x, inp.move_y)
+            } else if let Some(m) = inp.mouse {
+                let (mx, my) = self.mouse_world(m);
+                let (dx, dy) = (mx - self.p.x, my - self.p.y);
+                let l = (dx * dx + dy * dy).sqrt();
+                if l > 0.05 {
+                    (dx / l, dy / l)
+                } else {
+                    dir_vec(self.p.dir)
+                }
+            } else {
+                dir_vec(self.p.dir)
+            };
+            let v = DASH_DIST / DASH_TIME;
+            self.p.dash_v = (dx * v, dy * v);
+            self.p.dash_t = DASH_TIME;
+            self.p.dash_cd = DASH_CD;
+            self.p.dir = iso::dir8(dx, dy);
+            self.p.cast_t = 0.0;
+            self.p.path.clear();
+            self.p.goal = None;
+            self.stats.dashes += 1;
+            self.sfx.push(Sfx::Dash);
+        }
+        if self.p.dash_t > 0.0 {
+            self.p.dash_t = (self.p.dash_t - DT).max(0.0);
+            let (vx, vy) = self.p.dash_v;
+            let (mut x, mut y) = (self.p.x, self.p.y);
+            move_circle(&self.d, &mut x, &mut y, vx * DT, vy * DT, PLAYER_R);
+            self.p.x = x;
+            self.p.y = y;
+            self.p.moving = true;
+            self.p.anim_t += DT * 2.0;
+            if self.tick % 2 == 0 {
+                self.ghosts.push(Ghost { x, y, dir: self.p.dir, anim_t: self.p.anim_t, life: 0.3 });
+            }
+            for _ in 0..3 {
+                let (r1, r2, r3) = (self.rng.f() - 0.5, self.rng.f() - 0.5, self.rng.f());
+                self.parts.push(Particle {
+                    x: x + r1 * 0.4,
+                    y: y + r2 * 0.4,
+                    z: 4.0 + r3 * 30.0,
+                    vx: -vx * 0.05,
+                    vy: -vy * 0.05,
+                    vz: 10.0,
+                    life: 0.4,
+                    max: 0.4,
+                    kind: PKind::Fire,
+                });
+            }
+            self.collect_pickups();
+            return;
+        }
 
         // ---- casting ----
         let mut cast_at: Option<(f32, f32)> = None;
@@ -498,12 +594,9 @@ impl Game {
                 self.p.dir = iso::dir8(dx, dy);
             }
             if self.p.cast_cd <= 0.0 {
-                if self.p.mana >= FIREBALL_COST {
-                    self.cast_fireball(tx, ty);
-                } else if self.p.cast_cd <= 0.0 {
-                    self.p.cast_cd = 0.4;
-                    self.floater(self.p.x, self.p.y, "NO MANA".into(), rgb(0x7090ff));
-                }
+                // Out of mana: the free Ember Bolt keeps you fighting.
+                let ember = self.p.mana < FIREBALL_COST;
+                self.cast_fireball(tx, ty, ember);
             }
         }
 
@@ -565,7 +658,10 @@ impl Game {
             self.p.anim_t = 0.0;
         }
 
-        // Pickups
+        self.collect_pickups();
+    }
+
+    fn collect_pickups(&mut self) {
         let (px, py) = (self.p.x, self.p.y);
         let mut got = vec![];
         self.pickups.retain(|k| {
@@ -624,17 +720,27 @@ impl Game {
         }
     }
 
-    fn cast_fireball(&mut self, tx: f32, ty: f32) {
+    fn cast_fireball(&mut self, tx: f32, ty: f32, ember: bool) {
         let p = &mut self.p;
-        p.mana -= FIREBALL_COST;
-        p.cast_cd = CAST_TIME;
-        p.cast_t = CAST_TIME;
-        self.stats.casts += 1;
+        let (len, speed, life) = if ember { (EMBER_CAST_TIME, EMBER_SPEED, 0.7) } else { (CAST_TIME, FIREBALL_SPEED, 1.1) };
+        if !ember {
+            p.mana -= FIREBALL_COST;
+        }
+        p.cast_cd = len;
+        p.cast_t = len;
+        p.cast_len = len;
         let (dx, dy) = (tx - p.x, ty - p.y);
         let l = (dx * dx + dy * dy).sqrt().max(0.001);
         let (ux, uy) = (dx / l, dy / l);
-        let dmg = self.rng.rf(9.0, 15.0) * (1.0 + 0.12 * (self.depth - 1) as f32);
-        self.balls.push(Fireball { x: p.x + ux * 0.45, y: p.y + uy * 0.45, vx: ux * FIREBALL_SPEED, vy: uy * FIREBALL_SPEED, life: 1.1, dmg });
+        let (x, y) = (p.x + ux * 0.45, p.y + uy * 0.45);
+        let scale = 1.0 + 0.12 * (self.depth - 1) as f32;
+        let dmg = if ember { self.rng.rf(3.0, 5.0) } else { self.rng.rf(9.0, 15.0) } * scale;
+        self.balls.push(Fireball { x, y, vx: ux * speed, vy: uy * speed, life, dmg, ember });
+        if ember {
+            self.stats.embers += 1;
+        } else {
+            self.stats.casts += 1;
+        }
         self.sfx.push(Sfx::Cast);
     }
 
@@ -861,6 +967,11 @@ impl Game {
         if matches!(self.state, State::Dead(_)) {
             return;
         }
+        if self.p.dash_t > 0.0 {
+            self.stats.dodged += 1;
+            self.floater(self.p.x, self.p.y, "DODGE".into(), rgb(0xffc060));
+            return;
+        }
         self.p.hp -= dmg;
         self.stats.damage_taken += dmg;
         self.p.flash = 0.2;
@@ -899,14 +1010,15 @@ impl Game {
                 }
             }
             if hit {
-                booms.push((b.x, b.y, b.dmg));
+                booms.push((b.x, b.y, b.dmg, b.ember));
                 b.life = -1.0;
             }
         }
         // Trail sparks.
         for i in 0..self.balls.len() {
             let (bx, by, vx, vy) = (self.balls[i].x, self.balls[i].y, self.balls[i].vx, self.balls[i].vy);
-            for _ in 0..2 {
+            let n = if self.balls[i].ember { 1 } else { 2 };
+            for _ in 0..n {
                 let (r1, r2, r3) = (self.rng.f() - 0.5, self.rng.f() - 0.5, self.rng.f());
                 self.parts.push(Particle {
                     x: bx + r1 * 0.15,
@@ -922,8 +1034,48 @@ impl Game {
             }
         }
         self.balls.retain(|b| b.life > -0.5);
-        for (x, y, dmg) in booms {
-            self.explode(x, y, dmg);
+        for (x, y, dmg, ember) in booms {
+            if ember {
+                self.ember_hit(x, y, dmg);
+            } else {
+                self.explode(x, y, dmg);
+            }
+        }
+    }
+
+    /// Ember Bolt impact: a small puff that hurts only the monster it touched.
+    fn ember_hit(&mut self, x: f32, y: f32, dmg: f32) {
+        self.lights.push(Light { x, y, r: 70.0, s: 0.7, life: 0.2, max: 0.2 });
+        for _ in 0..8 {
+            let a = self.rng.f() * std::f32::consts::TAU;
+            let s = self.rng.rf(0.8, 2.5);
+            let (vz, life) = (self.rng.rf(10.0, 40.0), self.rng.rf(0.2, 0.4));
+            self.parts.push(Particle { x, y, z: 20.0, vx: a.cos() * s, vy: a.sin() * s, vz, life, max: life, kind: PKind::Fire });
+        }
+        let target = self
+            .mobs
+            .iter()
+            .enumerate()
+            .filter(|(_, m)| !matches!(m.state, MobState::Dead(_)))
+            .map(|(i, m)| (i, (m.x - x).powi(2) + (m.y - y).powi(2)))
+            .filter(|&(_, d2)| d2 < 0.6 * 0.6)
+            .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
+            .map(|v| v.0);
+        let Some(i) = target else { return };
+        self.stats.hits += 1;
+        self.sfx.push(Sfx::Hit);
+        let m = &mut self.mobs[i];
+        m.hp -= dmg;
+        m.flash = 0.1;
+        if m.state == MobState::Idle {
+            m.state = MobState::Chase;
+        }
+        let (mx, my) = (m.x, m.y);
+        self.focus = Some(i);
+        self.focus_t = 3.0;
+        self.floater(mx, my, format!("{}", dmg.round() as i32), rgb(0xffa060));
+        if self.mobs[i].hp <= 0.0 {
+            self.kill(i);
         }
     }
 
@@ -1067,6 +1219,10 @@ impl Game {
         for l in self.lights.iter_mut() {
             l.life -= DT;
         }
+        for g in self.ghosts.iter_mut() {
+            g.life -= DT;
+        }
+        self.ghosts.retain(|g| g.life > 0.0);
         self.lights.retain(|l| l.life > 0.0);
         self.focus_t -= DT;
         if self.focus_t <= 0.0 {
@@ -1151,6 +1307,7 @@ impl Game {
             Mob(usize),
             Player,
             Ball(usize),
+            Ghost(usize),
         }
         let mut list: Vec<(f32, D)> = vec![];
         for ty in y0..=y1 {
@@ -1169,6 +1326,9 @@ impl Game {
         list.push((px + py, D::Player));
         for (i, b) in self.balls.iter().enumerate() {
             list.push((b.x + b.y, D::Ball(i)));
+        }
+        for (i, g) in self.ghosts.iter().enumerate() {
+            list.push((g.x + g.y - 0.01, D::Ghost(i)));
         }
         list.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
 
@@ -1199,6 +1359,13 @@ impl Game {
                 }
                 D::Mob(i) => self.draw_mob(scr, i, to_scr(self.mobs[i].x, self.mobs[i].y)),
                 D::Player => self.draw_player(scr, (psx, psy)),
+                D::Ghost(i) => {
+                    let g = &self.ghosts[i];
+                    let (sx, sy) = to_scr(g.x, g.y);
+                    let spr = self.art.char("mage").frame("walk", g.dir, g.anim_t);
+                    let k = g.life / 0.3;
+                    scr.blit(spr, sx, sy, Fx { tint: rgb(0xff6018), tint_a: 0.75, alpha: 0.45 * k, ..Fx::default() });
+                }
                 D::Ball(i) => {
                     let b = &self.balls[i];
                     let (sx, sy) = to_scr(b.x, b.y);
@@ -1212,14 +1379,17 @@ impl Game {
         scr.begin_light();
         for b in &self.balls {
             let (sx, sy) = to_scr(b.x, b.y);
-            scr.add_light(sx, sy, 110.0, 0.9);
+            scr.add_light(sx, sy, if b.ember { 60.0 } else { 110.0 }, if b.ember { 0.6 } else { 0.9 });
         }
         for l in &self.lights {
             let (sx, sy) = to_scr(l.x, l.y);
             scr.add_light(sx, sy, l.r, l.s * (l.life / l.max));
         }
         if self.p.cast_t > 0.0 {
-            scr.add_light(psx, psy - 20, 70.0, 0.4 * self.p.cast_t / CAST_TIME);
+            scr.add_light(psx, psy - 20, 70.0, 0.4 * self.p.cast_t / self.p.cast_len);
+        }
+        if self.p.dash_t > 0.0 {
+            scr.add_light(psx, psy - 16, 80.0, 0.5);
         }
         for m in &self.mobs {
             if m.burn > 0.0 && !matches!(m.state, MobState::Dead(_)) {
@@ -1233,6 +1403,11 @@ impl Game {
         for b in &self.balls {
             let (sx, sy) = to_scr(b.x, b.y);
             let fl = ((self.tick as f32) * 0.9).sin() * 1.5;
+            if b.ember {
+                scr.glow(sx, sy - 22, 12.0 + fl * 0.5, rgb(0xff4008), 0.9);
+                scr.disc(sx + scr.shake.0, sy - 22 + scr.shake.1, 1, rgb(0xffd080));
+                continue;
+            }
             scr.glow(sx, sy - 22, 26.0 + fl, rgb(0xff5010), 0.9);
             scr.glow(sx, sy - 22, 12.0, rgb(0xffd060), 1.0);
             scr.disc(sx + scr.shake.0, sy - 22 + scr.shake.1, 3, rgb(0xfff4c0));
@@ -1349,7 +1524,7 @@ impl Game {
         blend_ellipse(scr, sx, sy, 11, 4, BLACK, 0.5);
         let dead_t = if let State::Dead(t) = self.state { Some(t) } else { None };
         let spr = if self.p.cast_t > 0.0 && art.has("cast") {
-            art.frame_at("cast", self.p.dir, 1.0 - self.p.cast_t / CAST_TIME)
+            art.frame_at("cast", self.p.dir, 1.0 - self.p.cast_t / self.p.cast_len)
         } else if self.p.moving {
             art.frame("walk", self.p.dir, self.p.anim_t)
         } else {
@@ -1443,8 +1618,26 @@ impl Game {
         scr.blit(&self.icon, ix, iy, Fx::default());
         if self.p.mana < FIREBALL_COST {
             scr.blend(ix, iy, 24, 24, rgb(0x000040), 0.6);
+            scr.text("EMBER", w / 2, iy + 28, rgb(0xff9050), Align::Center, 1);
+        } else {
+            scr.text("FIREBALL", w / 2, iy + 28, rgb(0xd8b878), Align::Center, 1);
         }
-        scr.text("FIREBALL", w / 2, iy + 28, rgb(0xd8b878), Align::Center, 1);
+        // Dash slot with a cooldown sweep.
+        let dx0 = ix + 40;
+        scr.fill(dx0 - 2, iy - 2, 28, 28, rgb(0x5a4a38));
+        scr.fill(dx0, iy, 24, 24, rgb(0x1a1410));
+        for k in 0..3 {
+            let x = dx0 + 4 + k * 6;
+            for yy in 0..8 {
+                let off = if yy < 4 { yy } else { 7 - yy };
+                scr.fill(x + off, iy + 8 + yy, 2, 1, mix(rgb(0xffd060), rgb(0xff5010), k as f32 / 2.0));
+            }
+        }
+        if self.p.dash_cd > 0.0 {
+            let hcd = (24.0 * self.p.dash_cd / DASH_CD) as i32;
+            scr.blend(dx0, iy, 24, hcd, BLACK, 0.7);
+        }
+        scr.text("DASH", dx0 + 12, iy + 28, rgb(0xd8b878), Align::Center, 1);
         // Potions.
         let bx = 80;
         potion(scr, bx, top + 12, rgb(0xc02020));
@@ -1477,8 +1670,8 @@ impl Game {
             scr.text(&format!("SANCTUM LEVEL {}", self.depth), w / 2, top / 2 - 30, mix(BLACK, rgb(0xb0a090), a), Align::Center, 1);
             if self.depth == 1 {
                 let hint = mix(BLACK, rgb(0x8a7a68), a);
-                scr.text("LEFT CLICK: MOVE / ATTACK    RIGHT CLICK: FIREBALL    Q / E: POTIONS", w / 2, top - 34, hint, Align::Center, 1);
-                scr.text("PAD: LEFT STICK MOVE    RIGHT STICK OR A: FIREBALL    L1 / Y: POTIONS", w / 2, top - 22, hint, Align::Center, 1);
+                scr.text("LEFT CLICK: MOVE   RIGHT CLICK: FIREBALL   SPACE: DASH   Q / E: POTIONS", w / 2, top - 34, hint, Align::Center, 1);
+                scr.text("PAD: LEFT STICK MOVE   RIGHT STICK OR A: FIREBALL   B: DASH   L1 / Y: POTIONS", w / 2, top - 22, hint, Align::Center, 1);
             }
         }
         match self.state {
@@ -1611,5 +1804,59 @@ fn draw_pickup(scr: &mut Screen, k: &Pickup, sx: i32, sy: i32, tick: u32) {
                 scr.pset(sx + dx, sy - 3 + dy - pop, rgb(0xfff0a0));
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn quiet_game() -> Game {
+        let mut g = Game::new(7, crate::gfx::SH_WIDE);
+        g.mobs.clear();
+        g.banner_t = 0.0;
+        g
+    }
+
+    #[test]
+    fn dash_moves_and_dodges() {
+        let mut g = quiet_game();
+        let (x0, y0) = (g.p.x, g.p.y);
+        // Dash toward the room's longer axis (screen right = world +x/-y); walls may cut it short.
+        let inp = Input { dash: true, move_x: 1.0, ..Input::default() };
+        g.update(&inp);
+        assert!(g.p.dash_t > 0.0, "dash started");
+        let hp = g.p.hp;
+        g.hurt_player(10.0);
+        assert_eq!(g.p.hp, hp, "no damage while dashing");
+        assert_eq!(g.stats.dodged, 1);
+        for _ in 0..20 {
+            g.update(&Input::default());
+        }
+        let moved = ((g.p.x - x0).powi(2) + (g.p.y - y0).powi(2)).sqrt();
+        assert!(moved > 1.0 && moved <= DASH_DIST * 1.1, "dash moved {moved}");
+        assert!(g.d.walkable(g.p.x as i32, g.p.y as i32));
+        // Cooldown: an immediate second dash is ignored.
+        g.update(&Input { dash: true, move_x: -1.0, ..Input::default() });
+        assert_eq!(g.p.dash_t, 0.0);
+        g.hurt_player(10.0);
+        assert!(g.p.hp < hp, "damage lands again after the dash");
+    }
+
+    #[test]
+    fn ember_bolt_is_free_when_out_of_mana() {
+        let mut g = quiet_game();
+        g.p.mana = 1.0;
+        g.update(&Input { cast: true, ..Input::default() });
+        assert_eq!(g.balls.len(), 1);
+        assert!(g.balls[0].ember);
+        assert!(g.p.mana >= 1.0, "ember costs no mana");
+        g.p.mana = 50.0;
+        for _ in 0..30 {
+            g.update(&Input::default());
+        }
+        g.update(&Input { cast: true, ..Input::default() });
+        assert!(g.balls.iter().any(|b| !b.ember), "fireball again with mana");
+        assert!(g.p.mana < 50.0);
     }
 }

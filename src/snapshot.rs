@@ -46,6 +46,7 @@ fn bot(g: &Game, t: u32) -> Input {
                 let (sx, sy) = crate::iso::to_screen(dx, dy);
                 let l = (sx * sx + sy * sy).sqrt().max(0.01);
                 inp.cast = t % 40 < 20;
+                inp.dash = t % 45 == 0;
                 inp.move_x = sx / l;
                 inp.move_y = sy / l;
             }
@@ -104,6 +105,20 @@ pub fn run(dir: Option<&str>, tall: bool) -> i32 {
         }
         assert!(g.p.x.is_finite() && g.p.y.is_finite(), "player position went non-finite");
         assert!(g.d.walkable(g.p.x.floor() as i32, g.p.y.floor() as i32), "player inside a wall at {:.2},{:.2}", g.p.x, g.p.y);
+    }
+    if let Some(d) = dir {
+        // Staged frame: out of mana (HUD shows EMBER), mid-dash with the afterimage trail.
+        let mut g = Game::new(7, h);
+        for _ in 0..30 {
+            g.update(&Input::default());
+        }
+        g.p.mana = 2.0;
+        g.update(&Input { dash: true, move_x: 1.0, move_y: 0.3, ..Input::default() });
+        for _ in 0..6 {
+            g.update(&Input { move_x: 1.0, move_y: 0.3, ..Input::default() });
+        }
+        g.draw(&mut scr);
+        write_bmp(&format!("{d}/dash.bmp"), &scr).expect("write snapshot");
     }
     let draws = if dir.is_some() { shots.len() as u32 } else { total / 4 };
     println!(

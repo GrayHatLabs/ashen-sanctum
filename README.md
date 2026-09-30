@@ -11,6 +11,8 @@ Sound effects are synthesised in code.
 ## How to play
 
 - **Fireball** costs 5 mana. It explodes on impact, splashes nearby foes and sets them burning.
+- **Ember Bolt**: when you're out of mana the same button fires a free, weaker bolt (single target, no burn).
+- **Dash** a few tiles in the direction you're moving (or toward the cursor). You can't be hit mid-dash; 1.2 s cooldown.
 - **Zombies** are slow and hit hard. **Skeletons** are fast and fragile. Monsters in a pack alert each other.
 - Getting hit by a fireball interrupts a monster's swing.
 - Life and mana regenerate slowly. Drink potions when you need them (monsters drop more).
@@ -22,10 +24,12 @@ Sound effects are synthesised in code.
 | Action | Mouse + keyboard | Gamepad / handheld |
 |---|---|---|
 | Move | Hold left click on the floor, or WASD / arrows | Left stick / D-pad |
-| Fireball | Right click (at the cursor), left click a monster, Shift + left click, Space | Right stick (aim + cast), or A / X / R1 / RT (auto-aims at the nearest foe) |
+| Fireball / Ember Bolt | Right click (at the cursor), left click a monster, Shift + left click, F | Right stick (aim + cast), or A / X / R1 / RT (auto-aims at the nearest foe) |
+| Dash | Space | B |
 | Health potion | Q or 1 | L1 / L2 |
+| Map | Tab or M | SELECT |
 | Mana potion | E or 2 | Y |
-| Descend / restart | Enter | START or B |
+| Descend / restart | Enter | START |
 | Quit | Esc | SELECT + START |
 
 ## Building
