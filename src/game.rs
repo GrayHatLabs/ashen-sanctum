@@ -14,17 +14,27 @@ const MAP_H: i32 = 72;
 
 const PLAYER_R: f32 = 0.3;
 const MOB_R: f32 = 0.32;
-const PLAYER_SPEED: f32 = 3.6;
+const WALK_SPEED: f32 = 4.3;
+const RUN_SPEED: f32 = 6.5;
 const FIREBALL_COST: f32 = 5.0;
 const FIREBALL_SPEED: f32 = 10.0;
 const CAST_TIME: f32 = 0.32;
 /// Free fallback bolt when out of mana.
 const EMBER_SPEED: f32 = 13.0;
 const EMBER_CAST_TIME: f32 = 0.4;
-/// Dash: distance in tiles, duration, cooldown (seconds).
-const DASH_DIST: f32 = 3.5;
-const DASH_TIME: f32 = 0.18;
-const DASH_CD: f32 = 1.2;
+/// Stamina (D2 style): drains while running, refills while walking or standing.
+const MAX_STAMINA: f32 = 100.0;
+const STAMINA_DRAIN: f32 = 14.0;
+const STAMINA_REGEN: f32 = 10.0;
+/// After running dry you walk until stamina is back to this much.
+const WINDED_UNTIL: f32 = 20.0;
+/// Food: drains over time (faster while running); empty = starving.
+const MAX_FOOD: f32 = 100.0;
+const FOOD_DRAIN: f32 = 0.35;
+const FOOD_DRAIN_RUN: f32 = 0.8;
+const STARVE_DPS: f32 = 1.2;
+/// Apple, bread, roast: food restored, bonus life.
+const FOODS: [(&str, f32, f32); 3] = [("APPLE", 20.0, 0.0), ("BREAD", 35.0, 0.0), ("ROAST", 60.0, 10.0)];
 /// Face height (pixels) of cut-down front walls.
 const LOW_WALL: i32 = 8;
 
@@ -50,8 +60,8 @@ pub struct Input {
     pub potion_mp: bool,
     /// Toggle the automap (one-shot).
     pub map: bool,
-    /// Dash (one-shot).
-    pub dash: bool,
+    /// Toggle run / walk (one-shot).
+    pub run_toggle: bool,
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
@@ -65,7 +75,7 @@ pub enum Sfx {
     Pickup,
     Drink,
     Descend,
-    Dash,
+    Eat,
 }
 
 #[derive(Clone, Copy, PartialEq)]
@@ -132,15 +142,6 @@ struct Fireball {
     ember: bool,
 }
 
-/// Fading afterimage left behind by a dash.
-struct Ghost {
-    x: f32,
-    y: f32,
-    dir: usize,
-    anim_t: f32,
-    life: f32,
-}
-
 #[derive(Clone, Copy)]
 enum PKind {
     /// Additive fire spark.
@@ -175,6 +176,8 @@ enum Drop {
     Health,
     Mana,
     Gold(i32),
+    /// Index into FOODS.
+    Food(usize),
 }
 
 struct Pickup {
@@ -215,9 +218,13 @@ pub struct Player {
     cast_cd: f32,
     /// Length of the current cast animation (fireball or ember).
     cast_len: f32,
-    dash_t: f32,
-    dash_cd: f32,
-    dash_v: (f32, f32),
+    pub stamina: f32,
+    /// Run toggle (D2's run/walk button).
+    pub running: bool,
+    /// Ran out of stamina: walking until it recovers.
+    winded: bool,
+    pub food: f32,
+    hunger_msg: f32,
     path: Vec<(f32, f32)>,
     goal: Option<(f32, f32)>,
     repath: f32,
@@ -241,7 +248,6 @@ pub struct Game {
     pub p: Player,
     mobs: Vec<Mob>,
     balls: Vec<Fireball>,
-    ghosts: Vec<Ghost>,
     parts: Vec<Particle>,
     floaters: Vec<Floater>,
     pickups: Vec<Pickup>,
@@ -274,8 +280,9 @@ pub struct Stats {
     pub damage_taken: f32,
     pub descents: u32,
     pub embers: u32,
-    pub dashes: u32,
-    pub dodged: u32,
+    pub eaten: u32,
+    pub starve_damage: f32,
+    pub run_time: f32,
 }
 
 impl Game {
@@ -295,9 +302,11 @@ impl Game {
             cast_t: 0.0,
             cast_cd: 0.0,
             cast_len: CAST_TIME,
-            dash_t: 0.0,
-            dash_cd: 0.0,
-            dash_v: (0.0, 0.0),
+            stamina: MAX_STAMINA,
+            running: true,
+            winded: false,
+            food: MAX_FOOD,
+            hunger_msg: 0.0,
             path: vec![],
             goal: None,
             repath: 0.0,
@@ -313,7 +322,6 @@ impl Game {
             p,
             mobs: vec![],
             balls: vec![],
-            ghosts: vec![],
             parts: vec![],
             floaters: vec![],
             pickups: vec![],
@@ -351,8 +359,6 @@ impl Game {
         self.explored = vec![false; (self.d.w * self.d.h) as usize];
         self.mobs.clear();
         self.balls.clear();
-        self.ghosts.clear();
-        self.p.dash_t = 0.0;
         self.pickups.clear();
         self.decals.clear();
         self.parts.clear();
@@ -374,6 +380,22 @@ impl Game {
                     self.mobs.push(Mob::new(kind, x, y, scale, &mut self.rng));
                     break;
                 }
+            }
+        }
+        // Food lying about: one or two per few rooms, roasts are rare.
+        let n_food = 3 + self.rng.range(0, 3);
+        for _ in 0..n_food {
+            let r = rooms[self.rng.range(1, rooms.len() as i32) as usize];
+            for _try in 0..20 {
+                let x = self.rng.range(r.x + 1, r.x + r.w - 1) as f32 + 0.5;
+                let y = self.rng.range(r.y + 1, r.y + r.h - 1) as f32 + 0.5;
+                if self.d.blocked(x, y, 0.3) {
+                    continue;
+                }
+                let roll = self.rng.f();
+                let kind = if roll < 0.5 { 0 } else if roll < 0.85 { 1 } else { 2 };
+                self.pickups.push(Pickup { x, y, kind: Drop::Food(kind), t: 1.0 });
+                break;
             }
         }
     }
@@ -401,6 +423,9 @@ impl Game {
         self.p.hp_pots = 3;
         self.p.mp_pots = 3;
         self.p.gold = 0;
+        self.p.food = MAX_FOOD;
+        self.p.stamina = MAX_STAMINA;
+        self.p.winded = false;
         self.descend();
     }
 
@@ -412,6 +437,24 @@ impl Game {
             .map(|m| (m.x, m.y, ((m.x - self.p.x).powi(2) + (m.y - self.p.y).powi(2)).sqrt()))
             .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap())
             .map(|(x, y, d)| (x, y, d, self.d.los(self.p.x, self.p.y, x, y)))
+    }
+
+    /// Drops one of each food next to the player (staged snapshot only).
+    pub fn debug_food_nearby(&mut self) {
+        for i in 0..3 {
+            let (x, y) = (self.p.x + 0.8 + i as f32 * 0.7, self.p.y - 0.6);
+            self.pickups.push(Pickup { x, y, kind: Drop::Food(i), t: 1.0 });
+        }
+    }
+
+    /// Nearest food on the floor (for the test bot).
+    pub fn bot_food(&self) -> Option<(f32, f32)> {
+        self.pickups
+            .iter()
+            .filter(|k| matches!(k.kind, Drop::Food(_)))
+            .map(|k| (k.x, k.y, (k.x - self.p.x).powi(2) + (k.y - self.p.y).powi(2)))
+            .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap())
+            .map(|(x, y, _)| (x, y))
     }
 
     /// Next waypoint on the A* path from the player to (tx, ty).
@@ -486,9 +529,32 @@ impl Game {
         p.flash = (p.flash - DT).max(0.0);
         p.cast_cd = (p.cast_cd - DT).max(0.0);
         p.cast_t = (p.cast_t - DT).max(0.0);
-        p.dash_cd = (p.dash_cd - DT).max(0.0);
         p.mana = (p.mana + 2.2 * DT).min(p.max_mana);
-        p.hp = (p.hp + 0.4 * DT).min(p.max_hp);
+        let starving = p.food <= 0.0;
+        if !starving {
+            p.hp = (p.hp + 0.4 * DT).min(p.max_hp);
+        }
+        p.hunger_msg = (p.hunger_msg - DT).max(0.0);
+        if inp.run_toggle {
+            p.running = !p.running;
+        }
+        if starving {
+            self.stats.starve_damage += STARVE_DPS * DT;
+            self.p.hp -= STARVE_DPS * DT;
+            if self.p.hunger_msg <= 0.0 {
+                self.p.hunger_msg = 4.0;
+                self.floater(self.p.x, self.p.y, "STARVING".into(), rgb(0xff6030));
+            }
+            if self.p.hp <= 0.0 {
+                self.p.hp = 0.0;
+                self.state = State::Dead(0.0);
+                self.sfx.push(Sfx::Die);
+                return;
+            }
+        } else if self.p.food < 25.0 && self.p.hunger_msg <= 0.0 {
+            self.p.hunger_msg = 12.0;
+            self.floater(self.p.x, self.p.y, "HUNGRY".into(), rgb(0xe0a040));
+        }
 
         if inp.potion_hp && self.p.hp_pots > 0 && self.p.hp < self.p.max_hp {
             self.p.hp_pots -= 1;
@@ -505,64 +571,6 @@ impl Game {
 
         // Hovered monster (mouse picking against sprite boxes).
         self.hover = inp.mouse.and_then(|m| self.pick_mob(m));
-
-        // ---- dash ----
-        if inp.dash && self.p.dash_cd <= 0.0 && self.p.dash_t <= 0.0 {
-            let key = inp.move_x * inp.move_x + inp.move_y * inp.move_y;
-            let (dx, dy) = if key > 0.04 {
-                iso::screen_dir_to_world(inp.move_x, inp.move_y)
-            } else if let Some(m) = inp.mouse {
-                let (mx, my) = self.mouse_world(m);
-                let (dx, dy) = (mx - self.p.x, my - self.p.y);
-                let l = (dx * dx + dy * dy).sqrt();
-                if l > 0.05 {
-                    (dx / l, dy / l)
-                } else {
-                    dir_vec(self.p.dir)
-                }
-            } else {
-                dir_vec(self.p.dir)
-            };
-            let v = DASH_DIST / DASH_TIME;
-            self.p.dash_v = (dx * v, dy * v);
-            self.p.dash_t = DASH_TIME;
-            self.p.dash_cd = DASH_CD;
-            self.p.dir = iso::dir8(dx, dy);
-            self.p.cast_t = 0.0;
-            self.p.path.clear();
-            self.p.goal = None;
-            self.stats.dashes += 1;
-            self.sfx.push(Sfx::Dash);
-        }
-        if self.p.dash_t > 0.0 {
-            self.p.dash_t = (self.p.dash_t - DT).max(0.0);
-            let (vx, vy) = self.p.dash_v;
-            let (mut x, mut y) = (self.p.x, self.p.y);
-            move_circle(&self.d, &mut x, &mut y, vx * DT, vy * DT, PLAYER_R);
-            self.p.x = x;
-            self.p.y = y;
-            self.p.moving = true;
-            self.p.anim_t += DT * 2.0;
-            if self.tick % 2 == 0 {
-                self.ghosts.push(Ghost { x, y, dir: self.p.dir, anim_t: self.p.anim_t, life: 0.3 });
-            }
-            for _ in 0..3 {
-                let (r1, r2, r3) = (self.rng.f() - 0.5, self.rng.f() - 0.5, self.rng.f());
-                self.parts.push(Particle {
-                    x: x + r1 * 0.4,
-                    y: y + r2 * 0.4,
-                    z: 4.0 + r3 * 30.0,
-                    vx: -vx * 0.05,
-                    vy: -vy * 0.05,
-                    vz: 10.0,
-                    life: 0.4,
-                    max: 0.4,
-                    kind: PKind::Fire,
-                });
-            }
-            self.collect_pickups();
-            return;
-        }
 
         // ---- casting ----
         let mut cast_at: Option<(f32, f32)> = None;
@@ -642,9 +650,27 @@ impl Game {
                 }
             }
         }
-        let casting = self.p.cast_t > 0.0;
-        let speed = if casting { PLAYER_SPEED * 0.25 } else { PLAYER_SPEED };
+        let casting = self.p.cast_t > 0.0 && self.p.cast_len >= CAST_TIME;
         self.p.moving = mv.0 != 0.0 || mv.1 != 0.0;
+        let run = self.p.running && !self.p.winded && self.p.moving && !casting;
+        let starving = self.p.food <= 0.0;
+        if run {
+            self.p.stamina -= STAMINA_DRAIN * DT;
+            self.stats.run_time += DT;
+            if self.p.stamina <= 0.0 {
+                self.p.stamina = 0.0;
+                self.p.winded = true;
+            }
+        } else {
+            let regen = if starving { STAMINA_REGEN * 0.5 } else { STAMINA_REGEN };
+            self.p.stamina = (self.p.stamina + regen * DT).min(MAX_STAMINA);
+            if self.p.winded && self.p.stamina >= WINDED_UNTIL {
+                self.p.winded = false;
+            }
+        }
+        self.p.food = (self.p.food - if run { FOOD_DRAIN_RUN } else { FOOD_DRAIN } * DT).max(0.0);
+        let base = if run { RUN_SPEED } else { WALK_SPEED };
+        let speed = if casting { base * 0.25 } else { base };
         if self.p.moving {
             if !casting {
                 self.p.dir = iso::dir8(mv.0, mv.1);
@@ -653,7 +679,7 @@ impl Game {
             move_circle(&self.d, &mut x, &mut y, mv.0 * speed * DT, mv.1 * speed * DT, PLAYER_R);
             self.p.x = x;
             self.p.y = y;
-            self.p.anim_t += DT;
+            self.p.anim_t += DT * speed / WALK_SPEED;
         } else {
             self.p.anim_t = 0.0;
         }
@@ -663,9 +689,11 @@ impl Game {
 
     fn collect_pickups(&mut self) {
         let (px, py) = (self.p.x, self.p.y);
+        let full = self.p.food > MAX_FOOD - 8.0;
         let mut got = vec![];
         self.pickups.retain(|k| {
-            if (k.x - px).powi(2) + (k.y - py).powi(2) < 0.5 && k.t > 0.3 {
+            let food_but_full = matches!(k.kind, Drop::Food(_)) && full;
+            if (k.x - px).powi(2) + (k.y - py).powi(2) < 0.5 && k.t > 0.3 && !food_but_full {
                 got.push(k.kind);
                 false
             } else {
@@ -686,6 +714,16 @@ impl Game {
                 Drop::Gold(n) => {
                     self.p.gold += n;
                     self.floater(px, py, format!("{n} GOLD"), rgb(0xe8c050));
+                }
+                Drop::Food(i) => {
+                    let (name, food, life) = FOODS[i];
+                    self.p.food = (self.p.food + food).min(MAX_FOOD);
+                    self.p.hp = (self.p.hp + life).min(self.p.max_hp);
+                    self.p.hunger_msg = 0.0;
+                    self.stats.eaten += 1;
+                    self.sfx.pop();
+                    self.sfx.push(Sfx::Eat);
+                    self.floater(px, py, name.into(), rgb(0xe0b060));
                 }
             }
         }
@@ -967,11 +1005,6 @@ impl Game {
         if matches!(self.state, State::Dead(_)) {
             return;
         }
-        if self.p.dash_t > 0.0 {
-            self.stats.dodged += 1;
-            self.floater(self.p.x, self.p.y, "DODGE".into(), rgb(0xffc060));
-            return;
-        }
         self.p.hp -= dmg;
         self.stats.damage_taken += dmg;
         self.p.flash = 0.2;
@@ -1162,7 +1195,9 @@ impl Game {
             Some(Drop::Health)
         } else if r < 0.26 {
             Some(Drop::Mana)
-        } else if r < 0.6 {
+        } else if r < 0.36 {
+            Some(Drop::Food(if self.rng.chance(0.6) { 0 } else { 1 }))
+        } else if r < 0.66 {
             Some(Drop::Gold(self.rng.range(3, 12) * self.depth as i32))
         } else {
             None
@@ -1219,10 +1254,7 @@ impl Game {
         for l in self.lights.iter_mut() {
             l.life -= DT;
         }
-        for g in self.ghosts.iter_mut() {
-            g.life -= DT;
-        }
-        self.ghosts.retain(|g| g.life > 0.0);
+
         self.lights.retain(|l| l.life > 0.0);
         self.focus_t -= DT;
         if self.focus_t <= 0.0 {
@@ -1298,7 +1330,7 @@ impl Game {
         // Shadows & pickups sit on the floor.
         for k in &self.pickups {
             let (sx, sy) = to_scr(k.x, k.y);
-            draw_pickup(scr, k, sx, sy, self.tick);
+            draw_pickup(scr, k, sx, sy, self.tick, &self.art);
         }
 
         // 2. Depth-sorted walls and actors.
@@ -1307,7 +1339,6 @@ impl Game {
             Mob(usize),
             Player,
             Ball(usize),
-            Ghost(usize),
         }
         let mut list: Vec<(f32, D)> = vec![];
         for ty in y0..=y1 {
@@ -1327,9 +1358,7 @@ impl Game {
         for (i, b) in self.balls.iter().enumerate() {
             list.push((b.x + b.y, D::Ball(i)));
         }
-        for (i, g) in self.ghosts.iter().enumerate() {
-            list.push((g.x + g.y - 0.01, D::Ghost(i)));
-        }
+
         list.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
 
         let (psx, psy) = to_scr(px, py);
@@ -1359,13 +1388,6 @@ impl Game {
                 }
                 D::Mob(i) => self.draw_mob(scr, i, to_scr(self.mobs[i].x, self.mobs[i].y)),
                 D::Player => self.draw_player(scr, (psx, psy)),
-                D::Ghost(i) => {
-                    let g = &self.ghosts[i];
-                    let (sx, sy) = to_scr(g.x, g.y);
-                    let spr = self.art.char("mage").frame("walk", g.dir, g.anim_t);
-                    let k = g.life / 0.3;
-                    scr.blit(spr, sx, sy, Fx { tint: rgb(0xff6018), tint_a: 0.75, alpha: 0.45 * k, ..Fx::default() });
-                }
                 D::Ball(i) => {
                     let b = &self.balls[i];
                     let (sx, sy) = to_scr(b.x, b.y);
@@ -1388,9 +1410,7 @@ impl Game {
         if self.p.cast_t > 0.0 {
             scr.add_light(psx, psy - 20, 70.0, 0.4 * self.p.cast_t / self.p.cast_len);
         }
-        if self.p.dash_t > 0.0 {
-            scr.add_light(psx, psy - 16, 80.0, 0.5);
-        }
+
         for m in &self.mobs {
             if m.burn > 0.0 && !matches!(m.state, MobState::Dead(_)) {
                 let (sx, sy) = to_scr(m.x, m.y);
@@ -1622,24 +1642,36 @@ impl Game {
         } else {
             scr.text("FIREBALL", w / 2, iy + 28, rgb(0xd8b878), Align::Center, 1);
         }
-        // Dash slot with a cooldown sweep.
-        let dx0 = ix + 40;
-        scr.fill(dx0 - 2, iy - 2, 28, 28, rgb(0x5a4a38));
-        scr.fill(dx0, iy, 24, 24, rgb(0x1a1410));
-        for k in 0..3 {
-            let x = dx0 + 4 + k * 6;
-            for yy in 0..8 {
-                let off = if yy < 4 { yy } else { 7 - yy };
-                scr.fill(x + off, iy + 8 + yy, 2, 1, mix(rgb(0xffd060), rgb(0xff5010), k as f32 / 2.0));
-            }
-        }
-        if self.p.dash_cd > 0.0 {
-            let hcd = (24.0 * self.p.dash_cd / DASH_CD) as i32;
-            scr.blend(dx0, iy, 24, hcd, BLACK, 0.7);
-        }
-        scr.text("DASH", dx0 + 12, iy + 28, rgb(0xd8b878), Align::Center, 1);
+        // Run / walk button (D2 style).
+        let rx = ix + 40;
+        scr.fill(rx - 2, iy - 2, 28, 28, rgb(0x5a4a38));
+        let lit = self.p.running && !self.p.winded;
+        scr.fill(rx, iy, 24, 24, if lit { rgb(0x5a3a10) } else { rgb(0x1a1410) });
+        let col = if self.p.winded {
+            rgb(0xc05030)
+        } else if self.p.running {
+            rgb(0xffd070)
+        } else {
+            rgb(0x908070)
+        };
+        scr.text(if self.p.running { "RUN" } else { "WALK" }, rx + 12, iy + 8, col, Align::Center, 1);
+        let label = if self.p.winded { "TIRED" } else { "R/B" };
+        scr.text(label, rx + 12, iy + 28, if self.p.winded { col } else { rgb(0x908070) }, Align::Center, 1);
+        // Stamina and food bars.
+        let (bar_x, bar_w) = (156, 130);
+        let st = self.p.stamina / MAX_STAMINA;
+        let st_col = if self.p.winded { rgb(0xa03020) } else { rgb(0xd8b020) };
+        scr.text("STAMINA", bar_x, top + 7, rgb(0xb0a090), Align::Left, 1);
+        bar(scr, bar_x, top + 17, bar_w, st, st_col);
+        let fd = self.p.food / MAX_FOOD;
+        let starving = self.p.food <= 0.0;
+        let fd_col = if fd < 0.25 { rgb(0xc04020) } else { rgb(0xb07030) };
+        let flabel = if starving { "FOOD - STARVING!" } else if fd < 0.25 { "FOOD - HUNGRY" } else { "FOOD" };
+        let fcol = if starving && (self.tick / 20) % 2 == 0 { rgb(0xff5030) } else { rgb(0xb0a090) };
+        scr.text(flabel, bar_x, top + 27, fcol, Align::Left, 1);
+        bar(scr, bar_x, top + 37, bar_w, fd, fd_col);
         // Potions.
-        let bx = 80;
+        let bx = 70;
         potion(scr, bx, top + 12, rgb(0xc02020));
         scr.text(&format!("X{}", self.p.hp_pots), bx + 14, top + 16, WHITE, Align::Left, 1);
         scr.text("Q", bx + 2, top + 32, rgb(0x908070), Align::Left, 1);
@@ -1669,9 +1701,12 @@ impl Game {
             scr.text(title, w / 2, top / 2 - 60, c, Align::Center, 3);
             scr.text(&format!("SANCTUM LEVEL {}", self.depth), w / 2, top / 2 - 30, mix(BLACK, rgb(0xb0a090), a), Align::Center, 1);
             if self.depth == 1 {
+                scr.text("RUNNING TIRES YOU AND MAKES YOU HUNGRY. FIND FOOD TO SURVIVE.", w / 2, top - 46, mix(BLACK, rgb(0x8a7a68), a), Align::Center, 1);
+            }
+            if self.depth == 1 {
                 let hint = mix(BLACK, rgb(0x8a7a68), a);
-                scr.text("LEFT CLICK: MOVE   RIGHT CLICK: FIREBALL   SPACE: DASH   Q / E: POTIONS", w / 2, top - 34, hint, Align::Center, 1);
-                scr.text("PAD: LEFT STICK MOVE   RIGHT STICK OR A: FIREBALL   B: DASH   L1 / Y: POTIONS", w / 2, top - 22, hint, Align::Center, 1);
+                scr.text("LEFT CLICK: MOVE   RIGHT CLICK: FIREBALL   R: RUN / WALK   Q / E: POTIONS", w / 2, top - 34, hint, Align::Center, 1);
+                scr.text("PAD: LEFT STICK MOVE   RIGHT STICK OR A: FIREBALL   B: RUN / WALK   L1 / Y: POTIONS", w / 2, top - 22, hint, Align::Center, 1);
             }
         }
         match self.state {
@@ -1791,7 +1826,39 @@ fn potion(scr: &mut Screen, x: i32, y: i32, col: u32) {
     scr.pset(x + 3, y + 7, rgb(0xffffff));
 }
 
-fn draw_pickup(scr: &mut Screen, k: &Pickup, sx: i32, sy: i32, tick: u32) {
+fn bar(scr: &mut Screen, x: i32, y: i32, w: i32, frac: f32, col: u32) {
+    scr.fill(x - 1, y - 1, w + 2, 7, BLACK);
+    scr.fill(x, y, w, 5, rgb(0x201a14));
+    let f = (frac.clamp(0.0, 1.0) * w as f32) as i32;
+    scr.fill(x, y, f, 5, col);
+    scr.fill(x, y, f, 1, mix(col, WHITE, 0.35));
+}
+
+/// Code-drawn food for when no generated sprite exists.
+fn draw_food_fallback(scr: &mut Screen, i: usize, sx: i32, sy: i32) {
+    match i {
+        0 => {
+            scr.disc(sx, sy, 4, BLACK);
+            scr.disc(sx, sy, 3, rgb(0xc02020));
+            scr.pset(sx - 1, sy - 2, rgb(0xff8080));
+            scr.fill(sx, sy - 5, 1, 2, rgb(0x5a3a1c));
+            scr.fill(sx + 1, sy - 5, 2, 1, rgb(0x40a030));
+        }
+        1 => {
+            scr.fill(sx - 6, sy - 3, 12, 7, BLACK);
+            scr.fill(sx - 5, sy - 2, 10, 5, rgb(0xb07830));
+            scr.fill(sx - 4, sy - 2, 8, 1, rgb(0xe0b060));
+        }
+        _ => {
+            scr.disc(sx - 1, sy, 4, BLACK);
+            scr.disc(sx - 1, sy, 3, rgb(0x904818));
+            scr.fill(sx + 2, sy - 1, 5, 2, rgb(0xe8e0c8));
+            scr.pset(sx - 2, sy - 1, rgb(0xd08040));
+        }
+    }
+}
+
+fn draw_pickup(scr: &mut Screen, k: &Pickup, sx: i32, sy: i32, tick: u32, art: &Art) {
     let bob = (((tick as f32) * 0.1 + k.x).sin() * 1.5) as i32;
     let pop = if k.t < 0.3 { ((0.3 - k.t) * 40.0) as i32 } else { 0 };
     blend_ellipse(scr, sx, sy, 5, 2, BLACK, 0.5);
@@ -1802,6 +1869,13 @@ fn draw_pickup(scr: &mut Screen, k: &Pickup, sx: i32, sy: i32, tick: u32) {
             for (dx, dy) in [(-3, 0), (2, -1), (0, -3), (-1, 1)] {
                 scr.fill(sx + dx, sy - 3 + dy - pop, 3, 2, rgb(0xe8c050));
                 scr.pset(sx + dx, sy - 3 + dy - pop, rgb(0xfff0a0));
+            }
+        }
+        Drop::Food(i) => {
+            let name = ["food_apple", "food_bread", "food_roast"][i];
+            match art.item(name) {
+                Some(s) => scr.blit(s, sx, sy + 1 - pop, Fx::default()),
+                None => draw_food_fallback(scr, i, sx, sy - 4 - pop),
             }
         }
     }
@@ -1819,28 +1893,62 @@ mod tests {
     }
 
     #[test]
-    fn dash_moves_and_dodges() {
+    fn running_is_faster_and_drains_stamina_until_winded() {
+        let walk = |running: bool| {
+            let mut g = quiet_game();
+            g.pickups.clear();
+            g.p.running = running;
+            let (x0, y0) = (g.p.x, g.p.y);
+            for _ in 0..20 {
+                g.update(&Input { move_x: 1.0, ..Input::default() });
+            }
+            (((g.p.x - x0).powi(2) + (g.p.y - y0).powi(2)).sqrt(), g.p.stamina)
+        };
+        let (walked, st_walk) = walk(false);
+        let (ran, st_run) = walk(true);
+        assert!(ran > walked * 1.3, "run {ran} vs walk {walked}");
+        assert_eq!(st_walk, MAX_STAMINA);
+        assert!(st_run < MAX_STAMINA);
+
+        // Run dry -> winded (walk speed) until stamina recovers.
         let mut g = quiet_game();
-        let (x0, y0) = (g.p.x, g.p.y);
-        // Dash toward the room's longer axis (screen right = world +x/-y); walls may cut it short.
-        let inp = Input { dash: true, move_x: 1.0, ..Input::default() };
-        g.update(&inp);
-        assert!(g.p.dash_t > 0.0, "dash started");
-        let hp = g.p.hp;
-        g.hurt_player(10.0);
-        assert_eq!(g.p.hp, hp, "no damage while dashing");
-        assert_eq!(g.stats.dodged, 1);
-        for _ in 0..20 {
+        g.p.stamina = 1.0;
+        for _ in 0..10 {
+            g.update(&Input { move_x: 1.0, ..Input::default() });
+        }
+        assert!(g.p.winded);
+        for _ in 0..60 * 3 {
             g.update(&Input::default());
         }
-        let moved = ((g.p.x - x0).powi(2) + (g.p.y - y0).powi(2)).sqrt();
-        assert!(moved > 1.0 && moved <= DASH_DIST * 1.1, "dash moved {moved}");
-        assert!(g.d.walkable(g.p.x as i32, g.p.y as i32));
-        // Cooldown: an immediate second dash is ignored.
-        g.update(&Input { dash: true, move_x: -1.0, ..Input::default() });
-        assert_eq!(g.p.dash_t, 0.0);
-        g.hurt_player(10.0);
-        assert!(g.p.hp < hp, "damage lands again after the dash");
+        assert!(!g.p.winded && g.p.stamina >= WINDED_UNTIL);
+        // The toggle switches to walking.
+        g.update(&Input { run_toggle: true, ..Input::default() });
+        assert!(!g.p.running);
+    }
+
+    #[test]
+    fn hunger_starves_and_food_feeds() {
+        let mut g = quiet_game();
+        g.pickups.clear();
+        g.p.food = 0.0;
+        let hp = g.p.hp;
+        for _ in 0..60 {
+            g.update(&Input::default());
+        }
+        assert!(g.p.hp < hp - 1.0, "starving hurts");
+        // Eat a roast lying at your feet.
+        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Food(2), t: 1.0 });
+        g.update(&Input::default());
+        assert!(g.p.food > 50.0 && g.pickups.is_empty());
+        assert_eq!(g.stats.eaten, 1);
+        // Full: food stays on the floor.
+        g.p.food = MAX_FOOD;
+        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Food(0), t: 1.0 });
+        g.update(&Input::default());
+        assert_eq!(g.pickups.len(), 1);
+        // Levels come with food.
+        let g2 = Game::new(11, crate::gfx::SH_WIDE);
+        assert!(g2.pickups.iter().filter(|k| matches!(k.kind, Drop::Food(_))).count() >= 3);
     }
 
     #[test]

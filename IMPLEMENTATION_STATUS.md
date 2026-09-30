@@ -35,7 +35,8 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Loot: gold, health/mana potions; HUD globes, potions, skill slot, D2 monster name bar | H S | |
 | Level cleared → descend (harder, bigger packs); death → restart | H | |
 | Ember Bolt: free fallback when out of mana (3–5 dmg, single target, 0.4 s cast, no burn/stun) | H S | Unit test: fires with no mana, costs nothing, fireball returns with mana |
-| Dash: 3.5 tiles, 0.18 s, invulnerable, 1.2 s cooldown, afterimage trail, HUD cooldown | H S | Unit test: distance, dodge, cooldown. Space / pad B (B no longer confirms; START does) |
+| Run / walk toggle with stamina (D2 style): walk 4.3, run 6.5 tiles/s; winded at 0 until 20 | H S | Unit test: run faster, drains, winded, recovers, toggle. Replaced the dash (user preference) |
+| Food / hunger: drains 0.35/s (0.8 running); starving drains life, stops life regen, halves stamina regen. Apple/bread/roast (PixelLab) placed per level + monster drops; left on the floor when full | H S | Unit test: starving hurts, eating feeds, full leaves food, levels have food. Bot survives 6 min eating 7 times |
 | Automap (Tab / SELECT) | H S | Explored walls + seen foes; every foe shows once 5 or fewer remain |
 | Controls: mouse click-to-move / right-click cast; twin-stick pad with auto-aim | H (bot uses the stick path) | Mouse path needs a D check |
 | Synth SFX (cast, boom, hit, hurt, death, swing, pickup, drink, descend) | built | Not listened to yet |

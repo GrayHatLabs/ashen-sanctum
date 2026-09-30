@@ -15,11 +15,12 @@ Project rules and reference. Read this before every major change.
 ## Controls (keep both schemes working)
 
 - Mouse (D2 style): left click moves / attacks the hovered monster, right click casts at the cursor,
-  Shift + left click casts in place, F casts, Space dashes, Q / E potions, Tab map.
+  Shift + left click casts in place, F / Space cast, R toggles run, Q / E potions, Tab map.
 - Pad (twin-stick): left stick moves, right stick aims and casts, A / X / R1 / RT casts (auto-targets the
-  nearest visible foe when the right stick is centred), B dashes, L1 / LT health potion, Y mana potion,
+  nearest visible foe when the right stick is centred), B toggles run / walk, L1 / LT health potion, Y mana potion,
   START confirms, SELECT toggles the map, SELECT + START quits.
 - Out of mana, the cast button fires the free Ember Bolt (never a dead button).
+- No dash (the user tried it and preferred D2's run + stamina). Survival: stamina and food meters (like Elemental Legends' food).
 
 ## Art pipeline
 

@@ -5,7 +5,7 @@
 //! Character sheets: one row per (animation, direction); rows for an animation
 //! start at `row` and run through the 8 directions in PixelLab order
 //! (south, south-east, east, north-east, north, north-west, west, south-west).
-use crate::art_gen::{CHARS, TILES};
+use crate::art_gen::{CHARS, ITEMS, TILES};
 use crate::gfx::Sprite;
 use crate::sprites;
 
@@ -22,6 +22,11 @@ pub struct CharDef {
     pub anchor: (i32, i32),
     pub data: &'static [u8],
     pub anims: &'static [AnimDef],
+}
+
+pub struct ItemDef {
+    pub name: &'static str,
+    pub data: &'static [u8],
 }
 
 pub struct TileDef {
@@ -94,6 +99,8 @@ pub struct Art {
     chars: Vec<(String, CharArt)>,
     pub floors: Vec<Sprite>,
     pub wall: Sprite,
+    /// Item sprites (anchored at the bottom centre, where they sit on the floor).
+    items: Vec<(&'static str, Sprite)>,
 }
 
 impl Art {
@@ -145,7 +152,20 @@ impl Art {
             Some(t) => tile(t),
             None => sprites::fallback_wall(),
         };
-        Art { chars, floors, wall }
+        let items = ITEMS
+            .iter()
+            .map(|d| {
+                let mut s = decode(d.data);
+                s.ax = s.w / 2;
+                s.ay = s.h - 1;
+                (d.name, s)
+            })
+            .collect();
+        Art { chars, floors, wall, items }
+    }
+
+    pub fn item(&self, name: &str) -> Option<&Sprite> {
+        self.items.iter().find(|i| i.0 == name).map(|i| &i.1)
     }
 
     pub fn char(&self, name: &str) -> &CharArt {

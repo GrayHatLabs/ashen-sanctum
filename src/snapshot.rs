@@ -37,6 +37,17 @@ fn bot(g: &Game, t: u32) -> Input {
     inp.potion_hp = hp < 0.35 && t % 30 == 0;
     inp.potion_mp = g.p.mana < 6.0 && t % 30 == 0;
     inp.confirm = matches!(g.state, State::Cleared | State::Dead(_)) && t % 60 == 0;
+    if g.p.food < 40.0 {
+        if let Some((fx, fy)) = g.bot_food() {
+            if let Some((nx, ny)) = g.bot_step(fx, fy).or(Some((fx, fy))) {
+                let (sx, sy) = crate::iso::to_screen(nx - g.p.x, ny - g.p.y);
+                let l = (sx * sx + sy * sy).sqrt().max(0.01);
+                inp.move_x = sx / l;
+                inp.move_y = sy / l;
+                return inp;
+            }
+        }
+    }
     if let Some((mx, my, dist, visible)) = g.bot_target() {
         if visible && dist < 9.0 {
             inp.cast = true;
@@ -46,7 +57,6 @@ fn bot(g: &Game, t: u32) -> Input {
                 let (sx, sy) = crate::iso::to_screen(dx, dy);
                 let l = (sx * sx + sy * sy).sqrt().max(0.01);
                 inp.cast = t % 40 < 20;
-                inp.dash = t % 45 == 0;
                 inp.move_x = sx / l;
                 inp.move_y = sy / l;
             }
@@ -107,18 +117,20 @@ pub fn run(dir: Option<&str>, tall: bool) -> i32 {
         assert!(g.d.walkable(g.p.x.floor() as i32, g.p.y.floor() as i32), "player inside a wall at {:.2},{:.2}", g.p.x, g.p.y);
     }
     if let Some(d) = dir {
-        // Staged frame: out of mana (HUD shows EMBER), mid-dash with the afterimage trail.
+        // Staged frame: out of mana (HUD shows EMBER), hungry and low on stamina, running.
         let mut g = Game::new(7, h);
         for _ in 0..30 {
             g.update(&Input::default());
         }
         g.p.mana = 2.0;
-        g.update(&Input { dash: true, move_x: 1.0, move_y: 0.3, ..Input::default() });
+        g.p.food = 18.0;
+        g.p.stamina = 40.0;
+        g.debug_food_nearby();
         for _ in 0..6 {
             g.update(&Input { move_x: 1.0, move_y: 0.3, ..Input::default() });
         }
         g.draw(&mut scr);
-        write_bmp(&format!("{d}/dash.bmp"), &scr).expect("write snapshot");
+        write_bmp(&format!("{d}/run.bmp"), &scr).expect("write snapshot");
     }
     let draws = if dir.is_some() { shots.len() as u32 } else { total / 4 };
     println!(

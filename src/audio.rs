@@ -52,7 +52,7 @@ impl Audio {
         let dev = sys.open_playback(None, &spec, |_| Mixer { voices: v2 }).ok()?;
         dev.resume();
         let mut rng = Rng::new(99);
-        let bank = [Sfx::Cast, Sfx::Boom, Sfx::Hit, Sfx::Hurt, Sfx::Die, Sfx::Swing, Sfx::Pickup, Sfx::Drink, Sfx::Descend, Sfx::Dash]
+        let bank = [Sfx::Cast, Sfx::Boom, Sfx::Hit, Sfx::Hurt, Sfx::Die, Sfx::Swing, Sfx::Pickup, Sfx::Drink, Sfx::Descend, Sfx::Eat]
             .into_iter()
             .map(|s| (s, (0..3).map(|_| Arc::new(synth(s, &mut rng))).collect()))
             .collect();
@@ -80,7 +80,7 @@ fn synth(s: Sfx, rng: &mut Rng) -> Vec<f32> {
         Sfx::Pickup => 0.2,
         Sfx::Drink => 0.35,
         Sfx::Descend => 1.2,
-        Sfx::Dash => 0.22,
+        Sfx::Eat => 0.3,
     };
     let n = (secs * RATE as f32) as usize;
     let mut out = vec![0.0f32; n];
@@ -131,11 +131,11 @@ fn synth(s: Sfx, rng: &mut Rng) -> Vec<f32> {
                 phase += (300.0 + 200.0 * (t * 30.0).sin().abs()) / RATE as f32;
                 (phase * std::f32::consts::TAU).sin() * 0.25 * (1.0 - k)
             }
-            Sfx::Dash => {
-                // Short bright whoosh.
-                let cut = 0.15 + 0.4 * (1.0 - k);
-                lp += (noise - lp) * cut;
-                lp * (k * 12.0).min(1.0) * (1.0 - k) * 1.4
+            Sfx::Eat => {
+                // Three quick crunches.
+                let c = (k * 3.0).fract();
+                lp += (noise - lp) * 0.5;
+                lp * (1.0 - c).powi(3) * 0.9
             }
             Sfx::Descend => {
                 phase += (110.0 - 50.0 * k) / RATE as f32;
