@@ -3,7 +3,7 @@ use crate::art::{AnimDef, CharDef, TileDef};
 
 pub static CHARS: &[CharDef] = &[
     CharDef { name: "mage", cell: (41, 70), anchor: (13, 53), data: include_bytes!("../assets/art/mage.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 10 }] },
-    CharDef { name: "zombie", cell: (34, 50), anchor: (17, 44), data: include_bytes!("../assets/art/zombie.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 7 }] },
+    CharDef { name: "zombie", cell: (45, 50), anchor: (22, 44), data: include_bytes!("../assets/art/zombie.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 7 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 12 }] },
     CharDef { name: "skeleton", cell: (37, 51), anchor: (19, 46), data: include_bytes!("../assets/art/skeleton.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 10 }] },
 ];
 
