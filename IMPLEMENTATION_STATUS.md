@@ -37,13 +37,15 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Automap (Tab / SELECT) | H S | Explored walls + seen foes; every foe shows once 5 or fewer remain |
 | Controls: mouse click-to-move / right-click cast; twin-stick pad with auto-aim | H (bot uses the stick path) | Mouse path needs a D check |
 | Synth SFX (cast, boom, hit, hurt, death, swing, pickup, drink, descend) | built | Not listened to yet |
-| Art: PixelLab 8-direction mage, zombie, skeleton, isometric floors + wall | S | Walk/cast/attack animations in progress (see art status) |
+| Art: PixelLab 8-direction mage (idle/walk/cast), zombie + skeleton (idle/walk/attack), isometric floors + wall | S | 5 directions generated per animation, 3 mirrored. `pack.py` trims frames where PixelLab drifted and keys out a stray background |
 
 ## Art status
 
-- Generated so far: mage/zombie/skeleton 8-direction rotations, 2 floor tiles, 1 wall block, mage walk.
-- Queued (5 directions each, mirrored to 8): mage cast, zombie walk + attack, skeleton walk + attack.
-- Spend: `python D:\projects\AshenSanctum-art\tools\gen.py spent` (budget ~400).
+- Complete for the MVP: 3 characters x 8 rotations, 7 animations, 2 floor tiles, 1 wall block.
+- Weaker pieces: zombie north attack and skeleton south-east / north-east attack are trimmed
+  (PixelLab turned the figure or morphed the sword late in the swing); the mirrored west-facing mage
+  holds the staff in the other hand.
+- Spend: about 45 generations for the whole MVP (well under the ~400 budget).
 
 ## Next ideas
 
