@@ -1,0 +1,22 @@
+[package]
+name = "ashensanctum"
+version = "0.1.0"
+edition = "2021"
+description = "ASHEN SANCTUM - an isometric Diablo 2-style action RPG with a fire mage"
+
+[dependencies]
+sdl2 = "0.37"
+
+[features]
+# Build SDL2 from source and link it statically (needs CMake). Handy on Windows.
+bundled = ["sdl2/bundled", "sdl2/static-link"]
+
+[profile.dev]
+opt-level = 2
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

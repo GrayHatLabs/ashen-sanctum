@@ -1,0 +1,4 @@
+# Shell scripts run on Linux handhelds / WSL: always LF.
+*.sh text eol=lf
+*.gptk text eol=lf
+*.bin binary
