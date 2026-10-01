@@ -43,6 +43,10 @@ take back their Seals, unseal the Sanctum and end the Ash King.
   - **Inferno**: hold to breathe a cone of flame (drains mana while held).
   - **Warmth** (passive): faster mana regeneration.
   - **Fire Nova** (char level 6, needs Inferno): a ring of fire that burns and hurls back everything nearby.
+  - **Fire Wall** (char level 6, needs Fireball): a line of flames across the target spot that burns anything in it.
+  - **Blaze** (char level 6, needs Warmth): for a while you leave burning ground behind you as you move.
+  - **Combust** (char level 12, needs Fire Wall): every burning foe in sight explodes; the longer it has
+    burned, the bigger the blast (Fire Wall ranks make it stronger).
   Out of mana, any skill fires the free Ember Bolt. Brother Aldric resets your skills for gold.
 - **Monsters**: zombies are slow and hit hard, skeletons are fast and fragile, wolves hunt in fast
   packs, goblins panic and flee when one of their own dies, and skeleton archers keep their distance.

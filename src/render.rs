@@ -246,6 +246,21 @@ impl Game {
                 scr.add_light(sx, sy - 10, 90.0, 0.7);
             }
         }
+        for w in &self.fire_walls {
+            let fade = ((w.life - w.t) / 0.6).min(1.0);
+            for (k, &(x, y)) in w.segs.iter().enumerate() {
+                if k % 2 == 0 && in_view(x, y) {
+                    let (sx, sy) = to_scr(x, y);
+                    scr.add_light(sx, sy - 8, 90.0, 0.55 * fade);
+                }
+            }
+        }
+        for p in &self.patches {
+            if in_view(p.x, p.y) {
+                let (sx, sy) = to_scr(p.x, p.y);
+                scr.add_light(sx, sy, 50.0, 0.35 * (1.0 - p.t / crate::skills::PATCH_TIME));
+            }
+        }
         scr.apply_light(view_h);
 
         // 4. Unlit, additive fire and magic on top.
@@ -274,6 +289,20 @@ impl Game {
                 }
                 ShotKind::Arrow => {}
             }
+        }
+        for w in &self.fire_walls {
+            let fade = ((w.life - w.t) / 0.6).min(1.0) * (w.t / 0.2).min(1.0);
+            let fl = ((self.tick as f32) * 0.4).sin() * 2.0;
+            for &(x, y) in &w.segs {
+                let (sx, sy) = to_scr(x, y);
+                scr.glow(sx, sy - 10, 18.0 + fl, rgb(0xff4a08), 0.8 * fade);
+                scr.glow(sx, sy - 6, 8.0, rgb(0xffd060), 0.7 * fade);
+            }
+        }
+        for p in &self.patches {
+            let (sx, sy) = to_scr(p.x, p.y);
+            let k = 1.0 - p.t / crate::skills::PATCH_TIME;
+            scr.glow(sx, sy - 2, 12.0, rgb(0xff5010), 0.6 * k);
         }
         for n in &self.novas {
             let k = (n.t / crate::skills::NOVA_TIME).min(1.0);

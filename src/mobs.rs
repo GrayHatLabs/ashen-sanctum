@@ -115,6 +115,8 @@ pub struct Mob {
     pub flash: f32,
     pub stun: f32,
     pub burn: f32,
+    /// How long it has been burning without a break (Combust hits harder).
+    pub burned: f32,
     pub path: Vec<(f32, f32)>,
     pub repath: f32,
     pub wander: (f32, f32, f32),
@@ -157,6 +159,7 @@ impl Mob {
             flash: 0.0,
             stun: 0.0,
             burn: 0.0,
+            burned: 0.0,
             path: vec![],
             repath: 0.0,
             wander: (0.0, 0.0, rng.f() * 2.0),
@@ -241,6 +244,7 @@ impl Game {
                 continue;
             }
             if m.burn > 0.0 {
+                m.burned += DT;
                 m.burn -= DT;
                 m.hp -= 3.0 * m.tier.max(1.0) * DT;
                 if tick % 4 == 0 {
@@ -260,6 +264,8 @@ impl Game {
                     m.hp = 0.0;
                     continue;
                 }
+            } else {
+                m.burned = 0.0;
             }
             if m.stun > 0.0 {
                 m.stun -= DT;

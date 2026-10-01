@@ -37,6 +37,6 @@ Synergies: Meteor boosts Fireball, Fire Mastery lengthens Blaze, Fire Wall boost
 
 ## Build order
 
-1. Skill system: points, tiers, skill tree screen, two slots, saving, respec. Skills: Fire Nova, Inferno, Warmth.
-2. Fire Wall, Blaze, Combust.
+1. **Done:** skill system: points, tiers, skill tree screen, two slots, saving, respec. Skills: Fire Nova, Inferno, Warmth.
+2. **Done:** Fire Wall, Blaze, Combust (Fire Wall ranks boost Combust 8% each).
 3. Meteor, Fire Mastery, Hydra, Ash Phoenix.

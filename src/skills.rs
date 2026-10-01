@@ -1,5 +1,6 @@
 //! Fire skills: D2-style skill points, ranks, two skill slots, and the skill tree screen.
-//! See docs/SKILLS_PLAN.md for the full plan (this is step 1: Fireball, Inferno, Warmth, Fire Nova).
+//! See docs/SKILLS_PLAN.md for the full plan (steps 1-2: Fireball, Inferno, Warmth, Fire Nova,
+//! Fire Wall, Blaze, Combust).
 use crate::game::{move_circle, Game, Input, Light, PKind, Particle, Sfx, CAST_TIME, DT, HUD_H};
 use crate::gfx::{rgb, Align, Fx, Screen, BLACK};
 use crate::mobs::MobState;
@@ -10,9 +11,22 @@ pub enum Skill {
     Inferno,
     Warmth,
     FireNova,
+    FireWall,
+    Blaze,
+    Combust,
 }
 
-pub const ALL: [Skill; 4] = [Skill::Fireball, Skill::Inferno, Skill::Warmth, Skill::FireNova];
+pub const ALL: [Skill; 7] = [
+    Skill::Fireball,
+    Skill::Inferno,
+    Skill::Warmth,
+    Skill::FireNova,
+    Skill::FireWall,
+    Skill::Blaze,
+    Skill::Combust,
+];
+/// Character level needed for each tree row.
+pub const TIER_LEVELS: [u32; 3] = [1, 6, 12];
 pub const MAX_RANK: u8 = 10;
 
 pub struct Def {
@@ -32,6 +46,9 @@ pub fn def(s: Skill) -> Def {
         Skill::Inferno => Def { name: "INFERNO", key: "inferno", level: 1, prereq: None, passive: false, cell: (0, 1) },
         Skill::Warmth => Def { name: "WARMTH", key: "warmth", level: 1, prereq: None, passive: true, cell: (0, 2) },
         Skill::FireNova => Def { name: "FIRE NOVA", key: "firenova", level: 6, prereq: Some(Skill::Inferno), passive: false, cell: (1, 1) },
+        Skill::FireWall => Def { name: "FIRE WALL", key: "firewall", level: 6, prereq: Some(Skill::Fireball), passive: false, cell: (1, 0) },
+        Skill::Blaze => Def { name: "BLAZE", key: "blaze", level: 6, prereq: Some(Skill::Warmth), passive: false, cell: (1, 2) },
+        Skill::Combust => Def { name: "COMBUST", key: "combust", level: 12, prereq: Some(Skill::FireWall), passive: false, cell: (2, 0) },
     }
 }
 
@@ -162,18 +179,57 @@ pub fn nova_mana(r: u8) -> f32 {
     10.0 + 0.6 * (r.max(1) - 1) as f32
 }
 
-/// Mana cost to start a cast (Inferno: one second of channelling).
+pub fn wall_dps(r: u8) -> f32 {
+    20.0 + 6.0 * (r.max(1) - 1) as f32
+}
+pub fn wall_len(r: u8) -> f32 {
+    3.0 + 0.2 * r as f32
+}
+pub fn wall_time(r: u8) -> f32 {
+    4.0 + 0.3 * r as f32
+}
+pub fn wall_mana(r: u8) -> f32 {
+    14.0 + 0.8 * (r.max(1) - 1) as f32
+}
+pub fn blaze_dps(r: u8) -> f32 {
+    12.0 + 4.0 * (r.max(1) - 1) as f32
+}
+pub fn blaze_time(r: u8) -> f32 {
+    6.0 + 0.5 * r as f32
+}
+pub fn blaze_mana(r: u8) -> f32 {
+    12.0 + 0.6 * (r.max(1) - 1) as f32
+}
+/// Combust's base damage per burning enemy; Fire Wall ranks add 8% each (synergy).
+pub fn combust_dmg(r: u8, wall_rank: u8) -> f32 {
+    (25.0 + 10.0 * (r.max(1) - 1) as f32) * (1.0 + 0.08 * wall_rank as f32)
+}
+pub fn combust_mana(r: u8) -> f32 {
+    16.0 + 1.0 * (r.max(1) - 1) as f32
+}
+/// How much harder an enemy that has been burning for `burned` seconds combusts.
+pub fn combust_mult(burned: f32) -> f32 {
+    1.0 + burned.min(4.0) * 0.25
+}
+pub const COMBUST_RANGE: f32 = 8.0;
+/// Fire patches left by Blaze last this long.
+pub const PATCH_TIME: f32 = 2.0;
+
+/// Mana cost to start a cast (Inferno: one tick of channelling).
 pub fn mana_cost(s: Skill, r: u8) -> f32 {
     match s {
         Skill::Fireball => fireball_mana(r),
         Skill::Inferno => inferno_mana(r) * DT,
         Skill::FireNova => nova_mana(r),
+        Skill::FireWall => wall_mana(r),
+        Skill::Blaze => blaze_mana(r),
+        Skill::Combust => combust_mana(r),
         Skill::Warmth => 0.0,
     }
 }
 
 /// Description lines for the tree: what it does, and this rank vs the next.
-pub fn describe(s: Skill, r: u8, power: f32) -> Vec<String> {
+pub fn describe(s: Skill, r: u8, power: f32, wall_rank: u8) -> Vec<String> {
     let at = |r: u8| -> String {
         match s {
             Skill::Fireball => {
@@ -183,6 +239,19 @@ pub fn describe(s: Skill, r: u8, power: f32) -> Vec<String> {
             Skill::Inferno => format!("{} DAMAGE/SEC, RANGE {:.1}, {:.0} MANA/SEC", (inferno_dps(r) * power) as i32, inferno_range(r), inferno_mana(r)),
             Skill::Warmth => format!("+{:.0}% MANA REGENERATION", (1.3 + 0.12 * (r.max(1) - 1) as f32 - 1.0) * 100.0),
             Skill::FireNova => format!("{} DAMAGE, RADIUS {:.1}, {:.0} MANA", (nova_dmg(r) * power) as i32, nova_radius(r), nova_mana(r)),
+            Skill::FireWall => format!(
+                "{} DAMAGE/SEC, {:.1} LONG, {:.1} SEC, {:.0} MANA",
+                (wall_dps(r) * power) as i32,
+                wall_len(r),
+                wall_time(r),
+                wall_mana(r)
+            ),
+            Skill::Blaze => format!("{} DAMAGE/SEC TRAIL FOR {:.1} SEC, {:.0} MANA", (blaze_dps(r) * power) as i32, blaze_time(r), blaze_mana(r)),
+            Skill::Combust => format!(
+                "{}+ DAMAGE PER BURNING FOE (UP TO 2X), {:.0} MANA",
+                (combust_dmg(r, wall_rank) * power) as i32,
+                combust_mana(r)
+            ),
         }
     };
     let what = match s {
@@ -190,6 +259,9 @@ pub fn describe(s: Skill, r: u8, power: f32) -> Vec<String> {
         Skill::Inferno => "HOLD TO BREATHE A CONE OF FLAME FROM YOUR STAFF. DRAINS MANA WHILE HELD.",
         Skill::Warmth => "PASSIVE. THE FLAME WITHIN RESTORES YOUR MANA FASTER.",
         Skill::FireNova => "A RING OF FIRE BURSTS OUT FROM YOU, BURNING AND HURLING BACK EVERYTHING NEARBY.",
+        Skill::FireWall => "RAISES A LINE OF FLAMES ACROSS THE TARGET SPOT. ANYTHING THAT STANDS IN IT BURNS.",
+        Skill::Blaze => "FOR A WHILE YOU LEAVE BURNING GROUND BEHIND YOU AS YOU MOVE. RUN, AND LET THEM FOLLOW.",
+        Skill::Combust => "EVERY BURNING FOE IN SIGHT EXPLODES. THE LONGER THEY HAVE BURNED, THE BIGGER THE BLAST. FIRE WALL RANKS ADD 8% EACH.",
     };
     let mut v = vec![what.to_string()];
     if r > 0 {
@@ -210,6 +282,23 @@ pub struct Nova {
 }
 
 pub const NOVA_TIME: f32 = 0.4;
+
+/// A line of flames from Fire Wall: tile-centred segments that burn whatever stands on them.
+pub struct FireWallFx {
+    pub segs: Vec<(f32, f32)>,
+    pub t: f32,
+    pub life: f32,
+    pub dps: f32,
+    pub tick: f32,
+}
+
+/// A burning patch of ground left by Blaze.
+pub struct FirePatch {
+    pub x: f32,
+    pub y: f32,
+    pub t: f32,
+    pub dps: f32,
+}
 
 /// The skill tree screen.
 pub struct TreeUi {
@@ -251,14 +340,173 @@ impl Game {
                 }
             }
             Skill::Inferno => self.channel_inferno(tx, ty, r),
-            Skill::FireNova => {
-                if self.p.cast_cd <= 0.0 {
-                    self.fire_nova(r);
-                }
-            }
-            Skill::Warmth => {}
+            Skill::FireNova if self.p.cast_cd <= 0.0 => self.fire_nova(r),
+            Skill::FireWall if self.p.cast_cd <= 0.0 => self.fire_wall(tx, ty, r),
+            Skill::Blaze if self.p.cast_cd <= 0.0 => self.blaze(r),
+            Skill::Combust if self.p.cast_cd <= 0.0 => self.combust(r),
+            _ => {}
         }
         true
+    }
+
+    fn cast_pose(&mut self, t: f32) {
+        self.p.cast_cd = t;
+        self.p.cast_t = t;
+        self.p.cast_len = t;
+    }
+
+    fn fire_wall(&mut self, tx: f32, ty: f32, r: u8) {
+        let (px, py) = (self.p.x, self.p.y);
+        // Not further than 7 tiles, and not through walls.
+        let (mut cx, mut cy) = (tx, ty);
+        let (dx, dy) = (cx - px, cy - py);
+        let l = (dx * dx + dy * dy).sqrt().max(0.001);
+        if l > 7.0 {
+            cx = px + dx / l * 7.0;
+            cy = py + dy / l * 7.0;
+        }
+        if !self.d.los(px, py, cx, cy) || !self.d.walkable(cx.floor() as i32, cy.floor() as i32) {
+            self.say("NO ROOM FOR A WALL THERE".into());
+            self.p.cast_cd = 0.3;
+            return;
+        }
+        self.p.mana -= wall_mana(r);
+        self.cast_pose(0.45);
+        // Perpendicular to the cast, one segment every half tile on walkable ground.
+        let (ux, uy) = (dx / l, dy / l);
+        let (nx, ny) = (-uy, ux);
+        let half = wall_len(r) * 0.5;
+        let mut segs = vec![];
+        let mut k = -half;
+        while k <= half + 0.01 {
+            let (sx, sy) = (cx + nx * k, cy + ny * k);
+            if self.d.walkable(sx.floor() as i32, sy.floor() as i32) {
+                segs.push((sx, sy));
+            }
+            k += 0.5;
+        }
+        self.fire_walls.push(FireWallFx { segs, t: 0.0, life: wall_time(r), dps: wall_dps(r) * self.p.power, tick: 0.0 });
+        self.lights.push(Light { x: cx, y: cy, r: 180.0, s: 1.0, life: 0.4, max: 0.4 });
+        self.sfx.push(Sfx::Boom);
+    }
+
+    fn blaze(&mut self, r: u8) {
+        self.p.mana -= blaze_mana(r);
+        self.cast_pose(0.3);
+        self.p.blaze_t = blaze_time(r);
+        self.p.blaze_from = (self.p.x, self.p.y);
+        self.sfx.push(Sfx::Cast);
+        self.say("BLAZE".into());
+        for _ in 0..20 {
+            self.spray_at(self.p.x, self.p.y, PKind::Fire, 4.0);
+        }
+    }
+
+    fn combust(&mut self, r: u8) {
+        let (px, py) = (self.p.x, self.p.y);
+        let burning: Vec<usize> = (0..self.mobs.len())
+            .filter(|&i| {
+                let m = &self.mobs[i];
+                m.alive() && m.burn > 0.0 && (m.x - px).powi(2) + (m.y - py).powi(2) < COMBUST_RANGE * COMBUST_RANGE && self.d.los(px, py, m.x, m.y)
+            })
+            .collect();
+        if burning.is_empty() {
+            self.say("NOTHING IS BURNING".into());
+            self.p.cast_cd = 0.3;
+            return;
+        }
+        self.p.mana -= combust_mana(r);
+        self.cast_pose(0.4);
+        self.sfx.push(Sfx::Boom);
+        self.shake = self.shake.max(0.5);
+        let base = combust_dmg(r, self.p.skills.rank(Skill::FireWall)) * self.p.power;
+        for i in burning {
+            let (mx, my, burned) = (self.mobs[i].x, self.mobs[i].y, self.mobs[i].burned);
+            self.lights.push(Light { x: mx, y: my, r: 120.0, s: 1.2, life: 0.3, max: 0.3 });
+            for _ in 0..14 {
+                self.spray_at(mx, my, PKind::Fire, 16.0);
+            }
+            // The fire is spent in the blast.
+            self.mobs[i].burn = 0.0;
+            self.mobs[i].burned = 0.0;
+            self.hit_mob(i, base * combust_mult(burned), 0.0, 0.2, Some((mx, my - 0.01, 0.0)), true);
+        }
+    }
+
+    /// Fire Wall flames and Blaze patches: burn what stands in them; Blaze lays new patches.
+    pub(crate) fn update_fire_ground(&mut self) {
+        // Blaze trail.
+        if self.p.blaze_t > 0.0 {
+            self.p.blaze_t = (self.p.blaze_t - DT).max(0.0);
+            let (fx, fy) = self.p.blaze_from;
+            if (self.p.x - fx).powi(2) + (self.p.y - fy).powi(2) > 0.45 * 0.45 {
+                let dps = blaze_dps(self.p.skills.rank(Skill::Blaze)) * self.p.power;
+                self.patches.push(FirePatch { x: fx, y: fy, t: 0.0, dps });
+                self.p.blaze_from = (self.p.x, self.p.y);
+            }
+        }
+        // Flames (particles) and damage ticks every 0.2 s.
+        let mut hits: Vec<(f32, f32, f32, f32)> = vec![]; // (x, y, radius, damage)
+        for w in self.fire_walls.iter_mut() {
+            w.t += DT;
+            w.tick += DT;
+            if w.tick >= 0.2 {
+                w.tick -= 0.2;
+                for &(x, y) in &w.segs {
+                    hits.push((x, y, 0.5, w.dps * 0.2));
+                }
+            }
+        }
+        self.fire_walls.retain(|w| w.t < w.life && !w.segs.is_empty());
+        let tick = (self.tick % 12) == 0;
+        for p in self.patches.iter_mut() {
+            p.t += DT;
+            if tick {
+                hits.push((p.x, p.y, 0.45, p.dps * 0.2));
+            }
+        }
+        self.patches.retain(|p| p.t < PATCH_TIME);
+        if self.patches.len() > 200 {
+            let n = self.patches.len() - 200;
+            self.patches.drain(0..n);
+        }
+        let mut sparks: Vec<(f32, f32, f32)> = vec![];
+        for w in &self.fire_walls {
+            let fade = ((w.life - w.t) / 0.6).min(1.0);
+            for &(x, y) in &w.segs {
+                if self.rng.f() < 0.5 * fade {
+                    sparks.push((x, y, 30.0));
+                }
+            }
+        }
+        for p in &self.patches {
+            if self.rng.f() < 0.25 * (1.0 - p.t / PATCH_TIME) {
+                sparks.push((p.x, p.y, 14.0));
+            }
+        }
+        for (x, y, h) in sparks {
+            let (a, b, c) = (self.rng.f() - 0.5, self.rng.f() - 0.5, self.rng.f());
+            let life = 0.3 + c * 0.35;
+            self.parts.push(Particle { x: x + a * 0.4, y: y + b * 0.4, z: 2.0 + c * 6.0, vx: 0.0, vy: 0.0, vz: h + c * h, life, max: life, kind: PKind::Fire });
+        }
+        if hits.is_empty() {
+            return;
+        }
+        for i in 0..self.mobs.len() {
+            if !self.mobs[i].alive() {
+                continue;
+            }
+            let (mx, my, mr) = (self.mobs[i].x, self.mobs[i].y, self.mobs[i].r);
+            // One hit per source type per tick: the strongest that touches this monster.
+            let best = hits
+                .iter()
+                .filter(|(x, y, r, _)| (mx - x).powi(2) + (my - y).powi(2) < (r + mr).powi(2))
+                .map(|h| h.3)
+                .fold(0.0f32, f32::max);
+            if best > 0.0 && self.mobs[i].alive() {
+                self.hit_mob(i, best, 1.2, 0.0, None, false);
+            }
+        }
     }
 
     fn channel_inferno(&mut self, tx: f32, ty: f32, r: u8) {
@@ -516,9 +764,9 @@ impl Game {
         let mut rects = vec![];
         // Tier rows.
         let (cw, ch) = (128, 38);
-        for tier in 0..2 {
+        for tier in 0..TIER_LEVELS.len() as i32 {
             let ty = y0 + 24 + tier * (ch + 8);
-            let lvl = [1, 6][tier as usize];
+            let lvl = TIER_LEVELS[tier as usize];
             let col = if self.p.clvl >= lvl { rgb(0x9a8a78) } else { rgb(0x5a4a40) };
             scr.text(&format!("LV{lvl}"), x0 + 8, ty + 14, col, Align::Left, 1);
         }
@@ -553,16 +801,21 @@ impl Game {
             }
             rects.push((cx, cy, cw, ch, TreeAct::Select(i)));
         }
-        // Prerequisite line (Inferno -> Fire Nova).
-        let (a, b) = (def(Skill::Inferno).cell, def(Skill::FireNova).cell);
-        let lx = x0 + 40 + a.1 * (cw + 6) + cw / 2;
-        scr.fill(lx, y0 + 24 + a.0 * (ch + 8) + ch, 2, (b.0 - a.0) * (ch + 8) - ch, rgb(0x8a6030));
+        // Prerequisite lines (each skill sits right below the one it needs).
+        for s in ALL {
+            if let Some(p) = def(s).prereq {
+                let (a, b) = (def(p).cell, def(s).cell);
+                let lx = x0 + 40 + a.1 * (cw + 6) + cw / 2;
+                let lit = sk.rank(p) > 0;
+                scr.fill(lx, y0 + 24 + a.0 * (ch + 8) + ch, 2, (b.0 - a.0) * (ch + 8) - ch, if lit { rgb(0xd88a30) } else { rgb(0x5a4030) });
+            }
+        }
         // Details of the selected skill.
         let s = ALL[sel];
-        let dy = y0 + 24 + 2 * (ch + 8) + 4;
+        let dy = y0 + 24 + TIER_LEVELS.len() as i32 * (ch + 8) + 4;
         scr.fill(x0 + 8, dy - 4, pw - 16, 1, rgb(0x4a3e30));
         let mut ly = dy;
-        for line in describe(s, sk.rank(s), self.p.power) {
+        for line in describe(s, sk.rank(s), self.p.power, sk.rank(Skill::FireWall)) {
             for l in crate::story::wrap(&line, 68) {
                 scr.text(&l, x0 + 12, ly, rgb(0xd8ccb8), Align::Left, 1);
                 ly += 10;
@@ -615,6 +868,19 @@ mod tests {
         assert_eq!(sk.points, 4);
         assert_eq!(sk.rank(Skill::Inferno), 0);
         assert_eq!(sk.rank(Skill::Fireball), 1);
+    }
+
+    #[test]
+    fn step_two_skills_need_their_prerequisites() {
+        let mut sk = Skills { points: 10, ..Skills::default() };
+        assert!(sk.blocker(Skill::FireWall, 5).is_some(), "needs level 6");
+        assert!(sk.learn(Skill::FireWall, 6), "Fireball is known from the start");
+        assert!(sk.blocker(Skill::Blaze, 6).is_some(), "needs Warmth");
+        assert!(sk.learn(Skill::Warmth, 6) && sk.learn(Skill::Blaze, 6));
+        assert!(!sk.learn(Skill::Combust, 11), "needs level 12");
+        assert!(sk.learn(Skill::Combust, 12));
+        assert!(combust_dmg(1, 5) > combust_dmg(1, 0) * 1.3, "Fire Wall synergy");
+        assert!(combust_mult(4.0) > combust_mult(0.5));
     }
 
     #[test]

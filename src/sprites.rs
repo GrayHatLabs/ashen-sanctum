@@ -297,6 +297,47 @@ pub fn skill_icon(s: crate::skills::Skill) -> Sprite {
                 }
             }
         }
+        Skill::FireWall => {
+            // A row of flame tongues on a dark ground line.
+            for x in 2..22 {
+                let h = 8 + (hash(x / 3, 0, 9) % 9) as i32;
+                for y in 0..h {
+                    let t = y as f32 / h as f32;
+                    if (x + y) % 5 != 0 || t < 0.5 {
+                        im.set(x, 20 - y, fire(t));
+                    }
+                }
+            }
+            im.fill(1, 20, 22, 2, rgb(0x3a2010));
+        }
+        Skill::Blaze => {
+            // Footprints of fire trailing behind.
+            for (k, (cx, cy)) in [(5, 18), (10, 13), (15, 9), (20, 5)].iter().enumerate() {
+                let r = 2.0 + k as f32 * 0.6;
+                for y in 0..24 {
+                    for x in 0..24 {
+                        let d = (((x - cx) as f32).powi(2) + ((y - cy) as f32).powi(2)).sqrt();
+                        if d < r {
+                            im.set(x, y, fire(d / r * 0.6 + (3 - k) as f32 * 0.12));
+                        }
+                    }
+                }
+            }
+        }
+        Skill::Combust => {
+            // A burst: star of flame with a hot core.
+            for y in 0..24 {
+                for x in 0..24 {
+                    let (dx, dy) = (x as f32 - 11.5, y as f32 - 11.5);
+                    let d = (dx * dx + dy * dy).sqrt();
+                    let a = dy.atan2(dx);
+                    let spike = 6.0 + 4.5 * (a * 4.0).cos().abs();
+                    if d < spike {
+                        im.set(x, y, fire(d / spike));
+                    }
+                }
+            }
+        }
         Skill::Fireball => {}
     }
     im.ax = 0;

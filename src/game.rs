@@ -208,6 +208,9 @@ pub struct Player {
     /// Inferno is being channelled (counts down when you let go).
     pub inferno: f32,
     pub inferno_t: f32,
+    /// Blaze time left, and where the last fire patch was dropped.
+    pub blaze_t: f32,
+    pub blaze_from: (f32, f32),
 }
 
 impl Player {
@@ -244,6 +247,8 @@ impl Player {
             skills: crate::skills::Skills::default(),
             inferno: 0.0,
             inferno_t: 0.0,
+            blaze_t: 0.0,
+            blaze_from: (0.0, 0.0),
         }
     }
 }
@@ -302,6 +307,8 @@ pub struct Game {
     // ---- transient effects ----
     pub(crate) balls: Vec<Fireball>,
     pub(crate) novas: Vec<crate::skills::Nova>,
+    pub(crate) fire_walls: Vec<crate::skills::FireWallFx>,
+    pub(crate) patches: Vec<crate::skills::FirePatch>,
     /// The skill tree screen, while open.
     pub tree: Option<crate::skills::TreeUi>,
     /// HUD skill buttons from the last draw (x, y, w, h): clicking one opens the tree.
@@ -367,6 +374,8 @@ impl Game {
             world_seed,
             balls: vec![],
             novas: vec![],
+            fire_walls: vec![],
+            patches: vec![],
             tree: None,
             hud_skill_rects: vec![],
             shots: vec![],
@@ -448,6 +457,8 @@ impl Game {
         }
         self.balls.clear();
         self.novas.clear();
+        self.fire_walls.clear();
+        self.patches.clear();
         self.tree = None;
         self.shots.clear();
         self.hazards.clear();
@@ -736,6 +747,7 @@ impl Game {
         self.update_hazards();
         self.update_balls();
         self.update_novas();
+        self.update_fire_ground();
         self.update_world();
         self.prev = inp.clone();
     }
@@ -2025,6 +2037,82 @@ mod tests {
         g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Seal(0), t: 1.0 });
         g.update(&Input::default());
         assert_eq!(g.p.skills.points, pts + 2);
+    }
+
+    #[test]
+    fn fire_wall_burns_what_stands_in_it() {
+        use crate::skills::Skill;
+        let mut g = with_zombie(3.0, 0.0);
+        g.p.skills.rank[Skill::FireWall as usize] = 1;
+        g.p.skills.primary = Skill::FireWall;
+        g.p.mana = 50.0;
+        let (zx, zy) = (g.mobs[0].x, g.mobs[0].y);
+        let (sx, sy) = crate::iso::to_screen(zx - g.p.x, zy - g.p.y);
+        let l = (sx * sx + sy * sy).sqrt();
+        // Aim the wall at the zombie (6 tiles out along the stick), keep it pinned there.
+        g.cast_skill(Skill::FireWall, zx, zy);
+        assert_eq!(g.fire_walls.len(), 1);
+        let _ = (sx, sy, l);
+        for _ in 0..60 {
+            g.mobs[0].x = zx;
+            g.mobs[0].y = zy;
+            g.mobs[0].stun = 1.0;
+            g.update(&Input::default());
+        }
+        assert!(g.mobs[0].hp < 1000.0 - 15.0, "zombie in the wall took {}", 1000.0 - g.mobs[0].hp);
+        for _ in 0..60 * 8 {
+            g.update(&Input::default());
+        }
+        assert!(g.fire_walls.is_empty(), "the wall burns out");
+    }
+
+    #[test]
+    fn blaze_leaves_burning_ground_behind_you() {
+        use crate::skills::Skill;
+        let mut g = quiet_game();
+        g.p.skills.rank[Skill::Blaze as usize] = 1;
+        g.p.mana = 50.0;
+        g.cast_skill(Skill::Blaze, g.p.x, g.p.y);
+        assert!(g.p.blaze_t > 5.0);
+        for _ in 0..40 {
+            g.update(&Input { move_x: 1.0, ..Input::default() });
+        }
+        assert!(g.patches.len() >= 3, "{} patches", g.patches.len());
+        // A zombie standing on a patch gets burned.
+        let (x, y) = (g.patches[0].x, g.patches[0].y);
+        let mut m = Mob::new(Kind::Zombie, x, y, 1.0, &mut g.rng);
+        m.hp = 1000.0;
+        g.mobs.push(m);
+        for _ in 0..30 {
+            g.mobs[0].x = x;
+            g.mobs[0].y = y;
+            g.mobs[0].stun = 1.0;
+            g.update(&Input::default());
+        }
+        assert!(g.mobs[0].hp < 1000.0);
+    }
+
+    #[test]
+    fn combust_detonates_only_burning_foes_and_longer_burns_hit_harder() {
+        use crate::skills::Skill;
+        let mut g = with_zombie(2.0, 0.0);
+        let mut cold = Mob::new(Kind::Zombie, g.p.x - 2.0, g.p.y, 1.0, &mut g.rng);
+        cold.hp = 1000.0;
+        g.mobs.push(cold);
+        g.p.skills.rank[Skill::Combust as usize] = 1;
+        g.p.mana = 50.0;
+        g.mobs[0].burn = 2.0;
+        g.mobs[0].burned = 3.0;
+        g.cast_skill(Skill::Combust, g.p.x, g.p.y);
+        let hot_dmg = 1000.0 - g.mobs[0].hp;
+        assert!(hot_dmg > crate::skills::combust_dmg(1, 0) * 1.5, "a long burn hits hard: {hot_dmg}");
+        assert_eq!(g.mobs[0].burn, 0.0, "the fire is spent");
+        assert_eq!(g.mobs[1].hp, 1000.0, "the unlit zombie is untouched");
+        // Nothing burning: no mana spent.
+        let mana = g.p.mana;
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::Combust, g.p.x, g.p.y);
+        assert_eq!(g.p.mana, mana);
     }
 
     #[test]

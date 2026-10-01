@@ -65,6 +65,7 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Inferno (channelled cone), Fire Nova (ring + knockback), Warmth (passive regen) | H S | Unit tests for each |
 | Fireball scales with its rank; Aldric respec for 50 x char level gold | H | Unit test |
 | Old saves get the points they would have earned | H | |
+| Step 2: Fire Wall (flame line, 0.2 s burn ticks), Blaze (fire trail while moving), Combust (detonates burning foes, scales with burn time, Fire Wall synergy); 3-tier tree | H S | Unit tests for each |
 
 ## Art status
 

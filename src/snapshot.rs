@@ -269,6 +269,37 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         g.update(&Input { cast2: true, ..Input::default() });
         idle(&mut g, 10);
         save(&mut g, scr, "skills_nova");
+        // Step 2: Fire Wall across the nearest pack, then Combust; Blaze trail while running.
+        g.p.clvl = 12;
+        g.p.skills.rank[Skill::FireWall as usize] = 3;
+        g.p.skills.rank[Skill::Warmth as usize] = 1;
+        g.p.skills.rank[Skill::Blaze as usize] = 2;
+        g.p.skills.rank[Skill::Combust as usize] = 2;
+        g.p.mana = 80.0;
+        g.p.max_mana = 80.0;
+        if let Some((x, y)) = g.bot_target().map(|t| (t.0, t.1)) {
+            g.debug_place_near(x, y, 3.5);
+            g.p.cast_cd = 0.0;
+            g.cast_skill(Skill::FireWall, x, y);
+        }
+        idle(&mut g, 45);
+        save(&mut g, scr, "skills_firewall");
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::Combust, g.p.x, g.p.y);
+        idle(&mut g, 6);
+        save(&mut g, scr, "skills_combust");
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::Blaze, g.p.x, g.p.y);
+        for t in 0..50 {
+            g.update(&Input { move_x: if t < 25 { 1.0 } else { 0.3 }, move_y: if t < 25 { 0.2 } else { 1.0 }, ..Input::default() });
+            g.sfx.clear();
+        }
+        save(&mut g, scr, "skills_blaze");
+        g.p.skills.points = 2;
+        g.update(&Input { skills: true, ..Input::default() });
+        g.tree.as_mut().unwrap().sel = Skill::Combust as usize;
+        save(&mut g, scr, "skills_tree2");
+        g.tree = None;
     }
     // HUD details: out of mana (EMBER), hungry, low stamina, food on the floor.
     let mut g = Game::new(7, h);
