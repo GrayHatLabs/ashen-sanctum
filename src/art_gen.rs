@@ -12,6 +12,7 @@ pub static CHARS: &[CharDef] = &[
     CharDef { name: "npc_merchant", cell: (20, 46), anchor: (10, 41), data: include_bytes!("../assets/art/npc_merchant.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
     CharDef { name: "npc_healer", cell: (22, 45), anchor: (10, 40), data: include_bytes!("../assets/art/npc_healer.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
     CharDef { name: "npc_guard", cell: (27, 57), anchor: (14, 51), data: include_bytes!("../assets/art/npc_guard.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
+    CharDef { name: "npc_villager", cell: (22, 48), anchor: (11, 43), data: include_bytes!("../assets/art/npc_villager.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
 ];
 
 pub static TILES: &[TileDef] = &[

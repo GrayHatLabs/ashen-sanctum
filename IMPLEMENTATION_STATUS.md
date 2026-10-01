@@ -42,6 +42,19 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Synth SFX (cast, boom, hit, hurt, death, swing, pickup, drink, descend) | built | Not listened to yet |
 | Art: PixelLab 8-direction mage (idle/walk/cast), zombie + skeleton (idle/walk/attack), isometric floors + wall | S | 5 directions generated per animation, 3 mirrored. `pack.py` trims frames where PixelLab drifted and keys out a stray background |
 
+## World expansion (2026-09-30)
+
+| Feature | Status | Notes |
+|---|---|---|
+| Overworld 112x112: forests (noise), rocks, bushes, roads to 4 entrances, 30 roaming packs, wild food | H S | Unit test: every entrance reachable from town, NPCs not in walls, no monsters in town |
+| Hollowmere: palisade with gates, 4 houses, stall, well, campfire; safe zone (no casting, no hunger, monsters give up) | H S | Front palisade cut low like dungeon front walls |
+| NPCs: Elder (story), Gerta (shop), Aldric (heal), Rolf + 4 villagers (hints, villagers stroll) | H S | Talk by clicking or cast/confirm nearby; dialogue with pages and options (keys, pad, mouse) |
+| Story: elder -> 3 Wardens -> seals -> Sanctum unsealed -> Ash King -> epilogue | H S | Unit test plays the whole quest line |
+| 4 dungeons (2/2/3/3 floors), themes, stairs, levels persist, town portal after bosses | H S | Unit tests: stairs/boss per floor, entrance <-> floors <-> overworld round trip |
+| Monsters: wolf, imp (flees when kin die), skeleton archer (ranged, keeps distance) | H S | Generated rotations; walk/attack animations queued |
+| Bosses: Bone Warden (summons), Plague Warden (poison pools), Hex Warden (3-bolt volleys, blink, archer adds), Ash King (bolt spreads, ash nova, enrage + imps) | H S | Stand-in art (scaled/tinted) until their PixelLab sheets land |
+| XP / character levels, seal power-ups, quest log, area names, boss bar, death -> wake in town (-10% gold), victory screen | H S | |
+
 ## Art status
 
 - Complete for the MVP: 3 characters x 8 rotations, 7 animations, 2 floor tiles, 1 wall block.
@@ -49,6 +62,8 @@ without errors) but not played by a human yet. Nothing is HW yet.
   (PixelLab turned the figure or morphed the sword late in the swing); the mirrored west-facing mage
   holds the staff in the other hand.
 - Spend: about 45 generations for the whole MVP (well under the ~400 budget).
+- World expansion art: 12 characters, 17 props, 5 overworld tiles generated; 15 animations queued
+  (`tools/world_art.py chars`), imported as they finish.
 
 ## Next ideas
 

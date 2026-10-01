@@ -8,17 +8,39 @@ Written in Rust with SDL2. Renders a 640x360 software framebuffer (640x480 on th
 ANBERNIC RG35XX H), with pixel art generated with PixelLab and embedded in the binary.
 Sound effects are synthesised in code.
 
+## The story
+
+Ash falls on the village of Hollowmere. Beneath the Ashen Sanctum sleeps the Ash King, a
+fallen archmage who tried to burn away death itself. Three Wardens gave their lives to seal him,
+but their tombs have been defiled and the Wardens walk again. Elder Maren asks you to slay them,
+take back their Seals, unseal the Sanctum and end the Ash King.
+
+## The world
+
+- **Hollowmere** (the starting town) is safe: no monsters, no hunger. Talk to everyone:
+  - **Elder Maren** (by the campfire): the story and your quests. A **!** means she has news.
+  - **Gerta** (market stall): healing and mana potions, bread and roasts for gold.
+  - **Brother Aldric**: heals you fully whenever you talk to him.
+  - **Captain Rolf** and the villagers: hints.
+- **The Ashlands** (overworld): forests, roads, roaming wolves, imps and undead, wild food.
+- **Four dungeons**, each with its own look, floors joined by stairs, and a boss at the bottom:
+  1. **The Bone Crypt** (southwest, 2 floors): the **Bone Warden** raises skeletons.
+  2. **The Rotting Warrens** (southeast, 2 floors): the **Plague Warden** spits poison pools.
+  3. **The Hexed Catacombs** (northeast, 3 floors): the **Hex Warden** fires bolt volleys and blinks away.
+  4. **The Ashen Sanctum** (northwest, 3 floors, sealed until you have all three Seals): the **Ash King**.
+- Each Warden drops a **Seal** (more life, mana and fireball power) and opens a portal home.
+  Levels remember what you killed. If you die, you wake in Hollowmere and lose 10% of your gold.
+
 ## How to play
 
 - **Fireball** costs 5 mana. It explodes on impact, splashes nearby foes and sets them burning.
 - **Ember Bolt**: when you're out of mana the same button fires a free, weaker bolt (single target, no burn).
 - **Run / walk** (R or pad B), like D2: running is fast but drains the yellow **stamina** bar, which refills while you walk or stand. Run it dry and you're tired (walk only) until it recovers.
-- **Food**: the food bar slowly empties, faster while running. When it's empty you're **starving**: you lose life, don't regenerate it, and stamina refills slowly. Apples, bread and roasts lie around each level and drop from monsters; walk over one to eat it (it stays on the floor if you're full).
-- **Zombies** are slow and hit hard. **Skeletons** are fast and fragile. Monsters in a pack alert each other.
-- Getting hit by a fireball interrupts a monster's swing.
-- Life and mana regenerate slowly. Drink potions when you need them (monsters drop more).
-- Kill every monster on a level to cleanse it, then press Enter / START to descend.
-  Each level is bigger and meaner.
+- **Food**: the food bar slowly empties, faster while running. When it's empty you're **starving**: you lose life, don't regenerate it, and stamina refills slowly. Apples, bread and roasts lie around and drop from monsters (walk over them to eat), and Gerta sells them.
+- **Experience**: kills level you up (more life, mana and fireball damage).
+- **Monsters**: zombies are slow and hit hard, skeletons are fast and fragile, wolves hunt in fast
+  packs, imps panic and flee when one of their own dies, and skeleton archers keep their distance.
+  Bosses telegraph their big attacks with markers on the floor: step out of them.
 
 ## Controls
 
@@ -28,10 +50,12 @@ Sound effects are synthesised in code.
 | Fireball / Ember Bolt | Right click (at the cursor), left click a monster, Shift + left click, F or Space | Right stick (aim + cast), or A / X / R1 / RT (auto-aims at the nearest foe) |
 | Run / walk toggle | R | B |
 | Health potion | Q or 1 | L1 / L2 |
+| Talk to someone | Left click them, or F / Space next to them | A next to them |
+| Choose in a conversation | Up / Down + Enter, or click | D-pad + A |
 | Map | Tab or M | SELECT |
 | Mana potion | E or 2 | Y |
-| Descend / restart | Enter | START |
-| Quit | Esc | SELECT + START |
+| Continue after death / the ending | Enter | START |
+| Close menu / quit | Esc (closes a conversation or the map first) | SELECT + START |
 
 ## Building
 

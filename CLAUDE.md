@@ -12,6 +12,15 @@ Project rules and reference. Read this before every major change.
   From Windows: `wsl -d Ubuntu -e bash scripts/wsl-build.sh`, `scripts/wsl-run.sh <args>`, `scripts/wsl-test.sh`.
 - Keep the handheld's performance budget in mind (the draw is ~1–2 ms on desktop x86).
 
+## Code layout
+
+- `game.rs`: Game state, level swapping (`go_to`, parked levels), player, combat, pickups, dialogue flow.
+- `mobs.rs`: monster definitions (`def`), AI incl. boss abilities, enemy shots, ground hazards.
+- `world.rs`: `Level`, overworld + Hollowmere generation, dungeon floors, portals, props, `DUNGEONS`.
+- `story.rs`: quest stages, NPC dialogue, shop wares, epilogue.
+- `render.rs`: all drawing (world, lighting, HUD, dialogue, overlays). `art.rs` themes and stand-in art.
+- Unit tests cover the world graph, stairs, the whole story, shop/healer, death, XP, run/food.
+
 ## Controls (keep both schemes working)
 
 - Mouse (D2 style): left click moves / attacks the hovered monster, right click casts at the cursor,
