@@ -36,6 +36,12 @@ Project rules and reference. Read this before every major change.
 
 ## Art pipeline
 
+- **Style rules: `D:\projects\AshenSanctum-art\STYLE.md`. Read it before generating anything.**
+  Short version: realistic proportions with small heads like the mage (never chibi / big heads;
+  presets `heroic` or `realistic_*`, prompt suffix "small head, realistic adult body proportions,
+  long legs"), green goblins instead of imps, and check every animation for glowing effects
+  (`FIX` / `TRIM` in pack.py).
+
 - Art lives in `D:\projects\AshenSanctum-art` (PixelLab API, key in the `PIXELLAB_API_KEY` user env var;
   never print it). `tools/gen.py` generates, `tools/pack.py` packs sheets + `sheets/manifest.json`,
   `scripts/import_art.py` (in this repo) embeds them into `src/art_gen.rs` + `assets/art/*.bin`.
