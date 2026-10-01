@@ -37,7 +37,13 @@ take back their Seals, unseal the Sanctum and end the Ash King.
 - **Ember Bolt**: when you're out of mana the same button fires a free, weaker bolt (single target, no burn).
 - **Run / walk** (R or pad B), like D2: running is fast but drains the yellow **stamina** bar, which refills while you walk or stand. Run it dry and you're tired (walk only) until it recovers.
 - **Food**: the food bar slowly empties, faster while running. When it's empty you're **starving**: you lose life, don't regenerate it, and stamina refills slowly. Apples, bread and roasts lie around and drop from monsters (walk over them to eat), and Gerta sells them.
-- **Experience**: kills level you up (more life, mana and fireball damage).
+- **Experience**: kills level you up (more life, mana and damage) and give a **skill point**; each
+  Warden's Seal gives another. Spend them in the **skill tree** (K / hold SELECT):
+  - **Fireball**: exploding bolt that sets foes burning.
+  - **Inferno**: hold to breathe a cone of flame (drains mana while held).
+  - **Warmth** (passive): faster mana regeneration.
+  - **Fire Nova** (char level 6, needs Inferno): a ring of fire that burns and hurls back everything nearby.
+  Out of mana, any skill fires the free Ember Bolt. Brother Aldric resets your skills for gold.
 - **Monsters**: zombies are slow and hit hard, skeletons are fast and fragile, wolves hunt in fast
   packs, goblins panic and flee when one of their own dies, and skeleton archers keep their distance.
   Bosses telegraph their big attacks with markers on the floor: step out of them.
@@ -47,7 +53,10 @@ take back their Seals, unseal the Sanctum and end the Ash King.
 | Action | Mouse + keyboard | Gamepad / handheld |
 |---|---|---|
 | Move | Hold left click on the floor, or WASD / arrows | Left stick / D-pad |
-| Fireball / Ember Bolt | Right click (at the cursor), left click a monster, Shift + left click, F or Space | Right stick (aim + cast), or A / X / R1 / RT (auto-aims at the nearest foe) |
+| Primary skill (L slot) | Left click a monster, Shift + left click, F | A, RT or the right stick (auto-aims at the nearest foe) |
+| Secondary skill (R slot) | Right click, Space | X |
+| Pick the secondary skill | 1-4 | R1 (cycles) |
+| Skill tree | K, or click the skill slots / the + button | Hold SELECT |
 | Run / walk toggle | R | B |
 | Health potion | Q or 1 | L1 / L2 |
 | Talk to someone | Left click them, or F / Space next to them | A next to them |

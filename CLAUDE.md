@@ -21,6 +21,8 @@ Project rules and reference. Read this before every major change.
 - `levels.rs` + `build.rs`: JSON level files (folder override, embedded at build, generator fallback).
   Editor: `tools/level-editor/index.html`. Format: `docs/LEVEL_FORMAT.md`. Keep the editor's catalog
   (kinds, footprints, validation) in sync with `levels.rs` when adding props/monsters/NPCs.
+- `skills.rs`: skill points, ranks, slots, Inferno / Fire Nova / Warmth, the skill tree screen. Plan for
+  the remaining skills: `docs/SKILLS_PLAN.md` (step 1 done).
 - `render.rs`: all drawing (world, lighting, HUD, dialogue, overlays). `art.rs` themes and stand-in art.
 - Unit tests cover the world graph, stairs, the whole story, shop/healer, death, XP, run/food.
 

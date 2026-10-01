@@ -247,3 +247,59 @@ pub fn fallback_prop(name: &str) -> Sprite {
     s.ay = s.h - 1;
     s
 }
+
+/// 24x24 skill icons (drawn at their top-left corner).
+pub fn skill_icon(s: crate::skills::Skill) -> Sprite {
+    use crate::skills::Skill;
+    if s == Skill::Fireball {
+        return fireball_icon();
+    }
+    let mut im = Sprite::new(24, 24);
+    im.fill(0, 0, 24, 24, rgb(0x1a1410));
+    let fire = |d: f32| mix(rgb(0xfff0a0), rgb(0xc02808), d.clamp(0.0, 1.0));
+    match s {
+        Skill::Inferno => {
+            // Staff tip at the left, a cone of flame to the right.
+            for y in 0..24 {
+                for x in 3..23 {
+                    let t = (x - 3) as f32 / 19.0;
+                    let half = 1.0 + t * 9.0;
+                    let dy = (y as f32 - 12.0).abs();
+                    if dy < half && (hash(x, y, 3) % 7 != 0 || t < 0.3) {
+                        im.set(x, y, fire(t * 0.8 + dy / half * 0.4));
+                    }
+                }
+            }
+            im.fill(0, 11, 4, 2, rgb(0x6a4020));
+        }
+        Skill::FireNova => {
+            for y in 0..24 {
+                for x in 0..24 {
+                    let d = ((x as f32 - 11.5).powi(2) + (y as f32 - 11.5).powi(2)).sqrt();
+                    if (7.0..10.5).contains(&d) {
+                        im.set(x, y, fire((d - 7.0) / 3.5));
+                    } else if d < 2.5 {
+                        im.set(x, y, rgb(0xfff4c0));
+                    }
+                }
+            }
+        }
+        Skill::Warmth => {
+            // A glowing ember heart.
+            for y in 0..24 {
+                for x in 0..24 {
+                    let (fx, fy) = ((x as f32 - 11.5) / 8.0, (y as f32 - 10.0) / 8.0);
+                    let heart = (fx * fx + fy * fy - 1.0).powi(3) - fx * fx * fy.powi(3) * -1.0;
+                    if heart < 0.0 {
+                        let d = (fx * fx + fy * fy).sqrt();
+                        im.set(x, y, fire(d));
+                    }
+                }
+            }
+        }
+        Skill::Fireball => {}
+    }
+    im.ax = 0;
+    im.ay = 0;
+    im
+}

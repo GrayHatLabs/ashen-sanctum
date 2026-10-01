@@ -13,6 +13,7 @@ mod mobs;
 mod render;
 mod rng;
 mod save;
+mod skills;
 mod snapshot;
 mod sprites;
 mod story;
@@ -34,6 +35,7 @@ struct Keys {
     left: bool,
     right: bool,
     cast: bool,
+    cast2: bool,
     shift: bool,
 }
 
@@ -48,6 +50,7 @@ struct Pad {
     dleft: bool,
     dright: bool,
     cast: bool,
+    cast2: bool,
     rt: bool,
 }
 
@@ -137,6 +140,8 @@ fn main() -> Result<(), String> {
     let mut back_held = false;
     // One-shot presses, cleared after each simulated tick.
     let (mut confirm, mut pot_hp, mut pot_mp, mut map, mut run_toggle, mut cancel) = (false, false, false, false, false, false);
+    let (mut skills_key, mut cycle, mut slot): (bool, bool, Option<u8>) = (false, false, None);
+    let mut back_down: Option<Instant> = None;
 
     'main: loop {
         for ev in events.poll_iter() {
@@ -149,12 +154,22 @@ fn main() -> Result<(), String> {
                         S | Down => keys.down = true,
                         A | Left => keys.left = true,
                         D | Right => keys.right = true,
-                        F | Space => keys.cast = true,
+                        F => keys.cast = true,
+                        Space => keys.cast2 = true,
+                        K if !repeat => skills_key = true,
+                        Num1 | Num2 | Num3 | Num4 if !repeat => {
+                            slot = Some(match sc {
+                                Num1 => 0,
+                                Num2 => 1,
+                                Num3 => 2,
+                                _ => 3,
+                            })
+                        }
                         R if !repeat => run_toggle = true,
                         LShift | RShift => keys.shift = true,
                         Return | KpEnter if !repeat => confirm = true,
-                        Q | Num1 if !repeat => pot_hp = true,
-                        E | Num2 if !repeat => pot_mp = true,
+                        Q if !repeat => pot_hp = true,
+                        E if !repeat => pot_mp = true,
                         Tab | M if !repeat => map = true,
                         Escape if !repeat => cancel = true,
                         _ => {}
@@ -167,7 +182,8 @@ fn main() -> Result<(), String> {
                         S | Down => keys.down = false,
                         A | Left => keys.left = false,
                         D | Right => keys.right = false,
-                        F | Space => keys.cast = false,
+                        F => keys.cast = false,
+                        Space => keys.cast2 = false,
                         LShift | RShift => keys.shift = false,
                         _ => {}
                     }
@@ -197,11 +213,16 @@ fn main() -> Result<(), String> {
                 }
                 Event::ControllerButtonDown { button, .. } => {
                     match button {
-                        Button::Back => back_held = true,
+                        Button::Back => {
+                            back_held = true;
+                            back_down = Some(Instant::now());
+                        }
                         // SELECT + START quits (the usual handheld hotkey).
                         Button::Start if back_held => break 'main,
                         Button::Start => confirm = true,
-                        Button::A | Button::X | Button::RightShoulder => pad.cast = true,
+                        Button::A => pad.cast = true,
+                        Button::X => pad.cast2 = true,
+                        Button::RightShoulder => cycle = true,
                         Button::B => run_toggle = true,
                         Button::LeftShoulder => pot_hp = true,
                         Button::Y => pot_mp = true,
@@ -217,11 +238,17 @@ fn main() -> Result<(), String> {
                 }
                 Event::ControllerButtonUp { button, .. } => match button {
                     // SELECT on its own toggles the map (SELECT + START quits above).
+                    // SELECT tapped: map; held: skill tree (SELECT + START quits above).
                     Button::Back => {
                         back_held = false;
-                        map = true;
+                        if back_down.map_or(false, |t| t.elapsed() > Duration::from_millis(400)) {
+                            skills_key = true;
+                        } else {
+                            map = true;
+                        }
                     }
-                    Button::A | Button::X | Button::RightShoulder => pad.cast = false,
+                    Button::A => pad.cast = false,
+                    Button::X => pad.cast2 = false,
                     Button::DPadUp => pad.dup = false,
                     Button::DPadDown => pad.ddown = false,
                     Button::DPadLeft => pad.dleft = false,
@@ -260,6 +287,7 @@ fn main() -> Result<(), String> {
         // Twin-stick: pushing the right stick far casts in that direction.
         let aim_cast = pad.rx * pad.rx + pad.ry * pad.ry > 0.5;
         inp.cast = keys.cast || pad.cast || pad.rt || aim_cast;
+        inp.cast2 = keys.cast2 || pad.cast2;
         inp.stand = keys.shift;
 
         let now = Instant::now();
@@ -272,6 +300,9 @@ fn main() -> Result<(), String> {
             inp.map = map;
             inp.run_toggle = run_toggle;
             inp.cancel = cancel;
+            inp.skills = skills_key;
+            inp.cycle = cycle;
+            inp.slot = slot;
             game.update(&inp);
             confirm = false;
             pot_hp = false;
@@ -279,6 +310,9 @@ fn main() -> Result<(), String> {
             map = false;
             run_toggle = false;
             cancel = false;
+            skills_key = false;
+            cycle = false;
+            slot = None;
             for s in game.sfx.drain(..) {
                 if let Some(a) = audio.as_mut() {
                     a.play(s);

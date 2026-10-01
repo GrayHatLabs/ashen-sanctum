@@ -3,11 +3,10 @@
 //! maps in `world.rs` and the story in `story.rs`.
 use crate::art::Art;
 use crate::dungeon::{Dungeon, Tile};
-use crate::gfx::{rgb, Sprite};
+use crate::gfx::rgb;
 use crate::iso;
 use crate::mobs::{Hazard, Kind, Mob, MobState, Shot};
 use crate::rng::Rng;
-use crate::sprites;
 use crate::story::{self, Act, Dialog, Npc, Quest, Role, Ware};
 use crate::world::{self, Level, LevelId, Portal, PortalKind, Prop, Theme, SANCTUM};
 #[cfg(test)]
@@ -67,6 +66,14 @@ pub struct Input {
     pub map: bool,
     /// Toggle run / walk (one-shot).
     pub run_toggle: bool,
+    /// Secondary skill held (right mouse is `rmb`; this is pad X / Space).
+    pub cast2: bool,
+    /// Number key 1-4: pick the secondary skill (one-shot, 0-based).
+    pub slot: Option<u8>,
+    /// Pad R1: cycle the secondary skill (one-shot).
+    pub cycle: bool,
+    /// K / hold SELECT: open the skill tree (one-shot).
+    pub skills: bool,
     /// Esc: close a conversation or the map; with nothing open, quit.
     pub cancel: bool,
 }
@@ -197,6 +204,10 @@ pub struct Player {
     pub power: f32,
     /// Walking toward someone to talk to them (mouse click on an NPC).
     pub talk_to: Option<usize>,
+    pub skills: crate::skills::Skills,
+    /// Inferno is being channelled (counts down when you let go).
+    pub inferno: f32,
+    pub inferno_t: f32,
 }
 
 impl Player {
@@ -230,6 +241,9 @@ impl Player {
             xp: 0.0,
             power: 1.0,
             talk_to: None,
+            skills: crate::skills::Skills::default(),
+            inferno: 0.0,
+            inferno_t: 0.0,
         }
     }
 }
@@ -287,6 +301,11 @@ pub struct Game {
     world_seed: u64,
     // ---- transient effects ----
     pub(crate) balls: Vec<Fireball>,
+    pub(crate) novas: Vec<crate::skills::Nova>,
+    /// The skill tree screen, while open.
+    pub tree: Option<crate::skills::TreeUi>,
+    /// HUD skill buttons from the last draw (x, y, w, h): clicking one opens the tree.
+    pub(crate) hud_skill_rects: Vec<(i32, i32, i32, i32)>,
     pub(crate) shots: Vec<Shot>,
     pub(crate) hazards: Vec<Hazard>,
     pub(crate) parts: Vec<Particle>,
@@ -308,13 +327,12 @@ pub struct Game {
     pub(crate) focus_t: f32,
     pub(crate) hover: Option<usize>,
     pub(crate) hover_npc: Option<usize>,
-    pub(crate) icon: Sprite,
     pub(crate) banner_t: f32,
     pub(crate) level_up_t: f32,
     pub(crate) view_h: i32,
     pub(crate) light_ready: bool,
     portal_cd: f32,
-    prev: Input,
+    pub(crate) prev: Input,
     pub show_map: bool,
     pub quit: bool,
     /// Set when the game wants the character saved (town, boss kills); main writes it.
@@ -348,6 +366,9 @@ impl Game {
             parked: HashMap::new(),
             world_seed,
             balls: vec![],
+            novas: vec![],
+            tree: None,
+            hud_skill_rects: vec![],
             shots: vec![],
             hazards: vec![],
             parts: vec![],
@@ -366,7 +387,6 @@ impl Game {
             focus_t: 0.0,
             hover: None,
             hover_npc: None,
-            icon: sprites::fireball_icon(),
             banner_t: 7.0,
             level_up_t: 0.0,
             view_h,
@@ -427,6 +447,8 @@ impl Game {
             self.town_start = lv.start;
         }
         self.balls.clear();
+        self.novas.clear();
+        self.tree = None;
         self.shots.clear();
         self.hazards.clear();
         self.parts.clear();
@@ -589,6 +611,19 @@ impl Game {
         false
     }
 
+    /// Moves the player to a free spot about `dist` tiles from (x, y) with line of sight (snapshots).
+    pub fn debug_place_near(&mut self, x: f32, y: f32, dist: f32) {
+        for k in 0..16 {
+            let a = k as f32 / 16.0 * std::f32::consts::TAU;
+            let (px, py) = (x + a.cos() * dist, y + a.sin() * dist);
+            if !self.d.blocked(px, py, PLAYER_R) && self.d.los(px, py, x, y) {
+                self.p.x = px;
+                self.p.y = py;
+                return;
+            }
+        }
+    }
+
     /// Kills the level's boss outright (tests).
     pub fn debug_kill_boss(&mut self) -> bool {
         let Some(i) = self.mobs.iter().position(|m| m.boss && m.alive()) else { return false };
@@ -665,6 +700,17 @@ impl Game {
             }
             State::Playing => {}
         }
+        if self.tree.is_some() {
+            // The world waits while you plan your skills.
+            self.update_tree(inp, p_cast || p_confirm, p_lmb);
+            self.prev = inp.clone();
+            return;
+        }
+        if inp.skills && self.dialog.is_none() && self.state == State::Playing {
+            self.open_tree();
+            self.prev = inp.clone();
+            return;
+        }
         if inp.cancel {
             if self.dialog.is_some() {
                 self.dialog = None;
@@ -689,6 +735,7 @@ impl Game {
         self.update_shots();
         self.update_hazards();
         self.update_balls();
+        self.update_novas();
         self.update_world();
         self.prev = inp.clone();
     }
@@ -823,7 +870,12 @@ impl Game {
 
     pub(crate) fn open_dialog(&mut self, i: usize) {
         let role = self.npcs[i].role;
-        let d = story::talk(role, &self.quest);
+        let mut d = story::talk(role, &self.quest);
+        if d.heals {
+            // Aldric can also make you forget your skills, for a price.
+            let price = 50 * self.p.clvl as i32;
+            d.options = vec![(format!("FORGET MY SKILLS  {price} GOLD"), Act::Respec(price)), ("FAREWELL".into(), Act::Close)];
+        }
         if d.heals {
             self.p.hp = self.p.max_hp;
             self.p.mana = self.p.max_mana;
@@ -883,6 +935,18 @@ impl Game {
                 self.dialog = None;
             }
             Some(Act::Buy(w)) => self.buy(w),
+            Some(Act::Respec(price)) => {
+                if self.p.gold < price {
+                    self.say("NOT ENOUGH GOLD".into());
+                } else {
+                    self.p.gold -= price;
+                    let n = self.p.skills.respec();
+                    self.sfx.push(Sfx::Descend);
+                    self.say(format!("YOUR SKILLS ARE FORGOTTEN: {n} POINTS RETURNED"));
+                    self.dialog = None;
+                    self.save_due = true;
+                }
+            }
             None => {}
         }
     }
@@ -952,7 +1016,8 @@ impl Game {
         p.flash = (p.flash - DT).max(0.0);
         p.cast_cd = (p.cast_cd - DT).max(0.0);
         p.cast_t = (p.cast_t - DT).max(0.0);
-        p.mana = (p.mana + 2.2 * DT).min(p.max_mana);
+        p.mana = (p.mana + 2.2 * p.skills.regen_mult() * DT).min(p.max_mana);
+        p.inferno = (p.inferno - DT).max(0.0);
         let starving = p.food <= 0.0;
         if !starving {
             p.hp = (p.hp + 0.4 * DT).min(p.max_hp);
@@ -997,6 +1062,15 @@ impl Game {
         self.hover = inp.mouse.and_then(|m| self.pick_mob(m));
         self.hover_npc = inp.mouse.and_then(|m| self.pick_npc(m));
 
+        self.update_slots(inp);
+        if let (Some((mx, my)), true) = (inp.mouse, p_lmb) {
+            if self.hud_skill_rects.iter().any(|&(x, y, w, h)| mx >= x && mx < x + w && my >= y && my < y + h) {
+                self.open_tree();
+                return;
+            }
+        }
+        let on_hud = inp.mouse.map_or(false, |(_, my)| my >= self.view_h - HUD_H);
+
         // ---- talking (town) ----
         if let (Some(i), true) = (self.hover_npc, p_lmb) {
             self.p.talk_to = Some(i);
@@ -1016,15 +1090,21 @@ impl Game {
         }
 
         // ---- casting (not in town) ----
+        // Primary skill: left click on a monster / Shift+click / pad A. Secondary: right click / X / Space.
         let mut cast_at: Option<(f32, f32)> = None;
-        if !in_town {
+        let mut use_secondary = false;
+        if !in_town && !on_hud {
             if let Some(m) = inp.mouse {
                 let target = self.hover.map(|i| (self.mobs[i].x, self.mobs[i].y)).unwrap_or_else(|| self.mouse_world(m));
-                if inp.rmb || (inp.lmb && (inp.stand || self.hover.is_some())) {
+                if inp.rmb {
+                    cast_at = Some(target);
+                    use_secondary = true;
+                } else if inp.lmb && (inp.stand || self.hover.is_some()) {
                     cast_at = Some(target);
                 }
             }
-            if inp.cast {
+            if inp.cast || inp.cast2 {
+                use_secondary = inp.cast2 && !inp.cast;
                 let aim = inp.aim_x * inp.aim_x + inp.aim_y * inp.aim_y;
                 if aim > 0.09 {
                     let (dx, dy) = iso::screen_dir_to_world(inp.aim_x, inp.aim_y);
@@ -1047,11 +1127,11 @@ impl Game {
             if dx * dx + dy * dy > 0.01 {
                 self.p.dir = iso::dir8(dx, dy);
             }
-            if self.p.cast_cd <= 0.0 {
-                // Out of mana: the free Ember Bolt keeps you fighting.
-                let ember = self.p.mana < FIREBALL_COST;
-                self.cast_fireball(tx, ty, ember);
-            }
+            let skill = if use_secondary { self.p.skills.secondary } else { self.p.skills.primary };
+            self.cast_skill(skill, tx, ty);
+        }
+        if self.p.inferno <= 0.0 {
+            self.p.inferno_t = 0.0;
         }
 
         // ---- movement ----
@@ -1068,7 +1148,7 @@ impl Game {
             let talk_goal = self.p.talk_to.map(|i| (self.npcs[i].x, self.npcs[i].y));
             let want = if let Some(g) = talk_goal {
                 Some(g)
-            } else if let (Some(m), true) = (inp.mouse, inp.lmb && !inp.stand && self.hover.is_none()) {
+            } else if let (Some(m), true) = (inp.mouse, inp.lmb && !inp.stand && self.hover.is_none() && !on_hud) {
                 Some(self.mouse_world(m))
             } else {
                 None
@@ -1183,6 +1263,7 @@ impl Game {
                 }
                 Drop::Seal(i) => {
                     self.quest.seals[i] = true;
+                    self.p.skills.points += 1;
                     self.p.max_hp += 15.0;
                     self.p.max_mana += 10.0;
                     self.p.power *= 1.15;
@@ -1231,11 +1312,12 @@ impl Game {
         }
     }
 
-    fn cast_fireball(&mut self, tx: f32, ty: f32, ember: bool) {
+    pub(crate) fn cast_fireball(&mut self, tx: f32, ty: f32, ember: bool) {
         let p = &mut self.p;
+        let fb_rank = p.skills.rank(crate::skills::Skill::Fireball);
         let (len, speed, life) = if ember { (EMBER_CAST_TIME, EMBER_SPEED, 0.7) } else { (CAST_TIME, FIREBALL_SPEED, 1.1) };
         if !ember {
-            p.mana -= FIREBALL_COST;
+            p.mana -= crate::skills::fireball_mana(fb_rank);
         }
         p.cast_cd = len;
         p.cast_t = len;
@@ -1245,7 +1327,8 @@ impl Game {
         let (ux, uy) = (dx / l, dy / l);
         let (x, y) = (p.x + ux * 0.45, p.y + uy * 0.45);
         let power = p.power;
-        let dmg = if ember { self.rng.rf(3.0, 5.0) } else { self.rng.rf(9.0, 15.0) } * power;
+        let (lo, hi) = crate::skills::fireball_dmg(fb_rank);
+        let dmg = if ember { self.rng.rf(3.0, 5.0) } else { self.rng.rf(lo, hi) } * power;
         self.balls.push(Fireball { x, y, vx: ux * speed, vy: uy * speed, life, dmg, ember });
         if ember {
             self.stats.embers += 1;
@@ -1546,6 +1629,7 @@ impl Game {
         while self.p.xp >= xp_to_next(self.p.clvl) {
             self.p.xp -= xp_to_next(self.p.clvl);
             self.p.clvl += 1;
+            self.p.skills.points += 1;
             self.p.max_hp += 8.0;
             self.p.max_mana += 4.0;
             self.p.power *= 1.07;
@@ -1869,6 +1953,98 @@ mod tests {
         assert_eq!(g.level, LevelId::Overworld);
         assert!(g.in_safe(g.p.x, g.p.y));
         assert_eq!(g.p.gold, 90);
+    }
+
+    /// A quiet dungeon with one zombie placed relative to the player.
+    fn with_zombie(dx: f32, dy: f32) -> Game {
+        let mut g = quiet_game();
+        let mut m = Mob::new(Kind::Zombie, g.p.x + dx, g.p.y + dy, 1.0, &mut g.rng);
+        m.hp = 1000.0;
+        m.max_hp = 1000.0;
+        g.mobs.push(m);
+        g
+    }
+
+    #[test]
+    fn inferno_burns_what_is_in_front() {
+        use crate::skills::Skill;
+        let mut g = with_zombie(1.5, 0.0);
+        let mut behind = Mob::new(Kind::Zombie, g.p.x - 1.5, g.p.y, 1.0, &mut g.rng);
+        behind.hp = 1000.0;
+        g.mobs.push(behind);
+        g.p.skills.rank[Skill::Inferno as usize] = 1;
+        g.p.skills.primary = Skill::Inferno;
+        g.p.mana = 50.0;
+        let (zx, zy) = (g.mobs[0].x, g.mobs[0].y);
+        for _ in 0..60 {
+            // Aim with the right stick toward the zombie's side of the screen.
+            let (sx, sy) = crate::iso::to_screen(zx - g.p.x, zy - g.p.y);
+            let l = (sx * sx + sy * sy).sqrt();
+            g.mobs[0].x = zx;
+            g.mobs[0].y = zy;
+            g.mobs[0].state = MobState::Idle;
+            g.update(&Input { cast: true, aim_x: sx / l, aim_y: sy / l, ..Input::default() });
+        }
+        assert!(g.mobs[0].hp < 1000.0 - 10.0, "front zombie hp {}", g.mobs[0].hp);
+        assert!(g.mobs[1].hp >= 1000.0 - 0.01, "the one behind is untouched");
+        assert!(g.p.mana < 50.0 - 5.0, "inferno drains mana");
+    }
+
+    #[test]
+    fn fire_nova_hits_and_hurls_back() {
+        use crate::skills::Skill;
+        let mut g = with_zombie(1.2, 0.0);
+        g.p.skills.rank[Skill::FireNova as usize] = 1;
+        g.p.skills.secondary = Skill::FireNova;
+        g.p.mana = 50.0;
+        let d0 = ((g.mobs[0].x - g.p.x).powi(2) + (g.mobs[0].y - g.p.y).powi(2)).sqrt();
+        g.update(&Input { cast2: true, ..Input::default() });
+        let d1 = ((g.mobs[0].x - g.p.x).powi(2) + (g.mobs[0].y - g.p.y).powi(2)).sqrt();
+        assert!(g.mobs[0].hp < 1000.0, "nova hit");
+        assert!(d1 > d0 + 0.3, "knocked back {d0} -> {d1}");
+        assert!(g.p.mana < 45.0);
+    }
+
+    #[test]
+    fn warmth_speeds_up_mana_and_points_come_from_levels_and_seals() {
+        use crate::skills::Skill;
+        let regen = |warmth: u8| {
+            let mut g = quiet_game();
+            g.p.skills.rank[Skill::Warmth as usize] = warmth;
+            g.p.mana = 0.0;
+            for _ in 0..60 {
+                g.update(&Input::default());
+            }
+            g.p.mana
+        };
+        assert!(regen(3) > regen(0) * 1.4);
+        let mut g = quiet_game();
+        let pts = g.p.skills.points;
+        g.gain_xp(xp_to_next(1) + 1.0);
+        assert_eq!(g.p.skills.points, pts + 1);
+        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Seal(0), t: 1.0 });
+        g.update(&Input::default());
+        assert_eq!(g.p.skills.points, pts + 2);
+    }
+
+    #[test]
+    fn skill_tree_learns_and_aldric_respecs() {
+        use crate::skills::Skill;
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        g.update(&Input { skills: true, ..Input::default() });
+        assert!(g.tree.is_some());
+        g.tree.as_mut().unwrap().sel = Skill::Inferno as usize;
+        g.update(&Input { confirm: true, ..Input::default() });
+        assert_eq!(g.p.skills.rank(Skill::Inferno), 1);
+        assert_eq!(g.p.skills.secondary, Skill::Inferno, "new skill goes in the secondary slot");
+        g.update(&Input { skills: true, ..Input::default() });
+        assert!(g.tree.is_none());
+        g.p.gold = 500;
+        assert!(g.debug_talk(Role::Healer));
+        g.update(&Input { confirm: true, ..Input::default() }); // first option: forget skills
+        assert_eq!(g.p.skills.rank(Skill::Inferno), 0);
+        assert_eq!(g.p.skills.points, 1);
+        assert!(g.p.gold < 500);
     }
 
     #[test]

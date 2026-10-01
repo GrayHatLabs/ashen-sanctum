@@ -36,7 +36,7 @@ pub fn to_text(g: &Game) -> String {
         q.stage,
         seals,
         g.kills
-    )
+    ) + &p.skills.save_text()
 }
 
 /// Applies a saved character to a freshly created game. Returns false on a bad file.
@@ -66,6 +66,12 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
         }
     }
     g.kills = num("kills").unwrap_or(0.0) as u32;
+    // Older saves have no skills: hand out the points they would have earned.
+    g.p.skills = crate::skills::Skills::load_text(text).unwrap_or_else(|| {
+        let mut sk = crate::skills::Skills::default();
+        sk.points = g.p.clvl + g.quest.seal_count() as u32;
+        sk
+    });
     true
 }
 

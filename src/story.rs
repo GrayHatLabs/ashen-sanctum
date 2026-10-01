@@ -83,6 +83,8 @@ pub enum Act {
     Next,
     Close,
     Buy(Ware),
+    /// Reset skill points (Brother Aldric), for this much gold.
+    Respec(i32),
 }
 
 pub struct Dialog {

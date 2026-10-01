@@ -275,6 +275,17 @@ impl Game {
                 ShotKind::Arrow => {}
             }
         }
+        for n in &self.novas {
+            let k = (n.t / crate::skills::NOVA_TIME).min(1.0);
+            let fade = 1.0 - ((n.t - crate::skills::NOVA_TIME * 0.7) / 0.3).clamp(0.0, 1.0);
+            let r = n.r * (0.25 + 0.75 * k);
+            let steps = (r * 18.0) as i32 + 12;
+            for i in 0..steps {
+                let a = i as f32 / steps as f32 * std::f32::consts::TAU;
+                let (sx, sy) = to_scr(n.x + a.cos() * r, n.y + a.sin() * r);
+                scr.glow(sx, sy - 6, 10.0, rgb(0xff6010), 0.9 * fade);
+            }
+        }
         for l in &self.lights {
             let (sx, sy) = to_scr(l.x, l.y);
             let k = l.life / l.max;
@@ -353,11 +364,12 @@ impl Game {
         if self.show_map {
             self.draw_map(scr);
         }
-        self.draw_hud(scr);
+        self.hud_skill_rects = self.draw_hud(scr);
         self.dlg_rects.clear();
         if self.dialog.is_some() {
             self.draw_dialog(scr);
         }
+        self.draw_tree(scr);
         self.draw_overlays(scr);
     }
 
@@ -529,7 +541,8 @@ impl Game {
         self.blit_char(scr, name, anim, (sx, sy), fx, m.moving);
     }
 
-    fn draw_hud(&self, scr: &mut Screen) {
+    /// Draws the HUD; returns the clickable skill button rectangles.
+    fn draw_hud(&self, scr: &mut Screen) -> Vec<(i32, i32, i32, i32)> {
         let (w, h) = (scr.w, self.view_h);
         let top = h - HUD_H;
         for y in top..h {
@@ -547,19 +560,36 @@ impl Game {
         globe(scr, w - 34, gy, 26, self.p.mana / self.p.max_mana, rgb(0x1830b0), rgb(0x6090ff));
         scr.text(&format!("{}/{}", self.p.hp.ceil() as i32, self.p.max_hp as i32), 34, gy - 4, WHITE, Align::Center, 1);
         scr.text(&format!("{}/{}", self.p.mana.floor() as i32, self.p.max_mana as i32), w - 34, gy - 4, WHITE, Align::Center, 1);
-        // Skill slot.
+        // Skill slots: primary (left click / A) and secondary (right click / X), like D2.
         let ix = w / 2 - 12;
         let iy = top + 8;
-        scr.fill(ix - 2, iy - 2, 28, 28, rgb(0x5a4a38));
-        scr.blit(&self.icon, ix, iy, Fx::default());
-        if self.p.mana < FIREBALL_COST {
-            scr.blend(ix, iy, 24, 24, rgb(0x000040), 0.6);
-            scr.text("EMBER", w / 2, iy + 28, rgb(0xff9050), Align::Center, 1);
-        } else {
-            scr.text("FIREBALL", w / 2, iy + 28, rgb(0xd8b878), Align::Center, 1);
+        let mut skill_rects = vec![];
+        for (k, s) in [self.p.skills.primary, self.p.skills.secondary].into_iter().enumerate() {
+            let sx = ix - 24 + k as i32 * 32;
+            scr.fill(sx - 2, iy - 2, 28, 28, rgb(0x5a4a38));
+            scr.blit(&crate::sprites::skill_icon(s), sx, iy, Fx::default());
+            let r = self.p.skills.rank(s);
+            if self.p.mana < crate::skills::mana_cost(s, r) {
+                scr.blend(sx, iy, 24, 24, rgb(0x000040), 0.6);
+            }
+            scr.text(["L", "R"][k], sx + 1, iy + 1, rgb(0xd8c090), Align::Left, 1);
+            skill_rects.push((sx - 2, iy - 2, 28, 28));
+        }
+        let out = self.p.mana < crate::skills::mana_cost(self.p.skills.primary, self.p.skills.rank(self.p.skills.primary));
+        if out {
+            scr.text("EMBER", ix + 4, iy + 28, rgb(0xff9050), Align::Center, 1);
+        }
+        // Unspent skill points: a pulsing button (opens the tree, like D2's level-up button).
+        if self.p.skills.points > 0 {
+            let bx = ix - 46;
+            let pulse = (self.tick / 15) % 2 == 0;
+            scr.fill(bx, iy + 2, 18, 18, if pulse { rgb(0xd8a048) } else { rgb(0x8a6020) });
+            scr.text("+", bx + 6, iy + 7, BLACK, Align::Left, 1);
+            skill_rects.push((bx, iy + 2, 18, 18));
         }
         // Run / walk button (D2 style).
         let rx = ix + 40;
+        let _ = FIREBALL_COST;
         scr.fill(rx - 2, iy - 2, 28, 28, rgb(0x5a4a38));
         let lit = self.p.running && !self.p.winded;
         scr.fill(rx, iy, 24, 24, if lit { rgb(0x5a3a10) } else { rgb(0x1a1410) });
@@ -574,7 +604,7 @@ impl Game {
         let label = if self.p.winded { "TIRED" } else { "R/B" };
         scr.text(label, rx + 12, iy + 28, if self.p.winded { col } else { rgb(0x908070) }, Align::Center, 1);
         // Stamina and food bars.
-        let (bar_x, bar_w) = (156, 130);
+        let (bar_x, bar_w) = (156, 100);
         let st = self.p.stamina / MAX_STAMINA;
         let st_col = if self.p.winded { rgb(0xa03020) } else { rgb(0xd8b020) };
         scr.text("STAMINA", bar_x, top + 7, rgb(0xb0a090), Align::Left, 1);
@@ -641,10 +671,11 @@ impl Game {
                 scr.text("HOLLOWMERE, ON THE EDGE OF THE ASHLANDS", w / 2, top / 2 - 30, mix(BLACK, rgb(0xb0a090), a), Align::Center, 1);
                 let hint = mix(BLACK, rgb(0x8a7a68), a);
                 scr.text("CLICK PEOPLE (OR PRESS A / F NEAR THEM) TO TALK. FIND ELDER MAREN BY THE FIRE.", w / 2, top - 46, hint, Align::Center, 1);
-                scr.text("LEFT CLICK: MOVE   RIGHT CLICK: FIREBALL   R: RUN / WALK   Q / E: POTIONS   TAB: MAP", w / 2, top - 34, hint, Align::Center, 1);
-                scr.text("PAD: LEFT STICK MOVE   RIGHT STICK OR A: FIREBALL   B: RUN / WALK   SELECT: MAP", w / 2, top - 22, hint, Align::Center, 1);
+                scr.text("LEFT CLICK: MOVE   RIGHT CLICK: SKILL   K: SKILL TREE   R: RUN   Q / E: POTIONS   TAB: MAP", w / 2, top - 34, hint, Align::Center, 1);
+                scr.text("PAD: LEFT STICK MOVE   A / X: SKILLS   B: RUN / WALK   SELECT: MAP (HOLD: SKILL TREE)", w / 2, top - 22, hint, Align::Center, 1);
             }
         }
+        skill_rects
     }
 
     fn draw_dialog(&mut self, scr: &mut Screen) {

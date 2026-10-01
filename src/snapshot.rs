@@ -236,6 +236,40 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
     g.debug_kill_boss();
     idle(&mut g, 60 * 6);
     save(&mut g, scr, "victory");
+    // Skills: the tree, Inferno into a pack, Fire Nova.
+    {
+        use crate::skills::Skill;
+        let mut g = Game::new(7, h);
+        g.debug_goto(LevelId::Dungeon(0, 0));
+        idle(&mut g, 200);
+        g.p.clvl = 6;
+        g.p.skills.points = 3;
+        g.update(&Input { skills: true, ..Input::default() });
+        g.tree.as_mut().unwrap().sel = Skill::Inferno as usize;
+        save(&mut g, scr, "skills_tree");
+        g.tree = None;
+        g.p.skills.rank[Skill::Inferno as usize] = 3;
+        g.p.skills.rank[Skill::FireNova as usize] = 2;
+        g.p.skills.primary = Skill::Inferno;
+        g.p.skills.secondary = Skill::FireNova;
+        g.p.mana = 50.0;
+        if let Some((x, y)) = g.bot_target().map(|t| (t.0, t.1)) {
+            let (px, py) = (g.p.x, g.p.y);
+            let _ = (px, py);
+            g.debug_place_near(x, y, 2.2);
+        }
+        for _ in 0..30 {
+            let (sx, sy) = g.bot_target().map(|t| crate::iso::to_screen(t.0 - g.p.x, t.1 - g.p.y)).unwrap_or((1.0, 0.0));
+            let l = (sx * sx + sy * sy).sqrt().max(0.01);
+            g.update(&Input { cast: true, aim_x: sx / l, aim_y: sy / l, ..Input::default() });
+            g.sfx.clear();
+        }
+        save(&mut g, scr, "skills_inferno");
+        g.p.mana = 50.0;
+        g.update(&Input { cast2: true, ..Input::default() });
+        idle(&mut g, 10);
+        save(&mut g, scr, "skills_nova");
+    }
     // HUD details: out of mana (EMBER), hungry, low stamina, food on the floor.
     let mut g = Game::new(7, h);
     g.debug_goto(LevelId::Dungeon(0, 0));

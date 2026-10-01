@@ -55,6 +55,17 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Bosses: Bone Warden (summons), Plague Warden (poison pools), Hex Warden (3-bolt volleys, blink, archer adds), Ash King (bolt spreads, ash nova, enrage + imps) | H S | Stand-in art (scaled/tinted) until their PixelLab sheets land |
 | XP / character levels, seal power-ups, quest log, area names, boss bar, death -> wake in town (-10% gold), victory screen | H S | |
 
+## Fire skills, step 1 (2026-10-01)
+
+| Feature | Status | Notes |
+|---|---|---|
+| Skill points (1 per level, 1 per seal), ranks 1-10, tier gates, prerequisites | H | Unit tests: learning rules, save/load |
+| Two slots (L primary / R secondary), 1-4 and R1 to pick, HUD slots + points button | H S | |
+| Skill tree screen (K / hold SELECT / click the HUD); world pauses while open | H S | Keys, pad and mouse |
+| Inferno (channelled cone), Fire Nova (ring + knockback), Warmth (passive regen) | H S | Unit tests for each |
+| Fireball scales with its rank; Aldric respec for 50 x char level gold | H | Unit test |
+| Old saves get the points they would have earned | H | |
+
 ## Art status
 
 - Complete for the MVP: 3 characters x 8 rotations, 7 animations, 2 floor tiles, 1 wall block.
