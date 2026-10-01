@@ -11,7 +11,7 @@ from PIL import Image
 HERE = Path(__file__).resolve().parent
 ART = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(r"D:\projects\AshenSanctum-art")
 OUT = HERE / "art"
-CHARS = ["mage", "zombie", "skeleton", "wolf", "imp", "archer", "boss_bone", "boss_plague", "boss_hex", "boss_ashking",
+CHARS = ["mage", "zombie", "skeleton", "wolf", "goblin", "archer", "boss_bone", "boss_plague", "boss_hex", "boss_ashking",
          "npc_elder", "npc_merchant", "npc_healer", "npc_guard", "npc_villager"]
 
 

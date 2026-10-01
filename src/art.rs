@@ -244,13 +244,11 @@ impl Art {
     /// while its own art hasn't been generated yet.
     pub fn char_art(&self, name: &str) -> (&CharArt, f32, u32, f32) {
         if self.has_char(name) {
-            // The Plague Warden is meant to be enormous.
-            let scale = if name == "boss_plague" { 1.3 } else { 1.0 };
-            return (self.char(name), scale, 0, 0.0);
+            return (self.char(name), 1.0, 0, 0.0);
         }
         let (base, scale, tint, a) = match name {
             "wolf" => ("zombie", 0.8, 0x606060, 0.5),
-            "imp" => ("zombie", 0.7, 0xc03020, 0.5),
+            "goblin" => ("zombie", 0.7, 0x40a030, 0.5),
             "archer" => ("skeleton", 1.0, 0x303050, 0.3),
             "npc_elder" => ("mage", 0.95, 0x406030, 0.5),
             "npc_merchant" => ("mage", 1.0, 0x805030, 0.5),

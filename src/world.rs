@@ -65,7 +65,7 @@ pub const DUNGEONS: [DungeonDef; 4] = [
         floors: 2,
         theme: Theme::Warrens,
         boss: Kind::PlagueWarden,
-        monsters: &[Kind::Zombie, Kind::Imp, Kind::Wolf],
+        monsters: &[Kind::Zombie, Kind::Goblin, Kind::Wolf],
         tier: 1.6,
         entrance: (94, 92),
     },
@@ -74,7 +74,7 @@ pub const DUNGEONS: [DungeonDef; 4] = [
         floors: 3,
         theme: Theme::Catacombs,
         boss: Kind::HexWarden,
-        monsters: &[Kind::Archer, Kind::Skeleton, Kind::Imp],
+        monsters: &[Kind::Archer, Kind::Skeleton, Kind::Goblin],
         tier: 2.3,
         entrance: (92, 22),
     },
@@ -83,7 +83,7 @@ pub const DUNGEONS: [DungeonDef; 4] = [
         floors: 3,
         theme: Theme::Sanctum,
         boss: Kind::AshKing,
-        monsters: &[Kind::Imp, Kind::Skeleton, Kind::Archer, Kind::Zombie],
+        monsters: &[Kind::Goblin, Kind::Skeleton, Kind::Archer, Kind::Zombie],
         tier: 3.2,
         entrance: (22, 20),
     },
@@ -421,7 +421,7 @@ pub fn overworld(seed: u64) -> Level {
             continue;
         }
         let tier = if far < 34.0 { 0.8 } else { 1.1 };
-        let kinds: &[Kind] = if far < 34.0 { &[Kind::Wolf, Kind::Imp] } else { &[Kind::Wolf, Kind::Imp, Kind::Zombie, Kind::Skeleton] };
+        let kinds: &[Kind] = if far < 34.0 { &[Kind::Wolf, Kind::Goblin] } else { &[Kind::Wolf, Kind::Goblin, Kind::Zombie, Kind::Skeleton] };
         let kind = kinds[rng.range(0, kinds.len() as i32) as usize];
         let n = rng.range(3, 6);
         for _ in 0..n {

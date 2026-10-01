@@ -101,13 +101,13 @@
   ],
   "monsters": [
     {
-      "kind": "imp",
+      "kind": "goblin",
       "x": 28.5,
       "y": 10.5,
       "tier": 3.2
     },
     {
-      "kind": "imp",
+      "kind": "goblin",
       "x": 28.5,
       "y": 12.5,
       "tier": 3.2
@@ -161,7 +161,7 @@
       "tier": 3.2
     },
     {
-      "kind": "imp",
+      "kind": "goblin",
       "x": 27.5,
       "y": 47.5,
       "tier": 3.2
@@ -173,25 +173,25 @@
       "tier": 3.2
     },
     {
-      "kind": "imp",
+      "kind": "goblin",
       "x": 42.5,
       "y": 44.5,
       "tier": 3.2
     },
     {
-      "kind": "imp",
+      "kind": "goblin",
       "x": 44.5,
       "y": 46.5,
       "tier": 3.2
     },
     {
-      "kind": "imp",
+      "kind": "goblin",
       "x": 44.5,
       "y": 47.5,
       "tier": 3.2
     },
     {
-      "kind": "imp",
+      "kind": "goblin",
       "x": 37.5,
       "y": 47.5,
       "tier": 3.2

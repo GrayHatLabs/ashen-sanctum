@@ -22,7 +22,7 @@ take back their Seals, unseal the Sanctum and end the Ash King.
   - **Gerta** (market stall): healing and mana potions, bread and roasts for gold.
   - **Brother Aldric**: heals you fully whenever you talk to him.
   - **Captain Rolf** and the villagers: hints.
-- **The Ashlands** (overworld): forests, roads, roaming wolves, imps and undead, wild food.
+- **The Ashlands** (overworld): forests, roads, roaming wolves, goblins and undead, wild food.
 - **Four dungeons**, each with its own look, floors joined by stairs, and a boss at the bottom:
   1. **The Bone Crypt** (southwest, 2 floors): the **Bone Warden** raises skeletons.
   2. **The Rotting Warrens** (southeast, 2 floors): the **Plague Warden** spits poison pools.
@@ -39,7 +39,7 @@ take back their Seals, unseal the Sanctum and end the Ash King.
 - **Food**: the food bar slowly empties, faster while running. When it's empty you're **starving**: you lose life, don't regenerate it, and stamina refills slowly. Apples, bread and roasts lie around and drop from monsters (walk over them to eat), and Gerta sells them.
 - **Experience**: kills level you up (more life, mana and fireball damage).
 - **Monsters**: zombies are slow and hit hard, skeletons are fast and fragile, wolves hunt in fast
-  packs, imps panic and flee when one of their own dies, and skeleton archers keep their distance.
+  packs, goblins panic and flee when one of their own dies, and skeleton archers keep their distance.
   Bosses telegraph their big attacks with markers on the floor: step out of them.
 
 ## Controls

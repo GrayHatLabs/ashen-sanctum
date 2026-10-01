@@ -182,7 +182,7 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
             let line = if q.stage == 0 {
                 "HALT- OH, A TRAVELLER. ELDER MAREN WILL WANT TO SEE YOU. SHE'S BY THE FIRE."
             } else if q.seal_count() == 0 {
-                "WOLVES AND IMPS ROAM THE WILDS. STAY ON THE ROADS. THEY SAY THE IMPS FLEE WHEN THEIR KIN FALL. COWARDS, THE LOT."
+                "WOLVES AND GOBLINS ROAM THE WILDS. STAY ON THE ROADS. THEY SAY GOBLINS FLEE WHEN THEIR KIN FALL. COWARDS, THE LOT."
             } else {
                 "THEY SAY YOU FELLED A WARDEN. THE WHOLE TOWN IS TALKING. KEEP IT UP."
             };

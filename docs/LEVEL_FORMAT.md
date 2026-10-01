@@ -73,7 +73,7 @@ scripts/dev-build.sh run --level bone_crypt_floor2
   (dungeon entrance buildings). Stairs are drawn automatically for `up` / `down` portals.
 - **portals**: tile centres (`x.5`). Kinds: `up`, `down`, `entrance0` ... `entrance3`
   (overworld doors to the Crypt, Warrens, Catacombs, Sanctum), `townportal`.
-- **monsters**: `zombie`, `skeleton`, `wolf`, `imp`, `archer`, `boss_bone`, `boss_plague`,
+- **monsters**: `zombie`, `skeleton`, `wolf`, `goblin` (old files may say `imp`), `archer`, `boss_bone`, `boss_plague`,
   `boss_hex`, `boss_ashking`.
 - **npcs**: `elder`, `merchant`, `healer`, `guard`, `villager0` ... `villager3`.
 - **items**: `apple`, `bread`, `roast`, `health_potion`, `mana_potion`, `gold<N>` (e.g. `gold25`).

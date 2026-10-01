@@ -1485,10 +1485,10 @@ impl Game {
             self.decals.push(Decal { x, y, r: if boss { 1.0 } else { 0.4 }, col: rgb(0x301008), a: 0.5 });
         }
         self.gain_xp(xp);
-        // Imps panic when one of their own falls (like D2's Fallen).
-        if kind == Kind::Imp {
+        // Goblins panic when one of their own falls (like D2's Fallen).
+        if kind == Kind::Goblin {
             for m in self.mobs.iter_mut() {
-                if m.kind == Kind::Imp && m.alive() && (m.x - x).powi(2) + (m.y - y).powi(2) < 36.0 {
+                if m.kind == Kind::Goblin && m.alive() && (m.x - x).powi(2) + (m.y - y).powi(2) < 36.0 {
                     m.flee = 2.5;
                 }
             }

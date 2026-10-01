@@ -9,7 +9,7 @@ pub enum Kind {
     Zombie,
     Skeleton,
     Wolf,
-    Imp,
+    Goblin,
     Archer,
     BoneWarden,
     PlagueWarden,
@@ -54,7 +54,7 @@ pub fn def(k: Kind) -> Def {
         Kind::Zombie => d("zombie", "ROTTING ZOMBIE", 34.0, 1.25, (5.0, 9.0), 0.55, 1.5, 14.0),
         Kind::Skeleton => d("skeleton", "RISEN SKELETON", 20.0, 2.3, (3.0, 6.0), 0.35, 1.0, 10.0),
         Kind::Wolf => Def { r: 0.3, ..d("wolf", "DIRE WOLF", 16.0, 3.6, (3.0, 5.0), 0.3, 0.9, 9.0) },
-        Kind::Imp => Def { r: 0.26, ..d("imp", "ASHEN IMP", 12.0, 2.8, (2.0, 5.0), 0.3, 0.9, 7.0) },
+        Kind::Goblin => Def { r: 0.26, ..d("goblin", "GOBLIN", 12.0, 2.8, (2.0, 5.0), 0.3, 0.9, 7.0) },
         Kind::Archer => Def { ranged: true, ..d("archer", "SKELETON ARCHER", 16.0, 1.9, (4.0, 7.0), 0.55, 1.7, 13.0) },
         Kind::BoneWarden => Def {
             r: 0.55,
@@ -118,7 +118,7 @@ pub struct Mob {
     pub path: Vec<(f32, f32)>,
     pub repath: f32,
     pub wander: (f32, f32, f32),
-    /// Imps run away from you for this long after a packmate dies.
+    /// Goblins run away from you for this long after a packmate dies.
     pub flee: f32,
     /// Boss ability timers.
     pub special: f32,
@@ -669,7 +669,7 @@ fn boss_specials(
                 });
                 texts.push((m.x, m.y, "BURN!"));
                 if m.enraged && summons < 8 {
-                    around(rng, 4, Kind::Imp, m.tier, spawns);
+                    around(rng, 4, Kind::Goblin, m.tier, spawns);
                 }
             }
         }

@@ -140,7 +140,7 @@ const KINDS: [Kind; 9] = [
     Kind::Zombie,
     Kind::Skeleton,
     Kind::Wolf,
-    Kind::Imp,
+    Kind::Goblin,
     Kind::Archer,
     Kind::BoneWarden,
     Kind::PlagueWarden,
@@ -331,7 +331,9 @@ pub fn from_file(f: &LevelFile, seed: u64) -> Result<Level, String> {
         }
     }
     for m in &f.monsters {
-        match KINDS.iter().find(|k| def(**k).art == m.kind) {
+        // "imp" is the old name for goblins.
+        let name = if m.kind == "imp" { "goblin" } else { m.kind.as_str() };
+        match KINDS.iter().find(|k| def(**k).art == name) {
             Some(&kind) => {
                 let boss = def(kind).boss;
                 // Bosses are scaled like the generator's (half the floor tier, plus half).
