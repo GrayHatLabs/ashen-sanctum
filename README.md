@@ -47,6 +47,12 @@ take back their Seals, unseal the Sanctum and end the Ash King.
   - **Blaze** (char level 6, needs Warmth): for a while you leave burning ground behind you as you move.
   - **Combust** (char level 12, needs Fire Wall): every burning foe in sight explodes; the longer it has
     burned, the bigger the blast (Fire Wall ranks make it stronger).
+  - **Meteor** (char level 12, needs Fire Nova): a shadow marks the spot, then a meteor crashes down and
+    leaves the ground burning (Meteor ranks also boost Fireball).
+  - **Fire Mastery** (char level 12, passive, needs Blaze): all fire hits harder and burns longer; lengthens Blaze.
+  - **Hydra** (char level 18, needs Combust, 12 s cooldown): a fire hydra spits fireballs at nearby foes for 10 s.
+  - **Ash Phoenix** (char level 18, needs Meteor, 30 s cooldown): fiery wings; you move faster and skills
+    cost no mana, then you explode in flame.
   Out of mana, any skill fires the free Ember Bolt. Brother Aldric resets your skills for gold.
 - **Monsters**: zombies are slow and hit hard, skeletons are fast and fragile, wolves hunt in fast
   packs, goblins panic and flee when one of their own dies, and skeleton archers keep their distance.

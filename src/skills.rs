@@ -1,6 +1,6 @@
 //! Fire skills: D2-style skill points, ranks, two skill slots, and the skill tree screen.
-//! See docs/SKILLS_PLAN.md for the full plan (steps 1-2: Fireball, Inferno, Warmth, Fire Nova,
-//! Fire Wall, Blaze, Combust).
+//! The whole plan in docs/SKILLS_PLAN.md is built: Fireball, Inferno, Warmth, Fire Nova, Fire Wall,
+//! Blaze, Combust, Meteor, Fire Mastery, Hydra and Ash Phoenix.
 use crate::game::{move_circle, Game, Input, Light, PKind, Particle, Sfx, CAST_TIME, DT, HUD_H};
 use crate::gfx::{rgb, Align, Fx, Screen, BLACK};
 use crate::mobs::MobState;
@@ -14,9 +14,13 @@ pub enum Skill {
     FireWall,
     Blaze,
     Combust,
+    Meteor,
+    Mastery,
+    Hydra,
+    Phoenix,
 }
 
-pub const ALL: [Skill; 7] = [
+pub const ALL: [Skill; 11] = [
     Skill::Fireball,
     Skill::Inferno,
     Skill::Warmth,
@@ -24,9 +28,13 @@ pub const ALL: [Skill; 7] = [
     Skill::FireWall,
     Skill::Blaze,
     Skill::Combust,
+    Skill::Meteor,
+    Skill::Mastery,
+    Skill::Hydra,
+    Skill::Phoenix,
 ];
 /// Character level needed for each tree row.
-pub const TIER_LEVELS: [u32; 3] = [1, 6, 12];
+pub const TIER_LEVELS: [u32; 4] = [1, 6, 12, 18];
 pub const MAX_RANK: u8 = 10;
 
 pub struct Def {
@@ -49,6 +57,10 @@ pub fn def(s: Skill) -> Def {
         Skill::FireWall => Def { name: "FIRE WALL", key: "firewall", level: 6, prereq: Some(Skill::Fireball), passive: false, cell: (1, 0) },
         Skill::Blaze => Def { name: "BLAZE", key: "blaze", level: 6, prereq: Some(Skill::Warmth), passive: false, cell: (1, 2) },
         Skill::Combust => Def { name: "COMBUST", key: "combust", level: 12, prereq: Some(Skill::FireWall), passive: false, cell: (2, 0) },
+        Skill::Meteor => Def { name: "METEOR", key: "meteor", level: 12, prereq: Some(Skill::FireNova), passive: false, cell: (2, 1) },
+        Skill::Mastery => Def { name: "FIRE MASTERY", key: "mastery", level: 12, prereq: Some(Skill::Blaze), passive: true, cell: (2, 2) },
+        Skill::Hydra => Def { name: "HYDRA", key: "hydra", level: 18, prereq: Some(Skill::Combust), passive: false, cell: (3, 0) },
+        Skill::Phoenix => Def { name: "ASH PHOENIX", key: "phoenix", level: 18, prereq: Some(Skill::Meteor), passive: false, cell: (3, 1) },
     }
 }
 
@@ -61,6 +73,8 @@ pub struct Skills {
     pub primary: Skill,
     /// Right-click / pad X (1-4 or R1 to change).
     pub secondary: Skill,
+    /// Seconds left before each skill can be cast again (Hydra, Ash Phoenix).
+    pub cooldown: [f32; ALL.len()],
 }
 
 impl Default for Skills {
@@ -68,7 +82,7 @@ impl Default for Skills {
         // You start knowing Fireball, with one point to spend.
         let mut rank = [0; ALL.len()];
         rank[Skill::Fireball as usize] = 1;
-        Skills { rank, points: 1, primary: Skill::Fireball, secondary: Skill::Fireball }
+        Skills { rank, points: 1, primary: Skill::Fireball, secondary: Skill::Fireball, cooldown: [0.0; ALL.len()] }
     }
 }
 
@@ -118,6 +132,16 @@ impl Skills {
         spent
     }
 
+    /// Fire damage multiplier from Fire Mastery.
+    pub fn fire_mult(&self) -> f32 {
+        1.0 + 0.08 * self.rank(Skill::Mastery) as f32
+    }
+
+    /// Burn duration multiplier from Fire Mastery.
+    pub fn burn_mult(&self) -> f32 {
+        1.0 + 0.1 * self.rank(Skill::Mastery) as f32
+    }
+
     /// Mana regeneration multiplier from Warmth.
     pub fn regen_mult(&self) -> f32 {
         match self.rank(Skill::Warmth) {
@@ -134,7 +158,13 @@ impl Skills {
     pub fn load_text(text: &str) -> Option<Skills> {
         let get = |k: &str| text.lines().find_map(|l| l.strip_prefix(k).and_then(|r| r.strip_prefix('='))).map(str::trim);
         let by_key = |k: &str| ALL.iter().copied().find(|s| def(*s).key == k);
-        let mut sk = Skills { rank: [0; ALL.len()], points: get("points")?.parse().ok()?, primary: Skill::Fireball, secondary: Skill::Fireball };
+        let mut sk = Skills {
+            rank: [0; ALL.len()],
+            points: get("points")?.parse().ok()?,
+            primary: Skill::Fireball,
+            secondary: Skill::Fireball,
+            cooldown: [0.0; ALL.len()],
+        };
         for part in get("skills")?.split(',') {
             let (k, v) = part.split_once(':')?;
             if let (Some(s), Ok(r)) = (by_key(k), v.parse::<u8>()) {
@@ -157,6 +187,39 @@ pub fn fireball_dmg(r: u8) -> (f32, f32) {
     let k = 1.0 + 0.15 * (r.max(1) - 1) as f32;
     (9.0 * k, 15.0 * k)
 }
+/// Meteor ranks boost Fireball by 6% each (synergy).
+pub fn fireball_synergy(meteor_rank: u8) -> f32 {
+    1.0 + 0.06 * meteor_rank as f32
+}
+pub fn meteor_dmg(r: u8) -> f32 {
+    40.0 + 15.0 * (r.max(1) - 1) as f32
+}
+pub fn meteor_radius(r: u8) -> f32 {
+    1.8 + 0.06 * r as f32
+}
+pub fn meteor_mana(r: u8) -> f32 {
+    22.0 + 1.2 * (r.max(1) - 1) as f32
+}
+pub const METEOR_DELAY: f32 = 1.0;
+pub fn hydra_dmg(r: u8) -> f32 {
+    10.0 + 4.0 * (r.max(1) - 1) as f32
+}
+pub fn hydra_mana(r: u8) -> f32 {
+    30.0 + 1.0 * (r.max(1) - 1) as f32
+}
+pub const HYDRA_TIME: f32 = 10.0;
+pub const HYDRA_CD: f32 = 12.0;
+pub fn phoenix_time(r: u8) -> f32 {
+    6.0 + 0.3 * r as f32
+}
+pub fn phoenix_burst(r: u8) -> f32 {
+    60.0 + 20.0 * (r.max(1) - 1) as f32
+}
+pub fn phoenix_mana(r: u8) -> f32 {
+    40.0 + 1.0 * (r.max(1) - 1) as f32
+}
+pub const PHOENIX_CD: f32 = 30.0;
+pub const PHOENIX_RADIUS: f32 = 3.6;
 pub fn fireball_mana(r: u8) -> f32 {
     5.0 + 0.3 * (r.max(1) - 1) as f32
 }
@@ -197,6 +260,10 @@ pub fn blaze_dps(r: u8) -> f32 {
 pub fn blaze_time(r: u8) -> f32 {
     6.0 + 0.5 * r as f32
 }
+/// Fire Mastery lengthens Blaze by half a second per rank (synergy).
+pub fn blaze_time_with(r: u8, mastery: u8) -> f32 {
+    blaze_time(r) + 0.5 * mastery as f32
+}
 pub fn blaze_mana(r: u8) -> f32 {
     12.0 + 0.6 * (r.max(1) - 1) as f32
 }
@@ -224,17 +291,32 @@ pub fn mana_cost(s: Skill, r: u8) -> f32 {
         Skill::FireWall => wall_mana(r),
         Skill::Blaze => blaze_mana(r),
         Skill::Combust => combust_mana(r),
-        Skill::Warmth => 0.0,
+        Skill::Meteor => meteor_mana(r),
+        Skill::Hydra => hydra_mana(r),
+        Skill::Phoenix => phoenix_mana(r),
+        Skill::Warmth | Skill::Mastery => 0.0,
+    }
+}
+
+/// Cooldown after casting (0 = limited only by mana and cast time).
+pub fn cooldown_of(s: Skill) -> f32 {
+    match s {
+        Skill::Hydra => HYDRA_CD,
+        Skill::Phoenix => PHOENIX_CD,
+        _ => 0.0,
     }
 }
 
 /// Description lines for the tree: what it does, and this rank vs the next.
-pub fn describe(s: Skill, r: u8, power: f32, wall_rank: u8) -> Vec<String> {
+pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
+    let wall_rank = sk.rank(Skill::FireWall);
+    let power = power * if s == Skill::Mastery { 1.0 } else { sk.fire_mult() };
     let at = |r: u8| -> String {
         match s {
             Skill::Fireball => {
                 let (a, b) = fireball_dmg(r);
-                format!("{}-{} DAMAGE, {:.0} MANA", (a * power) as i32, (b * power) as i32, fireball_mana(r))
+                let k = power * fireball_synergy(sk.rank(Skill::Meteor));
+                format!("{}-{} DAMAGE, {:.0} MANA", (a * k) as i32, (b * k) as i32, fireball_mana(r))
             }
             Skill::Inferno => format!("{} DAMAGE/SEC, RANGE {:.1}, {:.0} MANA/SEC", (inferno_dps(r) * power) as i32, inferno_range(r), inferno_mana(r)),
             Skill::Warmth => format!("+{:.0}% MANA REGENERATION", (1.3 + 0.12 * (r.max(1) - 1) as f32 - 1.0) * 100.0),
@@ -246,7 +328,32 @@ pub fn describe(s: Skill, r: u8, power: f32, wall_rank: u8) -> Vec<String> {
                 wall_time(r),
                 wall_mana(r)
             ),
-            Skill::Blaze => format!("{} DAMAGE/SEC TRAIL FOR {:.1} SEC, {:.0} MANA", (blaze_dps(r) * power) as i32, blaze_time(r), blaze_mana(r)),
+            Skill::Blaze => format!(
+                "{} DAMAGE/SEC TRAIL FOR {:.1} SEC, {:.0} MANA",
+                (blaze_dps(r) * power) as i32,
+                blaze_time_with(r, sk.rank(Skill::Mastery)),
+                blaze_mana(r)
+            ),
+            Skill::Meteor => format!("{} DAMAGE, RADIUS {:.1}, {:.0} MANA", (meteor_dmg(r) * power) as i32, meteor_radius(r), meteor_mana(r)),
+            Skill::Mastery => format!(
+                "+{}% FIRE DAMAGE, BURNS LAST {}% LONGER",
+                (0.08 * r.max(1) as f32 * 100.0).round() as i32,
+                (0.1 * r.max(1) as f32 * 100.0).round() as i32
+            ),
+            Skill::Hydra => format!(
+                "{} DAMAGE PER BOLT FOR {:.0} SEC, {:.0} MANA, {:.0} SEC COOLDOWN",
+                (hydra_dmg(r) * power) as i32,
+                HYDRA_TIME,
+                hydra_mana(r),
+                HYDRA_CD
+            ),
+            Skill::Phoenix => format!(
+                "{:.1} SEC, {} DAMAGE BURST, {:.0} MANA, {:.0} SEC COOLDOWN",
+                phoenix_time(r),
+                (phoenix_burst(r) * power) as i32,
+                phoenix_mana(r),
+                PHOENIX_CD
+            ),
             Skill::Combust => format!(
                 "{}+ DAMAGE PER BURNING FOE (UP TO 2X), {:.0} MANA",
                 (combust_dmg(r, wall_rank) * power) as i32,
@@ -262,6 +369,10 @@ pub fn describe(s: Skill, r: u8, power: f32, wall_rank: u8) -> Vec<String> {
         Skill::FireWall => "RAISES A LINE OF FLAMES ACROSS THE TARGET SPOT. ANYTHING THAT STANDS IN IT BURNS.",
         Skill::Blaze => "FOR A WHILE YOU LEAVE BURNING GROUND BEHIND YOU AS YOU MOVE. RUN, AND LET THEM FOLLOW.",
         Skill::Combust => "EVERY BURNING FOE IN SIGHT EXPLODES. THE LONGER THEY HAVE BURNED, THE BIGGER THE BLAST. FIRE WALL RANKS ADD 8% EACH.",
+        Skill::Meteor => "A SHADOW FALLS ON THE TARGET, THEN A METEOR CRASHES DOWN AND LEAVES THE GROUND BURNING. METEOR RANKS ADD 6% TO FIREBALL.",
+        Skill::Mastery => "PASSIVE. ALL YOUR FIRE HITS HARDER AND BURNS LONGER. EACH RANK ALSO LENGTHENS BLAZE.",
+        Skill::Hydra => "SUMMONS A FIRE HYDRA THAT SPITS FIREBALLS AT NEARBY FOES.",
+        Skill::Phoenix => "FIERY WINGS: YOU MOVE FASTER AND YOUR SKILLS COST NO MANA. WHEN IT ENDS, YOU EXPLODE IN FLAME.",
     };
     let mut v = vec![what.to_string()];
     if r > 0 {
@@ -290,6 +401,24 @@ pub struct FireWallFx {
     pub life: f32,
     pub dps: f32,
     pub tick: f32,
+}
+
+/// A meteor on its way down: the shadow grows until it lands.
+pub struct MeteorFx {
+    pub x: f32,
+    pub y: f32,
+    pub t: f32,
+    pub r: f32,
+    pub dmg: f32,
+}
+
+/// A fire hydra: a burning turret that spits fireballs.
+pub struct HydraFx {
+    pub x: f32,
+    pub y: f32,
+    pub t: f32,
+    pub shot: f32,
+    pub dmg: f32,
 }
 
 /// A burning patch of ground left by Blaze.
@@ -326,6 +455,19 @@ impl Game {
         if r == 0 || def(s).passive {
             return false;
         }
+        if self.p.skills.cooldown[s as usize] > 0.0 {
+            if self.p.cast_cd <= 0.0 {
+                self.say(format!("{} IS NOT READY ({:.0}S)", def(s).name, self.p.skills.cooldown[s as usize].ceil()));
+                self.p.cast_cd = 0.4;
+            }
+            return true;
+        }
+        // Ash Phoenix: everything is free while it lasts (mana is restored after the cast).
+        let phoenix = self.p.phoenix_t > 0.0;
+        let mana_before = self.p.mana;
+        if phoenix {
+            self.p.mana = self.p.max_mana.max(mana_cost(s, r));
+        }
         // Out of mana: the free Ember Bolt keeps you fighting.
         if self.p.mana < mana_cost(s, r) {
             if self.p.cast_cd <= 0.0 {
@@ -344,9 +486,169 @@ impl Game {
             Skill::FireWall if self.p.cast_cd <= 0.0 => self.fire_wall(tx, ty, r),
             Skill::Blaze if self.p.cast_cd <= 0.0 => self.blaze(r),
             Skill::Combust if self.p.cast_cd <= 0.0 => self.combust(r),
+            Skill::Meteor if self.p.cast_cd <= 0.0 => self.meteor(tx, ty, r),
+            Skill::Hydra if self.p.cast_cd <= 0.0 => self.hydra(tx, ty, r),
+            Skill::Phoenix if self.p.cast_cd <= 0.0 => self.phoenix(r),
             _ => {}
         }
+        if phoenix {
+            self.p.mana = mana_before;
+        }
         true
+    }
+
+    /// Damage multiplier for fire skills: levels, seals and Fire Mastery.
+    pub(crate) fn fire_power(&self) -> f32 {
+        self.p.power * self.p.skills.fire_mult()
+    }
+
+    fn meteor(&mut self, tx: f32, ty: f32, r: u8) {
+        let (px, py) = (self.p.x, self.p.y);
+        let (mut cx, mut cy) = (tx, ty);
+        let (dx, dy) = (cx - px, cy - py);
+        let l = (dx * dx + dy * dy).sqrt();
+        if l > 9.0 {
+            cx = px + dx / l * 9.0;
+            cy = py + dy / l * 9.0;
+        }
+        if !self.d.walkable(cx.floor() as i32, cy.floor() as i32) || !self.d.los(px, py, cx, cy) {
+            self.say("CAN'T CALL A METEOR THERE".into());
+            self.p.cast_cd = 0.3;
+            return;
+        }
+        self.p.mana -= meteor_mana(r);
+        self.cast_pose(0.5);
+        self.meteors.push(MeteorFx { x: cx, y: cy, t: 0.0, r: meteor_radius(r), dmg: meteor_dmg(r) * self.fire_power() });
+        self.sfx.push(Sfx::Cast);
+    }
+
+    fn hydra(&mut self, tx: f32, ty: f32, r: u8) {
+        let (px, py) = (self.p.x, self.p.y);
+        let (dx, dy) = (tx - px, ty - py);
+        let l = (dx * dx + dy * dy).sqrt().max(0.001);
+        // A couple of tiles toward the target, on open floor.
+        let (mut hx, mut hy) = (px + dx / l * 1.6, py + dy / l * 1.6);
+        if self.d.blocked(hx, hy, 0.35) {
+            hx = px;
+            hy = py;
+        }
+        self.p.mana -= hydra_mana(r);
+        self.cast_pose(0.5);
+        self.p.skills.cooldown[Skill::Hydra as usize] = HYDRA_CD;
+        // One hydra at a time: a new one replaces the old.
+        self.hydras.clear();
+        self.hydras.push(HydraFx { x: hx, y: hy, t: 0.0, shot: 0.3, dmg: hydra_dmg(r) * self.fire_power() });
+        self.sfx.push(Sfx::Boom);
+        for _ in 0..24 {
+            self.spray_at(hx, hy, PKind::Fire, 6.0);
+        }
+    }
+
+    fn phoenix(&mut self, r: u8) {
+        self.p.mana -= phoenix_mana(r);
+        self.cast_pose(0.5);
+        self.p.skills.cooldown[Skill::Phoenix as usize] = PHOENIX_CD;
+        self.p.phoenix_t = phoenix_time(r);
+        self.p.phoenix_rank = r;
+        self.sfx.push(Sfx::Descend);
+        self.say("ASH PHOENIX".into());
+        self.lights.push(Light { x: self.p.x, y: self.p.y, r: 220.0, s: 1.2, life: 0.6, max: 0.6 });
+        for _ in 0..40 {
+            self.spray_at(self.p.x, self.p.y, PKind::Fire, 24.0);
+        }
+    }
+
+    /// Meteors landing, hydras shooting, Ash Phoenix ticking down (and its final burst).
+    pub(crate) fn update_big_fire(&mut self) {
+        for c in self.p.skills.cooldown.iter_mut() {
+            *c = (*c - DT).max(0.0);
+        }
+        // Meteors.
+        let mut landed = vec![];
+        for m in self.meteors.iter_mut() {
+            m.t += DT;
+            if m.t >= METEOR_DELAY {
+                landed.push((m.x, m.y, m.r, m.dmg));
+            }
+        }
+        self.meteors.retain(|m| m.t < METEOR_DELAY);
+        for (x, y, r, dmg) in landed {
+            self.blast(x, y, r, dmg, 3.0);
+            self.shake = self.shake.max(0.8);
+            // Burning ground where it struck.
+            let dps = dmg * 0.25;
+            for k in 0..7 {
+                let a = k as f32 / 7.0 * std::f32::consts::TAU;
+                let rr = if k == 0 { 0.0 } else { r * 0.55 };
+                let (px, py) = (x + a.cos() * rr, y + a.sin() * rr);
+                if self.d.walkable(px.floor() as i32, py.floor() as i32) {
+                    self.patches.push(FirePatch { x: px, y: py, t: -1.0, dps });
+                }
+            }
+        }
+        // Hydras.
+        let mut shots = vec![];
+        for h in self.hydras.iter_mut() {
+            h.t += DT;
+            h.shot -= DT;
+            if h.shot <= 0.0 {
+                h.shot = 0.8;
+                shots.push((h.x, h.y, h.dmg));
+            }
+        }
+        self.hydras.retain(|h| h.t < HYDRA_TIME);
+        for (hx, hy, dmg) in shots {
+            let target = self
+                .mobs
+                .iter()
+                .filter(|m| m.alive() && (m.x - hx).powi(2) + (m.y - hy).powi(2) < 64.0 && self.d.los(hx, hy, m.x, m.y))
+                .min_by(|a, b| ((a.x - hx).powi(2) + (a.y - hy).powi(2)).partial_cmp(&((b.x - hx).powi(2) + (b.y - hy).powi(2))).unwrap())
+                .map(|m| (m.x, m.y));
+            if let Some((mx, my)) = target {
+                let (dx, dy) = (mx - hx, my - hy);
+                let l = (dx * dx + dy * dy).sqrt().max(0.01);
+                self.balls.push(crate::game::Fireball { x: hx, y: hy, vx: dx / l * 9.0, vy: dy / l * 9.0, life: 1.0, dmg, ember: false });
+                self.sfx.push(Sfx::Cast);
+            }
+        }
+        // Ash Phoenix.
+        if self.p.phoenix_t > 0.0 {
+            self.p.phoenix_t -= DT;
+            if self.tick % 2 == 0 {
+                let (a, b) = (self.rng.f() - 0.5, self.rng.f());
+                self.parts.push(Particle { x: self.p.x + a * 0.6, y: self.p.y + 0.1, z: 20.0 + b * 20.0, vx: 0.0, vy: 0.0, vz: 25.0, life: 0.6, max: 0.6, kind: PKind::Fire });
+            }
+            if self.p.phoenix_t <= 0.0 {
+                self.p.phoenix_t = 0.0;
+                let dmg = phoenix_burst(self.p.phoenix_rank) * self.fire_power();
+                let (x, y) = (self.p.x, self.p.y);
+                self.novas.push(Nova { x, y, r: PHOENIX_RADIUS, t: 0.0 });
+                self.blast(x, y, PHOENIX_RADIUS, dmg, 2.5);
+                self.shake = self.shake.max(0.9);
+            }
+        }
+    }
+
+    /// A big fire explosion: damages and knocks back everything in radius `r`.
+    fn blast(&mut self, x: f32, y: f32, r: f32, dmg: f32, burn: f32) {
+        self.sfx.push(Sfx::Boom);
+        self.lights.push(Light { x, y, r: 240.0, s: 1.5, life: 0.5, max: 0.5 });
+        self.decals.push(crate::game::Decal { x, y, r: r * 0.7, col: rgb(0x100804), a: 0.6 });
+        for _ in 0..50 {
+            let a = self.rng.f() * std::f32::consts::TAU;
+            let sp = self.rng.rf(1.0, r * 2.5);
+            let (vz, life) = (self.rng.rf(20.0, 90.0), self.rng.rf(0.3, 0.8));
+            self.parts.push(Particle { x, y, z: 10.0, vx: a.cos() * sp, vy: a.sin() * sp, vz, life, max: life, kind: PKind::Fire });
+        }
+        let hits: Vec<usize> = (0..self.mobs.len())
+            .filter(|&i| {
+                let m = &self.mobs[i];
+                m.alive() && (m.x - x).powi(2) + (m.y - y).powi(2) < (r + m.r).powi(2)
+            })
+            .collect();
+        for i in hits {
+            self.hit_mob(i, dmg, burn, 0.3, Some((x, y, 0.8)), true);
+        }
     }
 
     fn cast_pose(&mut self, t: f32) {
@@ -385,7 +687,7 @@ impl Game {
             }
             k += 0.5;
         }
-        self.fire_walls.push(FireWallFx { segs, t: 0.0, life: wall_time(r), dps: wall_dps(r) * self.p.power, tick: 0.0 });
+        self.fire_walls.push(FireWallFx { segs, t: 0.0, life: wall_time(r), dps: wall_dps(r) * self.fire_power(), tick: 0.0 });
         self.lights.push(Light { x: cx, y: cy, r: 180.0, s: 1.0, life: 0.4, max: 0.4 });
         self.sfx.push(Sfx::Boom);
     }
@@ -393,7 +695,7 @@ impl Game {
     fn blaze(&mut self, r: u8) {
         self.p.mana -= blaze_mana(r);
         self.cast_pose(0.3);
-        self.p.blaze_t = blaze_time(r);
+        self.p.blaze_t = blaze_time_with(r, self.p.skills.rank(Skill::Mastery));
         self.p.blaze_from = (self.p.x, self.p.y);
         self.sfx.push(Sfx::Cast);
         self.say("BLAZE".into());
@@ -419,7 +721,7 @@ impl Game {
         self.cast_pose(0.4);
         self.sfx.push(Sfx::Boom);
         self.shake = self.shake.max(0.5);
-        let base = combust_dmg(r, self.p.skills.rank(Skill::FireWall)) * self.p.power;
+        let base = combust_dmg(r, self.p.skills.rank(Skill::FireWall)) * self.fire_power();
         for i in burning {
             let (mx, my, burned) = (self.mobs[i].x, self.mobs[i].y, self.mobs[i].burned);
             self.lights.push(Light { x: mx, y: my, r: 120.0, s: 1.2, life: 0.3, max: 0.3 });
@@ -440,7 +742,7 @@ impl Game {
             self.p.blaze_t = (self.p.blaze_t - DT).max(0.0);
             let (fx, fy) = self.p.blaze_from;
             if (self.p.x - fx).powi(2) + (self.p.y - fy).powi(2) > 0.45 * 0.45 {
-                let dps = blaze_dps(self.p.skills.rank(Skill::Blaze)) * self.p.power;
+                let dps = blaze_dps(self.p.skills.rank(Skill::Blaze)) * self.fire_power();
                 self.patches.push(FirePatch { x: fx, y: fy, t: 0.0, dps });
                 self.p.blaze_from = (self.p.x, self.p.y);
             }
@@ -537,7 +839,7 @@ impl Game {
         if (self.p.inferno_t / 0.1) as i32 == ((self.p.inferno_t - DT) / 0.1) as i32 {
             return;
         }
-        let dmg = inferno_dps(r) * self.p.power * 0.1;
+        let dmg = inferno_dps(r) * self.fire_power() * 0.1;
         let cos_half = (26.0f32).to_radians().cos();
         let targets: Vec<usize> = (0..self.mobs.len())
             .filter(|&i| {
@@ -577,7 +879,7 @@ impl Game {
             let life = NOVA_TIME * self.rng.rf(0.9, 1.15);
             self.parts.push(Particle { x: px, y: py, z: 8.0 + self.rng.f() * 10.0, vx: a.cos() * sp, vy: a.sin() * sp, vz: 6.0, life, max: life, kind: PKind::Fire });
         }
-        let dmg = nova_dmg(r) * self.p.power;
+        let dmg = nova_dmg(r) * self.fire_power();
         let hits: Vec<usize> = (0..self.mobs.len())
             .filter(|&i| {
                 let m = &self.mobs[i];
@@ -591,6 +893,7 @@ impl Game {
 
     /// Damages one monster: burning (seconds), stagger, optional knockback (from x, y, distance).
     pub(crate) fn hit_mob(&mut self, i: usize, dmg: f32, burn: f32, stun: f32, knock: Option<(f32, f32, f32)>, show: bool) {
+        let burn = burn * self.p.skills.burn_mult();
         let m = &mut self.mobs[i];
         let (mx, my, boss, r) = (m.x, m.y, m.boss, m.r);
         m.hp -= dmg;
@@ -763,7 +1066,7 @@ impl Game {
         scr.text(&format!("SKILL POINTS: {}", sk.points), x0 + pw - 10, y0 + 8, pts_col, Align::Right, 1);
         let mut rects = vec![];
         // Tier rows.
-        let (cw, ch) = (128, 38);
+        let (cw, ch) = (128, 34);
         for tier in 0..TIER_LEVELS.len() as i32 {
             let ty = y0 + 24 + tier * (ch + 8);
             let lvl = TIER_LEVELS[tier as usize];
@@ -781,11 +1084,19 @@ impl Game {
             scr.fill(cx, cy, cw, 1, if i == sel { rgb(0xffcf70) } else { rgb(0x4a3e30) });
             scr.fill(cx, cy + ch - 1, cw, 1, if i == sel { rgb(0xffcf70) } else { rgb(0x4a3e30) });
             let icon = crate::sprites::skill_icon(*s);
-            scr.blit(&icon, cx + 7, cy + 7, Fx { tint: BLACK, tint_a: if locked { 0.6 } else { 0.0 }, ..Fx::default() });
+            scr.blit(&icon, cx + 5, cy + 5, Fx { tint: BLACK, tint_a: if locked { 0.6 } else { 0.0 }, ..Fx::default() });
             let ncol = if locked { rgb(0x6a5a4a) } else if r > 0 { rgb(0xffe0a0) } else { rgb(0xb0a090) };
-            scr.text(d.name, cx + 36, cy + 7, ncol, Align::Left, 1);
-            let sub = if locked { format!("LV{}", d.level) } else { format!("{r}/{MAX_RANK}") };
-            scr.text(&sub, cx + 36, cy + 20, if locked { rgb(0x6a5a4a) } else { rgb(0x9a8a78) }, Align::Left, 1);
+            scr.text(d.name, cx + 36, cy + 6, ncol, Align::Left, 1);
+
+            let cd = sk.cooldown[i];
+            let sub = if locked {
+                format!("LV{}", d.level)
+            } else if cd > 0.0 {
+                format!("{r}/{MAX_RANK}  {:.0}S", cd.ceil())
+            } else {
+                format!("{r}/{MAX_RANK}")
+            };
+            scr.text(&sub, cx + 36, cy + 19, if locked { rgb(0x6a5a4a) } else { rgb(0x9a8a78) }, Align::Left, 1);
             let mut tag = String::new();
             if !d.passive && r > 0 && sk.primary == *s {
                 tag.push('L');
@@ -797,7 +1108,7 @@ impl Game {
                 tag.push('P');
             }
             if !tag.is_empty() {
-                scr.text(&tag, cx + cw - 6, cy + 20, rgb(0x80c0ff), Align::Right, 1);
+                scr.text(&tag, cx + cw - 6, cy + 19, rgb(0x80c0ff), Align::Right, 1);
             }
             rects.push((cx, cy, cw, ch, TreeAct::Select(i)));
         }
@@ -815,7 +1126,7 @@ impl Game {
         let dy = y0 + 24 + TIER_LEVELS.len() as i32 * (ch + 8) + 4;
         scr.fill(x0 + 8, dy - 4, pw - 16, 1, rgb(0x4a3e30));
         let mut ly = dy;
-        for line in describe(s, sk.rank(s), self.p.power, sk.rank(Skill::FireWall)) {
+        for line in describe(s, sk.rank(s), self.p.power, sk) {
             for l in crate::story::wrap(&line, 68) {
                 scr.text(&l, x0 + 12, ly, rgb(0xd8ccb8), Align::Left, 1);
                 ly += 10;
@@ -881,6 +1192,22 @@ mod tests {
         assert!(sk.learn(Skill::Combust, 12));
         assert!(combust_dmg(1, 5) > combust_dmg(1, 0) * 1.3, "Fire Wall synergy");
         assert!(combust_mult(4.0) > combust_mult(0.5));
+    }
+
+    #[test]
+    fn mastery_scales_fire_and_ultimates_need_level_18() {
+        let mut sk = Skills { points: 20, ..Skills::default() };
+        assert_eq!(sk.fire_mult(), 1.0);
+        sk.rank[Skill::Mastery as usize] = 5;
+        assert!((sk.fire_mult() - 1.4).abs() < 1e-5);
+        assert!(sk.burn_mult() > 1.4);
+        assert!(blaze_time_with(1, 5) > blaze_time(1) + 2.0);
+        sk.rank[Skill::Combust as usize] = 1;
+        assert!(sk.blocker(Skill::Hydra, 17).is_some());
+        assert!(sk.learn(Skill::Hydra, 18));
+        assert!(sk.blocker(Skill::Phoenix, 18).is_some(), "needs Meteor");
+        assert!(cooldown_of(Skill::Hydra) > 0.0 && cooldown_of(Skill::Fireball) == 0.0);
+        assert!(fireball_synergy(5) > 1.25);
     }
 
     #[test]

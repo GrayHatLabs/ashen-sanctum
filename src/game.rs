@@ -211,6 +211,9 @@ pub struct Player {
     /// Blaze time left, and where the last fire patch was dropped.
     pub blaze_t: f32,
     pub blaze_from: (f32, f32),
+    /// Ash Phoenix time left, and the rank it was cast at (for the final burst).
+    pub phoenix_t: f32,
+    pub phoenix_rank: u8,
 }
 
 impl Player {
@@ -249,6 +252,8 @@ impl Player {
             inferno_t: 0.0,
             blaze_t: 0.0,
             blaze_from: (0.0, 0.0),
+            phoenix_t: 0.0,
+            phoenix_rank: 1,
         }
     }
 }
@@ -309,6 +314,8 @@ pub struct Game {
     pub(crate) novas: Vec<crate::skills::Nova>,
     pub(crate) fire_walls: Vec<crate::skills::FireWallFx>,
     pub(crate) patches: Vec<crate::skills::FirePatch>,
+    pub(crate) meteors: Vec<crate::skills::MeteorFx>,
+    pub(crate) hydras: Vec<crate::skills::HydraFx>,
     /// The skill tree screen, while open.
     pub tree: Option<crate::skills::TreeUi>,
     /// HUD skill buttons from the last draw (x, y, w, h): clicking one opens the tree.
@@ -376,6 +383,8 @@ impl Game {
             novas: vec![],
             fire_walls: vec![],
             patches: vec![],
+            meteors: vec![],
+            hydras: vec![],
             tree: None,
             hud_skill_rects: vec![],
             shots: vec![],
@@ -459,6 +468,8 @@ impl Game {
         self.novas.clear();
         self.fire_walls.clear();
         self.patches.clear();
+        self.meteors.clear();
+        self.hydras.clear();
         self.tree = None;
         self.shots.clear();
         self.hazards.clear();
@@ -748,6 +759,7 @@ impl Game {
         self.update_balls();
         self.update_novas();
         self.update_fire_ground();
+        self.update_big_fire();
         self.update_world();
         self.prev = inp.clone();
     }
@@ -1219,6 +1231,7 @@ impl Game {
             self.p.food = (self.p.food - if run { FOOD_DRAIN_RUN } else { FOOD_DRAIN } * DT).max(0.0);
         }
         let base = if run { RUN_SPEED } else { WALK_SPEED };
+        let base = if self.p.phoenix_t > 0.0 { base * 1.4 } else { base };
         let speed = if casting { base * 0.25 } else { base };
         if self.p.moving {
             if !casting {
@@ -1338,7 +1351,7 @@ impl Game {
         let l = (dx * dx + dy * dy).sqrt().max(0.001);
         let (ux, uy) = (dx / l, dy / l);
         let (x, y) = (p.x + ux * 0.45, p.y + uy * 0.45);
-        let power = p.power;
+        let power = p.power * p.skills.fire_mult() * crate::skills::fireball_synergy(p.skills.rank(crate::skills::Skill::Meteor));
         let (lo, hi) = crate::skills::fireball_dmg(fb_rank);
         let dmg = if ember { self.rng.rf(3.0, 5.0) } else { self.rng.rf(lo, hi) } * power;
         self.balls.push(Fireball { x, y, vx: ux * speed, vy: uy * speed, life, dmg, ember });
@@ -1534,7 +1547,7 @@ impl Game {
             let m = &mut self.mobs[i];
             m.hp -= dmg;
             m.flash = 0.12;
-            m.burn = 2.0;
+            m.burn = 2.0 * self.p.skills.burn_mult();
             // Bosses shrug off most of the stagger.
             m.stun = m.stun.max(if boss { 0.03 } else { 0.15 });
             if m.state == MobState::Idle {
@@ -2113,6 +2126,76 @@ mod tests {
         g.p.cast_cd = 0.0;
         g.cast_skill(Skill::Combust, g.p.x, g.p.y);
         assert_eq!(g.p.mana, mana);
+    }
+
+    #[test]
+    fn meteor_lands_after_its_shadow_and_burns_the_ground() {
+        use crate::skills::Skill;
+        let mut g = with_zombie(3.0, 0.0);
+        g.p.skills.rank[Skill::Meteor as usize] = 1;
+        g.p.mana = 50.0;
+        let (zx, zy) = (g.mobs[0].x, g.mobs[0].y);
+        g.cast_skill(Skill::Meteor, zx, zy);
+        assert_eq!(g.meteors.len(), 1);
+        for _ in 0..30 {
+            g.mobs[0].x = zx;
+            g.mobs[0].y = zy;
+            g.mobs[0].stun = 1.0;
+            g.update(&Input::default());
+        }
+        assert_eq!(g.mobs[0].hp, 1000.0, "nothing until it lands");
+        for _ in 0..40 {
+            g.mobs[0].x = zx;
+            g.mobs[0].y = zy;
+            g.mobs[0].stun = 1.0;
+            g.update(&Input::default());
+        }
+        assert!(g.mobs[0].hp < 1000.0 - crate::skills::meteor_dmg(1) * 0.9, "it struck: {}", 1000.0 - g.mobs[0].hp);
+        assert!(!g.patches.is_empty(), "burning ground");
+    }
+
+    #[test]
+    fn hydra_spits_at_foes_and_has_a_cooldown() {
+        use crate::skills::Skill;
+        let mut g = with_zombie(4.0, 0.0);
+        g.p.skills.rank[Skill::Hydra as usize] = 1;
+        g.p.mana = 60.0;
+        let (zx, zy) = (g.mobs[0].x, g.mobs[0].y);
+        g.cast_skill(Skill::Hydra, zx, zy);
+        assert_eq!(g.hydras.len(), 1);
+        let mana = g.p.mana;
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::Hydra, zx, zy);
+        assert_eq!(g.p.mana, mana, "on cooldown: no second cast");
+        for _ in 0..60 * 3 {
+            g.mobs[0].x = zx;
+            g.mobs[0].y = zy;
+            g.mobs[0].stun = 1.0;
+            g.update(&Input::default());
+        }
+        assert!(g.mobs[0].hp < 1000.0, "the hydra hit it");
+    }
+
+    #[test]
+    fn ash_phoenix_makes_casts_free_then_explodes() {
+        use crate::skills::Skill;
+        let mut g = with_zombie(1.5, 0.0);
+        g.p.skills.rank[Skill::Phoenix as usize] = 1;
+        g.p.mana = 45.0;
+        g.cast_skill(Skill::Phoenix, g.p.x, g.p.y);
+        assert!(g.p.phoenix_t > 5.0);
+        let mana = g.p.mana;
+        for _ in 0..60 {
+            g.mobs[0].stun = 1.0;
+            g.update(&Input { cast: true, ..Input::default() });
+        }
+        assert!(g.p.mana >= mana, "free casts while it lasts ({mana} -> {})", g.p.mana);
+        assert!(g.p.mana <= g.p.max_mana);
+        for _ in 0..60 * 7 {
+            g.update(&Input::default());
+        }
+        assert_eq!(g.p.phoenix_t, 0.0);
+        assert!(g.mobs[0].hp < 1000.0 - crate::skills::phoenix_burst(1) * 0.9 || !g.mobs[0].alive(), "the final burst");
     }
 
     #[test]

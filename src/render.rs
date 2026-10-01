@@ -87,6 +87,12 @@ impl Game {
             let (sx, sy) = to_scr(pr.x, pr.y);
             scr.blit(self.art.prop(pr.kind.art()), sx, sy + 8, Fx::default());
         }
+        for m in &self.meteors {
+            let (sx, sy) = to_scr(m.x, m.y);
+            let k = m.t / crate::skills::METEOR_DELAY;
+            let rx = (m.r * iso::TW * 0.5 * (0.3 + 0.7 * k)) as i32;
+            blend_ellipse(scr, sx, sy, rx, rx / 2, BLACK, 0.25 + 0.35 * k);
+        }
         for h in &self.hazards {
             let (sx, sy) = to_scr(h.x, h.y);
             draw_hazard(scr, h.kind, sx, sy, h.r, h.t, h.warn, h.live, self.tick);
@@ -246,6 +252,17 @@ impl Game {
                 scr.add_light(sx, sy - 10, 90.0, 0.7);
             }
         }
+        for hy in &self.hydras {
+            let (sx, sy) = to_scr(hy.x, hy.y);
+            scr.add_light(sx, sy - 10, 110.0, 0.7);
+        }
+        for m in &self.meteors {
+            let (sx, sy) = to_scr(m.x, m.y);
+            scr.add_light(sx, sy, 90.0, 0.4 * m.t / crate::skills::METEOR_DELAY);
+        }
+        if self.p.phoenix_t > 0.0 {
+            scr.add_light(psx, psy - 20, 130.0, 0.6);
+        }
         for w in &self.fire_walls {
             let fade = ((w.life - w.t) / 0.6).min(1.0);
             for (k, &(x, y)) in w.segs.iter().enumerate() {
@@ -258,7 +275,7 @@ impl Game {
         for p in &self.patches {
             if in_view(p.x, p.y) {
                 let (sx, sy) = to_scr(p.x, p.y);
-                scr.add_light(sx, sy, 50.0, 0.35 * (1.0 - p.t / crate::skills::PATCH_TIME));
+                scr.add_light(sx, sy, 50.0, 0.35 * (1.0 - p.t.max(0.0) / crate::skills::PATCH_TIME));
             }
         }
         scr.apply_light(view_h);
@@ -299,9 +316,47 @@ impl Game {
                 scr.glow(sx, sy - 6, 8.0, rgb(0xffd060), 0.7 * fade);
             }
         }
+        for m in &self.meteors {
+            // The meteor itself, falling from above.
+            let (sx, sy) = to_scr(m.x, m.y);
+            let k = m.t / crate::skills::METEOR_DELAY;
+            let h = ((1.0 - k) * 220.0) as i32;
+            let drift = ((1.0 - k) * 80.0) as i32;
+            scr.glow(sx - drift, sy - 20 - h, 26.0, rgb(0xff4010), 1.0);
+            scr.glow(sx - drift, sy - 20 - h, 12.0, rgb(0xffe080), 1.0);
+            for t in 1..6 {
+                let (tx, ty) = (sx - drift - t * 7, sy - 20 - h - t * 18);
+                scr.glow(tx, ty, 14.0 - t as f32 * 2.0, rgb(0xff6010), 0.6 - t as f32 * 0.09);
+            }
+        }
+        for hy in &self.hydras {
+            let (sx, sy) = to_scr(hy.x, hy.y);
+            let fade = ((crate::skills::HYDRA_TIME - hy.t) / 0.6).min(1.0);
+            let w = ((self.tick as f32) * 0.25).sin() * 3.0;
+            scr.glow(sx, sy - 8, 22.0, rgb(0xff4a08), 0.9 * fade);
+            for (k, dx) in [-8.0f32, 0.0, 8.0].iter().enumerate() {
+                let bob = ((self.tick as f32) * 0.2 + k as f32 * 2.1).sin() * 3.0;
+                let (hx, hy2) = (sx + *dx as i32 + w as i32, sy - 26 - bob as i32 - if k == 1 { 6 } else { 0 });
+                scr.glow(hx, hy2, 11.0, rgb(0xff7020), 1.0 * fade);
+                scr.glow(hx, hy2, 5.0, rgb(0xfff0a0), 1.0 * fade);
+            }
+        }
+        if self.p.phoenix_t > 0.0 {
+            // Wings of flame behind the mage.
+            let (psx, psy) = to_scr(self.p.x, self.p.y);
+            let flap = ((self.tick as f32) * 0.3).sin() * 4.0;
+            for side in [-1.0f32, 1.0] {
+                for k in 0..7 {
+                    let t = k as f32 / 6.0;
+                    let x = psx as f32 + side * (8.0 + t * 26.0);
+                    let y = psy as f32 - 34.0 - (t * 3.14).sin() * 10.0 - flap * t;
+                    scr.glow(x as i32, y as i32, 12.0 - t * 4.0, rgb(0xff5010), 0.9);
+                }
+            }
+        }
         for p in &self.patches {
             let (sx, sy) = to_scr(p.x, p.y);
-            let k = 1.0 - p.t / crate::skills::PATCH_TIME;
+            let k = 1.0 - p.t.max(0.0) / crate::skills::PATCH_TIME;
             scr.glow(sx, sy - 2, 12.0, rgb(0xff5010), 0.6 * k);
         }
         for n in &self.novas {
@@ -598,8 +653,13 @@ impl Game {
             scr.fill(sx - 2, iy - 2, 28, 28, rgb(0x5a4a38));
             scr.blit(&crate::sprites::skill_icon(s), sx, iy, Fx::default());
             let r = self.p.skills.rank(s);
-            if self.p.mana < crate::skills::mana_cost(s, r) {
+            if self.p.mana < crate::skills::mana_cost(s, r) && self.p.phoenix_t <= 0.0 {
                 scr.blend(sx, iy, 24, 24, rgb(0x000040), 0.6);
+            }
+            let cd = self.p.skills.cooldown[s as usize];
+            if cd > 0.0 {
+                let full = crate::skills::cooldown_of(s).max(0.01);
+                scr.blend(sx, iy, 24, (24.0 * cd / full) as i32, BLACK, 0.7);
             }
             scr.text(["L", "R"][k], sx + 1, iy + 1, rgb(0xd8c090), Align::Left, 1);
             skill_rects.push((sx - 2, iy - 2, 28, 28));

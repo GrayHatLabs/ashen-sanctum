@@ -338,6 +338,61 @@ pub fn skill_icon(s: crate::skills::Skill) -> Sprite {
                 }
             }
         }
+        Skill::Meteor => {
+            // A rock with a flaming tail, falling to the lower right.
+            for t in 0..14 {
+                let (x, y) = (2 + t, 2 + t);
+                for w in -2..=2 {
+                    if (t + w) % 3 != 0 {
+                        im.set(x + w, y - w, fire(1.0 - t as f32 / 14.0));
+                    }
+                }
+            }
+            im.ellipse(17.0, 17.0, 4.5, 4.5, rgb(0x3a2a20));
+            im.ellipse(16.0, 16.0, 2.0, 2.0, rgb(0xffc060));
+        }
+        Skill::Mastery => {
+            // A flame inside a gold ring.
+            for y in 0..24 {
+                for x in 0..24 {
+                    let (dx, dy) = (x as f32 - 11.5, y as f32 - 11.5);
+                    let d = (dx * dx + dy * dy).sqrt();
+                    if (9.0..11.0).contains(&d) {
+                        im.set(x, y, rgb(0xd8a040));
+                    }
+                    let fl = (dx.abs() / 5.0) + ((dy + 2.0) / 7.0).abs();
+                    if fl < 1.0 && dy < 6.0 {
+                        im.set(x, y, fire(fl));
+                    }
+                }
+            }
+        }
+        Skill::Hydra => {
+            // Three flame heads on necks.
+            for (k, hx) in [6, 12, 18].iter().enumerate() {
+                let top = if k == 1 { 3 } else { 6 };
+                for y in top..20 {
+                    im.set(*hx, y, mix(rgb(0xc04010), rgb(0x701808), (y - top) as f32 / 16.0));
+                    im.set(hx + 1, y, mix(rgb(0xc04010), rgb(0x701808), (y - top) as f32 / 16.0));
+                }
+                im.ellipse(*hx as f32 + 1.0, top as f32 + 1.0, 3.0, 2.5, rgb(0xffb040));
+                im.set(hx + 2, top, rgb(0xfff0a0));
+            }
+            im.fill(3, 19, 18, 3, rgb(0x5a2010));
+        }
+        Skill::Phoenix => {
+            // Spread wings of fire.
+            for y in 0..24 {
+                for x in 0..24 {
+                    let (dx, dy) = ((x as f32 - 11.5).abs(), y as f32);
+                    let wing = dy > 4.0 + dx * 0.3 && dy < 10.0 + dx * 0.6 && dx < 11.0;
+                    let body = dx < 2.0 && (6.0..20.0).contains(&dy);
+                    if wing || body {
+                        im.set(x, y, fire(if body { 0.1 } else { dx / 11.0 }));
+                    }
+                }
+            }
+        }
         Skill::Fireball => {}
     }
     im.ax = 0;

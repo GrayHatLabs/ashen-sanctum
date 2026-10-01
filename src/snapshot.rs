@@ -300,6 +300,36 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         g.tree.as_mut().unwrap().sel = Skill::Combust as usize;
         save(&mut g, scr, "skills_tree2");
         g.tree = None;
+        // Step 3: a meteor on its way down, a hydra, Ash Phoenix wings, and the full tree.
+        g.p.clvl = 18;
+        for sk in [Skill::Meteor, Skill::Mastery, Skill::Hydra, Skill::Phoenix] {
+            g.p.skills.rank[sk as usize] = 2;
+        }
+        g.p.mana = 200.0;
+        g.p.max_mana = 200.0;
+        let target = g.bot_target().map(|t| (t.0, t.1)).unwrap_or((g.p.x + 3.0, g.p.y));
+        g.debug_place_near(target.0, target.1, 4.0);
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::Meteor, target.0, target.1);
+        idle(&mut g, 35);
+        save(&mut g, scr, "skills_meteor");
+        idle(&mut g, 30);
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::Hydra, target.0, target.1);
+        idle(&mut g, 70);
+        save(&mut g, scr, "skills_hydra");
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::Phoenix, g.p.x, g.p.y);
+        for _ in 0..20 {
+            g.update(&Input { move_x: 0.6, move_y: 0.4, ..Input::default() });
+            g.sfx.clear();
+        }
+        save(&mut g, scr, "skills_phoenix");
+        g.p.skills.points = 1;
+        g.update(&Input { skills: true, ..Input::default() });
+        g.tree.as_mut().unwrap().sel = Skill::Phoenix as usize;
+        save(&mut g, scr, "skills_tree3");
+        g.tree = None;
     }
     // HUD details: out of mana (EMBER), hungry, low stamina, food on the floor.
     let mut g = Game::new(7, h);

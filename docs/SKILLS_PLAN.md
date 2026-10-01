@@ -39,4 +39,6 @@ Synergies: Meteor boosts Fireball, Fire Mastery lengthens Blaze, Fire Wall boost
 
 1. **Done:** skill system: points, tiers, skill tree screen, two slots, saving, respec. Skills: Fire Nova, Inferno, Warmth.
 2. **Done:** Fire Wall, Blaze, Combust (Fire Wall ranks boost Combust 8% each).
-3. Meteor, Fire Mastery, Hydra, Ash Phoenix.
+3. **Done:** Meteor (boosts Fireball 6%/rank), Fire Mastery (+8% fire damage, +10% burn time per rank, lengthens Blaze), Hydra (12 s cooldown), Ash Phoenix (30 s cooldown).
+
+The whole plan is built (2026-10-01).

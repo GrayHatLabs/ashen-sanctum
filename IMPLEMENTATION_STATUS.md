@@ -66,6 +66,7 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Fireball scales with its rank; Aldric respec for 50 x char level gold | H | Unit test |
 | Old saves get the points they would have earned | H | |
 | Step 2: Fire Wall (flame line, 0.2 s burn ticks), Blaze (fire trail while moving), Combust (detonates burning foes, scales with burn time, Fire Wall synergy); 3-tier tree | H S | Unit tests for each |
+| Step 3: Meteor (1 s telegraph, burning ground, Fireball synergy), Fire Mastery (passive), Hydra and Ash Phoenix (cooldowns, HUD sweep); 4-tier tree | H S | Unit tests for each; balance untested by a human |
 
 ## Art status
 
