@@ -57,6 +57,13 @@ take back their Seals, unseal the Sanctum and end the Ash King.
 | Continue after death / the ending | Enter | START |
 | Close menu / quit | Esc (closes a conversation or the map first) | SELECT + START |
 
+## Saving
+
+Your character saves automatically (whenever you reach the overworld, after boss kills and
+when you quit) to `~/.local/share/ashensanctum/save.txt`. Like Diablo 2, your hero, gold,
+potions and quest progress carry over, while the monsters and loot are fresh each time you
+start the game. Start a brand-new character with `--new`.
+
 ## Building
 
 Builds run in WSL Ubuntu:

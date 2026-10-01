@@ -1,0 +1,114 @@
+//! Saving and loading the character, D2 style: your hero, gold, potions and quest
+//! progress persist; the world (monsters, loot) is fresh each time you load.
+use crate::game::Game;
+use std::path::PathBuf;
+
+/// `$XDG_DATA_HOME/ashensanctum/save.txt` (or `~/.local/share/...`); next to the
+/// executable when neither is set (handheld ports).
+pub fn path() -> PathBuf {
+    if let Ok(p) = std::env::var("ASHEN_SAVE") {
+        return PathBuf::from(p);
+    }
+    let base = std::env::var("XDG_DATA_HOME")
+        .map(PathBuf::from)
+        .or_else(|_| std::env::var("HOME").map(|h| PathBuf::from(h).join(".local/share")))
+        .unwrap_or_else(|_| PathBuf::from("."));
+    base.join("ashensanctum").join("save.txt")
+}
+
+pub fn to_text(g: &Game) -> String {
+    let p = &g.p;
+    let q = &g.quest;
+    let seals: String = q.seals.iter().map(|s| if *s { '1' } else { '0' }).collect();
+    format!(
+        "version=1\nseed={}\nclvl={}\nxp={}\nmax_hp={}\nmax_mana={}\npower={}\ngold={}\nhp_pots={}\nmp_pots={}\nfood={}\nrunning={}\nstage={}\nseals={}\nkills={}\n",
+        g.world_seed(),
+        p.clvl,
+        p.xp,
+        p.max_hp,
+        p.max_mana,
+        p.power,
+        p.gold,
+        p.hp_pots,
+        p.mp_pots,
+        p.food,
+        p.running as u8,
+        q.stage,
+        seals,
+        g.kills
+    )
+}
+
+/// Applies a saved character to a freshly created game. Returns false on a bad file.
+pub fn apply(g: &mut Game, text: &str) -> bool {
+    let get = |k: &str| text.lines().find_map(|l| l.strip_prefix(k).and_then(|r| r.strip_prefix('='))).map(str::trim);
+    let num = |k: &str| get(k).and_then(|v| v.parse::<f64>().ok());
+    if get("version") != Some("1") {
+        return false;
+    }
+    let (Some(clvl), Some(max_hp), Some(max_mana)) = (num("clvl"), num("max_hp"), num("max_mana")) else { return false };
+    g.p.clvl = clvl as u32;
+    g.p.xp = num("xp").unwrap_or(0.0) as f32;
+    g.p.max_hp = max_hp as f32;
+    g.p.max_mana = max_mana as f32;
+    g.p.hp = g.p.max_hp;
+    g.p.mana = g.p.max_mana;
+    g.p.power = num("power").unwrap_or(1.0) as f32;
+    g.p.gold = num("gold").unwrap_or(0.0) as i32;
+    g.p.hp_pots = num("hp_pots").unwrap_or(3.0) as i32;
+    g.p.mp_pots = num("mp_pots").unwrap_or(3.0) as i32;
+    g.p.food = (num("food").unwrap_or(100.0) as f32).max(40.0);
+    g.p.running = num("running").unwrap_or(1.0) != 0.0;
+    g.quest.stage = num("stage").unwrap_or(0.0) as u8;
+    if let Some(s) = get("seals") {
+        for (i, c) in s.chars().take(3).enumerate() {
+            g.quest.seals[i] = c == '1';
+        }
+    }
+    g.kills = num("kills").unwrap_or(0.0) as u32;
+    true
+}
+
+pub fn seed_of(text: &str) -> Option<u64> {
+    text.lines().find_map(|l| l.strip_prefix("seed=")).and_then(|v| v.trim().parse().ok())
+}
+
+pub fn write(g: &Game) {
+    let p = path();
+    if let Some(dir) = p.parent() {
+        let _ = std::fs::create_dir_all(dir);
+    }
+    let _ = std::fs::write(&p, to_text(g));
+}
+
+pub fn read() -> Option<String> {
+    std::fs::read_to_string(path()).ok()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_saved_character_comes_back() {
+        let mut g = Game::new(42, crate::gfx::SH_WIDE);
+        g.p.clvl = 7;
+        g.p.max_hp = 133.0;
+        g.p.gold = 321;
+        g.p.power = 1.8;
+        g.quest.stage = 1;
+        g.quest.seals = [true, false, true];
+        let text = to_text(&g);
+        assert_eq!(seed_of(&text), Some(42));
+        let mut h = Game::new(42, crate::gfx::SH_WIDE);
+        assert!(apply(&mut h, &text));
+        assert_eq!(h.p.clvl, 7);
+        assert_eq!(h.p.max_hp, 133.0);
+        assert_eq!(h.p.hp, 133.0);
+        assert_eq!(h.p.gold, 321);
+        assert!((h.p.power - 1.8).abs() < 1e-5);
+        assert_eq!(h.quest.stage, 1);
+        assert_eq!(h.quest.seals, [true, false, true]);
+        assert!(!apply(&mut h, "garbage"));
+    }
+}

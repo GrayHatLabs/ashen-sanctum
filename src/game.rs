@@ -314,6 +314,8 @@ pub struct Game {
     prev: Input,
     pub show_map: bool,
     pub quit: bool,
+    /// Set when the game wants the character saved (town, boss kills); main writes it.
+    pub save_due: bool,
     pub stats: Stats,
 }
 
@@ -368,6 +370,7 @@ impl Game {
             prev: Input::default(),
             show_map: false,
             quit: false,
+            save_due: false,
             stats: Stats::default(),
         };
         g.swap_in(lv);
@@ -375,6 +378,10 @@ impl Game {
         g.p.x = cx;
         g.p.y = cy;
         g
+    }
+
+    pub fn world_seed(&self) -> u64 {
+        self.world_seed
     }
 
     // ------------------------------------------------------------------ levels
@@ -442,6 +449,9 @@ impl Game {
         };
         self.swap_in(lv);
         self.stats.levels_entered += 1;
+        if id == LevelId::Overworld {
+            self.save_due = true;
+        }
         self.sfx.push(Sfx::Descend);
         // Where do we arrive?
         let spot = match (id, from) {
@@ -720,6 +730,13 @@ impl Game {
         }
     }
 
+    /// Greets a returning player (after loading a save).
+    pub fn welcome_back(&mut self) {
+        self.stats.levels_entered = 1; // skip the first-visit title card
+        let msg = format!("WELCOME BACK. CHAR LEVEL {}, {}/3 SEALS", self.p.clvl, self.quest.seal_count());
+        self.say(msg);
+    }
+
     pub(crate) fn say(&mut self, text: String) {
         self.message = Some((text, 4.0));
     }
@@ -860,6 +877,7 @@ impl Game {
             Some(Act::Close) => {
                 if let Some(stage) = self.dialog.as_ref().and_then(|d| d.advance_to) {
                     self.advance_quest(stage);
+                    self.save_due = true;
                 }
                 self.dialog = None;
             }
@@ -1476,6 +1494,7 @@ impl Game {
         }
         if boss {
             self.stats.bosses += 1;
+            self.save_due = true;
             self.shake = 1.0;
             self.lights.push(Light { x, y, r: 260.0, s: 1.5, life: 1.2, max: 1.2 });
             match kind {

@@ -11,6 +11,7 @@ mod iso;
 mod mobs;
 mod render;
 mod rng;
+mod save;
 mod snapshot;
 mod sprites;
 mod story;
@@ -93,7 +94,15 @@ fn main() -> Result<(), String> {
     let mut pads: Vec<GameController> = Vec::new();
     let mut audio = audio_sys.as_ref().and_then(audio::Audio::open);
     let seed = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_nanos() as u64).unwrap_or(1);
+    // Continue the saved character (fresh world from the same seed), unless --new.
+    let saved = if args.iter().any(|a| a == "--new") { None } else { save::read() };
+    let seed = saved.as_deref().and_then(save::seed_of).unwrap_or(seed);
     let mut game = Game::new(seed, view_h);
+    if let Some(text) = saved.as_deref() {
+        if save::apply(&mut game, text) {
+            game.welcome_back();
+        }
+    }
     let mut scr = gfx::Screen::new(view_h);
     let mut keys = Keys::default();
     let mut pad = Pad::default();
@@ -256,6 +265,10 @@ fn main() -> Result<(), String> {
             acc -= step;
         }
 
+        if game.save_due {
+            game.save_due = false;
+            save::write(&game);
+        }
         if game.quit {
             break 'main;
         }
@@ -284,6 +297,7 @@ fn main() -> Result<(), String> {
             std::thread::sleep(Duration::from_millis(1));
         }
     }
+    save::write(&game);
     Ok(())
 }
 
