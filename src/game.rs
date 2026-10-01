@@ -1,42 +1,46 @@
-//! Game state, simulation and rendering. No SDL here, so the game also runs
-//! headless for snapshots and self-tests.
+//! Game state and simulation. No SDL here, so the game also runs headless for
+//! snapshots and self-tests. Rendering lives in `render.rs`, monsters in `mobs.rs`,
+//! maps in `world.rs` and the story in `story.rs`.
 use crate::art::Art;
 use crate::dungeon::{Dungeon, Tile};
-use crate::gfx::{mix, rgb, Align, Fx, Screen, Sprite, BLACK, WHITE};
+use crate::gfx::{rgb, Sprite};
 use crate::iso;
+use crate::mobs::{Hazard, Kind, Mob, MobState, Shot};
 use crate::rng::Rng;
 use crate::sprites;
+use crate::story::{self, Act, Dialog, Npc, Quest, Role, Ware};
+use crate::world::{self, Level, LevelId, Portal, PortalKind, Prop, Theme, SANCTUM};
+#[cfg(test)]
+use crate::world::DUNGEONS;
+use std::collections::HashMap;
 
 pub const DT: f32 = 1.0 / 60.0;
 pub const HUD_H: i32 = 52;
-const MAP_W: i32 = 72;
-const MAP_H: i32 = 72;
 
-const PLAYER_R: f32 = 0.3;
-const MOB_R: f32 = 0.32;
-const WALK_SPEED: f32 = 4.3;
-const RUN_SPEED: f32 = 6.5;
-const FIREBALL_COST: f32 = 5.0;
+pub const PLAYER_R: f32 = 0.3;
+pub const WALK_SPEED: f32 = 4.3;
+pub const RUN_SPEED: f32 = 6.5;
+pub const FIREBALL_COST: f32 = 5.0;
 const FIREBALL_SPEED: f32 = 10.0;
-const CAST_TIME: f32 = 0.32;
+pub const CAST_TIME: f32 = 0.32;
 /// Free fallback bolt when out of mana.
 const EMBER_SPEED: f32 = 13.0;
 const EMBER_CAST_TIME: f32 = 0.4;
 /// Stamina (D2 style): drains while running, refills while walking or standing.
-const MAX_STAMINA: f32 = 100.0;
+pub const MAX_STAMINA: f32 = 100.0;
 const STAMINA_DRAIN: f32 = 14.0;
 const STAMINA_REGEN: f32 = 10.0;
 /// After running dry you walk until stamina is back to this much.
-const WINDED_UNTIL: f32 = 20.0;
+pub const WINDED_UNTIL: f32 = 20.0;
 /// Food: drains over time (faster while running); empty = starving.
-const MAX_FOOD: f32 = 100.0;
+pub const MAX_FOOD: f32 = 100.0;
 const FOOD_DRAIN: f32 = 0.35;
 const FOOD_DRAIN_RUN: f32 = 0.8;
 const STARVE_DPS: f32 = 1.2;
 /// Apple, bread, roast: food restored, bonus life.
-const FOODS: [(&str, f32, f32); 3] = [("APPLE", 20.0, 0.0), ("BREAD", 35.0, 0.0), ("ROAST", 60.0, 10.0)];
-/// Face height (pixels) of cut-down front walls.
-const LOW_WALL: i32 = 8;
+pub const FOODS: [(&str, f32, f32); 3] = [("APPLE", 20.0, 0.0), ("BREAD", 35.0, 0.0), ("ROAST", 60.0, 10.0)];
+/// Talking range to people in town.
+const TALK_RANGE: f32 = 1.8;
 
 /// Everything the game reads from the outside world for one tick.
 #[derive(Default, Clone)]
@@ -54,6 +58,7 @@ pub struct Input {
     /// Shift held: left click casts in place instead of moving.
     pub stand: bool,
     /// Pad / keyboard cast button held (casts at the aim direction or the nearest foe).
+    /// In town (and in conversations) it talks / chooses instead.
     pub cast: bool,
     pub confirm: bool,
     pub potion_hp: bool,
@@ -62,6 +67,8 @@ pub struct Input {
     pub map: bool,
     /// Toggle run / walk (one-shot).
     pub run_toggle: bool,
+    /// Esc: close a conversation or the map; with nothing open, quit.
+    pub cancel: bool,
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
@@ -78,130 +85,81 @@ pub enum Sfx {
     Eat,
 }
 
-#[derive(Clone, Copy, PartialEq)]
-enum Kind {
-    Zombie,
-    Skeleton,
-}
-
-impl Kind {
-    fn name(self) -> &'static str {
-        match self {
-            Kind::Zombie => "zombie",
-            Kind::Skeleton => "skeleton",
-        }
-    }
-    fn label(self) -> &'static str {
-        match self {
-            Kind::Zombie => "ROTTING ZOMBIE",
-            Kind::Skeleton => "RISEN SKELETON",
-        }
-    }
-}
-
-#[derive(Clone, Copy, PartialEq)]
-enum MobState {
-    Idle,
-    Chase,
-    /// Wind-up before a swing; the hit lands when the timer runs out.
-    Attack(f32),
-    Dead(f32),
-}
-
-struct Mob {
-    kind: Kind,
-    x: f32,
-    y: f32,
-    hp: f32,
-    max_hp: f32,
-    speed: f32,
-    dmg: (i32, i32),
-    windup: f32,
-    cooldown: f32,
-    cd: f32,
-    state: MobState,
-    dir: usize,
-    anim_t: f32,
-    moving: bool,
-    flash: f32,
-    stun: f32,
-    burn: f32,
-    path: Vec<(f32, f32)>,
-    repath: f32,
-    wander: (f32, f32, f32),
-}
-
-struct Fireball {
-    x: f32,
-    y: f32,
-    vx: f32,
-    vy: f32,
-    life: f32,
-    dmg: f32,
+pub struct Fireball {
+    pub x: f32,
+    pub y: f32,
+    pub vx: f32,
+    pub vy: f32,
+    pub life: f32,
+    pub dmg: f32,
     /// Ember bolt (free, weak, single target, no burn).
-    ember: bool,
+    pub ember: bool,
 }
 
-#[derive(Clone, Copy)]
-enum PKind {
+#[derive(Clone, Copy, PartialEq)]
+pub enum PKind {
     /// Additive fire spark.
     Fire,
     Smoke,
     Bone,
     Blood,
+    /// Violet magic (seals, hex bolts, portals).
+    Magic,
 }
 
-struct Particle {
-    x: f32,
-    y: f32,
-    z: f32,
-    vx: f32,
-    vy: f32,
-    vz: f32,
-    life: f32,
-    max: f32,
-    kind: PKind,
+pub struct Particle {
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
+    pub vx: f32,
+    pub vy: f32,
+    pub vz: f32,
+    pub life: f32,
+    pub max: f32,
+    pub kind: PKind,
 }
 
-struct Floater {
-    x: f32,
-    y: f32,
-    t: f32,
-    text: String,
-    col: u32,
+pub struct Floater {
+    pub x: f32,
+    pub y: f32,
+    pub t: f32,
+    pub text: String,
+    pub col: u32,
 }
 
-#[derive(Clone, Copy, PartialEq)]
-enum Drop {
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub enum Drop {
     Health,
     Mana,
     Gold(i32),
     /// Index into FOODS.
     Food(usize),
+    /// A Warden's seal (0 bone, 1 plague, 2 hex).
+    Seal(usize),
 }
 
-struct Pickup {
-    x: f32,
-    y: f32,
-    kind: Drop,
-    t: f32,
+pub struct Pickup {
+    pub x: f32,
+    pub y: f32,
+    pub kind: Drop,
+    pub t: f32,
 }
 
-struct Decal {
-    x: f32,
-    y: f32,
-    r: f32,
-    col: u32,
-    a: f32,
+pub struct Decal {
+    pub x: f32,
+    pub y: f32,
+    pub r: f32,
+    pub col: u32,
+    pub a: f32,
 }
 
-struct Light {
-    x: f32,
-    y: f32,
-    r: f32,
-    s: f32,
-    life: f32,
-    max: f32,
+pub struct Light {
+    pub x: f32,
+    pub y: f32,
+    pub r: f32,
+    pub s: f32,
+    pub life: f32,
+    pub max: f32,
 }
 
 pub struct Player {
@@ -211,85 +169,39 @@ pub struct Player {
     pub max_hp: f32,
     pub mana: f32,
     pub max_mana: f32,
-    dir: usize,
-    anim_t: f32,
-    moving: bool,
-    cast_t: f32,
-    cast_cd: f32,
+    pub dir: usize,
+    pub anim_t: f32,
+    pub moving: bool,
+    pub cast_t: f32,
+    pub cast_cd: f32,
     /// Length of the current cast animation (fireball or ember).
-    cast_len: f32,
+    pub cast_len: f32,
     pub stamina: f32,
     /// Run toggle (D2's run/walk button).
     pub running: bool,
     /// Ran out of stamina: walking until it recovers.
-    winded: bool,
+    pub winded: bool,
     pub food: f32,
-    hunger_msg: f32,
-    path: Vec<(f32, f32)>,
-    goal: Option<(f32, f32)>,
-    repath: f32,
-    flash: f32,
+    pub hunger_msg: f32,
+    pub path: Vec<(f32, f32)>,
+    pub goal: Option<(f32, f32)>,
+    pub repath: f32,
+    pub flash: f32,
     pub hp_pots: i32,
     pub mp_pots: i32,
     pub gold: i32,
+    /// Character level and experience.
+    pub clvl: u32,
+    pub xp: f32,
+    /// Fireball damage multiplier (levels and seals).
+    pub power: f32,
+    /// Walking toward someone to talk to them (mouse click on an NPC).
+    pub talk_to: Option<usize>,
 }
 
-#[derive(Clone, Copy, PartialEq, Debug)]
-pub enum State {
-    Playing,
-    Dead(f32),
-    Cleared,
-}
-
-pub struct Game {
-    rng: Rng,
-    pub art: Art,
-    pub d: Dungeon,
-    pub p: Player,
-    mobs: Vec<Mob>,
-    balls: Vec<Fireball>,
-    parts: Vec<Particle>,
-    floaters: Vec<Floater>,
-    pickups: Vec<Pickup>,
-    decals: Vec<Decal>,
-    lights: Vec<Light>,
-    pub state: State,
-    pub depth: u32,
-    pub kills: u32,
-    pub tick: u32,
-    pub sfx: Vec<Sfx>,
-    shake: f32,
-    /// Mob last hit or hovered (for the top-of-screen health bar).
-    focus: Option<usize>,
-    focus_t: f32,
-    hover: Option<usize>,
-    icon: Sprite,
-    banner_t: f32,
-    view_h: i32,
-    light_ready: bool,
-    /// Tiles the player has seen (for the automap).
-    explored: Vec<bool>,
-    pub show_map: bool,
-    pub stats: Stats,
-}
-
-#[derive(Default, Debug, Clone)]
-pub struct Stats {
-    pub casts: u32,
-    pub hits: u32,
-    pub damage_taken: f32,
-    pub descents: u32,
-    pub embers: u32,
-    pub eaten: u32,
-    pub starve_damage: f32,
-    pub run_time: f32,
-}
-
-impl Game {
-    pub fn new(seed: u64, view_h: i32) -> Self {
-        let mut rng = Rng::new(seed);
-        let d = Dungeon::generate(&mut rng, MAP_W, MAP_H);
-        let p = Player {
+impl Player {
+    fn new() -> Self {
+        Player {
             x: 0.0,
             y: 0.0,
             hp: 70.0,
@@ -313,22 +225,132 @@ impl Game {
             flash: 0.0,
             hp_pots: 3,
             mp_pots: 3,
-            gold: 0,
-        };
+            gold: 40,
+            clvl: 1,
+            xp: 0.0,
+            power: 1.0,
+            talk_to: None,
+        }
+    }
+}
+
+/// Experience needed to reach the next character level.
+pub fn xp_to_next(clvl: u32) -> f32 {
+    60.0 * (clvl as f32).powf(1.6)
+}
+
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub enum State {
+    Playing,
+    Dead(f32),
+    /// The Ash King is dead: show the epilogue.
+    Victory(f32),
+}
+
+#[derive(Default, Debug, Clone)]
+pub struct Stats {
+    pub casts: u32,
+    pub hits: u32,
+    pub damage_taken: f32,
+    pub embers: u32,
+    pub eaten: u32,
+    pub starve_damage: f32,
+    pub run_time: f32,
+    pub levels_entered: u32,
+    pub deaths: u32,
+    pub talks: u32,
+    pub bosses: u32,
+}
+
+pub struct Game {
+    pub(crate) rng: Rng,
+    pub art: Art,
+    pub p: Player,
+    // ---- the current level (swapped in and out of `parked`) ----
+    pub level: LevelId,
+    pub level_name: String,
+    pub theme: Theme,
+    pub tier: f32,
+    pub d: Dungeon,
+    pub(crate) mobs: Vec<Mob>,
+    pub(crate) pickups: Vec<Pickup>,
+    pub(crate) decals: Vec<Decal>,
+    pub(crate) explored: Vec<bool>,
+    pub(crate) props: Vec<Prop>,
+    pub(crate) portals: Vec<Portal>,
+    pub(crate) npcs: Vec<Npc>,
+    pub(crate) safe: Option<(f32, f32, f32, f32)>,
+    parked: HashMap<LevelId, Level>,
+    world_seed: u64,
+    // ---- transient effects ----
+    pub(crate) balls: Vec<Fireball>,
+    pub(crate) shots: Vec<Shot>,
+    pub(crate) hazards: Vec<Hazard>,
+    pub(crate) parts: Vec<Particle>,
+    pub(crate) floaters: Vec<Floater>,
+    pub(crate) lights: Vec<Light>,
+    // ---- story and UI ----
+    pub quest: Quest,
+    pub dialog: Option<Dialog>,
+    /// Clickable dialog option rectangles from the last draw (x, y, w, h).
+    pub(crate) dlg_rects: Vec<(i32, i32, i32, i32)>,
+    pub(crate) message: Option<(String, f32)>,
+    pub state: State,
+    pub kills: u32,
+    pub tick: u32,
+    pub sfx: Vec<Sfx>,
+    pub(crate) shake: f32,
+    /// Mob last hit or hovered (for the top-of-screen health bar).
+    pub(crate) focus: Option<usize>,
+    pub(crate) focus_t: f32,
+    pub(crate) hover: Option<usize>,
+    pub(crate) hover_npc: Option<usize>,
+    pub(crate) icon: Sprite,
+    pub(crate) banner_t: f32,
+    pub(crate) level_up_t: f32,
+    pub(crate) view_h: i32,
+    pub(crate) light_ready: bool,
+    portal_cd: f32,
+    prev: Input,
+    pub show_map: bool,
+    pub quit: bool,
+    pub stats: Stats,
+}
+
+impl Game {
+    pub fn new(seed: u64, view_h: i32) -> Self {
+        let world_seed = seed;
+        let lv = world::overworld(world_seed);
         let mut g = Game {
-            rng,
+            rng: Rng::new(seed),
             art: Art::load(),
-            d,
-            p,
+            p: Player::new(),
+            level: LevelId::Overworld,
+            level_name: String::new(),
+            theme: Theme::Overworld,
+            tier: 1.0,
+            d: Dungeon::blank(1, 1, Tile::Void),
             mobs: vec![],
-            balls: vec![],
-            parts: vec![],
-            floaters: vec![],
             pickups: vec![],
             decals: vec![],
+            explored: vec![],
+            props: vec![],
+            portals: vec![],
+            npcs: vec![],
+            safe: None,
+            parked: HashMap::new(),
+            world_seed,
+            balls: vec![],
+            shots: vec![],
+            hazards: vec![],
+            parts: vec![],
+            floaters: vec![],
             lights: vec![],
+            quest: Quest::default(),
+            dialog: None,
+            dlg_rects: vec![],
+            message: None,
             state: State::Playing,
-            depth: 1,
             kills: 0,
             tick: 0,
             sfx: vec![],
@@ -336,107 +358,186 @@ impl Game {
             focus: None,
             focus_t: 0.0,
             hover: None,
+            hover_npc: None,
             icon: sprites::fireball_icon(),
-            banner_t: 6.0,
+            banner_t: 7.0,
+            level_up_t: 0.0,
             view_h,
             light_ready: false,
-            explored: vec![],
+            portal_cd: 0.0,
+            prev: Input::default(),
             show_map: false,
+            quit: false,
             stats: Stats::default(),
         };
-        g.populate();
+        g.swap_in(lv);
+        let (cx, cy) = world::town_center();
+        g.p.x = cx;
+        g.p.y = cy;
         g
     }
 
-    /// Places the player in the first room and fills the other rooms with monster packs.
-    fn populate(&mut self) {
-        let r0 = self.d.rooms[0];
-        let (cx, cy) = r0.center();
-        self.p.x = cx as f32 + 0.5;
-        self.p.y = cy as f32 + 0.5;
-        self.p.path.clear();
-        self.p.goal = None;
-        self.explored = vec![false; (self.d.w * self.d.h) as usize];
-        self.mobs.clear();
+    // ------------------------------------------------------------------ levels
+
+    fn swap_out(&mut self) -> Level {
+        Level {
+            id: self.level,
+            name: std::mem::take(&mut self.level_name),
+            theme: self.theme,
+            tier: self.tier,
+            d: std::mem::replace(&mut self.d, Dungeon::blank(1, 1, Tile::Void)),
+            mobs: std::mem::take(&mut self.mobs),
+            pickups: std::mem::take(&mut self.pickups),
+            decals: std::mem::take(&mut self.decals),
+            explored: std::mem::take(&mut self.explored),
+            props: std::mem::take(&mut self.props),
+            portals: std::mem::take(&mut self.portals),
+            npcs: std::mem::take(&mut self.npcs),
+            safe: self.safe.take(),
+        }
+    }
+
+    fn swap_in(&mut self, lv: Level) {
+        self.level = lv.id;
+        self.level_name = lv.name;
+        self.theme = lv.theme;
+        self.tier = lv.tier;
+        self.d = lv.d;
+        self.mobs = lv.mobs;
+        self.pickups = lv.pickups;
+        self.decals = lv.decals;
+        self.explored = lv.explored;
+        self.props = lv.props;
+        self.portals = lv.portals;
+        self.npcs = lv.npcs;
+        self.safe = lv.safe;
         self.balls.clear();
-        self.pickups.clear();
-        self.decals.clear();
+        self.shots.clear();
+        self.hazards.clear();
         self.parts.clear();
         self.floaters.clear();
         self.lights.clear();
-        let scale = 1.0 + 0.3 * (self.depth - 1) as f32;
-        let rooms = self.d.rooms.clone();
-        for r in rooms.iter().skip(1) {
-            let n = self.rng.range(2, 5) + (self.depth as i32 - 1).min(3);
-            let kind = if self.rng.chance(0.5) { Kind::Zombie } else { Kind::Skeleton };
-            for _ in 0..n {
-                for _try in 0..20 {
-                    let x = self.rng.range(r.x + 1, r.x + r.w - 1) as f32 + 0.5;
-                    let y = self.rng.range(r.y + 1, r.y + r.h - 1) as f32 + 0.5;
-                    if self.d.blocked(x, y, MOB_R) || self.mobs.iter().any(|m| (m.x - x).abs() + (m.y - y).abs() < 1.0) {
-                        continue;
-                    }
-                    let kind = if self.rng.chance(0.2) { if kind == Kind::Zombie { Kind::Skeleton } else { Kind::Zombie } } else { kind };
-                    self.mobs.push(Mob::new(kind, x, y, scale, &mut self.rng));
-                    break;
-                }
-            }
-        }
-        // Food lying about: one or two per few rooms, roasts are rare.
-        let n_food = 3 + self.rng.range(0, 3);
-        for _ in 0..n_food {
-            let r = rooms[self.rng.range(1, rooms.len() as i32) as usize];
-            for _try in 0..20 {
-                let x = self.rng.range(r.x + 1, r.x + r.w - 1) as f32 + 0.5;
-                let y = self.rng.range(r.y + 1, r.y + r.h - 1) as f32 + 0.5;
-                if self.d.blocked(x, y, 0.3) {
-                    continue;
-                }
-                let roll = self.rng.f();
-                let kind = if roll < 0.5 { 0 } else if roll < 0.85 { 1 } else { 2 };
-                self.pickups.push(Pickup { x, y, kind: Drop::Food(kind), t: 1.0 });
-                break;
-            }
-        }
-    }
-
-    fn descend(&mut self) {
-        self.depth += 1;
-        self.stats.descents += 1;
-        let seed = self.rng.next_u32() as u64;
-        let mut r = Rng::new(seed);
-        self.d = Dungeon::generate(&mut r, MAP_W, MAP_H);
-        self.populate();
-        self.state = State::Playing;
+        self.focus = None;
+        self.hover = None;
+        self.hover_npc = None;
+        self.p.path.clear();
+        self.p.goal = None;
+        self.p.talk_to = None;
+        self.dialog = None;
+        self.light_ready = false;
+        self.portal_cd = 0.8;
         self.banner_t = 3.0;
-        self.p.hp = (self.p.hp + self.p.max_hp * 0.35).min(self.p.max_hp);
-        self.p.mana = self.p.max_mana;
-        self.sfx.push(Sfx::Descend);
     }
 
-    fn restart(&mut self) {
-        self.depth = 0;
-        self.kills = 0;
-        self.p.max_hp = 70.0;
-        self.p.hp = 70.0;
-        self.p.mana = self.p.max_mana;
-        self.p.hp_pots = 3;
-        self.p.mp_pots = 3;
-        self.p.gold = 0;
-        self.p.food = MAX_FOOD;
-        self.p.stamina = MAX_STAMINA;
-        self.p.winded = false;
-        self.descend();
+    /// Moves to another level and places the player at the matching entrance.
+    pub fn go_to(&mut self, id: LevelId, from: Option<LevelId>) {
+        let cur = self.swap_out();
+        self.parked.insert(cur.id, cur);
+        let lv = match self.parked.remove(&id) {
+            Some(lv) => lv,
+            None => match id {
+                LevelId::Overworld => world::overworld(self.world_seed),
+                LevelId::Dungeon(k, f) => world::dungeon_floor(k, f, self.world_seed),
+            },
+        };
+        self.swap_in(lv);
+        self.stats.levels_entered += 1;
+        self.sfx.push(Sfx::Descend);
+        // Where do we arrive?
+        let spot = match (id, from) {
+            (LevelId::Overworld, Some(LevelId::Dungeon(k, _))) => self.portal_spot(PortalKind::Entrance(k)),
+            (LevelId::Dungeon(_, f), Some(LevelId::Dungeon(_, g))) if g > f => self.portal_spot(PortalKind::Down),
+            (LevelId::Dungeon(..), _) => self.portal_spot(PortalKind::Up),
+            _ => None,
+        };
+        let (x, y) = spot.unwrap_or_else(world::town_center);
+        self.p.x = x;
+        self.p.y = y;
     }
+
+    /// A walkable spot next to a portal of this kind (so you don't land back on it).
+    fn portal_spot(&self, kind: PortalKind) -> Option<(f32, f32)> {
+        let p = self.portals.iter().find(|p| p.kind == kind)?;
+        for (dx, dy) in [(0.0, 1.2), (1.2, 0.0), (-1.2, 0.0), (0.0, -1.2), (1.0, 1.0), (-1.0, 1.0), (1.0, -1.0), (-1.0, -1.0)] {
+            let (x, y) = (p.x + dx, p.y + dy);
+            if !self.d.blocked(x, y, PLAYER_R + 0.05) {
+                return Some((x, y));
+            }
+        }
+        Some((p.x, p.y))
+    }
+
+    pub fn in_safe(&self, x: f32, y: f32) -> bool {
+        self.safe_contains(x, y, 0.0)
+    }
+
+    pub fn safe_contains(&self, x: f32, y: f32, pad: f32) -> bool {
+        match self.safe {
+            Some((x0, y0, x1, y1)) => x > x0 - pad && x < x1 + pad && y > y0 - pad && y < y1 + pad,
+            None => false,
+        }
+    }
+
+    // ------------------------------------------------------------------ bot / debug helpers
 
     /// Nearest living monster for the test bot: (x, y, distance, in line of sight).
     pub fn bot_target(&self) -> Option<(f32, f32, f32, bool)> {
         self.mobs
             .iter()
-            .filter(|m| !matches!(m.state, MobState::Dead(_)))
+            .filter(|m| m.alive())
             .map(|m| (m.x, m.y, ((m.x - self.p.x).powi(2) + (m.y - self.p.y).powi(2)).sqrt()))
             .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap())
             .map(|(x, y, d)| (x, y, d, self.d.los(self.p.x, self.p.y, x, y)))
+    }
+
+    /// Nearest food on the floor (for the test bot).
+    pub fn bot_food(&self) -> Option<(f32, f32)> {
+        self.pickups
+            .iter()
+            .filter(|k| matches!(k.kind, Drop::Food(_) | Drop::Seal(_)))
+            .map(|k| (k.x, k.y, (k.x - self.p.x).powi(2) + (k.y - self.p.y).powi(2)))
+            .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap())
+            .map(|(x, y, _)| (x, y))
+    }
+
+    /// Where the bot should head next when nothing is in reach: deeper, or into the next dungeon.
+    pub fn bot_portal(&self) -> Option<(f32, f32)> {
+        let want = |p: &&Portal| match p.kind {
+            PortalKind::Down => true,
+            PortalKind::Entrance(k) => k == self.bot_dungeon(),
+            PortalKind::TownPortal => true,
+            PortalKind::Up => self.mobs.iter().all(|m| !m.boss || !m.alive()) && self.portal_kind_exists_not(PortalKind::Down),
+        };
+        self.portals.iter().find(want).map(|p| (p.x, p.y))
+    }
+
+    fn portal_kind_exists_not(&self, k: PortalKind) -> bool {
+        !self.portals.iter().any(|p| p.kind == k)
+    }
+
+    /// First dungeon whose seal the bot doesn't have yet (the Sanctum once unlocked).
+    fn bot_dungeon(&self) -> usize {
+        (0..3).find(|&k| !self.quest.seals[k]).unwrap_or(SANCTUM)
+    }
+
+    /// Path from the player to (tx, ty), for the bot.
+    pub fn bot_path(&self, tx: f32, ty: f32) -> Option<Vec<(f32, f32)>> {
+        self.d.path((self.p.x as i32, self.p.y as i32), (tx as i32, ty as i32), 60_000)
+    }
+
+    /// Where an NPC of this role stands (for the bot).
+    pub fn bot_npc(&self, role: Role) -> Option<(f32, f32)> {
+        self.npcs.iter().find(|n| n.role == role).map(|n| (n.x, n.y))
+    }
+
+    /// A living boss within `r` tiles (for the bot).
+    pub fn boss_alive_near(&self, r: f32) -> bool {
+        self.mobs.iter().any(|m| m.boss && m.alive() && (m.x - self.p.x).powi(2) + (m.y - self.p.y).powi(2) < r * r)
+    }
+
+    /// A seal is lying on the floor waiting to be picked up.
+    pub fn boss_dead_with_loot(&self) -> bool {
+        self.pickups.iter().any(|k| matches!(k.kind, Drop::Seal(_)))
     }
 
     /// Drops one of each food next to the player (staged snapshot only).
@@ -447,20 +548,61 @@ impl Game {
         }
     }
 
-    /// Nearest food on the floor (for the test bot).
-    pub fn bot_food(&self) -> Option<(f32, f32)> {
-        self.pickups
-            .iter()
-            .filter(|k| matches!(k.kind, Drop::Food(_)))
-            .map(|k| (k.x, k.y, (k.x - self.p.x).powi(2) + (k.y - self.p.y).powi(2)))
-            .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap())
-            .map(|(x, y, _)| (x, y))
+    /// Jumps straight to a level (tests and snapshots).
+    pub fn debug_goto(&mut self, id: LevelId) {
+        let from = self.level;
+        self.go_to(id, Some(from));
+        if let LevelId::Dungeon(..) = id {
+            if let Some((x, y)) = self.portal_spot(PortalKind::Up) {
+                self.p.x = x;
+                self.p.y = y;
+            }
+        }
     }
 
-    /// Next waypoint on the A* path from the player to (tx, ty).
-    pub fn bot_step(&self, tx: f32, ty: f32) -> Option<(f32, f32)> {
-        let path = self.d.path((self.p.x as i32, self.p.y as i32), (tx as i32, ty as i32), 6000)?;
-        path.first().copied()
+    /// Puts the player next to the level's boss (tests and snapshots).
+    pub fn debug_near_boss(&mut self) -> bool {
+        let Some(b) = self.mobs.iter().find(|m| m.boss && m.alive()) else { return false };
+        let (bx, by) = (b.x, b.y);
+        for (dx, dy) in [(-3.0, 0.0), (0.0, -3.0), (3.0, 0.0), (0.0, 3.0), (-2.0, -2.0)] {
+            if !self.d.blocked(bx + dx, by + dy, PLAYER_R) && self.d.los(bx + dx, by + dy, bx, by) {
+                self.p.x = bx + dx;
+                self.p.y = by + dy;
+                return true;
+            }
+        }
+        false
+    }
+
+    /// Kills the level's boss outright (tests).
+    pub fn debug_kill_boss(&mut self) -> bool {
+        let Some(i) = self.mobs.iter().position(|m| m.boss && m.alive()) else { return false };
+        self.mobs[i].hp = 0.0;
+        self.kill(i);
+        true
+    }
+
+    /// Opens a conversation with the first NPC of this role (tests and snapshots).
+    pub fn debug_talk(&mut self, role: Role) -> bool {
+        match self.npcs.iter().position(|n| n.role == role) {
+            Some(i) => {
+                self.open_dialog(i);
+                true
+            }
+            None => false,
+        }
+    }
+
+    /// Picks up every pickup on the level (tests).
+    #[cfg(test)]
+    pub fn debug_collect_all(&mut self) {
+        for k in self.pickups.iter_mut() {
+            k.x = self.p.x;
+            k.y = self.p.y;
+            k.t = 1.0;
+        }
+        self.p.food = 50.0;
+        self.collect_pickups();
     }
 
     /// True while fire is on screen (for picking interesting snapshot frames).
@@ -469,7 +611,12 @@ impl Game {
     }
 
     pub fn alive_mobs(&self) -> usize {
-        self.mobs.iter().filter(|m| !matches!(m.state, MobState::Dead(_))).count()
+        self.mobs.iter().filter(|m| m.alive()).count()
+    }
+
+    #[cfg(test)]
+    pub fn boss_alive(&self) -> bool {
+        self.mobs.iter().any(|m| m.boss && m.alive())
     }
 
     // ------------------------------------------------------------------ update
@@ -477,54 +624,311 @@ impl Game {
     pub fn update(&mut self, inp: &Input) {
         self.tick += 1;
         self.banner_t = (self.banner_t - DT).max(0.0);
+        self.level_up_t = (self.level_up_t - DT).max(0.0);
         self.shake = (self.shake - DT * 6.0).max(0.0);
+        self.portal_cd = (self.portal_cd - DT).max(0.0);
+        if let Some((_, t)) = self.message.as_mut() {
+            *t -= DT;
+            if *t <= 0.0 {
+                self.message = None;
+            }
+        }
+        let pressed = |now: bool, before: bool| now && !before;
+        let (p_cast, p_lmb, p_confirm) = (pressed(inp.cast, self.prev.cast), pressed(inp.lmb, self.prev.lmb), inp.confirm);
         match self.state {
             State::Dead(t) => {
                 self.state = State::Dead(t + DT);
-                if t > 1.5 && inp.confirm {
-                    self.restart();
+                if t > 1.5 && (inp.confirm || p_cast) {
+                    self.respawn();
                 }
             }
-            State::Cleared => {
-                if inp.confirm {
-                    self.descend();
-                    return;
+            State::Victory(t) => {
+                self.state = State::Victory(t + DT);
+                if t > 3.0 && (inp.confirm || p_cast || p_lmb) {
+                    self.state = State::Playing;
                 }
             }
             State::Playing => {}
         }
+        if inp.cancel {
+            if self.dialog.is_some() {
+                self.dialog = None;
+            } else if self.show_map {
+                self.show_map = false;
+            } else {
+                self.quit = true;
+            }
+        }
         if inp.map {
             self.show_map = !self.show_map;
         }
-        if self.state == State::Playing || self.state == State::Cleared {
-            self.update_player(inp);
+        if self.dialog.is_some() {
+            self.update_dialog(inp, p_cast || p_confirm, p_lmb);
+        } else if self.state == State::Playing {
+            self.update_player(inp, p_cast, p_lmb);
+            self.check_portals();
         }
+        self.update_npcs();
         self.explore();
         self.update_mobs();
+        self.update_shots();
+        self.update_hazards();
         self.update_balls();
         self.update_world();
-        if self.state == State::Playing && self.alive_mobs() == 0 {
-            self.state = State::Cleared;
-        }
+        self.prev = inp.clone();
     }
 
     /// Mouse position in world coordinates.
-    fn mouse_world(&self, m: (i32, i32)) -> (f32, f32) {
+    pub(crate) fn mouse_world(&self, m: (i32, i32)) -> (f32, f32) {
         let (ox, oy) = self.cam_origin();
         let (wx, wy) = iso::to_world(m.0 as f32 - ox, m.1 as f32 - oy);
         (wx + self.p.x, wy + self.p.y)
     }
 
     /// Screen position of the player's feet.
-    fn cam_origin(&self) -> (f32, f32) {
+    pub(crate) fn cam_origin(&self) -> (f32, f32) {
         (crate::gfx::SW as f32 * 0.5, ((self.view_h - HUD_H) as f32 * 0.5 + 18.0).round())
     }
 
-    fn update_player(&mut self, inp: &Input) {
-        let dead = matches!(self.state, State::Dead(_));
-        if dead {
+    fn respawn(&mut self) {
+        self.stats.deaths += 1;
+        let lost = self.p.gold / 10;
+        self.p.gold -= lost;
+        self.p.hp = self.p.max_hp;
+        self.p.mana = self.p.max_mana;
+        self.p.food = self.p.food.max(60.0);
+        self.p.stamina = MAX_STAMINA;
+        self.p.winded = false;
+        self.state = State::Playing;
+        // Monsters that were chasing you lose interest.
+        for m in self.mobs.iter_mut() {
+            if m.alive() && m.state != MobState::Idle {
+                m.state = MobState::Idle;
+            }
+        }
+        let from = self.level;
+        if from != LevelId::Overworld {
+            self.go_to(LevelId::Overworld, None);
+        }
+        let (x, y) = world::town_center();
+        self.p.x = x;
+        self.p.y = y;
+        if lost > 0 {
+            self.say(format!("YOU WAKE IN HOLLOWMERE. LOST {lost} GOLD."));
+        } else {
+            self.say("YOU WAKE IN HOLLOWMERE.".into());
+        }
+    }
+
+    pub(crate) fn say(&mut self, text: String) {
+        self.message = Some((text, 4.0));
+    }
+
+    fn check_portals(&mut self) {
+        if self.portal_cd > 0.0 {
             return;
         }
+        let (px, py) = (self.p.x, self.p.y);
+        let Some(kind) = self.portals.iter().find(|p| (p.x - px).powi(2) + (p.y - py).powi(2) < 0.55 * 0.55).map(|p| p.kind) else { return };
+        let here = self.level;
+        match kind {
+            PortalKind::Entrance(k) => {
+                if k == SANCTUM && self.quest.stage < 2 {
+                    self.portal_cd = 2.0;
+                    let n = self.quest.seal_count();
+                    self.say(format!("A WALL OF ASH BARS THE GATE. ({n}/3 SEALS)"));
+                    return;
+                }
+                self.go_to(LevelId::Dungeon(k, 0), Some(here));
+            }
+            PortalKind::Up => match here {
+                LevelId::Dungeon(k, 0) => self.go_to(LevelId::Overworld, Some(LevelId::Dungeon(k, 0))),
+                LevelId::Dungeon(k, f) => self.go_to(LevelId::Dungeon(k, f - 1), Some(here)),
+                LevelId::Overworld => {}
+            },
+            PortalKind::Down => {
+                if let LevelId::Dungeon(k, f) = here {
+                    self.go_to(LevelId::Dungeon(k, f + 1), Some(here));
+                }
+            }
+            PortalKind::TownPortal => {
+                self.go_to(LevelId::Overworld, None);
+                let (x, y) = world::town_center();
+                self.p.x = x;
+                self.p.y = y;
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------ people & conversations
+
+    fn update_npcs(&mut self) {
+        let (px, py) = (self.p.x, self.p.y);
+        let talking = self.dialog.is_some();
+        for i in 0..self.npcs.len() {
+            let r1 = self.rng.f();
+            let r2 = self.rng.f();
+            let n = &mut self.npcs[i];
+            n.moving = false;
+            let near = (n.x - px).powi(2) + (n.y - py).powi(2) < 9.0;
+            if near || talking {
+                // Face the player when they're close.
+                if near {
+                    n.dir = iso::dir8(px - n.x, py - n.y);
+                }
+                continue;
+            }
+            if !matches!(n.role, Role::Villager(_)) {
+                continue;
+            }
+            n.wander.2 -= DT;
+            if n.wander.2 <= 0.0 {
+                let a = r1 * std::f32::consts::TAU;
+                // Stroll, but drift back toward home.
+                let (hx, hy) = (n.home.0 - n.x, n.home.1 - n.y);
+                let (wx, wy) = if hx * hx + hy * hy > 9.0 { (hx, hy) } else { (a.cos(), a.sin()) };
+                let l = (wx * wx + wy * wy).sqrt().max(0.01);
+                n.wander = if r2 < 0.45 { (0.0, 0.0, 1.5 + r2 * 3.0) } else { (wx / l, wy / l, 1.0 + r2 * 2.0) };
+            }
+            if n.wander.0 != 0.0 || n.wander.1 != 0.0 {
+                let (wx, wy) = (n.wander.0, n.wander.1);
+                let (mut x, mut y) = (n.x, n.y);
+                move_circle(&self.d, &mut x, &mut y, wx * 1.1 * DT, wy * 1.1 * DT, 0.3);
+                n.x = x;
+                n.y = y;
+                n.dir = iso::dir8(wx, wy);
+                n.moving = true;
+                n.anim_t += DT * 0.7;
+            }
+        }
+    }
+
+    pub(crate) fn open_dialog(&mut self, i: usize) {
+        let role = self.npcs[i].role;
+        let d = story::talk(role, &self.quest);
+        if d.heals {
+            self.p.hp = self.p.max_hp;
+            self.p.mana = self.p.max_mana;
+            self.p.stamina = MAX_STAMINA;
+            self.p.winded = false;
+            self.sfx.push(Sfx::Drink);
+        }
+        self.stats.talks += 1;
+        self.p.path.clear();
+        self.p.goal = None;
+        self.p.talk_to = None;
+        self.dialog = Some(d);
+    }
+
+    /// Conversation controls: up/down or the mouse pick an option, cast / confirm / click chooses.
+    fn update_dialog(&mut self, inp: &Input, choose: bool, click: bool) {
+        let up = inp.move_y < -0.5 && self.prev.move_y >= -0.5;
+        let down = inp.move_y > 0.5 && self.prev.move_y <= 0.5;
+        let mut act = None;
+        {
+            let d = self.dialog.as_mut().unwrap();
+            let n = d.options.len().max(1);
+            if up {
+                d.sel = (d.sel + n - 1) % n;
+            }
+            if down {
+                d.sel = (d.sel + 1) % n;
+            }
+            let mut hovered = None;
+            if let Some((mx, my)) = inp.mouse {
+                hovered = self.dlg_rects.iter().position(|&(x, y, w, h)| mx >= x && mx < x + w && my >= y && my < y + h);
+                if let Some(i) = hovered {
+                    if inp.mouse != self.prev.mouse {
+                        d.sel = i;
+                    }
+                }
+            }
+            if choose || (click && hovered.is_some()) {
+                let sel = if click { hovered.unwrap_or(d.sel) } else { d.sel };
+                act = d.options.get(sel).map(|o| o.1);
+            }
+            if inp.run_toggle {
+                act = Some(Act::Close);
+            }
+        }
+        match act {
+            Some(Act::Next) => {
+                let d = self.dialog.as_mut().unwrap();
+                d.page += 1;
+                d.refresh_options();
+            }
+            Some(Act::Close) => {
+                if let Some(stage) = self.dialog.as_ref().and_then(|d| d.advance_to) {
+                    self.advance_quest(stage);
+                }
+                self.dialog = None;
+            }
+            Some(Act::Buy(w)) => self.buy(w),
+            None => {}
+        }
+    }
+
+    fn advance_quest(&mut self, stage: u8) {
+        if stage > self.quest.stage {
+            self.quest.stage = stage;
+            self.sfx.push(Sfx::Pickup);
+            match stage {
+                1 => self.say("NEW QUEST: SLAY THE THREE WARDENS".into()),
+                2 => self.say("THE SANCTUM GATE IS UNSEALED".into()),
+                _ => {}
+            }
+        }
+    }
+
+    fn buy(&mut self, w: Ware) {
+        let price = w.price();
+        if self.p.gold < price {
+            self.say("NOT ENOUGH GOLD".into());
+            return;
+        }
+        self.p.gold -= price;
+        self.sfx.push(Sfx::Pickup);
+        match w {
+            Ware::HealthPotion => self.p.hp_pots += 1,
+            Ware::ManaPotion => self.p.mp_pots += 1,
+            Ware::Bread => self.p.food = (self.p.food + FOODS[1].1).min(MAX_FOOD),
+            Ware::Roast => {
+                self.p.food = (self.p.food + FOODS[2].1).min(MAX_FOOD);
+                self.p.hp = (self.p.hp + FOODS[2].2).min(self.p.max_hp);
+            }
+        }
+        let name = match w {
+            Ware::HealthPotion => "HEALING POTION",
+            Ware::ManaPotion => "MANA POTION",
+            Ware::Bread => "BREAD - EATEN",
+            Ware::Roast => "ROAST - EATEN",
+        };
+        self.say(format!("BOUGHT {name}"));
+    }
+
+    fn nearest_npc(&self, range: f32) -> Option<usize> {
+        self.npcs
+            .iter()
+            .enumerate()
+            .map(|(i, n)| (i, (n.x - self.p.x).powi(2) + (n.y - self.p.y).powi(2)))
+            .filter(|&(_, d2)| d2 < range * range)
+            .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
+            .map(|v| v.0)
+    }
+
+    pub(crate) fn pick_npc(&self, m: (i32, i32)) -> Option<usize> {
+        let (ox, oy) = self.cam_origin();
+        let (mx, my) = (m.0 as f32, m.1 as f32);
+        self.npcs.iter().enumerate().find_map(|(i, n)| {
+            let (sx, sy) = iso::to_screen(n.x - self.p.x, n.y - self.p.y);
+            let (sx, sy) = (sx + ox, sy + oy);
+            ((mx - sx).abs() < 12.0 && my < sy + 4.0 && my > sy - 50.0).then_some(i)
+        })
+    }
+
+    // ------------------------------------------------------------------ player
+
+    fn update_player(&mut self, inp: &Input, p_cast: bool, p_lmb: bool) {
         let p = &mut self.p;
         p.flash = (p.flash - DT).max(0.0);
         p.cast_cd = (p.cast_cd - DT).max(0.0);
@@ -538,7 +942,8 @@ impl Game {
         if inp.run_toggle {
             p.running = !p.running;
         }
-        if starving {
+        let in_town = self.in_safe(self.p.x, self.p.y);
+        if starving && !in_town {
             self.stats.starve_damage += STARVE_DPS * DT;
             self.p.hp -= STARVE_DPS * DT;
             if self.p.hunger_msg <= 0.0 {
@@ -558,45 +963,67 @@ impl Game {
 
         if inp.potion_hp && self.p.hp_pots > 0 && self.p.hp < self.p.max_hp {
             self.p.hp_pots -= 1;
-            self.p.hp = (self.p.hp + 40.0).min(self.p.max_hp);
+            self.p.hp = (self.p.hp + 40.0 + self.p.max_hp * 0.15).min(self.p.max_hp);
             self.sfx.push(Sfx::Drink);
-            self.floater(self.p.x, self.p.y, "+40".into(), rgb(0xff5050));
+            self.floater(self.p.x, self.p.y, "HEALED".into(), rgb(0xff5050));
         }
         if inp.potion_mp && self.p.mp_pots > 0 && self.p.mana < self.p.max_mana {
             self.p.mp_pots -= 1;
-            self.p.mana = (self.p.mana + 35.0).min(self.p.max_mana);
+            self.p.mana = (self.p.mana + 35.0 + self.p.max_mana * 0.15).min(self.p.max_mana);
             self.sfx.push(Sfx::Drink);
-            self.floater(self.p.x, self.p.y, "+35".into(), rgb(0x5080ff));
+            self.floater(self.p.x, self.p.y, "MANA".into(), rgb(0x5080ff));
         }
 
-        // Hovered monster (mouse picking against sprite boxes).
+        // Hovered monster / person (mouse picking against sprite boxes).
         self.hover = inp.mouse.and_then(|m| self.pick_mob(m));
+        self.hover_npc = inp.mouse.and_then(|m| self.pick_npc(m));
 
-        // ---- casting ----
-        let mut cast_at: Option<(f32, f32)> = None;
-        if let Some(m) = inp.mouse {
-            let target = self.hover.map(|i| (self.mobs[i].x, self.mobs[i].y)).unwrap_or_else(|| self.mouse_world(m));
-            if inp.rmb || (inp.lmb && (inp.stand || self.hover.is_some())) {
-                cast_at = Some(target);
+        // ---- talking (town) ----
+        if let (Some(i), true) = (self.hover_npc, p_lmb) {
+            self.p.talk_to = Some(i);
+        }
+        if let Some(i) = self.p.talk_to {
+            let n = &self.npcs[i];
+            if (n.x - self.p.x).powi(2) + (n.y - self.p.y).powi(2) < TALK_RANGE * TALK_RANGE {
+                self.open_dialog(i);
+                return;
             }
         }
-        if inp.cast {
-            let aim = inp.aim_x * inp.aim_x + inp.aim_y * inp.aim_y;
-            if aim > 0.09 {
-                let (dx, dy) = iso::screen_dir_to_world(inp.aim_x, inp.aim_y);
-                cast_at = Some((self.p.x + dx * 6.0, self.p.y + dy * 6.0));
-            } else if let Some(i) = self.nearest_visible_mob(10.0) {
-                cast_at = Some((self.mobs[i].x, self.mobs[i].y));
-            } else if let Some(m) = inp.mouse.filter(|_| inp.move_x == 0.0 && inp.move_y == 0.0) {
-                cast_at = Some(self.mouse_world(m));
-            } else {
-                let (dx, dy) = dir_vec(self.p.dir);
-                cast_at = Some((self.p.x + dx * 6.0, self.p.y + dy * 6.0));
+        if in_town && (p_cast || inp.confirm) {
+            if let Some(i) = self.nearest_npc(TALK_RANGE) {
+                self.open_dialog(i);
+                return;
+            }
+        }
+
+        // ---- casting (not in town) ----
+        let mut cast_at: Option<(f32, f32)> = None;
+        if !in_town {
+            if let Some(m) = inp.mouse {
+                let target = self.hover.map(|i| (self.mobs[i].x, self.mobs[i].y)).unwrap_or_else(|| self.mouse_world(m));
+                if inp.rmb || (inp.lmb && (inp.stand || self.hover.is_some())) {
+                    cast_at = Some(target);
+                }
+            }
+            if inp.cast {
+                let aim = inp.aim_x * inp.aim_x + inp.aim_y * inp.aim_y;
+                if aim > 0.09 {
+                    let (dx, dy) = iso::screen_dir_to_world(inp.aim_x, inp.aim_y);
+                    cast_at = Some((self.p.x + dx * 6.0, self.p.y + dy * 6.0));
+                } else if let Some(i) = self.nearest_visible_mob(10.0) {
+                    cast_at = Some((self.mobs[i].x, self.mobs[i].y));
+                } else if let Some(m) = inp.mouse.filter(|_| inp.move_x == 0.0 && inp.move_y == 0.0) {
+                    cast_at = Some(self.mouse_world(m));
+                } else {
+                    let (dx, dy) = dir_vec(self.p.dir);
+                    cast_at = Some((self.p.x + dx * 6.0, self.p.y + dy * 6.0));
+                }
             }
         }
         if let Some((tx, ty)) = cast_at {
             self.p.path.clear();
             self.p.goal = None;
+            self.p.talk_to = None;
             let (dx, dy) = (tx - self.p.x, ty - self.p.y);
             if dx * dx + dy * dy > 0.01 {
                 self.p.dir = iso::dir8(dx, dy);
@@ -617,9 +1044,17 @@ impl Game {
             mv = (dx * mag, dy * mag);
             self.p.path.clear();
             self.p.goal = None;
+            self.p.talk_to = None;
         } else if cast_at.is_none() {
-            if let (Some(m), true) = (inp.mouse, inp.lmb && !inp.stand && self.hover.is_none()) {
-                let goal = self.mouse_world(m);
+            let talk_goal = self.p.talk_to.map(|i| (self.npcs[i].x, self.npcs[i].y));
+            let want = if let Some(g) = talk_goal {
+                Some(g)
+            } else if let (Some(m), true) = (inp.mouse, inp.lmb && !inp.stand && self.hover.is_none()) {
+                Some(self.mouse_world(m))
+            } else {
+                None
+            };
+            if let Some(goal) = want {
                 self.p.repath -= DT;
                 let changed = self.p.goal.map_or(true, |g| (g.0 - goal.0).abs() + (g.1 - goal.1).abs() > 0.5);
                 if changed || self.p.repath <= 0.0 {
@@ -627,7 +1062,7 @@ impl Game {
                     self.p.repath = 0.25;
                     let from = (self.p.x.floor() as i32, self.p.y.floor() as i32);
                     let to = (goal.0.floor() as i32, goal.1.floor() as i32);
-                    self.p.path = self.d.path(from, to, 4000).unwrap_or_default();
+                    self.p.path = self.d.path(from, to, 6000).unwrap_or_default();
                     if let Some(last) = self.p.path.last_mut() {
                         *last = goal;
                     }
@@ -641,7 +1076,7 @@ impl Game {
                 } else {
                     mv = (dx / l, dy / l);
                 }
-            } else if let Some(goal) = self.p.goal.filter(|_| inp.lmb) {
+            } else if let Some(goal) = self.p.goal.filter(|_| inp.lmb || talk_goal.is_some()) {
                 // Clicked somewhere unreachable: walk straight at it and slide along walls.
                 let (dx, dy) = (goal.0 - self.p.x, goal.1 - self.p.y);
                 let l = (dx * dx + dy * dy).sqrt();
@@ -668,7 +1103,10 @@ impl Game {
                 self.p.winded = false;
             }
         }
-        self.p.food = (self.p.food - if run { FOOD_DRAIN_RUN } else { FOOD_DRAIN } * DT).max(0.0);
+        // Hunger doesn't tick in the safety of town.
+        if !in_town {
+            self.p.food = (self.p.food - if run { FOOD_DRAIN_RUN } else { FOOD_DRAIN } * DT).max(0.0);
+        }
         let base = if run { RUN_SPEED } else { WALK_SPEED };
         let speed = if casting { base * 0.25 } else { base };
         if self.p.moving {
@@ -683,7 +1121,6 @@ impl Game {
         } else {
             self.p.anim_t = 0.0;
         }
-
         self.collect_pickups();
     }
 
@@ -725,6 +1162,23 @@ impl Game {
                     self.sfx.push(Sfx::Eat);
                     self.floater(px, py, name.into(), rgb(0xe0b060));
                 }
+                Drop::Seal(i) => {
+                    self.quest.seals[i] = true;
+                    self.p.max_hp += 15.0;
+                    self.p.max_mana += 10.0;
+                    self.p.power *= 1.15;
+                    self.p.hp = self.p.max_hp;
+                    self.p.mana = self.p.max_mana;
+                    self.sfx.push(Sfx::Descend);
+                    let name = ["BONE", "PLAGUE", "HEX"][i];
+                    self.floater(px, py, format!("SEAL OF {name}"), rgb(0xc8a0ff));
+                    let n = self.quest.seal_count();
+                    if n == 3 {
+                        self.say("ALL THREE SEALS. RETURN TO ELDER MAREN".into());
+                    } else {
+                        self.say(format!("THE SEAL'S POWER FLOWS INTO YOU ({n}/3)"));
+                    }
+                }
             }
         }
     }
@@ -735,7 +1189,7 @@ impl Game {
             return;
         }
         let (px, py) = (self.p.x, self.p.y);
-        let r = 9;
+        let r = if self.level == LevelId::Overworld { 13 } else { 9 };
         for ty in py as i32 - r..=py as i32 + r {
             for tx in px as i32 - r..=px as i32 + r {
                 if tx < 0 || ty < 0 || tx >= self.d.w || ty >= self.d.h {
@@ -751,7 +1205,7 @@ impl Game {
                 }
                 // Walls are seen when the floor next to them is visible.
                 let (lx, ly) = (cx + (px - cx).signum() * 0.6, cy + (py - cy).signum() * 0.6);
-                if self.d.los(px, py, cx, cy) || self.d.los(px, py, lx, ly) {
+                if self.level == LevelId::Overworld || self.d.los(px, py, cx, cy) || self.d.los(px, py, lx, ly) {
                     self.explored[i] = true;
                 }
             }
@@ -771,8 +1225,8 @@ impl Game {
         let l = (dx * dx + dy * dy).sqrt().max(0.001);
         let (ux, uy) = (dx / l, dy / l);
         let (x, y) = (p.x + ux * 0.45, p.y + uy * 0.45);
-        let scale = 1.0 + 0.12 * (self.depth - 1) as f32;
-        let dmg = if ember { self.rng.rf(3.0, 5.0) } else { self.rng.rf(9.0, 15.0) } * scale;
+        let power = p.power;
+        let dmg = if ember { self.rng.rf(3.0, 5.0) } else { self.rng.rf(9.0, 15.0) } * power;
         self.balls.push(Fireball { x, y, vx: ux * speed, vy: uy * speed, life, dmg, ember });
         if ember {
             self.stats.embers += 1;
@@ -786,25 +1240,27 @@ impl Game {
         self.mobs
             .iter()
             .enumerate()
-            .filter(|(_, m)| !matches!(m.state, MobState::Dead(_)))
+            .filter(|(_, m)| m.alive())
             .map(|(i, m)| (i, (m.x - self.p.x).powi(2) + (m.y - self.p.y).powi(2)))
             .filter(|&(i, d2)| d2 < range * range && self.d.los(self.p.x, self.p.y, self.mobs[i].x, self.mobs[i].y))
             .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
             .map(|v| v.0)
     }
 
-    fn pick_mob(&self, m: (i32, i32)) -> Option<usize> {
+    pub(crate) fn pick_mob(&self, m: (i32, i32)) -> Option<usize> {
         let (ox, oy) = self.cam_origin();
         let mut best: Option<(usize, f32)> = None;
         for (i, mob) in self.mobs.iter().enumerate() {
-            if matches!(mob.state, MobState::Dead(_)) {
+            if !mob.alive() {
                 continue;
             }
             let (sx, sy) = iso::to_screen(mob.x - self.p.x, mob.y - self.p.y);
             let (sx, sy) = (sx + ox, sy + oy);
-            let h = self.art.char(mob.kind.name()).height as f32;
+            let (art, scale, ..) = self.art.char_art(crate::mobs::def(mob.kind).art);
+            let h = art.height as f32 * scale;
+            let half = if mob.boss { 22.0 } else { 12.0 };
             let (mx, my) = (m.0 as f32, m.1 as f32);
-            if (mx - sx).abs() < 12.0 && my < sy + 4.0 && my > sy - h {
+            if (mx - sx).abs() < half && my < sy + 4.0 && my > sy - h {
                 let depth = mob.x + mob.y;
                 if best.map_or(true, |b| depth > b.1) {
                     best = Some((i, depth));
@@ -814,206 +1270,22 @@ impl Game {
         best.map(|b| b.0)
     }
 
-    fn update_mobs(&mut self) {
-        let (px, py) = (self.p.x, self.p.y);
-        let player_alive = !matches!(self.state, State::Dead(_));
-        let n = self.mobs.len();
-        let mut hits: Vec<f32> = vec![];
-        let mut aggro_at: Vec<(f32, f32)> = vec![];
-        for i in 0..n {
-            let (tick, rng_v) = (self.tick, self.rng.f());
-            let m = &mut self.mobs[i];
-            m.flash = (m.flash - DT).max(0.0);
-            m.cd = (m.cd - DT).max(0.0);
-            if let MobState::Dead(t) = m.state {
-                m.state = MobState::Dead(t + DT);
-                continue;
-            }
-            // Burning damage over time.
-            if m.burn > 0.0 {
-                m.burn -= DT;
-                m.hp -= 3.0 * DT;
-                if tick % 4 == 0 {
-                    self.parts.push(Particle {
-                        x: m.x + rng_v * 0.4 - 0.2,
-                        y: m.y + 0.1,
-                        z: 10.0 + rng_v * 24.0,
-                        vx: 0.0,
-                        vy: 0.0,
-                        vz: 30.0,
-                        life: 0.4,
-                        max: 0.4,
-                        kind: PKind::Fire,
-                    });
-                }
-                if m.hp <= 0.0 {
-                    m.hp = 0.0;
-                }
-            }
-            if m.stun > 0.0 {
-                m.stun -= DT;
-                m.moving = false;
-                continue;
-            }
-            let (dx, dy) = (px - m.x, py - m.y);
-            let dist = (dx * dx + dy * dy).sqrt();
-            m.moving = false;
-            match m.state {
-                MobState::Idle => {
-                    if player_alive && dist < 8.5 && self.d.los(m.x, m.y, px, py) {
-                        m.state = MobState::Chase;
-                        aggro_at.push((m.x, m.y));
-                    } else {
-                        // Shuffle about a little.
-                        m.wander.2 -= DT;
-                        if m.wander.2 <= 0.0 {
-                            let a = rng_v * std::f32::consts::TAU;
-                            m.wander = (a.cos(), a.sin(), 1.0 + rng_v * 2.5);
-                            if rng_v < 0.5 {
-                                m.wander.0 = 0.0;
-                                m.wander.1 = 0.0;
-                            }
-                        }
-                        if m.wander.0 != 0.0 || m.wander.1 != 0.0 {
-                            let (wx, wy) = (m.wander.0, m.wander.1);
-                            let (mut x, mut y) = (m.x, m.y);
-                            move_circle(&self.d, &mut x, &mut y, wx * m.speed * 0.35 * DT, wy * m.speed * 0.35 * DT, MOB_R);
-                            m.x = x;
-                            m.y = y;
-                            m.dir = iso::dir8(wx, wy);
-                            m.moving = true;
-                            m.anim_t += DT * 0.5;
-                        }
-                    }
-                }
-                MobState::Chase => {
-                    if !player_alive {
-                        m.state = MobState::Idle;
-                        continue;
-                    }
-                    if dist < 0.85 {
-                        if m.cd <= 0.0 {
-                            m.state = MobState::Attack(m.windup);
-                            m.dir = iso::dir8(dx, dy);
-                        }
-                        continue;
-                    }
-                    let (tx, ty) = if self.d.los(m.x, m.y, px, py) {
-                        m.path.clear();
-                        (px, py)
-                    } else {
-                        m.repath -= DT;
-                        if m.repath <= 0.0 || m.path.is_empty() {
-                            m.repath = 0.6 + (i % 7) as f32 * 0.05;
-                            m.path = self.d.path((m.x as i32, m.y as i32), (px as i32, py as i32), 2500).unwrap_or_default();
-                        }
-                        while let Some(&(nx, ny)) = m.path.first() {
-                            if (nx - m.x).powi(2) + (ny - m.y).powi(2) < 0.04 {
-                                m.path.remove(0);
-                            } else {
-                                break;
-                            }
-                        }
-                        m.path.first().copied().unwrap_or((px, py))
-                    };
-                    let (ddx, ddy) = (tx - m.x, ty - m.y);
-                    let l = (ddx * ddx + ddy * ddy).sqrt().max(0.001);
-                    let (ux, uy) = (ddx / l, ddy / l);
-                    let (mut x, mut y) = (m.x, m.y);
-                    move_circle(&self.d, &mut x, &mut y, ux * m.speed * DT, uy * m.speed * DT, MOB_R);
-                    m.x = x;
-                    m.y = y;
-                    m.dir = iso::dir8(ux, uy);
-                    m.moving = true;
-                    m.anim_t += DT * m.speed / 1.6;
-                }
-                MobState::Attack(t) => {
-                    let t = t - DT;
-                    if t <= 0.0 {
-                        m.state = MobState::Chase;
-                        m.cd = m.cooldown;
-                        if player_alive && dist < 1.25 {
-                            hits.push(self.rng.range(m.dmg.0, m.dmg.1 + 1) as f32);
-                        } else {
-                            self.sfx.push(Sfx::Swing);
-                        }
-                    } else {
-                        m.state = MobState::Attack(t);
-                    }
-                }
-                MobState::Dead(_) => {}
-            }
-        }
-        // Pack aggro: a monster that notices you alerts its friends.
-        for (ax, ay) in aggro_at {
-            for m in self.mobs.iter_mut() {
-                if m.state == MobState::Idle && (m.x - ax).powi(2) + (m.y - ay).powi(2) < 25.0 {
-                    m.state = MobState::Chase;
-                }
-            }
-        }
-        // Separation so packs don't stack on one spot.
-        for i in 0..n {
-            if matches!(self.mobs[i].state, MobState::Dead(_)) {
-                continue;
-            }
-            for j in i + 1..n {
-                if matches!(self.mobs[j].state, MobState::Dead(_)) {
-                    continue;
-                }
-                let (dx, dy) = (self.mobs[j].x - self.mobs[i].x, self.mobs[j].y - self.mobs[i].y);
-                let d2 = dx * dx + dy * dy;
-                let min = MOB_R * 2.0;
-                if d2 < min * min && d2 > 1e-6 {
-                    let d = d2.sqrt();
-                    let push = (min - d) * 0.5;
-                    let (ux, uy) = (dx / d * push, dy / d * push);
-                    let (mut x, mut y) = (self.mobs[i].x, self.mobs[i].y);
-                    move_circle(&self.d, &mut x, &mut y, -ux, -uy, MOB_R);
-                    self.mobs[i].x = x;
-                    self.mobs[i].y = y;
-                    let (mut x, mut y) = (self.mobs[j].x, self.mobs[j].y);
-                    move_circle(&self.d, &mut x, &mut y, ux, uy, MOB_R);
-                    self.mobs[j].x = x;
-                    self.mobs[j].y = y;
-                }
-            }
-            // Keep off the player.
-            let (dx, dy) = (self.mobs[i].x - px, self.mobs[i].y - py);
-            let d2 = dx * dx + dy * dy;
-            let min = MOB_R + PLAYER_R;
-            if d2 < min * min && d2 > 1e-6 {
-                let d = d2.sqrt();
-                let (mut x, mut y) = (self.mobs[i].x, self.mobs[i].y);
-                move_circle(&self.d, &mut x, &mut y, dx / d * (min - d), dy / d * (min - d), MOB_R);
-                self.mobs[i].x = x;
-                self.mobs[i].y = y;
-            }
-        }
-        // Burn deaths.
-        for i in 0..n {
-            if self.mobs[i].hp <= 0.0 && !matches!(self.mobs[i].state, MobState::Dead(_)) {
-                self.kill(i);
-            }
-        }
-        for dmg in hits {
-            self.hurt_player(dmg);
-        }
-    }
-
-    fn hurt_player(&mut self, dmg: f32) {
+    pub(crate) fn hurt_player(&mut self, dmg: f32) {
         if matches!(self.state, State::Dead(_)) {
             return;
         }
-        self.p.hp -= dmg;
-        self.stats.damage_taken += dmg;
-        self.p.flash = 0.2;
-        self.shake = self.shake.max(0.5);
-        self.sfx.push(Sfx::Hurt);
-        self.floater(self.p.x, self.p.y, format!("{}", dmg as i32), rgb(0xff4040));
+        if dmg > 0.0 {
+            self.p.hp -= dmg;
+            self.stats.damage_taken += dmg;
+            self.p.flash = 0.2;
+            self.shake = self.shake.max(0.5);
+            self.sfx.push(Sfx::Hurt);
+            self.floater(self.p.x, self.p.y, format!("{}", dmg as i32), rgb(0xff4040));
+        }
         if self.p.hp <= 0.0 {
             self.p.hp = 0.0;
             self.state = State::Dead(0.0);
+            self.dialog = None;
             self.sfx.push(Sfx::Die);
             for _ in 0..30 {
                 self.spray(self.p.x, self.p.y, PKind::Blood, 20.0);
@@ -1038,7 +1310,7 @@ impl Game {
                     b.x -= b.vx * DT / steps as f32;
                     b.y -= b.vy * DT / steps as f32;
                 }
-                if self.mobs.iter().any(|m| !matches!(m.state, MobState::Dead(_)) && (m.x - b.x).powi(2) + (m.y - b.y).powi(2) < 0.45 * 0.45) {
+                if self.mobs.iter().any(|m| m.alive() && (m.x - b.x).powi(2) + (m.y - b.y).powi(2) < (m.r + 0.13).powi(2)) {
                     hit = true;
                 }
             }
@@ -1089,9 +1361,9 @@ impl Game {
             .mobs
             .iter()
             .enumerate()
-            .filter(|(_, m)| !matches!(m.state, MobState::Dead(_)))
-            .map(|(i, m)| (i, (m.x - x).powi(2) + (m.y - y).powi(2)))
-            .filter(|&(_, d2)| d2 < 0.6 * 0.6)
+            .filter(|(_, m)| m.alive())
+            .map(|(i, m)| (i, (m.x - x).powi(2) + (m.y - y).powi(2), m.r))
+            .filter(|&(_, d2, r)| d2 < (r + 0.3).powi(2))
             .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
             .map(|v| v.0);
         let Some(i) = target else { return };
@@ -1134,36 +1406,39 @@ impl Game {
         let mut hit_any = false;
         for i in 0..self.mobs.len() {
             let m = &self.mobs[i];
-            if matches!(m.state, MobState::Dead(_)) {
+            if !m.alive() {
                 continue;
             }
             let d2 = (m.x - x).powi(2) + (m.y - y).powi(2);
-            if d2 > 1.3 * 1.3 {
+            let reach = 1.3 + m.r - 0.32;
+            if d2 > reach * reach {
                 continue;
             }
-            let dmg = if d2 < 0.6 * 0.6 { dmg } else { dmg * 0.5 };
+            let dmg = if d2 < (0.3 + m.r).powi(2) { dmg } else { dmg * 0.5 };
             hit_any = true;
-            let (mx, my) = (m.x, m.y);
+            let (mx, my, boss, r) = (m.x, m.y, m.boss, m.r);
             let m = &mut self.mobs[i];
             m.hp -= dmg;
             m.flash = 0.12;
             m.burn = 2.0;
-            m.stun = m.stun.max(0.15);
+            // Bosses shrug off most of the stagger.
+            m.stun = m.stun.max(if boss { 0.03 } else { 0.15 });
             if m.state == MobState::Idle {
                 m.state = MobState::Chase;
             }
-            if let MobState::Attack(_) = m.state {
+            if let (MobState::Attack(_), false) = (m.state, boss) {
                 // Getting hit interrupts the swing (D2 hit recovery).
                 m.state = MobState::Chase;
                 m.cd = m.cd.max(0.3);
             }
-            // Knockback.
-            let (kx, ky) = (mx - x, my - y);
-            let kl = (kx * kx + ky * ky).sqrt().max(0.01);
-            let (mut nx, mut ny) = (mx, my);
-            move_circle(&self.d, &mut nx, &mut ny, kx / kl * 0.25, ky / kl * 0.25, MOB_R);
-            m.x = nx;
-            m.y = ny;
+            if !boss {
+                let (kx, ky) = (mx - x, my - y);
+                let kl = (kx * kx + ky * ky).sqrt().max(0.01);
+                let (mut nx, mut ny) = (mx, my);
+                move_circle(&self.d, &mut nx, &mut ny, kx / kl * 0.25, ky / kl * 0.25, r);
+                m.x = nx;
+                m.y = ny;
+            }
             self.focus = Some(i);
             self.focus_t = 3.0;
             self.floater(mx, my, format!("{}", dmg.round() as i32), rgb(0xffc040));
@@ -1177,28 +1452,67 @@ impl Game {
         }
     }
 
-    fn kill(&mut self, i: usize) {
-        let (x, y, kind) = (self.mobs[i].x, self.mobs[i].y, self.mobs[i].kind);
+    pub(crate) fn kill(&mut self, i: usize) {
+        let (x, y, kind, boss, xp) = (self.mobs[i].x, self.mobs[i].y, self.mobs[i].kind, self.mobs[i].boss, self.mobs[i].xp);
         self.mobs[i].state = MobState::Dead(0.0);
         self.mobs[i].hp = 0.0;
         self.kills += 1;
         self.sfx.push(Sfx::Die);
-        let pk = if kind == Kind::Skeleton { PKind::Bone } else { PKind::Blood };
-        for _ in 0..14 {
+        let pk = if matches!(kind, Kind::Skeleton | Kind::Archer | Kind::BoneWarden | Kind::HexWarden) { PKind::Bone } else { PKind::Blood };
+        for _ in 0..if boss { 60 } else { 14 } {
             self.spray(x, y, pk, 22.0);
         }
-        if kind == Kind::Zombie {
-            self.decals.push(Decal { x, y, r: 0.4, col: rgb(0x301008), a: 0.5 });
+        if matches!(kind, Kind::Zombie | Kind::PlagueWarden | Kind::Wolf) {
+            self.decals.push(Decal { x, y, r: if boss { 1.0 } else { 0.4 }, col: rgb(0x301008), a: 0.5 });
+        }
+        self.gain_xp(xp);
+        // Imps panic when one of their own falls (like D2's Fallen).
+        if kind == Kind::Imp {
+            for m in self.mobs.iter_mut() {
+                if m.kind == Kind::Imp && m.alive() && (m.x - x).powi(2) + (m.y - y).powi(2) < 36.0 {
+                    m.flee = 2.5;
+                }
+            }
+        }
+        if boss {
+            self.stats.bosses += 1;
+            self.shake = 1.0;
+            self.lights.push(Light { x, y, r: 260.0, s: 1.5, life: 1.2, max: 1.2 });
+            match kind {
+                Kind::BoneWarden => self.pickups.push(Pickup { x, y, kind: Drop::Seal(0), t: 0.0 }),
+                Kind::PlagueWarden => self.pickups.push(Pickup { x, y, kind: Drop::Seal(1), t: 0.0 }),
+                Kind::HexWarden => self.pickups.push(Pickup { x, y, kind: Drop::Seal(2), t: 0.0 }),
+                Kind::AshKing => {
+                    self.quest.stage = 3;
+                    self.state = State::Victory(0.0);
+                    self.dialog = None;
+                }
+                _ => {}
+            }
+            for k in 0..3 {
+                self.pickups.push(Pickup { x: x + k as f32 * 0.5 - 0.5, y: y + 0.6, kind: Drop::Gold(self.rng.range(40, 90)), t: 0.0 });
+            }
+            self.pickups.push(Pickup { x: x - 0.6, y: y - 0.4, kind: Drop::Health, t: 0.0 });
+            // A way home.
+            let (mut px, mut py) = (x + 1.5, y + 1.5);
+            if self.d.blocked(px, py, 0.4) {
+                px = x;
+                py = y + 1.2;
+            }
+            self.portals.push(Portal { x: px, y: py, kind: PortalKind::TownPortal });
+            let label = crate::mobs::def(kind).label;
+            self.say(format!("{label} IS SLAIN"));
+            return;
         }
         let r = self.rng.f();
-        let drop = if r < 0.14 {
+        let drop = if r < 0.12 {
             Some(Drop::Health)
-        } else if r < 0.26 {
+        } else if r < 0.22 {
             Some(Drop::Mana)
-        } else if r < 0.36 {
+        } else if r < 0.32 {
             Some(Drop::Food(if self.rng.chance(0.6) { 0 } else { 1 }))
-        } else if r < 0.66 {
-            Some(Drop::Gold(self.rng.range(3, 12) * self.depth as i32))
+        } else if r < 0.65 {
+            Some(Drop::Gold((self.rng.range(3, 12) as f32 * self.tier) as i32))
         } else {
             None
         };
@@ -1207,7 +1521,27 @@ impl Game {
         }
     }
 
-    fn spray(&mut self, x: f32, y: f32, kind: PKind, z: f32) {
+    fn gain_xp(&mut self, xp: f32) {
+        self.p.xp += xp;
+        while self.p.xp >= xp_to_next(self.p.clvl) {
+            self.p.xp -= xp_to_next(self.p.clvl);
+            self.p.clvl += 1;
+            self.p.max_hp += 8.0;
+            self.p.max_mana += 4.0;
+            self.p.power *= 1.07;
+            self.p.hp = self.p.max_hp;
+            self.p.mana = self.p.max_mana;
+            self.level_up_t = 2.5;
+            self.sfx.push(Sfx::Descend);
+            let (x, y) = (self.p.x, self.p.y);
+            self.floater(x, y, format!("LEVEL {}", self.p.clvl), rgb(0xffe080));
+            for _ in 0..30 {
+                self.spray_at(x, y, PKind::Magic, 20.0);
+            }
+        }
+    }
+
+    pub(crate) fn spray(&mut self, x: f32, y: f32, kind: PKind, z: f32) {
         let a = self.rng.f() * std::f32::consts::TAU;
         let s = self.rng.rf(0.5, 2.5);
         let life = self.rng.rf(0.5, 1.2);
@@ -1215,7 +1549,16 @@ impl Game {
         self.parts.push(Particle { x, y, z, vx: a.cos() * s, vy: a.sin() * s, vz, life, max: life, kind });
     }
 
-    fn floater(&mut self, x: f32, y: f32, text: String, col: u32) {
+    /// Particles bursting outward from a point (summons, novas, level-ups).
+    pub(crate) fn spray_at(&mut self, x: f32, y: f32, kind: PKind, z: f32) {
+        let a = self.rng.f() * std::f32::consts::TAU;
+        let s = self.rng.rf(0.5, 3.5);
+        let life = self.rng.rf(0.4, 0.9);
+        let vz = self.rng.rf(10.0, 50.0);
+        self.parts.push(Particle { x, y, z, vx: a.cos() * s, vy: a.sin() * s, vz, life, max: life, kind });
+    }
+
+    pub(crate) fn floater(&mut self, x: f32, y: f32, text: String, col: u32) {
         self.floaters.push(Floater { x, y, t: 0.0, text, col });
     }
 
@@ -1226,7 +1569,7 @@ impl Game {
             p.y += p.vy * DT;
             p.z += p.vz * DT;
             match p.kind {
-                PKind::Fire => p.vz += 12.0 * DT,
+                PKind::Fire | PKind::Magic => p.vz += 12.0 * DT,
                 PKind::Smoke => p.vz = 14.0,
                 PKind::Bone | PKind::Blood => {
                     p.vz -= 160.0 * DT;
@@ -1237,6 +1580,19 @@ impl Game {
                         p.vy *= 0.5;
                     }
                 }
+            }
+        }
+        // Campfires and portals give off sparks.
+        if self.tick % 3 == 0 {
+            let fires: Vec<(f32, f32)> = self.props.iter().filter(|p| p.kind == world::PropKind::Campfire).map(|p| (p.x, p.y)).collect();
+            for (x, y) in fires {
+                let (r1, r2) = (self.rng.f() - 0.5, self.rng.f());
+                self.parts.push(Particle { x: x + r1 * 0.3, y, z: 6.0, vx: r1 * 0.3, vy: 0.0, vz: 20.0 + r2 * 20.0, life: 0.8, max: 0.8, kind: PKind::Fire });
+            }
+            let portals: Vec<(f32, f32)> = self.portals.iter().filter(|p| p.kind == PortalKind::TownPortal).map(|p| (p.x, p.y)).collect();
+            for (x, y) in portals {
+                let (r1, r2) = (self.rng.f() - 0.5, self.rng.f());
+                self.parts.push(Particle { x: x + r1 * 0.4, y, z: 4.0 + r2 * 30.0, vx: 0.0, vy: 0.0, vz: 18.0, life: 0.7, max: 0.7, kind: PKind::Magic });
             }
         }
         self.parts.retain(|p| p.life > 0.0);
@@ -1254,520 +1610,23 @@ impl Game {
         for l in self.lights.iter_mut() {
             l.life -= DT;
         }
-
         self.lights.retain(|l| l.life > 0.0);
         self.focus_t -= DT;
         if self.focus_t <= 0.0 {
             self.focus = None;
         }
     }
-
-    // ------------------------------------------------------------------ draw
-
-    pub fn draw(&mut self, scr: &mut Screen) {
-        let (ox, oy) = self.cam_origin();
-        if !self.light_ready {
-            scr.build_base_light(ox as i32, oy as i32 - 14, 250.0, 0.10);
-            self.light_ready = true;
-        }
-        let sh = if self.shake > 0.0 { ((self.tick as f32 * 1.7).sin() * self.shake * 4.0) as i32 } else { 0 };
-        scr.shake = (sh, (sh as f32 * 0.5) as i32);
-        scr.clear(BLACK);
-        let (px, py) = (self.p.x, self.p.y);
-        let to_scr = |x: f32, y: f32| -> (i32, i32) {
-            let (sx, sy) = iso::to_screen(x - px, y - py);
-            ((sx + ox).round() as i32, (sy + oy).round() as i32)
-        };
-        let view_h = self.view_h;
-
-        // Visible tile range: invert the four screen corners.
-        let corners = [(0.0, -40.0), (scr.w as f32, -40.0), (0.0, view_h as f32 + 60.0), (scr.w as f32, view_h as f32 + 60.0)];
-        let (mut x0, mut y0, mut x1, mut y1) = (i32::MAX, i32::MAX, i32::MIN, i32::MIN);
-        for (cx, cy) in corners {
-            let (wx, wy) = iso::to_world(cx - ox, cy - oy);
-            let (wx, wy) = (wx + px, wy + py);
-            x0 = x0.min(wx.floor() as i32 - 1);
-            y0 = y0.min(wy.floor() as i32 - 1);
-            x1 = x1.max(wx.ceil() as i32 + 1);
-            y1 = y1.max(wy.ceil() as i32 + 4);
-        }
-        x0 = x0.max(0);
-        y0 = y0.max(0);
-        x1 = x1.min(self.d.w - 1);
-        y1 = y1.min(self.d.h - 1);
-
-        // 1. Floors.
-        for ty in y0..=y1 {
-            for tx in x0..=x1 {
-                if self.d.get(tx, ty) == Tile::Floor || self.d.get(tx, ty) == Tile::Wall {
-                    let (sx, sy) = to_scr(tx as f32 + 0.5, ty as f32 + 0.5);
-                    if sx < -20 || sx > scr.w + 20 || sy < -12 || sy > view_h + 12 {
-                        continue;
-                    }
-                    let v = self.d.var[(ty * self.d.w + tx) as usize] as usize;
-                    let f = &self.art.floors[v % self.art.floors.len()];
-                    scr.blit(f, sx, sy, Fx::default());
-                }
-            }
-        }
-        // Scorch marks and blood.
-        for dc in &self.decals {
-            let (sx, sy) = to_scr(dc.x, dc.y);
-            let r = dc.r * iso::TW * 0.5;
-            for yy in -(r as i32 / 2)..=(r as i32 / 2) {
-                for xx in -(r as i32)..=(r as i32) {
-                    let d = (xx as f32 / r).powi(2) + (yy as f32 * 2.0 / r).powi(2);
-                    if d < 1.0 && ((xx * 7 + yy * 13) & 3) != 0 {
-                        let (x, y) = (sx + xx + scr.shake.0, sy + yy + scr.shake.1);
-                        if x >= 0 && y >= 0 && x < scr.w && y < view_h {
-                            let i = (y * scr.w + x) as usize;
-                            scr.px[i] = mix(scr.px[i], dc.col, dc.a * (1.0 - d));
-                        }
-                    }
-                }
-            }
-        }
-        // Shadows & pickups sit on the floor.
-        for k in &self.pickups {
-            let (sx, sy) = to_scr(k.x, k.y);
-            draw_pickup(scr, k, sx, sy, self.tick, &self.art);
-        }
-
-        // 2. Depth-sorted walls and actors.
-        enum D {
-            Wall(i32, i32),
-            Mob(usize),
-            Player,
-            Ball(usize),
-        }
-        let mut list: Vec<(f32, D)> = vec![];
-        for ty in y0..=y1 {
-            for tx in x0..=x1 {
-                if self.d.get(tx, ty) == Tile::Wall {
-                    list.push((tx as f32 + ty as f32 + 1.0, D::Wall(tx, ty)));
-                }
-            }
-        }
-        for (i, m) in self.mobs.iter().enumerate() {
-            let depth = m.x + m.y - if matches!(m.state, MobState::Dead(_)) { 0.6 } else { 0.0 };
-            if (m.x - px).abs() < 30.0 && (m.y - py).abs() < 30.0 {
-                list.push((depth, D::Mob(i)));
-            }
-        }
-        list.push((px + py, D::Player));
-        for (i, b) in self.balls.iter().enumerate() {
-            list.push((b.x + b.y, D::Ball(i)));
-        }
-
-        list.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
-
-        let (psx, psy) = to_scr(px, py);
-        let player_depth = px + py;
-        for (depth, item) in &list {
-            match *item {
-                D::Wall(tx, ty) => {
-                    let (sx, sy) = to_scr(tx as f32 + 0.5, ty as f32 + 0.5);
-                    let w = &self.art.wall;
-                    let top = sy - w.ay;
-                    if sx < -20 || sx > scr.w + 20 || top > view_h || sy + 10 < 0 {
-                        continue;
-                    }
-                    // Walls with floor behind them (the camera side of a room) are cut down
-                    // to a low ledge so they never hide the room, like D2's front walls.
-                    let low = [(-1, 0), (0, -1), (-1, -1)].iter().any(|(dx, dy)| self.d.get(tx + dx, ty + dy) == Tile::Floor);
-                    if low {
-                        let drop = (w.ay - 8 - LOW_WALL).max(0);
-                        scr.blit(w, sx, sy + drop, Fx { cut: w.h - drop, ..Fx::default() });
-                        continue;
-                    }
-                    // See-through walls between the camera and the player.
-                    let front = *depth > player_depth + 0.3;
-                    let over = (sx - psx).abs() < 26 && psy - 44 < sy + 8 && psy > top;
-                    let fx = Fx { dither: front && over, ..Fx::default() };
-                    scr.blit(w, sx, sy, fx);
-                }
-                D::Mob(i) => self.draw_mob(scr, i, to_scr(self.mobs[i].x, self.mobs[i].y)),
-                D::Player => self.draw_player(scr, (psx, psy)),
-                D::Ball(i) => {
-                    let b = &self.balls[i];
-                    let (sx, sy) = to_scr(b.x, b.y);
-                    // Shadow on the floor.
-                    blend_ellipse(scr, sx, sy, 5, 2, BLACK, 0.45);
-                }
-            }
-        }
-
-        // 3. Lighting.
-        scr.begin_light();
-        for b in &self.balls {
-            let (sx, sy) = to_scr(b.x, b.y);
-            scr.add_light(sx, sy, if b.ember { 60.0 } else { 110.0 }, if b.ember { 0.6 } else { 0.9 });
-        }
-        for l in &self.lights {
-            let (sx, sy) = to_scr(l.x, l.y);
-            scr.add_light(sx, sy, l.r, l.s * (l.life / l.max));
-        }
-        if self.p.cast_t > 0.0 {
-            scr.add_light(psx, psy - 20, 70.0, 0.4 * self.p.cast_t / self.p.cast_len);
-        }
-
-        for m in &self.mobs {
-            if m.burn > 0.0 && !matches!(m.state, MobState::Dead(_)) {
-                let (sx, sy) = to_scr(m.x, m.y);
-                scr.add_light(sx, sy - 10, 50.0, 0.35);
-            }
-        }
-        scr.apply_light(view_h);
-
-        // 4. Unlit, additive fire on top.
-        for b in &self.balls {
-            let (sx, sy) = to_scr(b.x, b.y);
-            let fl = ((self.tick as f32) * 0.9).sin() * 1.5;
-            if b.ember {
-                scr.glow(sx, sy - 22, 12.0 + fl * 0.5, rgb(0xff4008), 0.9);
-                scr.disc(sx + scr.shake.0, sy - 22 + scr.shake.1, 1, rgb(0xffd080));
-                continue;
-            }
-            scr.glow(sx, sy - 22, 26.0 + fl, rgb(0xff5010), 0.9);
-            scr.glow(sx, sy - 22, 12.0, rgb(0xffd060), 1.0);
-            scr.disc(sx + scr.shake.0, sy - 22 + scr.shake.1, 3, rgb(0xfff4c0));
-        }
-        for l in &self.lights {
-            let (sx, sy) = to_scr(l.x, l.y);
-            let k = l.life / l.max;
-            scr.glow(sx, sy - 16, 50.0 * (1.2 - k * 0.5), rgb(0xff6010), 1.2 * k);
-            scr.glow(sx, sy - 16, 22.0 * (1.3 - k * 0.5), rgb(0xffe080), 1.2 * k);
-        }
-        for p in &self.parts {
-            let (sx, sy) = to_scr(p.x, p.y);
-            let (sx, sy) = (sx + scr.shake.0, sy - p.z as i32 + scr.shake.1);
-            if sx < 0 || sy < 0 || sx >= scr.w || sy >= view_h {
-                continue;
-            }
-            let k = p.life / p.max;
-            match p.kind {
-                PKind::Fire => {
-                    let c = if k > 0.6 { rgb(0xffe890) } else if k > 0.3 { rgb(0xff9030) } else { rgb(0xc03010) };
-                    let i = (sy * scr.w + sx) as usize;
-                    scr.px[i] = crate::gfx::add(scr.px[i], c, 0.5 + k);
-                    if k > 0.5 {
-                        scr.pset(sx + 1, sy, mix(scr.px[i], c, 0.6));
-                    }
-                }
-                PKind::Smoke => {
-                    let r = (4.0 + (1.0 - k) * 6.0) as i32;
-                    blend_ellipse(scr, sx - scr.shake.0, sy - scr.shake.1, r, r * 2 / 3, rgb(0x201c18), 0.3 * k);
-                }
-                PKind::Bone => {
-                    scr.fill(sx, sy, 2, 1, rgb(0xb0a888));
-                }
-                PKind::Blood => {
-                    scr.fill(sx, sy, 1, 1, rgb(0x801010));
-                }
-            }
-        }
-        scr.shake = (0, 0);
-
-        // Health bars over wounded, chasing monsters.
-        for m in &self.mobs {
-            if matches!(m.state, MobState::Dead(_)) || m.hp >= m.max_hp {
-                continue;
-            }
-            let (sx, sy) = to_scr(m.x, m.y);
-            let h = self.art.char(m.kind.name()).height;
-            let w = 22;
-            let f = ((m.hp / m.max_hp) * w as f32).ceil() as i32;
-            scr.fill(sx - w / 2 - 1, sy - h - 6, w + 2, 4, BLACK);
-            scr.fill(sx - w / 2, sy - h - 5, f, 2, rgb(0xc02020));
-        }
-        for f in &self.floaters {
-            let (sx, sy) = to_scr(f.x, f.y);
-            let rise = (f.t * 30.0) as i32;
-            let col = if f.t > 0.7 { mix(f.col, BLACK, (f.t - 0.7) / 0.3) } else { f.col };
-            scr.text(&f.text, sx, sy - 58 - rise, col, Align::Center, 1);
-        }
-
-        if self.show_map {
-            self.draw_map(scr);
-        }
-        self.draw_hud(scr);
-    }
-
-    /// D2-style automap overlay: explored walls projected isometrically, centred on the player.
-    fn draw_map(&self, scr: &mut Screen) {
-        let (cx, cy) = (scr.w / 2, (self.view_h - HUD_H) / 2);
-        let (px, py) = (self.p.x, self.p.y);
-        let proj = |x: f32, y: f32| -> (i32, i32) { (cx + ((x - px) - (y - py)) as i32 * 3, cy + ((x - px) + (y - py)) as i32 * 3 / 2) };
-        let wall = rgb(0xc8b088);
-        let floor = rgb(0x3a3024);
-        for ty in 0..self.d.h {
-            for tx in 0..self.d.w {
-                let i = (ty * self.d.w + tx) as usize;
-                if !self.explored[i] {
-                    continue;
-                }
-                let (sx, sy) = proj(tx as f32, ty as f32);
-                if sy >= self.view_h - HUD_H {
-                    continue;
-                }
-                match self.d.get(tx, ty) {
-                    Tile::Wall => scr.fill(sx, sy, 3, 2, wall),
-                    Tile::Floor => {
-                        let j = (sy * scr.w + sx) as usize;
-                        if sx >= 0 && sy >= 0 && sx < scr.w && j < scr.px.len() {
-                            scr.px[j] = mix(scr.px[j], floor, 0.8);
-                        }
-                    }
-                    Tile::Void => {}
-                }
-            }
-        }
-        // Foes you've seen the room of (and every foe once only a few remain).
-        let few = self.alive_mobs() <= 5;
-        for m in &self.mobs {
-            if matches!(m.state, MobState::Dead(_)) {
-                continue;
-            }
-            let seen = self.explored[(m.y as i32 * self.d.w + m.x as i32) as usize];
-            if seen || few {
-                let (sx, sy) = proj(m.x, m.y);
-                scr.fill(sx - 1, sy - 1, 3, 3, rgb(0xe02020));
-            }
-        }
-        let (sx, sy) = proj(px, py);
-        scr.fill(sx - 1, sy - 2, 3, 4, WHITE);
-        scr.text("MAP", scr.w - 30, 8, rgb(0xc8b088), Align::Center, 1);
-    }
-
-    fn draw_player(&self, scr: &mut Screen, (sx, sy): (i32, i32)) {
-        let art = self.art.char("mage");
-        blend_ellipse(scr, sx, sy, 11, 4, BLACK, 0.5);
-        let dead_t = if let State::Dead(t) = self.state { Some(t) } else { None };
-        let spr = if self.p.cast_t > 0.0 && art.has("cast") {
-            art.frame_at("cast", self.p.dir, 1.0 - self.p.cast_t / self.p.cast_len)
-        } else if self.p.moving {
-            art.frame("walk", self.p.dir, self.p.anim_t)
-        } else {
-            art.frame("idle", self.p.dir, 0.0)
-        };
-        let mut fx = Fx::default();
-        if self.p.flash > 0.0 {
-            fx.tint = rgb(0xff2020);
-            fx.tint_a = 0.5;
-        }
-        if let Some(t) = dead_t {
-            fx.tint = rgb(0x400000);
-            fx.tint_a = (t * 0.8).min(0.7);
-            fx.cut = (spr.h as f32 * (1.0 - (t * 0.6).min(0.6))) as i32;
-            scr.blit(spr, sx, sy + (t.min(1.0) * 14.0) as i32, fx);
-            return;
-        }
-        scr.blit(spr, sx, sy, fx);
-    }
-
-    fn draw_mob(&self, scr: &mut Screen, i: usize, (sx, sy): (i32, i32)) {
-        let m = &self.mobs[i];
-        let art = self.art.char(m.kind.name());
-        let mut fx = Fx::default();
-        let spr = match m.state {
-            MobState::Dead(t) => {
-                if art.has("death") {
-                    let s = art.frame_at("death", m.dir, (t / 0.7).min(0.999));
-                    if t > 6.0 {
-                        fx.alpha = (1.0 - (t - 6.0)).max(0.05);
-                        if t > 7.0 {
-                            return;
-                        }
-                    }
-                    s
-                } else {
-                    // Collapse: flash, then sink into the floor and fade.
-                    if t > 1.6 {
-                        return;
-                    }
-                    fx.tint = if m.kind == Kind::Zombie { rgb(0x300808) } else { rgb(0x202020) };
-                    fx.tint_a = (t * 1.5).min(0.8);
-                    let s = art.frame("idle", m.dir, 0.0);
-                    fx.cut = (s.ay as f32 - (t / 1.6) * s.ay as f32 * 0.9) as i32;
-                    let sink = (t / 1.6 * art.height as f32 * 0.9) as i32;
-                    scr.blit(s, sx, sy + sink, fx);
-                    return;
-                }
-            }
-            MobState::Attack(t) => art.frame_at("attack", m.dir, 1.0 - t / m.windup),
-            _ if m.moving => art.frame("walk", m.dir, m.anim_t),
-            _ => art.frame("idle", m.dir, 0.0),
-        };
-        if !matches!(m.state, MobState::Dead(_)) {
-            blend_ellipse(scr, sx, sy, 10, 4, BLACK, 0.45);
-        }
-        if m.flash > 0.0 {
-            fx.tint = WHITE;
-            fx.tint_a = 0.7;
-        } else if m.burn > 0.0 && (self.tick / 4) % 2 == 0 {
-            fx.tint = rgb(0xff6020);
-            fx.tint_a = 0.25;
-        }
-        if self.hover == Some(i) && fx.tint_a == 0.0 {
-            fx.tint = rgb(0xffe0a0);
-            fx.tint_a = 0.15;
-        }
-        scr.blit(spr, sx, sy, fx);
-    }
-
-    fn draw_hud(&self, scr: &mut Screen) {
-        let (w, h) = (scr.w, self.view_h);
-        let top = h - HUD_H;
-        // Stone panel.
-        for y in top..h {
-            let k = (y - top) as f32 / HUD_H as f32;
-            scr.fill(0, y, w, 1, mix(rgb(0x2a2520), rgb(0x141210), k));
-        }
-        scr.fill(0, top, w, 1, rgb(0x5a4a38));
-        scr.fill(0, top + 1, w, 1, rgb(0x0a0806));
-        // Globes.
-        let gy = h - 28;
-        globe(scr, 34, gy, 26, self.p.hp / self.p.max_hp, rgb(0xb01818), rgb(0xff6050));
-        globe(scr, w - 34, gy, 26, self.p.mana / self.p.max_mana, rgb(0x1830b0), rgb(0x6090ff));
-        scr.text(&format!("{}/{}", self.p.hp.ceil() as i32, self.p.max_hp as i32), 34, gy - 4, WHITE, Align::Center, 1);
-        scr.text(&format!("{}/{}", self.p.mana.floor() as i32, self.p.max_mana as i32), w - 34, gy - 4, WHITE, Align::Center, 1);
-        // Skill slot.
-        let ix = w / 2 - 12;
-        let iy = top + 8;
-        scr.fill(ix - 2, iy - 2, 28, 28, rgb(0x5a4a38));
-        scr.blit(&self.icon, ix, iy, Fx::default());
-        if self.p.mana < FIREBALL_COST {
-            scr.blend(ix, iy, 24, 24, rgb(0x000040), 0.6);
-            scr.text("EMBER", w / 2, iy + 28, rgb(0xff9050), Align::Center, 1);
-        } else {
-            scr.text("FIREBALL", w / 2, iy + 28, rgb(0xd8b878), Align::Center, 1);
-        }
-        // Run / walk button (D2 style).
-        let rx = ix + 40;
-        scr.fill(rx - 2, iy - 2, 28, 28, rgb(0x5a4a38));
-        let lit = self.p.running && !self.p.winded;
-        scr.fill(rx, iy, 24, 24, if lit { rgb(0x5a3a10) } else { rgb(0x1a1410) });
-        let col = if self.p.winded {
-            rgb(0xc05030)
-        } else if self.p.running {
-            rgb(0xffd070)
-        } else {
-            rgb(0x908070)
-        };
-        scr.text(if self.p.running { "RUN" } else { "WALK" }, rx + 12, iy + 8, col, Align::Center, 1);
-        let label = if self.p.winded { "TIRED" } else { "R/B" };
-        scr.text(label, rx + 12, iy + 28, if self.p.winded { col } else { rgb(0x908070) }, Align::Center, 1);
-        // Stamina and food bars.
-        let (bar_x, bar_w) = (156, 130);
-        let st = self.p.stamina / MAX_STAMINA;
-        let st_col = if self.p.winded { rgb(0xa03020) } else { rgb(0xd8b020) };
-        scr.text("STAMINA", bar_x, top + 7, rgb(0xb0a090), Align::Left, 1);
-        bar(scr, bar_x, top + 17, bar_w, st, st_col);
-        let fd = self.p.food / MAX_FOOD;
-        let starving = self.p.food <= 0.0;
-        let fd_col = if fd < 0.25 { rgb(0xc04020) } else { rgb(0xb07030) };
-        let flabel = if starving { "FOOD - STARVING!" } else if fd < 0.25 { "FOOD - HUNGRY" } else { "FOOD" };
-        let fcol = if starving && (self.tick / 20) % 2 == 0 { rgb(0xff5030) } else { rgb(0xb0a090) };
-        scr.text(flabel, bar_x, top + 27, fcol, Align::Left, 1);
-        bar(scr, bar_x, top + 37, bar_w, fd, fd_col);
-        // Potions.
-        let bx = 70;
-        potion(scr, bx, top + 12, rgb(0xc02020));
-        scr.text(&format!("X{}", self.p.hp_pots), bx + 14, top + 16, WHITE, Align::Left, 1);
-        scr.text("Q", bx + 2, top + 32, rgb(0x908070), Align::Left, 1);
-        potion(scr, bx + 44, top + 12, rgb(0x2040c0));
-        scr.text(&format!("X{}", self.p.mp_pots), bx + 58, top + 16, WHITE, Align::Left, 1);
-        scr.text("E", bx + 46, top + 32, rgb(0x908070), Align::Left, 1);
-        scr.text(&format!("GOLD {}", self.p.gold), w - 80, top + 12, rgb(0xe8c050), Align::Right, 1);
-        scr.text(&format!("LEVEL {}", self.depth), w - 80, top + 24, rgb(0xb0a090), Align::Right, 1);
-        scr.text(&format!("FOES {}", self.alive_mobs()), w - 80, top + 36, rgb(0xb0a090), Align::Right, 1);
-
-        // Monster name + health bar (D2 style, top centre).
-        if let Some(i) = self.hover.or(self.focus) {
-            let m = &self.mobs[i];
-            if !matches!(m.state, MobState::Dead(_)) {
-                let bw = 150;
-                let f = (m.hp / m.max_hp * bw as f32) as i32;
-                scr.fill(w / 2 - bw / 2 - 1, 5, bw + 2, 14, BLACK);
-                scr.fill(w / 2 - bw / 2, 6, f, 12, rgb(0x801010));
-                scr.text(m.kind.label(), w / 2, 8, WHITE, Align::Center, 1);
-            }
-        }
-
-        if self.banner_t > 0.0 {
-            let a = (self.banner_t.min(1.0)).clamp(0.0, 1.0);
-            let c = mix(BLACK, rgb(0xd8a048), a);
-            let title = if self.depth == 1 { "ASHEN SANCTUM" } else { "YOU DESCEND DEEPER" };
-            scr.text(title, w / 2, top / 2 - 60, c, Align::Center, 3);
-            scr.text(&format!("SANCTUM LEVEL {}", self.depth), w / 2, top / 2 - 30, mix(BLACK, rgb(0xb0a090), a), Align::Center, 1);
-            if self.depth == 1 {
-                scr.text("RUNNING TIRES YOU AND MAKES YOU HUNGRY. FIND FOOD TO SURVIVE.", w / 2, top - 46, mix(BLACK, rgb(0x8a7a68), a), Align::Center, 1);
-            }
-            if self.depth == 1 {
-                let hint = mix(BLACK, rgb(0x8a7a68), a);
-                scr.text("LEFT CLICK: MOVE   RIGHT CLICK: FIREBALL   R: RUN / WALK   Q / E: POTIONS", w / 2, top - 34, hint, Align::Center, 1);
-                scr.text("PAD: LEFT STICK MOVE   RIGHT STICK OR A: FIREBALL   B: RUN / WALK   L1 / Y: POTIONS", w / 2, top - 22, hint, Align::Center, 1);
-            }
-        }
-        match self.state {
-            State::Dead(t) => {
-                scr.blend(0, 0, w, top, BLACK, (t * 0.4).min(0.5));
-                scr.text("YOU HAVE DIED", w / 2, top / 2 - 20, rgb(0xc02020), Align::Center, 3);
-                if t > 1.5 {
-                    scr.text("PRESS ENTER OR START TO RISE AGAIN", w / 2, top / 2 + 14, rgb(0xb0a090), Align::Center, 1);
-                }
-            }
-            State::Cleared => {
-                scr.text("THE LEVEL IS CLEANSED", w / 2, 30, rgb(0xd8a048), Align::Center, 2);
-                scr.text("PRESS ENTER OR START TO DESCEND", w / 2, 52, rgb(0xb0a090), Align::Center, 1);
-            }
-            State::Playing => {}
-        }
-    }
-}
-
-impl Mob {
-    fn new(kind: Kind, x: f32, y: f32, scale: f32, rng: &mut Rng) -> Self {
-        let (hp, speed, dmg, windup, cooldown) = match kind {
-            Kind::Zombie => (34.0, 1.25, (5, 9), 0.55, 1.5),
-            Kind::Skeleton => (20.0, 2.3, (3, 6), 0.35, 1.0),
-        };
-        let hp = hp * scale;
-        let dmg = ((dmg.0 as f32 * scale) as i32, (dmg.1 as f32 * scale) as i32);
-        Mob {
-            kind,
-            x,
-            y,
-            hp,
-            max_hp: hp,
-            speed: speed * rng.rf(0.9, 1.1),
-            dmg,
-            windup,
-            cooldown,
-            cd: 0.0,
-            state: MobState::Idle,
-            dir: rng.range(0, 8) as usize,
-            anim_t: rng.f(),
-            moving: false,
-            flash: 0.0,
-            stun: 0.0,
-            burn: 0.0,
-            path: vec![],
-            repath: 0.0,
-            wander: (0.0, 0.0, rng.f() * 2.0),
-        }
-    }
 }
 
 /// World-space unit vector for a sprite direction.
-fn dir_vec(dir: usize) -> (f32, f32) {
+pub(crate) fn dir_vec(dir: usize) -> (f32, f32) {
     // Screen-space direction for each index, then back to world.
     let a = (90.0 - dir as f32 * 45.0).to_radians();
     iso::screen_dir_to_world(a.cos(), a.sin())
 }
 
 /// Moves a circle with wall sliding (x then y).
-fn move_circle(d: &Dungeon, x: &mut f32, y: &mut f32, dx: f32, dy: f32, r: f32) {
+pub(crate) fn move_circle(d: &Dungeon, x: &mut f32, y: &mut f32, dx: f32, dy: f32, r: f32) {
     let steps = ((dx.abs().max(dy.abs())) / 0.2).ceil().max(1.0) as i32;
     let (sx, sy) = (dx / steps as f32, dy / steps as f32);
     for _ in 0..steps {
@@ -1780,115 +1639,18 @@ fn move_circle(d: &Dungeon, x: &mut f32, y: &mut f32, dx: f32, dy: f32, r: f32) 
     }
 }
 
-fn blend_ellipse(scr: &mut Screen, cx: i32, cy: i32, rx: i32, ry: i32, c: u32, a: f32) {
-    let (cx, cy) = (cx + scr.shake.0, cy + scr.shake.1);
-    for y in -ry..=ry {
-        for x in -rx..=rx {
-            let d = (x as f32 / rx as f32).powi(2) + (y as f32 / ry.max(1) as f32).powi(2);
-            if d <= 1.0 {
-                let (px, py) = (cx + x, cy + y);
-                if px >= 0 && py >= 0 && px < scr.w && py < scr.h {
-                    let i = (py * scr.w + px) as usize;
-                    scr.px[i] = mix(scr.px[i], c, a * (1.0 - d * 0.5));
-                }
-            }
-        }
-    }
-}
-
-fn globe(scr: &mut Screen, cx: i32, cy: i32, r: i32, frac: f32, col: u32, hi: u32) {
-    let level = cy + r - (2.0 * r as f32 * frac.clamp(0.0, 1.0)) as i32;
-    scr.disc(cx, cy, r + 2, rgb(0x5a4a38));
-    scr.disc(cx, cy, r + 1, BLACK);
-    for y in -r..=r {
-        for x in -r..=r {
-            if x * x + y * y > r * r {
-                continue;
-            }
-            let (px, py) = (cx + x, cy + y);
-            let c = if py >= level {
-                let shade = 1.0 - ((x + r / 3) as f32).hypot((y + r / 3) as f32) / (r as f32 * 1.6);
-                mix(mix(col, BLACK, 0.5), hi, shade.clamp(0.0, 1.0) * 0.6)
-            } else {
-                rgb(0x0c0a0a)
-            };
-            scr.pset(px, py, c);
-        }
-    }
-    // Glass highlight.
-    scr.disc(cx - r / 3, cy - r / 2, 3, mix(rgb(0xffffff), col, 0.5));
-}
-
-fn potion(scr: &mut Screen, x: i32, y: i32, col: u32) {
-    scr.fill(x + 3, y, 4, 3, rgb(0x806040));
-    scr.disc(x + 5, y + 9, 5, BLACK);
-    scr.disc(x + 5, y + 9, 4, col);
-    scr.pset(x + 3, y + 7, rgb(0xffffff));
-}
-
-fn bar(scr: &mut Screen, x: i32, y: i32, w: i32, frac: f32, col: u32) {
-    scr.fill(x - 1, y - 1, w + 2, 7, BLACK);
-    scr.fill(x, y, w, 5, rgb(0x201a14));
-    let f = (frac.clamp(0.0, 1.0) * w as f32) as i32;
-    scr.fill(x, y, f, 5, col);
-    scr.fill(x, y, f, 1, mix(col, WHITE, 0.35));
-}
-
-/// Code-drawn food for when no generated sprite exists.
-fn draw_food_fallback(scr: &mut Screen, i: usize, sx: i32, sy: i32) {
-    match i {
-        0 => {
-            scr.disc(sx, sy, 4, BLACK);
-            scr.disc(sx, sy, 3, rgb(0xc02020));
-            scr.pset(sx - 1, sy - 2, rgb(0xff8080));
-            scr.fill(sx, sy - 5, 1, 2, rgb(0x5a3a1c));
-            scr.fill(sx + 1, sy - 5, 2, 1, rgb(0x40a030));
-        }
-        1 => {
-            scr.fill(sx - 6, sy - 3, 12, 7, BLACK);
-            scr.fill(sx - 5, sy - 2, 10, 5, rgb(0xb07830));
-            scr.fill(sx - 4, sy - 2, 8, 1, rgb(0xe0b060));
-        }
-        _ => {
-            scr.disc(sx - 1, sy, 4, BLACK);
-            scr.disc(sx - 1, sy, 3, rgb(0x904818));
-            scr.fill(sx + 2, sy - 1, 5, 2, rgb(0xe8e0c8));
-            scr.pset(sx - 2, sy - 1, rgb(0xd08040));
-        }
-    }
-}
-
-fn draw_pickup(scr: &mut Screen, k: &Pickup, sx: i32, sy: i32, tick: u32, art: &Art) {
-    let bob = (((tick as f32) * 0.1 + k.x).sin() * 1.5) as i32;
-    let pop = if k.t < 0.3 { ((0.3 - k.t) * 40.0) as i32 } else { 0 };
-    blend_ellipse(scr, sx, sy, 5, 2, BLACK, 0.5);
-    match k.kind {
-        Drop::Health => potion(scr, sx - 5, sy - 16 - pop + bob, rgb(0xc02020)),
-        Drop::Mana => potion(scr, sx - 5, sy - 16 - pop + bob, rgb(0x2040c0)),
-        Drop::Gold(_) => {
-            for (dx, dy) in [(-3, 0), (2, -1), (0, -3), (-1, 1)] {
-                scr.fill(sx + dx, sy - 3 + dy - pop, 3, 2, rgb(0xe8c050));
-                scr.pset(sx + dx, sy - 3 + dy - pop, rgb(0xfff0a0));
-            }
-        }
-        Drop::Food(i) => {
-            let name = ["food_apple", "food_bread", "food_roast"][i];
-            match art.item(name) {
-                Some(s) => scr.blit(s, sx, sy + 1 - pop, Fx::default()),
-                None => draw_food_fallback(scr, i, sx, sy - 4 - pop),
-            }
-        }
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    /// A game standing at the stairs of the Bone Crypt's first floor, with no monsters.
     fn quiet_game() -> Game {
         let mut g = Game::new(7, crate::gfx::SH_WIDE);
+        g.debug_goto(LevelId::Dungeon(0, 0));
         g.mobs.clear();
+        g.pickups.clear();
         g.banner_t = 0.0;
+        g.portal_cd = 1000.0;
         g
     }
 
@@ -1896,7 +1658,6 @@ mod tests {
     fn running_is_faster_and_drains_stamina_until_winded() {
         let walk = |running: bool| {
             let mut g = quiet_game();
-            g.pickups.clear();
             g.p.running = running;
             let (x0, y0) = (g.p.x, g.p.y);
             for _ in 0..20 {
@@ -1910,7 +1671,6 @@ mod tests {
         assert_eq!(st_walk, MAX_STAMINA);
         assert!(st_run < MAX_STAMINA);
 
-        // Run dry -> winded (walk speed) until stamina recovers.
         let mut g = quiet_game();
         g.p.stamina = 1.0;
         for _ in 0..10 {
@@ -1921,7 +1681,6 @@ mod tests {
             g.update(&Input::default());
         }
         assert!(!g.p.winded && g.p.stamina >= WINDED_UNTIL);
-        // The toggle switches to walking.
         g.update(&Input { run_toggle: true, ..Input::default() });
         assert!(!g.p.running);
     }
@@ -1929,26 +1688,22 @@ mod tests {
     #[test]
     fn hunger_starves_and_food_feeds() {
         let mut g = quiet_game();
-        g.pickups.clear();
         g.p.food = 0.0;
         let hp = g.p.hp;
         for _ in 0..60 {
             g.update(&Input::default());
         }
         assert!(g.p.hp < hp - 1.0, "starving hurts");
-        // Eat a roast lying at your feet.
         g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Food(2), t: 1.0 });
         g.update(&Input::default());
         assert!(g.p.food > 50.0 && g.pickups.is_empty());
         assert_eq!(g.stats.eaten, 1);
-        // Full: food stays on the floor.
         g.p.food = MAX_FOOD;
         g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Food(0), t: 1.0 });
         g.update(&Input::default());
         assert_eq!(g.pickups.len(), 1);
-        // Levels come with food.
-        let g2 = Game::new(11, crate::gfx::SH_WIDE);
-        assert!(g2.pickups.iter().filter(|k| matches!(k.kind, Drop::Food(_))).count() >= 3);
+        let lv = world::dungeon_floor(0, 0, 11);
+        assert!(lv.pickups.iter().filter(|k| matches!(k.kind, Drop::Food(_))).count() >= 3);
     }
 
     #[test]
@@ -1966,5 +1721,142 @@ mod tests {
         g.update(&Input { cast: true, ..Input::default() });
         assert!(g.balls.iter().any(|b| !b.ember), "fireball again with mana");
         assert!(g.p.mana < 50.0);
+    }
+
+    #[test]
+    fn stairs_and_entrances_connect_the_world() {
+        let mut g = Game::new(3, crate::gfx::SH_WIDE);
+        assert_eq!(g.level, LevelId::Overworld);
+        assert!(g.in_safe(g.p.x, g.p.y), "start in town");
+        // Walk onto the crypt entrance.
+        let e = g.portals.iter().find(|p| p.kind == PortalKind::Entrance(0)).map(|p| (p.x, p.y)).unwrap();
+        g.p.x = e.0;
+        g.p.y = e.1;
+        g.portal_cd = 0.0;
+        g.update(&Input::default());
+        assert_eq!(g.level, LevelId::Dungeon(0, 0));
+        assert!(g.d.walkable(g.p.x as i32, g.p.y as i32));
+        // Down the stairs, then back up and out.
+        let down = g.portals.iter().find(|p| p.kind == PortalKind::Down).map(|p| (p.x, p.y)).unwrap();
+        g.mobs.clear();
+        g.p.x = down.0;
+        g.p.y = down.1;
+        g.portal_cd = 0.0;
+        g.update(&Input::default());
+        assert_eq!(g.level, LevelId::Dungeon(0, 1));
+        assert!(g.boss_alive(), "the Bone Warden waits on the bottom floor");
+        let up = g.portals.iter().find(|p| p.kind == PortalKind::Up).map(|p| (p.x, p.y)).unwrap();
+        g.p.x = up.0;
+        g.p.y = up.1;
+        g.portal_cd = 0.0;
+        g.update(&Input::default());
+        assert_eq!(g.level, LevelId::Dungeon(0, 0));
+        assert!(g.mobs.is_empty(), "levels remember their state");
+        let up = g.portals.iter().find(|p| p.kind == PortalKind::Up).map(|p| (p.x, p.y)).unwrap();
+        g.p.x = up.0;
+        g.p.y = up.1;
+        g.portal_cd = 0.0;
+        g.update(&Input::default());
+        assert_eq!(g.level, LevelId::Overworld);
+        assert!(((g.p.x - e.0).powi(2) + (g.p.y - e.1).powi(2)).sqrt() < 2.5, "back at the crypt door");
+    }
+
+    #[test]
+    fn the_whole_story_can_be_completed() {
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        // Meet the elder and read through her story.
+        assert!(g.debug_talk(Role::Elder));
+        for _ in 0..10 {
+            if g.dialog.is_none() {
+                break;
+            }
+            g.update(&Input { confirm: true, ..Input::default() });
+            g.update(&Input::default());
+        }
+        assert!(g.dialog.is_none());
+        assert_eq!(g.quest.stage, 1);
+        // The Sanctum is sealed.
+        let s = g.portals.iter().find(|p| p.kind == PortalKind::Entrance(SANCTUM)).map(|p| (p.x, p.y)).unwrap();
+        g.p.x = s.0;
+        g.p.y = s.1;
+        g.portal_cd = 0.0;
+        g.update(&Input::default());
+        assert_eq!(g.level, LevelId::Overworld, "ash barrier holds");
+        // Slay the three wardens and take their seals.
+        for k in 0..3 {
+            g.debug_goto(LevelId::Dungeon(k, DUNGEONS[k].floors - 1));
+            assert!(g.debug_kill_boss());
+            g.debug_collect_all();
+            assert!(g.quest.seals[k], "seal {k}");
+            assert!(g.portals.iter().any(|p| p.kind == PortalKind::TownPortal));
+        }
+        assert!(g.p.power > 1.4, "seals and levels made you stronger");
+        // Town portal home, then the elder unseals the gate.
+        let tp = g.portals.iter().find(|p| p.kind == PortalKind::TownPortal).map(|p| (p.x, p.y)).unwrap();
+        g.p.x = tp.0;
+        g.p.y = tp.1;
+        g.portal_cd = 0.0;
+        g.update(&Input::default());
+        assert_eq!(g.level, LevelId::Overworld);
+        assert!(g.in_safe(g.p.x, g.p.y));
+        assert!(g.debug_talk(Role::Elder));
+        for _ in 0..10 {
+            if g.dialog.is_none() {
+                break;
+            }
+            g.update(&Input { confirm: true, ..Input::default() });
+            g.update(&Input::default());
+        }
+        assert_eq!(g.quest.stage, 2);
+        g.p.x = s.0;
+        g.p.y = s.1;
+        g.portal_cd = 0.0;
+        g.update(&Input::default());
+        assert_eq!(g.level, LevelId::Dungeon(SANCTUM, 0));
+        g.debug_goto(LevelId::Dungeon(SANCTUM, DUNGEONS[SANCTUM].floors - 1));
+        assert!(g.debug_kill_boss());
+        assert!(matches!(g.state, State::Victory(_)));
+        assert_eq!(g.quest.stage, 3);
+    }
+
+    #[test]
+    fn merchant_sells_and_healer_heals() {
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        g.p.gold = 100;
+        assert!(g.debug_talk(Role::Merchant));
+        let pots = g.p.hp_pots;
+        g.update(&Input { confirm: true, ..Input::default() }); // first option: healing potion
+        assert_eq!(g.p.hp_pots, pots + 1);
+        assert_eq!(g.p.gold, 100 - Ware::HealthPotion.price());
+        g.update(&Input { cancel: true, ..Input::default() });
+        assert!(g.dialog.is_none() && !g.quit);
+        g.p.hp = 5.0;
+        assert!(g.debug_talk(Role::Healer));
+        assert_eq!(g.p.hp, g.p.max_hp);
+    }
+
+    #[test]
+    fn dying_wakes_you_in_town() {
+        let mut g = quiet_game();
+        g.p.gold = 100;
+        g.hurt_player(10_000.0);
+        assert!(matches!(g.state, State::Dead(_)));
+        for _ in 0..120 {
+            g.update(&Input::default());
+        }
+        g.update(&Input { confirm: true, ..Input::default() });
+        assert_eq!(g.state, State::Playing);
+        assert_eq!(g.level, LevelId::Overworld);
+        assert!(g.in_safe(g.p.x, g.p.y));
+        assert_eq!(g.p.gold, 90);
+    }
+
+    #[test]
+    fn experience_levels_you_up() {
+        let mut g = quiet_game();
+        let hp = g.p.max_hp;
+        g.gain_xp(xp_to_next(1) + 1.0);
+        assert_eq!(g.p.clvl, 2);
+        assert!(g.p.max_hp > hp);
     }
 }

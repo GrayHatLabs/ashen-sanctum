@@ -217,6 +217,37 @@ impl Screen {
         }
     }
 
+    /// Nearest-neighbour scaled blit (stand-in art for bigger monsters).
+    pub fn blit_scaled(&mut self, s: &Sprite, x: i32, y: i32, scale: f32, fx: Fx) {
+        let (x, y) = (x + self.shake.0, y + self.shake.1);
+        let (dw, dh) = ((s.w as f32 * scale) as i32, (s.h as f32 * scale) as i32);
+        let (dx0, dy0) = (x - (s.ax as f32 * scale) as i32, y - (s.ay as f32 * scale) as i32);
+        let cut = if fx.cut > 0 { (fx.cut as f32 * scale) as i32 } else { dh };
+        for yy in 0..dh.min(cut) {
+            let py = dy0 + yy;
+            if py < 0 || py >= self.h {
+                continue;
+            }
+            let sy = ((yy as f32 / scale) as i32).min(s.h - 1);
+            for xx in 0..dw {
+                let px = dx0 + xx;
+                if px < 0 || px >= self.w {
+                    continue;
+                }
+                let sx = ((xx as f32 / scale) as i32).min(s.w - 1);
+                let mut c = s.px[(sy * s.w + sx) as usize];
+                if c == 0 || (fx.dither && ((px + py) & 1) == 0) {
+                    continue;
+                }
+                if fx.tint_a > 0.0 {
+                    c = mix(c, fx.tint, fx.tint_a);
+                }
+                let i = (py * self.w + px) as usize;
+                self.px[i] = if fx.alpha > 0.0 { mix(self.px[i], c, fx.alpha) } else { c };
+            }
+        }
+    }
+
     /// Soft additive glow (used for fire). Does not respect lighting: call after `apply_light`
     /// or before it for lit/unlit variants.
     pub fn glow(&mut self, cx: i32, cy: i32, r: f32, c: u32, a: f32) {

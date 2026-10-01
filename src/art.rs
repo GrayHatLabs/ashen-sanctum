@@ -6,7 +6,8 @@
 //! start at `row` and run through the 8 directions in PixelLab order
 //! (south, south-east, east, north-east, north, north-west, west, south-west).
 use crate::art_gen::{CHARS, ITEMS, TILES};
-use crate::gfx::Sprite;
+use crate::gfx::{mix, rgb, Sprite, BLACK};
+use crate::world::Theme;
 use crate::sprites;
 
 pub struct AnimDef {
@@ -97,10 +98,39 @@ impl CharArt {
 
 pub struct Art {
     chars: Vec<(String, CharArt)>,
-    pub floors: Vec<Sprite>,
-    pub wall: Sprite,
-    /// Item sprites (anchored at the bottom centre, where they sit on the floor).
+    /// Floor tiles per theme (dungeon themes are tinted copies of the stone set).
+    floors: Vec<Vec<Sprite>>,
+    walls: Vec<Sprite>,
+    /// Overworld ground: grass variants, dirt, road.
+    grass: Vec<Sprite>,
+    dirt: Sprite,
+    road: Sprite,
+    /// Item and prop sprites (anchored at the bottom centre, where they sit on the floor).
     items: Vec<(&'static str, Sprite)>,
+    /// Code-drawn props for any prop sprite that hasn't been generated.
+    fallback_props: Vec<(&'static str, Sprite)>,
+    missing: Sprite,
+}
+
+/// Dungeon theme colour grading: (tint colour, amount, brightness).
+fn theme_grade(t: Theme) -> (u32, f32, f32) {
+    match t {
+        Theme::Overworld | Theme::Crypt => (0, 0.0, 1.0),
+        Theme::Warrens => (0x6a4a24, 0.38, 0.95),
+        Theme::Catacombs => (0x4a3a78, 0.38, 0.95),
+        Theme::Sanctum => (0x6a1408, 0.42, 0.8),
+    }
+}
+
+fn grade(s: &Sprite, (col, a, bright): (u32, f32, f32)) -> Sprite {
+    let mut out = s.clone();
+    for p in out.px.iter_mut() {
+        if *p != 0 {
+            let c = if a > 0.0 { mix(*p, rgb(col), a) } else { *p };
+            *p = mix(BLACK, c, bright);
+        }
+    }
+    out
 }
 
 impl Art {
@@ -144,15 +174,26 @@ impl Art {
             s.ay = t.anchor.1;
             s
         };
-        let mut floors: Vec<Sprite> = TILES.iter().filter(|t| t.name.starts_with("floor")).map(tile).collect();
-        if floors.is_empty() {
-            floors = (0..3).map(sprites::fallback_floor).collect();
+        let named = |prefix: &str| -> Vec<Sprite> { TILES.iter().filter(|t| t.name.starts_with(prefix)).map(tile).collect() };
+        let mut stone = named("floor");
+        if stone.is_empty() {
+            stone = (0..3).map(sprites::fallback_floor).collect();
         }
-        let wall = match TILES.iter().find(|t| t.name.starts_with("wall")) {
-            Some(t) => tile(t),
-            None => sprites::fallback_wall(),
-        };
-        let items = ITEMS
+        let wall = named("wall").into_iter().next().unwrap_or_else(sprites::fallback_wall);
+        let palisade = named("palisade").into_iter().next().unwrap_or_else(|| grade(&sprites::fallback_wall(), (0x6a4a24, 0.6, 0.9)));
+        let mut floors = vec![];
+        let mut walls = vec![];
+        for t in Theme::ALL {
+            floors.push(stone.iter().map(|s| grade(s, theme_grade(t))).collect());
+            walls.push(if t == Theme::Overworld { palisade.clone() } else { grade(&wall, theme_grade(t)) });
+        }
+        let mut grass = named("grass");
+        if grass.is_empty() {
+            grass = (0..2).map(|v| sprites::fallback_ground(v, 0x2e4a22, 0x46682e)).collect();
+        }
+        let dirt = named("dirt").into_iter().next().unwrap_or_else(|| sprites::fallback_ground(0, 0x5a4428, 0x705838));
+        let road = named("road").into_iter().next().unwrap_or_else(|| sprites::fallback_ground(1, 0x585450, 0x7a746c));
+        let items: Vec<(&'static str, Sprite)> = ITEMS
             .iter()
             .map(|d| {
                 let mut s = decode(d.data);
@@ -161,15 +202,66 @@ impl Art {
                 (d.name, s)
             })
             .collect();
-        Art { chars, floors, wall, items }
+        let fallback_props = sprites::PROP_NAMES.iter().filter(|n| !items.iter().any(|i| i.0 == **n)).map(|n| (*n, sprites::fallback_prop(n))).collect();
+        let missing = sprites::fallback_prop("rock1");
+        Art { chars, floors, walls, grass, dirt, road, items, fallback_props, missing }
+    }
+
+    pub fn floor(&self, theme: Theme, ground: u8, var: usize) -> &Sprite {
+        if theme == Theme::Overworld {
+            return match ground {
+                1 => &self.dirt,
+                2 => &self.road,
+                _ => &self.grass[var % self.grass.len()],
+            };
+        }
+        let set = &self.floors[theme.index()];
+        &set[var % set.len()]
+    }
+
+    pub fn wall(&self, theme: Theme) -> &Sprite {
+        &self.walls[theme.index()]
     }
 
     pub fn item(&self, name: &str) -> Option<&Sprite> {
         self.items.iter().find(|i| i.0 == name).map(|i| &i.1)
     }
 
+    /// A prop sprite, generated or code-drawn.
+    pub fn prop(&self, name: &str) -> &Sprite {
+        self.item(name).or_else(|| self.fallback_props.iter().find(|p| p.0 == name).map(|p| &p.1)).unwrap_or(&self.missing)
+    }
+
+    pub fn has_char(&self, name: &str) -> bool {
+        self.chars.iter().any(|c| c.0 == name)
+    }
+
     pub fn char(&self, name: &str) -> &CharArt {
         &self.chars.iter().find(|c| c.0 == name).expect("character art").1
+    }
+
+    /// A character's sheet, or a stand-in (another sheet, scale, tint colour, tint amount)
+    /// while its own art hasn't been generated yet.
+    pub fn char_art(&self, name: &str) -> (&CharArt, f32, u32, f32) {
+        if self.has_char(name) {
+            return (self.char(name), 1.0, 0, 0.0);
+        }
+        let (base, scale, tint, a) = match name {
+            "wolf" => ("zombie", 0.8, 0x606060, 0.5),
+            "imp" => ("zombie", 0.7, 0xc03020, 0.5),
+            "archer" => ("skeleton", 1.0, 0x303050, 0.3),
+            "npc_elder" => ("mage", 0.95, 0x406030, 0.5),
+            "npc_merchant" => ("mage", 1.0, 0x805030, 0.5),
+            "npc_healer" => ("mage", 1.0, 0xe0e0f0, 0.55),
+            "npc_guard" => ("mage", 1.05, 0x8090a0, 0.55),
+            "npc_villager" => ("mage", 0.95, 0x6a5030, 0.55),
+            "boss_bone" => ("skeleton", 1.6, 0xe0d8c0, 0.3),
+            "boss_plague" => ("zombie", 1.7, 0x60a020, 0.4),
+            "boss_hex" => ("skeleton", 1.4, 0x8040c0, 0.45),
+            "boss_ashking" => ("mage", 1.8, 0x400808, 0.55),
+            _ => ("mage", 1.0, 0, 0.0),
+        };
+        (self.char(base), scale, rgb(tint), a)
     }
 }
 

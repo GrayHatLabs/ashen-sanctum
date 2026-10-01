@@ -7,6 +7,8 @@ pub enum Tile {
     Void,
     Floor,
     Wall,
+    /// Blocked by a prop (tree, house, rock); drawn by the prop, not as a wall.
+    Prop,
 }
 
 #[derive(Clone, Copy)]
@@ -32,12 +34,14 @@ pub struct Dungeon {
     pub tiles: Vec<Tile>,
     /// Floor variant per tile (for picking floor art).
     pub var: Vec<u8>,
+    /// Ground type per tile on the overworld: 0 grass, 1 dirt, 2 road (always 0 in dungeons).
+    pub ground: Vec<u8>,
     pub rooms: Vec<Room>,
 }
 
 impl Dungeon {
     pub fn generate(rng: &mut Rng, w: i32, h: i32) -> Self {
-        let mut d = Dungeon { w, h, tiles: vec![Tile::Void; (w * h) as usize], var: vec![0; (w * h) as usize], rooms: vec![] };
+        let mut d = Dungeon::blank(w, h, Tile::Void);
         for _ in 0..200 {
             if d.rooms.len() >= 14 {
                 break;
@@ -113,6 +117,26 @@ impl Dungeon {
         d
     }
 
+    /// An empty map filled with one tile type (the overworld starts all floor).
+    pub fn blank(w: i32, h: i32, fill: Tile) -> Self {
+        let n = (w * h) as usize;
+        Dungeon { w, h, tiles: vec![fill; n], var: vec![0; n], ground: vec![0; n], rooms: vec![] }
+    }
+
+    pub fn set_ground(&mut self, x: i32, y: i32, g: u8) {
+        if x >= 0 && y >= 0 && x < self.w && y < self.h {
+            self.ground[(y * self.w + x) as usize] = g;
+        }
+    }
+
+    pub fn ground_at(&self, x: i32, y: i32) -> u8 {
+        if x >= 0 && y >= 0 && x < self.w && y < self.h {
+            self.ground[(y * self.w + x) as usize]
+        } else {
+            0
+        }
+    }
+
     fn corridor(&mut self, ax: i32, ay: i32, bx: i32, by: i32, x_first: bool) {
         let carve = |d: &mut Dungeon, x: i32, y: i32| {
             for (ox, oy) in [(0, 0), (1, 0), (0, 1), (1, 1)] {
@@ -143,7 +167,7 @@ impl Dungeon {
         }
     }
 
-    fn set(&mut self, x: i32, y: i32, t: Tile) {
+    pub fn set(&mut self, x: i32, y: i32, t: Tile) {
         if x >= 0 && y >= 0 && x < self.w && y < self.h {
             self.tiles[(y * self.w + x) as usize] = t;
         }

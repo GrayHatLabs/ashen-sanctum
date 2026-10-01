@@ -138,3 +138,112 @@ pub fn fireball_icon() -> Sprite {
     s.ay = 0;
     s
 }
+
+/// Flat ground diamond (grass, dirt, road) for the overworld.
+pub fn fallback_ground(v: i32, base: u32, hi: u32) -> Sprite {
+    let mut s = Sprite::new(32, 17);
+    for y in 0..17 {
+        for x in 0..32 {
+            let dx = (x as f32 + 0.5 - 16.0).abs() / 16.0;
+            let dy = (y as f32 + 0.5 - 8.5).abs() / 8.5;
+            if dx + dy > 1.0 {
+                continue;
+            }
+            let n = (hash(x / 2, y, v + 11) % 30) as f32 / 100.0;
+            s.set(x, y, mix(rgb(base), rgb(hi), n));
+        }
+    }
+    s.ax = 16;
+    s.ay = 8;
+    s
+}
+
+/// Props that have code-drawn stand-ins.
+pub const PROP_NAMES: [&str; 16] = [
+    "tree_oak", "tree_pine", "tree_dead", "rock1", "bush1", "house1", "house2", "tent1", "campfire", "well", "ent_crypt",
+    "ent_warrens", "ent_catacombs", "ent_sanctum", "stairs_down", "stairs_up",
+];
+
+/// Simple stand-in shapes for props (anchored at the bottom centre).
+pub fn fallback_prop(name: &str) -> Sprite {
+    let mut s;
+    match name {
+        "tree_oak" | "tree_pine" | "tree_dead" | "bush1" => {
+            let (w, h) = if name == "bush1" { (24, 20) } else { (40, 64) };
+            s = Sprite::new(w, h);
+            if name != "bush1" {
+                s.fill(w / 2 - 3, h - 22, 6, 22, rgb(0x4a3020));
+            }
+            let leaf = match name {
+                "tree_pine" => rgb(0x1e4028),
+                "tree_dead" => rgb(0x5a5048),
+                _ => rgb(0x2e5a24),
+            };
+            if name == "tree_pine" {
+                for k in 0..4 {
+                    s.ellipse(w as f32 / 2.0, (8 + k * 11) as f32, 6.0 + k as f32 * 4.0, 7.0, mix(leaf, rgb(0x3a7038), k as f32 * 0.1));
+                }
+            } else if name != "tree_dead" {
+                s.ellipse(w as f32 / 2.0, h as f32 * 0.4, w as f32 / 2.0 - 1.0, h as f32 * 0.38, leaf);
+                s.ellipse(w as f32 / 2.0 - 4.0, h as f32 * 0.32, w as f32 / 4.0, h as f32 * 0.18, mix(leaf, rgb(0x5a8a40), 0.4));
+            }
+        }
+        "rock1" => {
+            s = Sprite::new(28, 20);
+            s.ellipse(14.0, 12.0, 12.0, 8.0, rgb(0x5a5a58));
+            s.ellipse(11.0, 9.0, 6.0, 4.0, rgb(0x7a7a74));
+        }
+        "house1" | "house2" | "tent1" => {
+            s = Sprite::new(96, 84);
+            let wall = if name == "house2" { rgb(0x6a6458) } else { rgb(0x8a6a40) };
+            s.fill(16, 40, 64, 40, wall);
+            let roof = if name == "tent1" { rgb(0xa03030) } else { rgb(0x6a5030) };
+            for y in 0..36 {
+                let half = 10 + y * 38 / 36;
+                s.fill(48 - half, 8 + y, half * 2, 1, roof);
+            }
+            s.fill(42, 58, 12, 22, rgb(0x3a2818));
+        }
+        "campfire" => {
+            s = Sprite::new(24, 14);
+            s.ellipse(12.0, 9.0, 10.0, 4.0, rgb(0x505050));
+            s.ellipse(12.0, 8.0, 6.0, 3.0, rgb(0x4a3020));
+        }
+        "well" => {
+            s = Sprite::new(32, 40);
+            s.ellipse(16.0, 32.0, 13.0, 7.0, rgb(0x6a6a64));
+            s.ellipse(16.0, 31.0, 8.0, 4.0, rgb(0x101820));
+            s.fill(4, 8, 3, 24, rgb(0x5a3a20));
+            s.fill(25, 8, 3, 24, rgb(0x5a3a20));
+            s.fill(2, 6, 28, 4, rgb(0x6a4a28));
+        }
+        "stairs_down" => {
+            s = Sprite::new(40, 21);
+            for y in 0..21 {
+                for x in 0..40 {
+                    let d = ((x as f32 - 20.0) / 20.0).abs() + ((y as f32 - 10.0) / 10.0).abs();
+                    if d <= 1.0 {
+                        s.set(x, y, mix(rgb(0x050404), rgb(0x3a3630), (d * 1.2).min(1.0)));
+                    }
+                }
+            }
+        }
+        _ => {
+            // Dungeon entrances and stairs up: a stone arch with a dark doorway.
+            s = Sprite::new(72, 72);
+            let stone = match name {
+                "ent_warrens" => rgb(0x5a4a30),
+                "ent_catacombs" => rgb(0x4a3a68),
+                "ent_sanctum" => rgb(0x3a2020),
+                _ => rgb(0x5a5850),
+            };
+            s.fill(8, 12, 56, 58, stone);
+            s.ellipse(36.0, 40.0, 16.0, 18.0, rgb(0x080606));
+            s.fill(20, 40, 32, 30, rgb(0x080606));
+        }
+    }
+    s.outline(BLACK);
+    s.ax = s.w / 2;
+    s.ay = s.h - 1;
+    s
+}

@@ -8,9 +8,13 @@ mod dungeon;
 mod game;
 mod gfx;
 mod iso;
+mod mobs;
+mod render;
 mod rng;
 mod snapshot;
 mod sprites;
+mod story;
+mod world;
 
 use game::{Game, Input};
 use sdl2::controller::{Axis, Button, GameController};
@@ -101,7 +105,7 @@ fn main() -> Result<(), String> {
     let mut acc = Duration::ZERO;
     let mut back_held = false;
     // One-shot presses, cleared after each simulated tick.
-    let (mut confirm, mut pot_hp, mut pot_mp, mut map, mut run_toggle) = (false, false, false, false, false);
+    let (mut confirm, mut pot_hp, mut pot_mp, mut map, mut run_toggle, mut cancel) = (false, false, false, false, false, false);
 
     'main: loop {
         for ev in events.poll_iter() {
@@ -121,7 +125,7 @@ fn main() -> Result<(), String> {
                         Q | Num1 if !repeat => pot_hp = true,
                         E | Num2 if !repeat => pot_mp = true,
                         Tab | M if !repeat => map = true,
-                        Escape => break 'main,
+                        Escape if !repeat => cancel = true,
                         _ => {}
                     }
                 }
@@ -236,12 +240,14 @@ fn main() -> Result<(), String> {
             inp.potion_mp = pot_mp;
             inp.map = map;
             inp.run_toggle = run_toggle;
+            inp.cancel = cancel;
             game.update(&inp);
             confirm = false;
             pot_hp = false;
             pot_mp = false;
             map = false;
             run_toggle = false;
+            cancel = false;
             for s in game.sfx.drain(..) {
                 if let Some(a) = audio.as_mut() {
                     a.play(s);
@@ -250,6 +256,9 @@ fn main() -> Result<(), String> {
             acc -= step;
         }
 
+        if game.quit {
+            break 'main;
+        }
         game.draw(&mut scr);
         if let (Some(m), false) = (inp.mouse, handheld) {
             draw_cursor(&mut scr, m.0, m.1);
