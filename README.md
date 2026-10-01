@@ -57,6 +57,19 @@ take back their Seals, unseal the Sanctum and end the Ash King.
 | Continue after death / the ending | Enter | START |
 | Close menu / quit | Esc (closes a conversation or the map first) | SELECT + START |
 
+## Level editor
+
+Every map (the overworld with Hollowmere, and each dungeon floor) can be hand-made in the
+browser level editor:
+
+```powershell
+D:\projects\AshenSanctum\scripts\level-editor.ps1
+```
+
+Click **Open levels folder**, pick `D:\projects\AshenSanctum\levels`, choose a map (exported
+starting points are in `levels/generated/`), edit, **Save**. The game uses `levels/<name>.json`
+instead of the generated map. Test with `--level <name>`. Details: `docs/LEVEL_FORMAT.md`.
+
 ## Saving
 
 Your character saves automatically (whenever you reach the overworld, after boss kills and

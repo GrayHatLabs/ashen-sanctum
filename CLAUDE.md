@@ -18,6 +18,9 @@ Project rules and reference. Read this before every major change.
 - `mobs.rs`: monster definitions (`def`), AI incl. boss abilities, enemy shots, ground hazards.
 - `world.rs`: `Level`, overworld + Hollowmere generation, dungeon floors, portals, props, `DUNGEONS`.
 - `story.rs`: quest stages, NPC dialogue, shop wares, epilogue.
+- `levels.rs` + `build.rs`: JSON level files (folder override, embedded at build, generator fallback).
+  Editor: `tools/level-editor/index.html`. Format: `docs/LEVEL_FORMAT.md`. Keep the editor's catalog
+  (kinds, footprints, validation) in sync with `levels.rs` when adding props/monsters/NPCs.
 - `render.rs`: all drawing (world, lighting, HUD, dialogue, overlays). `art.rs` themes and stand-in art.
 - Unit tests cover the world graph, stairs, the whole story, shop/healer, death, XP, run/food.
 

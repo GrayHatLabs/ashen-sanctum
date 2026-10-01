@@ -8,6 +8,7 @@ mod dungeon;
 mod game;
 mod gfx;
 mod iso;
+mod levels;
 mod mobs;
 mod render;
 mod rng;
@@ -63,6 +64,20 @@ fn main() -> Result<(), String> {
     let args: Vec<String> = std::env::args().collect();
     let handheld = cfg!(target_arch = "aarch64");
     let tall = args.iter().any(|a| a == "--tall") || (handheld && !args.iter().any(|a| a == "--wide"));
+    let seed_arg = args.iter().position(|a| a == "--seed").and_then(|i| args.get(i + 1)).and_then(|s| s.parse::<u64>().ok());
+    if let Some(i) = args.iter().position(|a| a == "--export-levels") {
+        // Writes every level as JSON for the level editor (generated, or the hand-made one).
+        let dir = args.get(i + 1).map(String::as_str).filter(|d| !d.starts_with("--")).unwrap_or("levels");
+        let seed = seed_arg.or_else(|| save::read().as_deref().and_then(save::seed_of)).unwrap_or(7);
+        match levels::export_all(dir, seed) {
+            Ok(n) => println!("wrote {n} levels to {dir}/ (seed {seed})"),
+            Err(e) => {
+                eprintln!("export failed: {e}");
+                std::process::exit(1);
+            }
+        }
+        return Ok(());
+    }
     if let Some(i) = args.iter().position(|a| a == "--snapshot" || a == "--selftest") {
         let dir = args.get(i + 1).map(String::as_str).filter(|d| !d.starts_with("--"));
         let dir = if args[i] == "--snapshot" { Some(dir.unwrap_or("snapshots")) } else { None };
@@ -96,11 +111,18 @@ fn main() -> Result<(), String> {
     let seed = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_nanos() as u64).unwrap_or(1);
     // Continue the saved character (fresh world from the same seed), unless --new.
     let saved = if args.iter().any(|a| a == "--new") { None } else { save::read() };
-    let seed = saved.as_deref().and_then(save::seed_of).unwrap_or(seed);
+    let seed = seed_arg.or_else(|| saved.as_deref().and_then(save::seed_of)).unwrap_or(seed);
     let mut game = Game::new(seed, view_h);
     if let Some(text) = saved.as_deref() {
         if save::apply(&mut game, text) {
             game.welcome_back();
+        }
+    }
+    // --level <name>: jump straight into a level to test it (e.g. bone_crypt_floor1).
+    if let Some(name) = args.iter().position(|a| a == "--level").and_then(|i| args.get(i + 1)) {
+        match levels::id_from_name(name) {
+            Some(id) => game.debug_goto(id),
+            None => eprintln!("--level: unknown level {name:?} (try overworld, bone_crypt_floor1, ...)"),
         }
     }
     let mut scr = gfx::Screen::new(view_h);

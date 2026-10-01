@@ -280,6 +280,9 @@ pub struct Game {
     pub(crate) portals: Vec<Portal>,
     pub(crate) npcs: Vec<Npc>,
     pub(crate) safe: Option<(f32, f32, f32, f32)>,
+    pub(crate) start: (f32, f32),
+    /// The overworld's wake-up spot (town square), remembered while you're in a dungeon.
+    town_start: (f32, f32),
     parked: HashMap<LevelId, Level>,
     world_seed: u64,
     // ---- transient effects ----
@@ -322,7 +325,7 @@ pub struct Game {
 impl Game {
     pub fn new(seed: u64, view_h: i32) -> Self {
         let world_seed = seed;
-        let lv = world::overworld(world_seed);
+        let lv = world::build(LevelId::Overworld, world_seed);
         let mut g = Game {
             rng: Rng::new(seed),
             art: Art::load(),
@@ -340,6 +343,8 @@ impl Game {
             portals: vec![],
             npcs: vec![],
             safe: None,
+            start: (0.0, 0.0),
+            town_start: world::town_center(),
             parked: HashMap::new(),
             world_seed,
             balls: vec![],
@@ -374,9 +379,7 @@ impl Game {
             stats: Stats::default(),
         };
         g.swap_in(lv);
-        let (cx, cy) = world::town_center();
-        g.p.x = cx;
-        g.p.y = cy;
+        (g.p.x, g.p.y) = g.start;
         g
     }
 
@@ -401,6 +404,7 @@ impl Game {
             portals: std::mem::take(&mut self.portals),
             npcs: std::mem::take(&mut self.npcs),
             safe: self.safe.take(),
+            start: self.start,
         }
     }
 
@@ -418,6 +422,10 @@ impl Game {
         self.portals = lv.portals;
         self.npcs = lv.npcs;
         self.safe = lv.safe;
+        self.start = lv.start;
+        if lv.id == LevelId::Overworld {
+            self.town_start = lv.start;
+        }
         self.balls.clear();
         self.shots.clear();
         self.hazards.clear();
@@ -442,10 +450,7 @@ impl Game {
         self.parked.insert(cur.id, cur);
         let lv = match self.parked.remove(&id) {
             Some(lv) => lv,
-            None => match id {
-                LevelId::Overworld => world::overworld(self.world_seed),
-                LevelId::Dungeon(k, f) => world::dungeon_floor(k, f, self.world_seed),
-            },
+            None => world::build(id, self.world_seed),
         };
         self.swap_in(lv);
         self.stats.levels_entered += 1;
@@ -460,7 +465,7 @@ impl Game {
             (LevelId::Dungeon(..), _) => self.portal_spot(PortalKind::Up),
             _ => None,
         };
-        let (x, y) = spot.unwrap_or_else(world::town_center);
+        let (x, y) = spot.unwrap_or(self.start);
         self.p.x = x;
         self.p.y = y;
     }
@@ -720,9 +725,7 @@ impl Game {
         if from != LevelId::Overworld {
             self.go_to(LevelId::Overworld, None);
         }
-        let (x, y) = world::town_center();
-        self.p.x = x;
-        self.p.y = y;
+        (self.p.x, self.p.y) = self.town_start;
         if lost > 0 {
             self.say(format!("YOU WAKE IN HOLLOWMERE. LOST {lost} GOLD."));
         } else {
@@ -770,9 +773,7 @@ impl Game {
             }
             PortalKind::TownPortal => {
                 self.go_to(LevelId::Overworld, None);
-                let (x, y) = world::town_center();
-                self.p.x = x;
-                self.p.y = y;
+                (self.p.x, self.p.y) = self.town_start;
             }
         }
     }

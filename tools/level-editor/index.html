@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ashen Sanctum Level Editor</title>
+<style>
+  :root {
+    --bg: #15120f; --panel: #221d18; --panel2: #2c251e; --line: #4a3e30; --text: #e6dccb;
+    --dim: #9a8a76; --accent: #d8a048; --accent2: #ffcf70; --bad: #e0503a; --good: #6cc060;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
+    font: 13px/1.35 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  #app { display: grid; grid-template-columns: 250px 1fr 270px; grid-template-rows: auto 1fr auto; height: 100vh; }
+  header { grid-column: 1 / 4; display: flex; gap: 6px; align-items: center; padding: 6px 10px;
+    background: var(--panel); border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  header h1 { font-size: 15px; margin: 0 10px 0 0; color: var(--accent2); letter-spacing: .04em; }
+  button, select, input { font: inherit; color: var(--text); background: var(--panel2);
+    border: 1px solid var(--line); border-radius: 4px; padding: 4px 8px; }
+  button:hover { border-color: var(--accent); cursor: pointer; }
+  button.on { background: #5a3a10; border-color: var(--accent2); color: var(--accent2); }
+  input[type=number] { width: 64px; }
+  aside { background: var(--panel); overflow-y: auto; padding: 8px; }
+  #left { border-right: 1px solid var(--line); }
+  #right { border-left: 1px solid var(--line); }
+  h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--dim); margin: 12px 0 6px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  .pal { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 2px;
+    background: var(--panel2); border: 1px solid var(--line); border-radius: 4px; cursor: pointer;
+    font-size: 10px; color: var(--dim); text-align: center; min-height: 56px; }
+  .pal:hover { border-color: var(--accent); }
+  .pal.on { border-color: var(--accent2); color: var(--accent2); background: #3a2a14; }
+  .pal img, .pal .sw { width: 32px; height: 32px; object-fit: contain; image-rendering: pixelated; }
+  .pal .sw { border-radius: 3px; }
+  #stage { position: relative; overflow: hidden; background: #0b0a09; }
+  canvas { display: block; image-rendering: pixelated; }
+  footer { grid-column: 1 / 4; display: flex; gap: 16px; padding: 4px 10px; background: var(--panel);
+    border-top: 1px solid var(--line); color: var(--dim); font-size: 12px; }
+  .row { display: flex; gap: 6px; align-items: center; margin: 4px 0; flex-wrap: wrap; }
+  .row label { color: var(--dim); min-width: 52px; }
+  .issues div { padding: 3px 6px; margin: 2px 0; border-radius: 3px; background: #2a1a14; border-left: 3px solid var(--bad); }
+  .issues div.ok { background: #18241a; border-left-color: var(--good); }
+  .issues div.warn { background: #2a2414; border-left-color: var(--accent); }
+  #levels { width: 100%; }
+  .hint { color: var(--dim); font-size: 11px; }
+  kbd { background: #332a20; border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; font-size: 11px; }
+  #props-panel input { width: 70px; }
+  #drop { position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
+    background: rgba(216,160,72,.15); border: 3px dashed var(--accent); font-size: 18px; color: var(--accent2); }
+  #welcome { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  #welcome > div { max-width: 520px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 18px 22px; }
+  #welcome h3 { margin: 0 0 8px; color: var(--accent2); }
+  #welcome code { background: #332a20; padding: 1px 5px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>ASHEN SANCTUM · LEVEL EDITOR</h1>
+    <button id="btn-folder" title="Pick the game's levels/ folder (Chrome / Edge)">Open levels folder</button>
+    <select id="levels" title="Levels in the folder" style="width:240px"></select>
+    <button id="btn-open" title="Open a single .json file">Open file…</button>
+    <input id="file" type="file" accept=".json" hidden>
+    <button id="btn-new">New…</button>
+    <button id="btn-save" title="Ctrl+S">Save</button>
+    <button id="btn-download">Download</button>
+    <span style="flex:1"></span>
+    <button id="btn-undo" title="Ctrl+Z">Undo</button>
+    <button id="btn-redo" title="Ctrl+Y">Redo</button>
+    <button id="btn-fit">Fit</button>
+    <button id="btn-help">Help</button>
+  </header>
+
+  <aside id="left">
+    <h2>Tools</h2>
+    <div class="grid" id="tools"></div>
+    <div class="row"><label>Brush</label>
+      <select id="brush"><option>1</option><option>2</option><option selected>3</option><option>5</option><option>9</option></select>
+      <span class="hint">Shift-drag: rectangle</span></div>
+    <h2>Tiles</h2><div class="grid" id="pal-tiles"></div>
+    <h2>Ground (overworld)</h2><div class="grid" id="pal-ground"></div>
+    <h2>Props</h2><div class="grid" id="pal-props"></div>
+    <h2>Portals</h2><div class="grid" id="pal-portals"></div>
+    <h2>Monsters</h2><div class="grid" id="pal-monsters"></div>
+    <h2>People</h2><div class="grid" id="pal-npcs"></div>
+    <h2>Items</h2><div class="grid" id="pal-items"></div>
+  </aside>
+
+  <div id="stage">
+    <canvas id="cv"></canvas>
+    <div id="drop">Drop a level .json here</div>
+    <div id="welcome"><div>
+      <h3>Get started</h3>
+      <p>1. Export the game's current maps once (they become your starting points):</p>
+      <p><code>wsl -d Ubuntu -e bash /mnt/d/projects/AshenSanctum/scripts/dev-build.sh run --export-levels levels/generated</code></p>
+      <p>2. Click <b>Open levels folder</b> and pick <code>D:\projects\AshenSanctum\levels</code>.
+        Pick a map from the list (generated ones are marked), edit it, and <b>Save</b>: it's written to
+        <code>levels/&lt;name&gt;.json</code>, which the game uses instead of the generated map.</p>
+      <p>3. Test it: <code>... dev-build.sh run --level bone_crypt_floor1</code></p>
+      <p class="hint">No folder access (Firefox)? Use <b>Open file…</b> and <b>Download</b>, then put the file in <code>levels/</code>.
+        You can also drag a .json onto this page.</p>
+    </div></div>
+  </div>
+
+  <aside id="right">
+    <h2>Level</h2>
+    <div class="row"><label>File</label><span id="lv-file" class="hint">(none)</span></div>
+    <div class="row"><label>Id</label><span id="lv-id" class="hint"></span></div>
+    <div class="row"><label>Name</label><input id="lv-name" style="flex:1"></div>
+    <div class="row"><label>Theme</label>
+      <select id="lv-theme"><option>overworld</option><option>crypt</option><option>warrens</option><option>catacombs</option><option>sanctum</option></select></div>
+    <div class="row"><label>Tier</label><input id="lv-tier" type="number" step="0.1" min="0.1">
+      <span class="hint">difficulty</span></div>
+    <div class="row"><label>Size</label><span id="lv-size" class="hint"></span>
+      <button id="btn-resize">Resize…</button></div>
+    <h2>Selection</h2>
+    <div id="props-panel" class="hint">Use the <b>Select</b> tool and click something.</div>
+    <h2>Checks</h2>
+    <div class="row"><button id="btn-check">Re-check</button><label><input type="checkbox" id="show-reach"> show reachable</label></div>
+    <div id="issues" class="issues"></div>
+    <h2>Counts</h2>
+    <div id="counts" class="hint"></div>
+  </aside>
+
+  <footer>
+    <span id="st-pos">–</span><span id="st-under"></span><span style="flex:1"></span>
+    <span id="st-msg"></span>
+  </footer>
+</div>
+
+<script>
+"use strict";
+// ------------------------------------------------------------------ catalog (mirrors src/levels.rs)
+const ART = "art/";
+const TILES = [
+  { id: ".", name: "Floor", color: "#5a5248" },
+  { id: "#", name: "Wall", color: "#2a2018", img: "wall" },
+  { id: " ", name: "Void", color: "#050404" },
+  { id: "o", name: "Blocked", color: "#3a4030" },
+];
+const GROUND = [
+  { id: "g", name: "Grass", color: "#3e6a2a", img: "grass1" },
+  { id: "d", name: "Dirt", color: "#7a4a36", img: "dirt1" },
+  { id: "r", name: "Road", color: "#6a6660", img: "road1" },
+];
+const PROPS = [
+  ["tree_oak", 1, 1], ["tree_pine", 1, 1], ["tree_dead", 1, 1], ["rock1", 1, 1], ["bush1", 1, 1],
+  ["house1", 4, 4], ["house2", 4, 4], ["tent1", 3, 2], ["campfire", 1, 1], ["well", 1, 1],
+  ["ent_crypt", 3, 3], ["ent_warrens", 3, 3], ["ent_catacombs", 3, 3], ["ent_sanctum", 3, 3],
+].map(([kind, w, h]) => ({ kind, w, h, img: kind, name: kind.replace(/_/g, " ").replace(/^ent /, "door: ").replace(/1$/, "") }));
+const PORTALS = [
+  { kind: "up", name: "Stairs up", color: "#ffd040", img: "stairs_up" },
+  { kind: "down", name: "Stairs down", color: "#ff9040", img: "stairs_down" },
+  { kind: "entrance0", name: "Door: Crypt", color: "#e0d8c0" },
+  { kind: "entrance1", name: "Door: Warrens", color: "#80d040" },
+  { kind: "entrance2", name: "Door: Catacombs", color: "#b070ff" },
+  { kind: "entrance3", name: "Door: Sanctum", color: "#ff4030" },
+  { kind: "townportal", name: "Town portal", color: "#6080ff" },
+];
+const MONSTERS = [
+  ["zombie", "Zombie"], ["skeleton", "Skeleton"], ["wolf", "Wolf"], ["imp", "Imp"], ["archer", "Archer"],
+  ["boss_bone", "Bone Warden"], ["boss_plague", "Plague Warden"], ["boss_hex", "Hex Warden"], ["boss_ashking", "Ash King"],
+].map(([kind, name]) => ({ kind, name, img: kind, boss: kind.startsWith("boss") }));
+const NPCS = [
+  ["elder", "Elder", "npc_elder"], ["merchant", "Merchant", "npc_merchant"], ["healer", "Healer", "npc_healer"],
+  ["guard", "Guard", "npc_guard"], ["villager0", "Villager 1", "npc_villager"], ["villager1", "Farmer 1", "npc_villager"],
+  ["villager2", "Villager 2", "npc_villager"], ["villager3", "Farmer 2", "npc_villager"],
+].map(([kind, name, img]) => ({ kind, name, img }));
+const ITEMS = [
+  { kind: "apple", name: "Apple", img: "food_apple" }, { kind: "bread", name: "Bread", img: "food_bread" },
+  { kind: "roast", name: "Roast", img: "food_roast" }, { kind: "health_potion", name: "Heal potion", color: "#c02020" },
+  { kind: "mana_potion", name: "Mana potion", color: "#2040c0" }, { kind: "gold25", name: "25 gold", color: "#e8c050" },
+];
+const THEME_FLOOR = { overworld: "#3e6a2a", crypt: "#4e5254", warrens: "#5a4a34", catacombs: "#4a4260", sanctum: "#4a2620" };
+const THEME_WALL = { overworld: "#3a2414", crypt: "#22281e", warrens: "#2e2214", catacombs: "#241e36", sanctum: "#2a0e0a" };
+const DUNGEONS = [["bone_crypt", "THE BONE CRYPT", 2, "crypt", 1.0], ["rotting_warrens", "THE ROTTING WARRENS", 2, "warrens", 1.6],
+  ["hexed_catacombs", "THE HEXED CATACOMBS", 3, "catacombs", 2.3], ["ashen_sanctum", "THE ASHEN SANCTUM", 3, "sanctum", 3.2]];
+const BOSSES = ["boss_bone", "boss_plague", "boss_hex", "boss_ashking"];
+
+const images = {};
+function img(name) {
+  if (!name) return null;
+  if (!(name in images)) {
+    const im = new Image();
+    im.onload = () => { im.ok = true; draw(); };
+    im.src = ART + name + ".png";
+    images[name] = im;
+  }
+  return images[name].ok ? images[name] : null;
+}
+
+// ------------------------------------------------------------------ state
+let L = null;            // the level being edited (LevelFile shape, tiles/ground as char arrays)
+let fileName = null;     // e.g. "bone_crypt_floor1"
+let dirHandle = null;    // File System Access folder (levels/)
+let undo = [], redo = [];
+let tool = "paint", pick = { group: "tiles", item: TILES[0] };
+let sel = null;          // { list, index }
+let view = { x: 0, y: 0, s: 8 };
+let dirty = false;
+const cv = document.getElementById("cv"), ctx = cv.getContext("2d");
+
+function levelIdToName(id) {
+  if (id === "overworld") return "overworld";
+  const m = /^dungeon:(\d+):(\d+)$/.exec(id || "");
+  return m ? `${DUNGEONS[+m[1]][0]}_floor${+m[2] + 1}` : null;
+}
+function nameToLevelId(name) {
+  if (name === "overworld") return "overworld";
+  for (let k = 0; k < DUNGEONS.length; k++)
+    for (let f = 0; f < DUNGEONS[k][2]; f++)
+      if (`${DUNGEONS[k][0]}_floor${f + 1}` === name) return `dungeon:${k}:${f}`;
+  return null;
+}
+
+function load(obj, name) {
+  if (!obj || obj.version !== 1 || !Array.isArray(obj.tiles)) { msg("Not an Ashen Sanctum level file (version 1)", true); return; }
+  L = JSON.parse(JSON.stringify(obj));
+  L.tiles = L.tiles.map(r => r.padEnd(L.width, " ").slice(0, L.width).split(""));
+  L.ground = (L.ground && L.ground.length ? L.ground : []).map(r => r.padEnd(L.width, "g").split(""));
+  while (L.ground.length < L.height) L.ground.push(Array(L.width).fill("g"));
+  for (const k of ["props", "portals", "monsters", "npcs", "items"]) L[k] = L[k] || [];
+  fileName = name || levelIdToName(L.id) || "level";
+  undo = []; redo = []; sel = null; dirty = false;
+  document.getElementById("welcome").style.display = "none";
+  resize(); syncInfo(); fit(); check(); draw();
+  msg(`Loaded ${fileName}`);
+}
+
+function serialize() {
+  const out = JSON.parse(JSON.stringify(L));
+  out.tiles = L.tiles.map(r => r.join(""));
+  out.ground = L.theme === "overworld" ? L.ground.map(r => r.join("")) : [];
+  out.name = document.getElementById("lv-name").value || L.name;
+  out.tier = +document.getElementById("lv-tier").value || L.tier;
+  out.theme = document.getElementById("lv-theme").value;
+  return JSON.stringify(out, null, 1);
+}
+
+function snapshot() { undo.push(serialize()); if (undo.length > 80) undo.shift(); redo = []; dirty = true; }
+function restore(text) { const keepName = fileName; load(JSON.parse(text), keepName); dirty = true; }
+
+// ------------------------------------------------------------------ palette UI
+function swatch(it) {
+  const el = document.createElement("div");
+  el.className = "pal";
+  const im = it.img ? Object.assign(document.createElement("img"), { src: ART + it.img + ".png" }) : null;
+  if (im) { im.onerror = () => { im.replaceWith(Object.assign(document.createElement("div"), { className: "sw", style: `background:${it.color || "#555"}` })); }; el.append(im); }
+  else el.append(Object.assign(document.createElement("div"), { className: "sw", style: `background:${it.color || "#555"}` }));
+  el.append(document.createTextNode(it.name));
+  return el;
+}
+function buildPalette(id, group, list) {
+  const box = document.getElementById(id);
+  for (const it of list) {
+    const el = swatch(it);
+    el.onclick = () => { pick = { group, item: it }; setTool(group === "tiles" || group === "ground" ? "paint" : "place"); refreshPal(); };
+    el.dataset.key = group + ":" + (it.id ?? it.kind);
+    box.append(el);
+  }
+}
+function refreshPal() {
+  document.querySelectorAll(".pal[data-key]").forEach(el => el.classList.toggle("on", el.dataset.key === pick.group + ":" + (pick.item.id ?? pick.item.kind) && (tool === "paint" || tool === "place")));
+}
+const TOOL_LIST = [["paint", "Paint", "#6a5a40"], ["place", "Place", "#4a6a40"], ["select", "Select / move", "#40606a"],
+  ["erase", "Erase things", "#6a3a30"], ["start", "Start point", "#e0e0e0"], ["safe", "Safe zone", "#40a060"], ["pan", "Pan", "#333"]];
+function setTool(t) {
+  tool = t;
+  document.querySelectorAll("#tools .pal").forEach(el => el.classList.toggle("on", el.dataset.tool === t));
+  refreshPal();
+}
+for (const [t, name, color] of TOOL_LIST) {
+  const el = swatch({ name, color });
+  el.dataset.tool = t;
+  el.onclick = () => setTool(t);
+  document.getElementById("tools").append(el);
+}
+buildPalette("pal-tiles", "tiles", TILES);
+buildPalette("pal-ground", "ground", GROUND);
+buildPalette("pal-props", "props", PROPS);
+buildPalette("pal-portals", "portals", PORTALS);
+buildPalette("pal-monsters", "monsters", MONSTERS);
+buildPalette("pal-npcs", "npcs", NPCS);
+buildPalette("pal-items", "items", ITEMS);
+setTool("paint");
+
+// ------------------------------------------------------------------ drawing
+function resize() {
+  const st = document.getElementById("stage");
+  cv.width = st.clientWidth; cv.height = st.clientHeight; draw();
+}
+new ResizeObserver(() => { const fresh = cv.width === 0; resize(); if (fresh && L) { fit(); draw(); } }).observe(document.getElementById("stage"));
+function fit() {
+  if (!L) return;
+  const s = Math.max(2, Math.floor(Math.min(cv.width / L.width, cv.height / L.height)));
+  view = { s, x: (cv.width - L.width * s) / 2, y: (cv.height - L.height * s) / 2 };
+}
+const toScr = (x, y) => [view.x + x * view.s, view.y + y * view.s];
+const toTile = (px, py) => [(px - view.x) / view.s, (py - view.y) / view.s];
+
+let reach = null;
+function draw() {
+  ctx.fillStyle = "#0b0a09"; ctx.fillRect(0, 0, cv.width, cv.height);
+  if (!L) return;
+  const s = view.s, ow = L.theme === "overworld";
+  const [x0, y0] = toTile(0, 0).map(v => Math.max(0, Math.floor(v)));
+  const [x1, y1] = toTile(cv.width, cv.height);
+  const xe = Math.min(L.width, Math.ceil(x1)), ye = Math.min(L.height, Math.ceil(y1));
+  const gcol = { g: "#3e6a2a", d: "#7a4a36", r: "#6a6660" };
+  for (let y = y0; y < ye; y++) for (let x = x0; x < xe; x++) {
+    const t = L.tiles[y][x];
+    let c;
+    if (t === " ") c = "#050404";
+    else if (t === "#") c = THEME_WALL[L.theme];
+    else {
+      c = ow ? gcol[L.ground[y][x]] || gcol.g : THEME_FLOOR[L.theme];
+      if (t === "o") c = shade(c, -0.35);
+    }
+    if (reach && t !== " " && t !== "#" && t !== "o" && !reach[y * L.width + x]) c = mixc(c, "#ff2020", 0.35);
+    ctx.fillStyle = c;
+    const [sx, sy] = toScr(x, y);
+    ctx.fillRect(sx, sy, s + 0.5, s + 0.5);
+    if (t === "#" && s >= 6) { ctx.fillStyle = "rgba(255,220,160,.12)"; ctx.fillRect(sx, sy, s, Math.max(1, s / 5)); }
+  }
+  if (s >= 14) {
+    ctx.strokeStyle = "rgba(0,0,0,.25)"; ctx.lineWidth = 1; ctx.beginPath();
+    for (let x = x0; x <= xe; x++) { const [sx] = toScr(x, 0); ctx.moveTo(sx + .5, view.y + y0 * s); ctx.lineTo(sx + .5, view.y + ye * s); }
+    for (let y = y0; y <= ye; y++) { const [, sy] = toScr(0, y); ctx.moveTo(view.x + x0 * s, sy + .5); ctx.lineTo(view.x + xe * s, sy + .5); }
+    ctx.stroke();
+  }
+  // Safe zone.
+  if (L.safe) {
+    const [a, b] = toScr(L.safe[0], L.safe[1]), [c, d] = toScr(L.safe[2], L.safe[3]);
+    ctx.setLineDash([6, 4]); ctx.strokeStyle = "#60d080"; ctx.lineWidth = 2; ctx.strokeRect(a, b, c - a, d - b); ctx.setLineDash([]);
+    ctx.fillStyle = "#60d080"; ctx.font = "11px system-ui"; ctx.fillText("SAFE ZONE", a + 4, b + 13);
+  }
+  // Props.
+  L.props.forEach((p, i) => {
+    const def = PROPS.find(d => d.kind === p.kind) || { img: p.kind };
+    const w = p.w || 1, h = p.h || 1;
+    const [sx, sy] = toScr(p.x, p.y);
+    const im = img(def.img);
+    if (im) drawFit(im, sx, sy, w * s, h * s);
+    else { ctx.fillStyle = "#6a7a40"; ctx.fillRect(sx + 1, sy + 1, w * s - 2, h * s - 2); }
+    if (w > 1 || h > 1 || isSel("props", i)) { ctx.strokeStyle = isSel("props", i) ? "#ffcf70" : "rgba(255,255,255,.35)"; ctx.lineWidth = isSel("props", i) ? 2 : 1; ctx.strokeRect(sx + .5, sy + .5, w * s - 1, h * s - 1); }
+  });
+  // Items, portals, people, monsters, start.
+  L.items.forEach((it, i) => drawEnt(it, ITEMS.find(d => d.kind === it.kind) || { color: "#e8c050" }, 0.55, "items", i));
+  L.portals.forEach((p, i) => {
+    const def = PORTALS.find(d => d.kind === p.kind) || { color: "#fff", name: p.kind };
+    const [sx, sy] = toScr(p.x - 0.5, p.y - 0.5);
+    ctx.fillStyle = def.color; ctx.globalAlpha = .85; ctx.fillRect(sx + s * .1, sy + s * .1, s * .8, s * .8); ctx.globalAlpha = 1;
+    ctx.strokeStyle = isSel("portals", i) ? "#ffcf70" : "#000"; ctx.lineWidth = 2; ctx.strokeRect(sx + s * .1, sy + s * .1, s * .8, s * .8);
+    label(def.name.replace("Door: ", "").replace("Stairs ", "").toUpperCase(), sx + s / 2, sy - 2, def.color);
+  });
+  L.npcs.forEach((n, i) => drawEnt(n, NPCS.find(d => d.kind === n.kind) || {}, 1.4, "npcs", i, "#60d060"));
+  L.monsters.forEach((m, i) => {
+    const def = MONSTERS.find(d => d.kind === m.kind) || {};
+    drawEnt(m, def, def.boss ? 2.6 : 1.1, "monsters", i, def.boss ? "#ffb030" : "#e03020");
+  });
+  if (L.start) {
+    const [sx, sy] = toScr(L.start[0], L.start[1]);
+    ctx.fillStyle = "#fff"; star(sx, sy, Math.max(4, s * 0.6)); label("START", sx, sy - Math.max(5, s * .7), "#fff");
+  }
+  if (dragRect) {
+    const [a, b] = toScr(Math.min(dragRect[0], dragRect[2]), Math.min(dragRect[1], dragRect[3]));
+    const [c, d] = toScr(Math.max(dragRect[0], dragRect[2]) + 1, Math.max(dragRect[1], dragRect[3]) + 1);
+    ctx.strokeStyle = "#ffcf70"; ctx.lineWidth = 2; ctx.strokeRect(a, b, c - a, d - b);
+  }
+  if (hover && (tool === "paint" || tool === "place")) {
+    let w = 1, h = 1, ox = 0;
+    if (tool === "paint") { w = h = +document.getElementById("brush").value; ox = Math.floor((w - 1) / 2); }
+    else if (pick.group === "props") { w = pick.item.w; h = pick.item.h; }
+    const [sx, sy] = toScr(hover[0] - ox, hover[1] - ox);
+    ctx.strokeStyle = "rgba(255,207,112,.8)"; ctx.lineWidth = 1; ctx.strokeRect(sx + .5, sy + .5, w * s, h * s);
+  }
+}
+function drawFit(im, x, y, w, h) {
+  const k = Math.min(w / im.width, (h * 1.6) / im.height);
+  const dw = im.width * k, dh = im.height * k;
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(im, x + (w - dw) / 2, y + h - dh, dw, dh);
+}
+function drawEnt(e, def, size, list, i, ring) {
+  const s = view.s, r = Math.max(3, s * size * 0.5);
+  const [sx, sy] = toScr(e.x, e.y);
+  const im = img(def.img);
+  if (ring) { ctx.beginPath(); ctx.arc(sx, sy, r, 0, 7); ctx.fillStyle = ring + "55"; ctx.fill(); ctx.strokeStyle = ring; ctx.lineWidth = 1.5; ctx.stroke(); }
+  if (im && s >= 5) { const k = (r * 2.2) / Math.max(im.width, im.height); ctx.imageSmoothingEnabled = false; ctx.drawImage(im, sx - im.width * k / 2, sy - im.height * k * 0.75, im.width * k, im.height * k); }
+  else if (!ring) { ctx.beginPath(); ctx.arc(sx, sy, r * 0.6, 0, 7); ctx.fillStyle = def.color || "#ccc"; ctx.fill(); }
+  if (isSel(list, i)) { ctx.beginPath(); ctx.arc(sx, sy, r + 3, 0, 7); ctx.strokeStyle = "#ffcf70"; ctx.lineWidth = 2; ctx.stroke(); }
+}
+function label(t, x, y, c) {
+  if (view.s < 6) return;
+  ctx.font = `${Math.min(12, Math.max(9, view.s * .8))}px system-ui`; ctx.textAlign = "center";
+  ctx.fillStyle = "#000"; ctx.fillText(t, x + 1, y + 1); ctx.fillStyle = c; ctx.fillText(t, x, y); ctx.textAlign = "left";
+}
+function star(x, y, r) {
+  ctx.beginPath();
+  for (let i = 0; i < 10; i++) { const a = i * Math.PI / 5 - Math.PI / 2, rr = i % 2 ? r * .45 : r; ctx.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); }
+  ctx.closePath(); ctx.fill(); ctx.strokeStyle = "#000"; ctx.stroke();
+}
+function shade(hex, k) { const n = parseInt(hex.slice(1), 16); const f = c => Math.max(0, Math.min(255, Math.round(c * (1 + k)))); return `rgb(${f(n >> 16)},${f((n >> 8) & 255)},${f(n & 255)})`; }
+function mixc(c, hex, a) {
+  const m = /rgb\((\d+),(\d+),(\d+)\)/.exec(c); const p = m ? m.slice(1).map(Number) : [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16));
+  const n = parseInt(hex.slice(1), 16), q = [n >> 16, (n >> 8) & 255, n & 255];
+  return `rgb(${p.map((v, i) => Math.round(v + (q[i] - v) * a)).join(",")})`;
+}
+const isSel = (list, i) => sel && sel.list === list && sel.index === i;
+
+// ------------------------------------------------------------------ editing
+function setTile(x, y, t) { if (x >= 0 && y >= 0 && x < L.width && y < L.height) L.tiles[y][x] = t; }
+function setGround(x, y, g) { if (x >= 0 && y >= 0 && x < L.width && y < L.height) { L.ground[y][x] = g; if (L.tiles[y][x] === " ") L.tiles[y][x] = "."; } }
+function paintAt(tx, ty) {
+  const b = +document.getElementById("brush").value, o = Math.floor((b - 1) / 2);
+  for (let y = ty - o; y < ty - o + b; y++) for (let x = tx - o; x < tx - o + b; x++) paintTile(x, y);
+}
+function paintTile(x, y) {
+  if (pick.group === "ground") setGround(x, y, pick.item.id);
+  else if (pick.group === "tiles") { if (L.tiles[y]?.[x] === "o" && pick.item.id !== "o") removePropAt(x, y); setTile(x, y, pick.item.id); }
+}
+function removePropAt(x, y) {
+  const i = L.props.findIndex(p => x >= p.x && y >= p.y && x < p.x + (p.w || 1) && y < p.y + (p.h || 1));
+  if (i >= 0) { const p = L.props[i]; for (let yy = p.y; yy < p.y + (p.h || 1); yy++) for (let xx = p.x; xx < p.x + (p.w || 1); xx++) setTile(xx, yy, "."); L.props.splice(i, 1); return true; }
+  return false;
+}
+function place(tx, ty, fx, fy) {
+  const it = pick.item;
+  const round = v => Math.round(v * 100) / 100;
+  switch (pick.group) {
+    case "props": {
+      for (let y = ty; y < ty + it.h; y++) for (let x = tx; x < tx + it.w; x++) removePropAt(x, y);
+      L.props.push({ kind: it.kind, x: tx, y: ty, w: it.w, h: it.h });
+      for (let y = ty; y < ty + it.h; y++) for (let x = tx; x < tx + it.w; x++) setTile(x, y, "o");
+      break;
+    }
+    case "portals":
+      if (["up", "down"].includes(it.kind) || it.kind.startsWith("entrance")) L.portals = L.portals.filter(p => p.kind !== it.kind);
+      L.portals.push({ kind: it.kind, x: tx + 0.5, y: ty + 0.5 });
+      if (L.tiles[ty][tx] !== ".") setTile(tx, ty, ".");
+      break;
+    case "monsters": L.monsters.push({ kind: it.kind, x: round(fx), y: round(fy), ...(it.boss ? {} : {}) }); break;
+    case "npcs": L.npcs.push({ kind: it.kind, x: round(fx), y: round(fy) }); break;
+    case "items": L.items.push({ kind: it.kind, x: round(fx), y: round(fy) }); break;
+  }
+}
+// Hit test entities (top-most first). Returns {list, index}.
+function hit(fx, fy) {
+  const near = (e, r) => (e.x - fx) ** 2 + (e.y - fy) ** 2 < r * r;
+  for (const [list, r] of [["monsters", 0.7], ["npcs", 0.7], ["portals", 0.6], ["items", 0.5]]) {
+    for (let i = L[list].length - 1; i >= 0; i--) if (near(L[list][i], list === "monsters" && L[list][i].kind.startsWith("boss") ? 1.3 : r)) return { list, index: i };
+  }
+  for (let i = L.props.length - 1; i >= 0; i--) {
+    const p = L.props[i];
+    if (fx >= p.x && fy >= p.y && fx < p.x + (p.w || 1) && fy < p.y + (p.h || 1)) return { list: "props", index: i };
+  }
+  return null;
+}
+function eraseAt(fx, fy) {
+  const h = hit(fx, fy);
+  if (!h) return false;
+  if (h.list === "props") removePropAt(L.props[h.index].x, L.props[h.index].y);
+  else L[h.list].splice(h.index, 1);
+  if (sel && sel.list === h.list) sel = null;
+  return true;
+}
+
+// ------------------------------------------------------------------ mouse
+let hover = null, drag = null, dragRect = null, panning = null, spaceDown = false;
+cv.addEventListener("contextmenu", e => e.preventDefault());
+cv.addEventListener("mousemove", e => {
+  const r = cv.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+  if (panning) { view.x = panning.vx + mx - panning.mx; view.y = panning.vy + my - panning.my; draw(); return; }
+  if (!L) return;
+  const [fx, fy] = toTile(mx, my), tx = Math.floor(fx), ty = Math.floor(fy);
+  hover = tx >= 0 && ty >= 0 && tx < L.width && ty < L.height ? [tx, ty] : null;
+  status(fx, fy);
+  if (drag) {
+    if (dragRect) { dragRect[2] = tx; dragRect[3] = ty; }
+    else if (tool === "paint" && hover) paintAt(tx, ty);
+    else if (tool === "erase") eraseAt(fx, fy);
+    else if (tool === "select" && sel) moveSel(fx, fy);
+  }
+  draw();
+});
+cv.addEventListener("mousedown", e => {
+  const r = cv.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+  if (e.button === 1 || e.button === 2 || tool === "pan" || spaceDown) { panning = { mx, my, vx: view.x, vy: view.y }; return; }
+  if (!L) return;
+  const [fx, fy] = toTile(mx, my), tx = Math.floor(fx), ty = Math.floor(fy);
+  if (tx < 0 || ty < 0 || tx >= L.width || ty >= L.height) return;
+  snapshot();
+  drag = true;
+  if (tool === "paint" && e.shiftKey || tool === "safe") { dragRect = [tx, ty, tx, ty]; return; }
+  if (tool === "paint") paintAt(tx, ty);
+  else if (tool === "place") place(tx, ty, fx, fy);
+  else if (tool === "erase") eraseAt(fx, fy);
+  else if (tool === "start") L.start = [Math.round(fx * 100) / 100, Math.round(fy * 100) / 100];
+  else if (tool === "select") { sel = hit(fx, fy); if (sel) sel.off = selOffset(fx, fy); showSel(); }
+  draw();
+});
+window.addEventListener("mouseup", () => {
+  if (panning) { panning = null; return; }
+  if (drag && dragRect) {
+    const [x0, y0, x1, y1] = [Math.min(dragRect[0], dragRect[2]), Math.min(dragRect[1], dragRect[3]), Math.max(dragRect[0], dragRect[2]), Math.max(dragRect[1], dragRect[3])];
+    if (tool === "safe") L.safe = [x0, y0, x1 + 1, y1 + 1];
+    else for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) paintTile(x, y);
+    dragRect = null;
+  }
+  if (drag) { drag = false; check(); showSel(); draw(); }
+});
+cv.addEventListener("wheel", e => {
+  e.preventDefault();
+  const r = cv.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+  const [fx, fy] = toTile(mx, my);
+  view.s = Math.max(2, Math.min(48, view.s * (e.deltaY < 0 ? 1.2 : 1 / 1.2)));
+  view.x = mx - fx * view.s; view.y = my - fy * view.s; draw();
+}, { passive: false });
+
+function selOffset(fx, fy) { const e = L[sel.list][sel.index]; return [e.x - fx, e.y - fy]; }
+function moveSel(fx, fy) {
+  const e = L[sel.list][sel.index];
+  if (sel.list === "props") {
+    const nx = Math.round(fx + sel.off[0]), ny = Math.round(fy + sel.off[1]);
+    if (nx === e.x && ny === e.y) return;
+    for (let y = e.y; y < e.y + (e.h || 1); y++) for (let x = e.x; x < e.x + (e.w || 1); x++) setTile(x, y, ".");
+    e.x = nx; e.y = ny;
+    for (let y = e.y; y < e.y + (e.h || 1); y++) for (let x = e.x; x < e.x + (e.w || 1); x++) setTile(x, y, "o");
+  } else if (sel.list === "portals") { e.x = Math.floor(fx) + 0.5; e.y = Math.floor(fy) + 0.5; }
+  else { e.x = Math.round((fx + sel.off[0]) * 100) / 100; e.y = Math.round((fy + sel.off[1]) * 100) / 100; }
+}
+function showSel() {
+  const box = document.getElementById("props-panel");
+  if (!sel || !L[sel.list][sel.index]) { box.innerHTML = 'Use the <b>Select</b> tool and click something.'; return; }
+  const e = L[sel.list][sel.index];
+  let html = `<div class="row"><label>Kind</label><b>${e.kind}</b></div><div class="row"><label>At</label>${e.x}, ${e.y}</div>`;
+  if (sel.list === "props") html += `<div class="row"><label>Size</label><input id="sel-w" type="number" min="1" max="12" value="${e.w || 1}"> × <input id="sel-h" type="number" min="1" max="12" value="${e.h || 1}"></div>`;
+  if (sel.list === "monsters") html += `<div class="row"><label>Tier</label><input id="sel-tier" type="number" step="0.1" min="0.1" value="${e.tier ?? ""}" placeholder="level"></div><div class="hint">Leave tier empty to use the level's (bosses: half of it + 0.5).</div>`;
+  if (sel.list === "items" && e.kind.startsWith("gold")) html += `<div class="row"><label>Gold</label><input id="sel-gold" type="number" min="1" value="${e.kind.slice(4)}"></div>`;
+  html += `<div class="row"><button id="sel-del">Delete</button><span class="hint"><kbd>Del</kbd></span></div>`;
+  box.innerHTML = html;
+  const num = (id, f) => { const el = document.getElementById(id); if (el) el.onchange = () => { snapshot(); f(+el.value, el.value); check(); draw(); }; };
+  num("sel-w", v => { resizeProp(e, Math.max(1, v), e.h || 1); });
+  num("sel-h", v => { resizeProp(e, e.w || 1, Math.max(1, v)); });
+  num("sel-tier", (v, raw) => { if (raw === "") delete e.tier; else e.tier = v; });
+  num("sel-gold", v => { e.kind = "gold" + Math.max(1, Math.round(v)); });
+  document.getElementById("sel-del").onclick = deleteSel;
+}
+function resizeProp(e, w, h) {
+  for (let y = e.y; y < e.y + (e.h || 1); y++) for (let x = e.x; x < e.x + (e.w || 1); x++) setTile(x, y, ".");
+  e.w = w; e.h = h;
+  for (let y = e.y; y < e.y + h; y++) for (let x = e.x; x < e.x + w; x++) setTile(x, y, "o");
+}
+function deleteSel() {
+  if (!sel) return;
+  snapshot();
+  if (sel.list === "props") removePropAt(L.props[sel.index].x, L.props[sel.index].y); else L[sel.list].splice(sel.index, 1);
+  sel = null; showSel(); check(); draw();
+}
+
+function status(fx, fy) {
+  const tx = Math.floor(fx), ty = Math.floor(fy);
+  document.getElementById("st-pos").textContent = hover ? `tile ${tx}, ${ty}` : "–";
+  if (!hover) { document.getElementById("st-under").textContent = ""; return; }
+  const t = { ".": "floor", "#": "wall", "o": "blocked", " ": "void" }[L.tiles[ty][tx]];
+  const h = hit(fx, fy);
+  const g = L.theme === "overworld" ? " · " + ({ g: "grass", d: "dirt", r: "road" }[L.ground[ty][tx]]) : "";
+  document.getElementById("st-under").textContent = t + g + (h ? " · " + L[h.list][h.index].kind : "");
+}
+function msg(t, bad) { const el = document.getElementById("st-msg"); el.textContent = t; el.style.color = bad ? "var(--bad)" : "var(--accent2)"; }
+
+// ------------------------------------------------------------------ validation (mirrors what the game needs)
+function check() {
+  if (!L) return;
+  const out = [], W = L.width, H = L.height;
+  const walk = (x, y) => x >= 0 && y >= 0 && x < W && y < H && L.tiles[y][x] === ".";
+  const sx = Math.floor(L.start?.[0] ?? -1), sy = Math.floor(L.start?.[1] ?? -1);
+  const up = L.portals.find(p => p.kind === "up");
+  const from = walk(sx, sy) ? [sx, sy] : up ? [Math.floor(up.x), Math.floor(up.y)] : null;
+  reach = null;
+  if (!walk(sx, sy)) out.push(["bad", "The start point must be on a floor tile."]);
+  if (from) {
+    reach = new Uint8Array(W * H);
+    const q = [from]; reach[from[1] * W + from[0]] = 1;
+    while (q.length) {
+      const [x, y] = q.pop();
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const nx = x + dx, ny = y + dy;
+        if (walk(nx, ny) && !reach[ny * W + nx]) { reach[ny * W + nx] = 1; q.push([nx, ny]); }
+      }
+    }
+  }
+  const ok = e => reach && reach[Math.floor(e.y) * W + Math.floor(e.x)];
+  const isOw = L.id === "overworld";
+  const m = /^dungeon:(\d+):(\d+)$/.exec(L.id);
+  if (isOw) {
+    for (let k = 0; k < 4; k++) if (!L.portals.some(p => p.kind === "entrance" + k)) out.push(["bad", `Missing the door to ${DUNGEONS[k][1]} (portal entrance${k}).`]);
+    if (!L.npcs.some(n => n.kind === "elder")) out.push(["bad", "Elder Maren is missing: the story can't start."]);
+    for (const k of ["merchant", "healer"]) if (!L.npcs.some(n => n.kind === k)) out.push(["warn", `No ${k} in town.`]);
+    if (!L.safe) out.push(["warn", "No safe zone: monsters can follow you into town."]);
+  } else if (m) {
+    const k = +m[1], f = +m[2], last = f + 1 === DUNGEONS[k][2];
+    if (!up) out.push(["bad", "Missing stairs up (the way out)."]);
+    if (!last && !L.portals.some(p => p.kind === "down")) out.push(["bad", "Missing stairs down to the next floor."]);
+    if (last && !L.monsters.some(mm => mm.kind === BOSSES[k])) out.push(["bad", `The bottom floor needs ${MONSTERS.find(x => x.kind === BOSSES[k]).name} (the seal / ending depend on it).`]);
+    if (last && L.portals.some(p => p.kind === "down")) out.push(["warn", "Stairs down on the bottom floor lead nowhere."]);
+  }
+  for (const p of L.portals) if (!ok(p)) out.push(["bad", `Portal ${p.kind} at ${p.x}, ${p.y} can't be reached.`]);
+  for (const n of L.npcs) if (!ok(n)) out.push(["warn", `${n.kind} at ${n.x}, ${n.y} can't be reached.`]);
+  for (const mm of L.monsters) if (!walk(Math.floor(mm.x), Math.floor(mm.y))) out.push(["warn", `${mm.kind} at ${mm.x}, ${mm.y} stands in a wall.`]);
+  for (const mm of L.monsters.filter(mm => mm.kind.startsWith("boss"))) if (!ok(mm)) out.push(["bad", `${mm.kind} can't be reached.`]);
+  let bad = 0; for (const it of L.items) if (!ok(it)) bad++;
+  if (bad) out.push(["warn", `${bad} item(s) can't be reached.`]);
+  if (L.safe && L.monsters.some(mm => mm.x > L.safe[0] && mm.x < L.safe[2] && mm.y > L.safe[1] && mm.y < L.safe[3])) out.push(["warn", "Monsters inside the safe zone will just stand there."]);
+  const box = document.getElementById("issues");
+  box.innerHTML = out.length ? "" : '<div class="ok">Looks playable.</div>';
+  for (const [k, t] of out) { const d = document.createElement("div"); d.className = k === "warn" ? "warn" : ""; d.textContent = t; box.append(d); }
+  const cnt = {}; for (const mm of L.monsters) cnt[mm.kind] = (cnt[mm.kind] || 0) + 1;
+  document.getElementById("counts").innerHTML = `${L.monsters.length} monsters (${Object.entries(cnt).map(([k, v]) => `${v} ${k}`).join(", ") || "none"})<br>${L.props.length} props · ${L.portals.length} portals · ${L.npcs.length} people · ${L.items.length} items`;
+  if (!document.getElementById("show-reach").checked) reach = null;
+}
+document.getElementById("btn-check").onclick = () => { check(); draw(); };
+document.getElementById("show-reach").onchange = () => { check(); draw(); };
+
+// ------------------------------------------------------------------ level info
+function syncInfo() {
+  document.getElementById("lv-file").textContent = fileName + ".json";
+  document.getElementById("lv-id").textContent = L.id;
+  document.getElementById("lv-name").value = L.name;
+  document.getElementById("lv-theme").value = L.theme;
+  document.getElementById("lv-tier").value = L.tier;
+  document.getElementById("lv-size").textContent = `${L.width} × ${L.height}`;
+}
+document.getElementById("lv-theme").onchange = e => { snapshot(); L.theme = e.target.value; draw(); };
+document.getElementById("lv-name").onchange = e => { snapshot(); L.name = e.target.value; };
+document.getElementById("lv-tier").onchange = e => { snapshot(); L.tier = +e.target.value || L.tier; };
+document.getElementById("btn-resize").onclick = () => {
+  if (!L) return;
+  const v = prompt("New size (width x height, 8–512). Content stays anchored top-left.", `${L.width}x${L.height}`);
+  const m = /^(\d+)\s*[x× ]\s*(\d+)$/.exec(v || ""); if (!m) return;
+  const w = Math.max(8, Math.min(512, +m[1])), h = Math.max(8, Math.min(512, +m[2]));
+  snapshot();
+  L.tiles = Array.from({ length: h }, (_, y) => Array.from({ length: w }, (_, x) => L.tiles[y]?.[x] ?? " "));
+  L.ground = Array.from({ length: h }, (_, y) => Array.from({ length: w }, (_, x) => L.ground[y]?.[x] ?? "g"));
+  L.width = w; L.height = h;
+  for (const k of ["portals", "monsters", "npcs", "items"]) L[k] = L[k].filter(e => e.x < w && e.y < h);
+  L.props = L.props.filter(p => p.x + (p.w || 1) <= w && p.y + (p.h || 1) <= h);
+  syncInfo(); fit(); check(); draw();
+};
+
+// ------------------------------------------------------------------ new level
+document.getElementById("btn-new").onclick = () => {
+  const names = ["overworld"]; for (const d of DUNGEONS) for (let f = 0; f < d[2]; f++) names.push(`${d[0]}_floor${f + 1}`);
+  const name = prompt("Which level? One of:\n" + names.join("\n"), "bone_crypt_floor1");
+  if (!name || !names.includes(name)) { if (name) msg("Unknown level name", true); return; }
+  const id = nameToLevelId(name), ow = id === "overworld";
+  const size = prompt("Size (width x height)", ow ? "112x112" : "48x48");
+  const m = /^(\d+)\s*[x× ]\s*(\d+)$/.exec(size || ""); if (!m) return;
+  const w = Math.max(8, Math.min(512, +m[1])), h = Math.max(8, Math.min(512, +m[2]));
+  const dm = /^dungeon:(\d+):(\d+)$/.exec(id);
+  const def = dm ? DUNGEONS[+dm[1]] : null;
+  const tiles = Array.from({ length: h }, (_, y) => Array.from({ length: w }, (_, x) =>
+    ow ? (x === 0 || y === 0 || x === w - 1 || y === h - 1 ? "o" : ".") : (x === 0 || y === 0 || x === w - 1 || y === h - 1 ? "#" : ".")).join(""));
+  load({
+    version: 1, id, name: ow ? "THE ASHLANDS" : `${def[1]} - LEVEL ${+dm[2] + 1}`, theme: ow ? "overworld" : def[3],
+    tier: ow ? 1 : def[4] + +dm[2] * 0.25, width: w, height: h, tiles, ground: ow ? Array(h).fill("g".repeat(w)) : [],
+    start: [Math.floor(w / 2) + 0.5, Math.floor(h / 2) + 0.5], safe: null, props: [],
+    portals: ow ? [] : [{ kind: "up", x: Math.floor(w / 2) + 0.5, y: Math.floor(h / 2) - 1.5 }], monsters: [], npcs: [], items: [],
+  }, name);
+  dirty = true;
+};
+
+// ------------------------------------------------------------------ files
+async function listFolder() {
+  const sel = document.getElementById("levels");
+  sel.innerHTML = "";
+  const add = (label, value) => sel.append(Object.assign(document.createElement("option"), { textContent: label, value }));
+  add("— pick a level —", "");
+  const mine = new Set();
+  for await (const [name, h] of dirHandle.entries()) if (h.kind === "file" && name.endsWith(".json")) { mine.add(name); add("★ " + name.slice(0, -5), "own/" + name); }
+  try {
+    const gen = await dirHandle.getDirectoryHandle("generated");
+    for await (const [name, h] of gen.entries()) if (h.kind === "file" && name.endsWith(".json") && !mine.has(name)) add("generated: " + name.slice(0, -5), "gen/" + name);
+  } catch { if (!mine.size) msg("No levels yet: export them first (see the start page)", true); }
+}
+document.getElementById("btn-folder").onclick = async () => {
+  if (!window.showDirectoryPicker) { msg("This browser can't open folders: use Open file… / Download (or Chrome / Edge)", true); return; }
+  try { dirHandle = await showDirectoryPicker({ id: "ashen-levels", mode: "readwrite" }); await listFolder(); msg("Folder: " + dirHandle.name); }
+  catch (e) { if (e.name !== "AbortError") msg(e.message, true); }
+};
+document.getElementById("levels").onchange = async e => {
+  const v = e.target.value; if (!v || !dirHandle) return;
+  if (dirty && !confirm("Discard unsaved changes?")) return;
+  const [where, name] = v.split("/");
+  const dir = where === "gen" ? await dirHandle.getDirectoryHandle("generated") : dirHandle;
+  const file = await (await dir.getFileHandle(name)).getFile();
+  load(JSON.parse(await file.text()), name.slice(0, -5));
+};
+document.getElementById("btn-open").onclick = () => document.getElementById("file").click();
+document.getElementById("file").onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  load(JSON.parse(await f.text()), f.name.replace(/\.json$/, ""));
+  e.target.value = "";
+};
+async function save() {
+  if (!L) return;
+  const text = serialize();
+  if (dirHandle) {
+    const fh = await dirHandle.getFileHandle(fileName + ".json", { create: true });
+    const w = await fh.createWritable(); await w.write(text); await w.close();
+    dirty = false; msg(`Saved levels/${fileName}.json. The game uses it next time the level loads.`); await listFolder();
+  } else download();
+}
+function download() {
+  if (!L) return;
+  const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(new Blob([serialize()], { type: "application/json" })), download: fileName + ".json" });
+  a.click(); URL.revokeObjectURL(a.href); dirty = false;
+  msg(`Downloaded ${fileName}.json: put it in D:\\projects\\AshenSanctum\\levels\\`);
+}
+document.getElementById("btn-save").onclick = save;
+document.getElementById("btn-download").onclick = download;
+const stage = document.getElementById("stage");
+stage.addEventListener("dragover", e => { e.preventDefault(); document.getElementById("drop").style.display = "flex"; });
+stage.addEventListener("dragleave", () => { document.getElementById("drop").style.display = "none"; });
+stage.addEventListener("drop", async e => {
+  e.preventDefault(); document.getElementById("drop").style.display = "none";
+  const f = e.dataTransfer.files[0]; if (f) load(JSON.parse(await f.text()), f.name.replace(/\.json$/, ""));
+});
+window.addEventListener("beforeunload", e => { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
+
+// ------------------------------------------------------------------ keys
+document.getElementById("btn-undo").onclick = () => { if (undo.length) { redo.push(serialize()); restore(undo.pop()); } };
+document.getElementById("btn-redo").onclick = () => { if (redo.length) { undo.push(serialize()); restore(redo.pop()); } };
+document.getElementById("btn-fit").onclick = () => { fit(); draw(); };
+document.getElementById("btn-help").onclick = () => alert(
+`Ashen Sanctum level editor
+
+Tools: Paint (tiles / ground, brush size, Shift-drag for a rectangle), Place (props, portals, monsters, people, items),
+Select (click to inspect, drag to move, Del to delete), Erase, Start point, Safe zone (drag a rectangle), Pan.
+
+Mouse: wheel = zoom, right / middle drag or Space+drag = pan.
+Keys: Ctrl+Z undo, Ctrl+Y redo, Ctrl+S save, Del delete selection, F fit,
+1 paint · 2 place · 3 select · 4 erase · 5 start · 6 safe zone.
+
+Tiles: Floor is walkable. Wall draws the dungeon wall (on the overworld: the town palisade).
+Blocked = something stands there (props mark their own footprint). Void is nothing.
+Portals: stairs up / down, the four dungeon doors (overworld), town portal.
+Bottom dungeon floors need their boss; the overworld needs the four doors and Elder Maren.
+
+Save writes levels/<name>.json; the game loads it instead of the generated map.
+Test: dev-build.sh run --level <name>   (e.g. bone_crypt_floor1)`);
+window.addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+  const k = e.key.toLowerCase();
+  if ((e.ctrlKey || e.metaKey) && k === "z") { e.preventDefault(); document.getElementById("btn-undo").click(); }
+  else if ((e.ctrlKey || e.metaKey) && k === "y") { e.preventDefault(); document.getElementById("btn-redo").click(); }
+  else if ((e.ctrlKey || e.metaKey) && k === "s") { e.preventDefault(); save(); }
+  else if (k === "delete" || k === "backspace") deleteSel();
+  else if (k === " ") { spaceDown = true; e.preventDefault(); }
+  else if (k === "f") { fit(); draw(); }
+  else if ("123456".includes(k) && k) setTool(["paint", "place", "select", "erase", "start", "safe"][+k - 1]);
+});
+window.addEventListener("keyup", e => { if (e.key === " ") spaceDown = false; });
+
+resize();
+</script>
+</body>
+</html>

@@ -161,6 +161,27 @@ pub struct Prop {
     /// Depth for sorting against actors (x + y of the footprint centre).
     pub depth: f32,
     pub kind: PropKind,
+    /// Blocked tiles: x0, y0, width, height.
+    pub foot: (i32, i32, i32, i32),
+}
+
+impl Prop {
+    /// A prop standing on a rectangle of blocked tiles.
+    pub fn on(kind: PropKind, x0: i32, y0: i32, fw: i32, fh: i32) -> Self {
+        Prop {
+            x: (x0 + fw) as f32 - 0.5,
+            y: (y0 + fh) as f32 - 0.5,
+            depth: x0 as f32 + y0 as f32 + (fw + fh) as f32 * 0.5,
+            kind,
+            foot: (x0, y0, fw, fh),
+        }
+    }
+
+    /// Stairs sprite drawn over a portal tile (walkable, not blocking).
+    pub fn stairs(kind: PropKind, tx: i32, ty: i32) -> Self {
+        let depth = (tx + ty) as f32 + if kind == PropKind::StairsUp { 0.9 } else { 0.0 };
+        Prop { x: tx as f32 + 0.5, y: ty as f32 + 0.5, depth, kind, foot: (tx, ty, 0, 0) }
+    }
 }
 
 pub struct Level {
@@ -178,6 +199,8 @@ pub struct Level {
     pub npcs: Vec<Npc>,
     /// Safe zone (town): x0, y0, x1, y1.
     pub safe: Option<(f32, f32, f32, f32)>,
+    /// Where you wake up / arrive when there's no matching portal (town square on the overworld).
+    pub start: (f32, f32),
 }
 
 impl Level {
@@ -197,6 +220,7 @@ impl Level {
             portals: vec![],
             npcs: vec![],
             safe: None,
+            start: (0.0, 0.0),
         }
     }
 
@@ -204,6 +228,24 @@ impl Level {
     pub fn portal(&self, kind: PortalKind) -> Option<&Portal> {
         self.portals.iter().find(|p| p.kind == kind)
     }
+}
+
+/// An empty level to fill in (used by the level loader).
+pub fn empty_level(id: LevelId, name: String, theme: Theme, tier: f32, d: Dungeon) -> Level {
+    Level::new(id, name, theme, tier, d)
+}
+
+/// The procedural version of a level.
+pub fn generate(id: LevelId, seed: u64) -> Level {
+    match id {
+        LevelId::Overworld => overworld(seed),
+        LevelId::Dungeon(k, f) => dungeon_floor(k, f, seed),
+    }
+}
+
+/// A level as the game plays it: the hand-made file if there is one, else generated.
+pub fn build(id: LevelId, seed: u64) -> Level {
+    crate::levels::load(id, seed).unwrap_or_else(|| generate(id, seed))
 }
 
 pub const WORLD_W: i32 = 112;
@@ -290,12 +332,7 @@ pub fn overworld(seed: u64) -> Level {
                 d.set(x, y, Tile::Prop);
             }
         }
-        lv.props.push(Prop {
-            x: (x0 + fw) as f32 - 0.5,
-            y: (y0 + fh) as f32 - 0.5,
-            depth: x0 as f32 + y0 as f32 + (fw + fh) as f32 * 0.5,
-            kind,
-        });
+        lv.props.push(Prop::on(kind, x0, y0, fw, fh));
     };
     prop(&mut lv, &mut d, PropKind::House1, 46, 52, 4, 4);
     prop(&mut lv, &mut d, PropKind::House2, 62, 52, 4, 4);
@@ -412,6 +449,7 @@ pub fn overworld(seed: u64) -> Level {
     }
     lv.explored = vec![false; (w * h) as usize];
     lv.d = d;
+    lv.start = town_center();
     lv
 }
 
@@ -427,8 +465,9 @@ pub fn dungeon_floor(k: usize, floor: usize, seed: u64) -> Level {
     let mut lv = Level::new(LevelId::Dungeon(k, floor), name, def.theme, tier, d);
     let rooms: Vec<Room> = lv.d.rooms.clone();
     let (sx, sy) = rooms[0].center();
+    lv.start = (sx as f32 + 1.5, sy as f32 + 0.5);
     lv.portals.push(Portal { x: sx as f32 + 0.5, y: sy as f32 + 0.5, kind: PortalKind::Up });
-    lv.props.push(Prop { x: sx as f32 + 0.5, y: sy as f32 + 0.5, depth: (sx + sy) as f32 + 0.9, kind: PropKind::StairsUp });
+    lv.props.push(Prop::stairs(PropKind::StairsUp, sx, sy));
     let end = *rooms.last().unwrap();
     let (ex, ey) = end.center();
     if last {
@@ -437,7 +476,7 @@ pub fn dungeon_floor(k: usize, floor: usize, seed: u64) -> Level {
         lv.mobs.push(boss);
     } else {
         lv.portals.push(Portal { x: ex as f32 + 0.5, y: ey as f32 + 0.5, kind: PortalKind::Down });
-        lv.props.push(Prop { x: ex as f32 + 0.5, y: ey as f32 + 0.5, depth: (ex + ey) as f32, kind: PropKind::StairsDown });
+        lv.props.push(Prop::stairs(PropKind::StairsDown, ex, ey));
     }
     let rooms_with_mobs = rooms.len() - if last { 1 } else { 0 };
     for r in rooms.iter().take(rooms_with_mobs).skip(1) {
