@@ -13,6 +13,10 @@ pub static CHARS: &[CharDef] = &[
     CharDef { name: "npc_healer", cell: (22, 45), anchor: (10, 40), data: include_bytes!("../assets/art/npc_healer.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
     CharDef { name: "npc_guard", cell: (27, 57), anchor: (14, 51), data: include_bytes!("../assets/art/npc_guard.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
     CharDef { name: "npc_villager", cell: (22, 48), anchor: (11, 43), data: include_bytes!("../assets/art/npc_villager.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
+    CharDef { name: "boss_bone", cell: (63, 85), anchor: (28, 78), data: include_bytes!("../assets/art/boss_bone.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
+    CharDef { name: "boss_plague", cell: (32, 80), anchor: (16, 72), data: include_bytes!("../assets/art/boss_plague.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
+    CharDef { name: "boss_hex", cell: (43, 76), anchor: (19, 70), data: include_bytes!("../assets/art/boss_hex.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
+    CharDef { name: "boss_ashking", cell: (59, 116), anchor: (29, 110), data: include_bytes!("../assets/art/boss_ashking.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
 ];
 
 pub static TILES: &[TileDef] = &[
