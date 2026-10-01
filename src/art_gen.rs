@@ -3,11 +3,11 @@ use crate::art::{AnimDef, CharDef, ItemDef, TileDef};
 
 pub static CHARS: &[CharDef] = &[
     CharDef { name: "mage", cell: (68, 70), anchor: (23, 53), data: include_bytes!("../assets/art/mage.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 10 }, AnimDef { name: "cast", row: 16, frames: 6, fps: 16 }] },
-    CharDef { name: "zombie", cell: (22, 52), anchor: (11, 47), data: include_bytes!("../assets/art/zombie.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
+    CharDef { name: "zombie", cell: (38, 66), anchor: (11, 50), data: include_bytes!("../assets/art/zombie.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 7 }] },
     CharDef { name: "skeleton", cell: (56, 65), anchor: (20, 49), data: include_bytes!("../assets/art/skeleton.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 10 }] },
     CharDef { name: "wolf", cell: (73, 55), anchor: (31, 39), data: include_bytes!("../assets/art/wolf.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 12 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 14 }] },
-    CharDef { name: "goblin", cell: (46, 63), anchor: (14, 47), data: include_bytes!("../assets/art/goblin.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 12 }] },
-    CharDef { name: "archer", cell: (38, 52), anchor: (20, 46), data: include_bytes!("../assets/art/archer.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
+    CharDef { name: "goblin", cell: (59, 63), anchor: (18, 47), data: include_bytes!("../assets/art/goblin.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 12 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 14 }] },
+    CharDef { name: "archer", cell: (48, 64), anchor: (20, 47), data: include_bytes!("../assets/art/archer.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 10 }] },
     CharDef { name: "npc_elder", cell: (26, 47), anchor: (13, 41), data: include_bytes!("../assets/art/npc_elder.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
     CharDef { name: "npc_merchant", cell: (20, 48), anchor: (10, 44), data: include_bytes!("../assets/art/npc_merchant.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
     CharDef { name: "npc_healer", cell: (24, 49), anchor: (12, 42), data: include_bytes!("../assets/art/npc_healer.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
