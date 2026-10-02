@@ -245,7 +245,58 @@ pub fn generate(id: LevelId, seed: u64) -> Level {
 
 /// A level as the game plays it: the hand-made file if there is one, else generated.
 pub fn build(id: LevelId, seed: u64) -> Level {
-    crate::levels::load(id, seed).unwrap_or_else(|| generate(id, seed))
+    let mut lv = crate::levels::load(id, seed).unwrap_or_else(|| generate(id, seed));
+    add_elites(&mut lv, seed);
+    lv
+}
+
+/// Promotes some packs, D2 style: blue champion packs (one modifier each) and elite leaders
+/// with a name, two modifiers and minions that share one of them. Works on hand-made levels too.
+pub fn add_elites(lv: &mut Level, seed: u64) {
+    use crate::mobs::{elite_name, roll_mods, Rank};
+    let salt = match lv.id {
+        LevelId::Overworld => 0x0e11,
+        LevelId::Dungeon(k, f) => 0x0e12 + k as u64 * 16 + f as u64,
+    };
+    let mut rng = Rng::new(seed ^ salt.wrapping_mul(0x9e37_79b9));
+    let (champs, elites) = match lv.id {
+        LevelId::Overworld => (5, 3),
+        LevelId::Dungeon(_, f) => (1 + (f > 0) as usize, 1),
+    };
+    let mut order: Vec<usize> = (0..lv.mobs.len()).filter(|&i| !lv.mobs[i].boss).collect();
+    for i in (1..order.len()).rev() {
+        order.swap(i, rng.range(0, i as i32 + 1) as usize);
+    }
+    let (mut c, mut e) = (0, 0);
+    for &i in &order {
+        if c >= champs && e >= elites {
+            break;
+        }
+        if lv.mobs[i].rank != Rank::Normal {
+            continue;
+        }
+        let (x, y) = (lv.mobs[i].x, lv.mobs[i].y);
+        let pack: Vec<usize> = (0..lv.mobs.len())
+            .filter(|&j| j != i && !lv.mobs[j].boss && lv.mobs[j].rank == Rank::Normal && (lv.mobs[j].x - x).powi(2) + (lv.mobs[j].y - y).powi(2) < 12.0)
+            .take(4)
+            .collect();
+        if e < elites {
+            let mods = roll_mods(2, &mut rng);
+            let shared = crate::mobs::MODS.iter().map(|m| m.0).find(|m| mods & m != 0).unwrap_or(0);
+            lv.mobs[i].promote(Rank::Elite, mods, Some(elite_name(&mut rng)));
+            for j in pack {
+                lv.mobs[j].promote(Rank::Minion, shared, None);
+            }
+            e += 1;
+        } else {
+            let mods = roll_mods(1, &mut rng);
+            lv.mobs[i].promote(Rank::Champion, mods, None);
+            for j in pack.into_iter().take(2) {
+                lv.mobs[j].promote(Rank::Champion, mods, None);
+            }
+            c += 1;
+        }
+    }
 }
 
 pub const WORLD_W: i32 = 112;

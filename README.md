@@ -66,6 +66,9 @@ take back their Seals, unseal the Sanctum and end the Ash King.
     the item twice). X or right click drops an item, or sells it in Hollowmere.
 - **Monsters**: zombies are slow and hit hard, skeletons are fast and fragile, wolves hunt in fast
   packs, goblins panic and flee when one of their own dies, and skeleton archers keep their distance.
+  **Champion packs** (blue names, tinted blue) are tougher, with one modifier; **elites** (gold
+  names) lead minions and have two: fast, strong, stone skin, vampiric (heals by hitting you), mana
+  burn, or fire enchanted (bursts into flame when it dies: step away). They drop more and better gear.
   Bosses telegraph their big attacks with markers on the floor: step out of them.
 
 ## Controls

@@ -1701,7 +1701,13 @@ impl Game {
             p.hp = (p.hp + p.bonus.get(Stat::LifeOnKill) as f32).min(p.max_hp);
             p.mana = (p.mana + p.bonus.get(Stat::ManaOnKill) as f32).min(p.max_mana);
         }
-        self.drop_gear(x, y, boss, kind);
+        let (rank, mods) = (self.mobs[i].rank, self.mobs[i].mods);
+        self.drop_gear(x, y, boss, kind, rank);
+        if mods & crate::mobs::M_FIERY != 0 {
+            // Fire enchanted: bursts into flame a moment after it dies.
+            let dmg = (self.mobs[i].dmg.1 * 1.4).max(8.0);
+            self.hazards.push(crate::mobs::Hazard { x, y, r: 1.7, warn: 0.6, live: 0.0, dps: 0.0, burst: dmg, t: 0.0, fired: false, kind: crate::mobs::HazardKind::Nova });
+        }
         // Goblins panic when one of their own falls (like D2's Fallen).
         if kind == Kind::Goblin {
             for m in self.mobs.iter_mut() {
@@ -1780,7 +1786,8 @@ impl Game {
 
     /// Equipment drops: about one monster in ten drops something; bosses drop their unique
     /// and two magic-or-better items.
-    fn drop_gear(&mut self, x: f32, y: f32, boss: bool, kind: Kind) {
+    fn drop_gear(&mut self, x: f32, y: f32, boss: bool, kind: Kind, rank: crate::mobs::Rank) {
+        use crate::mobs::Rank;
         use crate::items;
         let ilvl = items::ilvl_for(self.tier) + if boss { 3 } else { 0 };
         let mf = self.p.bonus.get(items::Stat::Magic);
@@ -1800,8 +1807,19 @@ impl Game {
                 }
                 drops.push(it);
             }
-        } else if self.rng.chance(ITEM_DROP) {
-            drops.push(items::drop(ilvl, mf, false, &mut self.rng));
+        } else {
+            // Champions and elites drop more, and better.
+            let (n, chance, boost) = match rank {
+                Rank::Normal => (1, ITEM_DROP, false),
+                Rank::Minion => (1, 0.2, false),
+                Rank::Champion => (1, 0.6, true),
+                Rank::Elite => (2, 1.0, true),
+            };
+            for _ in 0..n {
+                if self.rng.chance(chance) {
+                    drops.push(items::drop(ilvl + boost as u8, mf, boost, &mut self.rng));
+                }
+            }
         }
         let n = drops.len();
         for (k, it) in drops.into_iter().enumerate() {
@@ -2447,6 +2465,38 @@ mod tests {
         g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Item(Box::new(items::unique(2))), t: 1.0 });
         g.collect_pickups();
         assert_eq!(g.pickups.len(), 1, "no room: it stays on the floor");
+    }
+
+    #[test]
+    fn champion_and_elite_packs_are_tougher_and_drop_more() {
+        use crate::mobs::{Rank, M_FIERY, M_STONE};
+        let lv = world::build(LevelId::Dungeon(0, 1), 7);
+        let count = |r: Rank| lv.mobs.iter().filter(|m| m.rank == r).count();
+        assert!(count(Rank::Elite) == 1, "one elite leader per floor");
+        assert!(count(Rank::Minion) >= 1, "with minions");
+        assert!(count(Rank::Champion) >= 2, "and a champion pack");
+        let e = lv.mobs.iter().find(|m| m.rank == Rank::Elite).unwrap();
+        assert!(e.name.is_some() && e.mods.count_ones() == 2);
+        let ow = world::build(LevelId::Overworld, 7);
+        assert!(ow.mobs.iter().filter(|m| m.rank == Rank::Elite).count() == 3);
+        // Promotion multiplies life; stone skin even more.
+        let mut g = quiet_game();
+        let mut a = Mob::new(Kind::Zombie, g.p.x + 3.0, g.p.y, 1.0, &mut g.rng);
+        let hp = a.max_hp;
+        a.promote(Rank::Champion, M_STONE, None);
+        assert!(a.max_hp > hp * 4.0);
+        // An elite always drops two items; a fire enchanted one bursts into flame.
+        let mut m = Mob::new(Kind::Zombie, g.p.x + 1.0, g.p.y, 1.0, &mut g.rng);
+        m.promote(Rank::Elite, M_FIERY | M_STONE, Some("TEST THE FOUL".into()));
+        g.mobs.push(m);
+        g.kill(0);
+        assert_eq!(g.pickups.iter().filter(|k| matches!(k.kind, Drop::Item(_))).count(), 2);
+        assert_eq!(g.hazards.len(), 1);
+        let hp = g.p.hp;
+        for _ in 0..60 {
+            g.update(&Input::default());
+        }
+        assert!(g.p.hp < hp, "standing in the burst hurts");
     }
 
     #[test]

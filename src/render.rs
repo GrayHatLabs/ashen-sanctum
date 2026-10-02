@@ -650,6 +650,18 @@ impl Game {
             fx.tint = rgb(0xff2010);
             fx.tint_a = 0.18;
         }
+        // Champions are tinted blue; elites stand in a golden glow (D2).
+        match m.rank {
+            crate::mobs::Rank::Champion if fx.tint_a == 0.0 => {
+                fx.tint = rgb(0x4060ff);
+                fx.tint_a = 0.22;
+            }
+            crate::mobs::Rank::Elite => blend_ellipse(scr, sx, sy, 16, 6, rgb(0xd8a040), 0.35),
+            _ => {}
+        }
+        if m.mods & crate::mobs::M_FIERY != 0 && (self.tick / 6 + i as u32) % 5 == 0 {
+            scr.glow(sx, sy - 14, 10.0, rgb(0xff6020), 0.5);
+        }
         self.blit_char(scr, name, anim, (sx, sy), fx, m.moving);
     }
 
@@ -773,7 +785,13 @@ impl Game {
                 let f = (m.hp / m.max_hp * bw as f32) as i32;
                 scr.fill(w / 2 - bw / 2 - 1, 30, bw + 2, 14, BLACK);
                 scr.fill(w / 2 - bw / 2, 31, f, 12, rgb(0x801010));
-                scr.text(def(m.kind).label, w / 2, 33, WHITE, Align::Center, 1);
+                scr.text(&m.label(), w / 2, 33, rgb(m.name_col()), Align::Center, 1);
+                if m.mods != 0 {
+                    let t = crate::mobs::mod_text(m.mods);
+                    let tw = crate::gfx::text_width(&t, 1);
+                    scr.blend(w / 2 - tw / 2 - 2, 45, tw + 4, 10, BLACK, 0.6);
+                    scr.text(&t, w / 2, 46, rgb(0x8098ff), Align::Center, 1);
+                }
             }
         }
         if let Some((text, t)) = &self.message {

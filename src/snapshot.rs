@@ -331,6 +331,26 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         save(&mut g, scr, "skills_tree3");
         g.tree = None;
     }
+    // An elite pack: gold-named leader with minions, its name and modifiers on the bar.
+    {
+        let mut g = Game::new(7, h);
+        g.debug_goto(LevelId::Dungeon(0, 1));
+        g.p.max_hp = 9999.0;
+        g.p.hp = 9999.0;
+        let e = g.mobs.iter().position(|m| m.rank == crate::mobs::Rank::Elite);
+        if let Some(i) = e {
+            let (x, y) = (g.mobs[i].x, g.mobs[i].y);
+            g.debug_place_near(x, y, 3.0);
+            g.banner_t = 0.0;
+            for _ in 0..40 {
+                g.update(&Input::default());
+                g.sfx.clear();
+            }
+            g.focus = Some(i);
+            g.focus_t = 3.0;
+            save(&mut g, scr, "elite");
+        }
+    }
     // Equipment: loot on the floor, then the inventory with gear worn and a full-ish bag.
     {
         use crate::items::{self, Rarity};

@@ -83,6 +83,51 @@ pub fn def(k: Kind) -> Def {
     }
 }
 
+/// D2-style elite monsters: blue champion packs, and gold-named elites with minions.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum Rank {
+    Normal,
+    Champion,
+    Elite,
+    Minion,
+}
+
+/// Elite modifiers (bit flags).
+pub const M_FAST: u8 = 1;
+pub const M_STRONG: u8 = 2;
+pub const M_STONE: u8 = 4;
+pub const M_VAMPIRE: u8 = 8;
+pub const M_MANABURN: u8 = 16;
+pub const M_FIERY: u8 = 32;
+pub const MODS: [(u8, &str); 6] = [
+    (M_FAST, "FAST"),
+    (M_STRONG, "STRONG"),
+    (M_STONE, "STONE SKIN"),
+    (M_VAMPIRE, "VAMPIRIC"),
+    (M_MANABURN, "MANA BURN"),
+    (M_FIERY, "FIRE ENCHANTED"),
+];
+
+pub fn mod_text(mods: u8) -> String {
+    MODS.iter().filter(|(m, _)| mods & m != 0).map(|(_, n)| *n).collect::<Vec<_>>().join(", ")
+}
+
+const ELITE_A: &[&str] = &["GRIMTOOTH", "ROTGUT", "BLOODMAW", "ASHCLAW", "BONEGNAW", "GLOOMFANG", "SOOTHIDE", "CINDERSKULL", "MARROWKIN", "DREADSPINE"];
+const ELITE_B: &[&str] = &["THE FOUL", "THE HUNGRY", "THE CRUEL", "THE BURNT", "THE DEFILER", "THE WICKED", "THE UNCLEAN", "THE VILE"];
+
+pub fn elite_name(rng: &mut Rng) -> String {
+    format!("{} {}", ELITE_A[rng.range(0, ELITE_A.len() as i32) as usize], ELITE_B[rng.range(0, ELITE_B.len() as i32) as usize])
+}
+
+/// `n` different random modifiers.
+pub fn roll_mods(n: usize, rng: &mut Rng) -> u8 {
+    let mut m = 0u8;
+    while (m.count_ones() as usize) < n.min(MODS.len()) {
+        m |= MODS[rng.range(0, MODS.len() as i32) as usize].0;
+    }
+    m
+}
+
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub enum MobState {
     Idle,
@@ -129,6 +174,10 @@ pub struct Mob {
     /// Where it lives (overworld monsters return home instead of chasing you forever).
     pub home: (f32, f32),
     pub tier: f32,
+    pub rank: Rank,
+    pub mods: u8,
+    /// Elite leaders have their own names.
+    pub name: Option<String>,
 }
 
 impl Mob {
@@ -169,6 +218,51 @@ impl Mob {
             enraged: false,
             home: (x, y),
             tier,
+            rank: Rank::Normal,
+            mods: 0,
+            name: None,
+        }
+    }
+
+    /// Turns a normal monster into a champion, an elite leader or one of its minions.
+    pub fn promote(&mut self, rank: Rank, mods: u8, name: Option<String>) {
+        let (hp, dmg, xp) = match rank {
+            Rank::Normal => (1.0, 1.0, 1.0),
+            Rank::Champion => (3.0, 1.5, 3.0),
+            Rank::Elite => (4.0, 1.6, 5.0),
+            Rank::Minion => (1.8, 1.2, 1.5),
+        };
+        let hp = hp * if mods & M_STONE != 0 { 1.6 } else { 1.0 };
+        let dmg = dmg * if mods & M_STRONG != 0 { 1.6 } else { 1.0 };
+        self.rank = rank;
+        self.mods = mods;
+        self.name = name;
+        self.max_hp *= hp;
+        self.hp = self.max_hp;
+        self.dmg = (self.dmg.0 * dmg, self.dmg.1 * dmg);
+        self.xp *= xp;
+        if mods & M_FAST != 0 {
+            self.speed *= 1.45;
+            self.cooldown *= 0.7;
+            self.windup *= 0.8;
+        } else if rank != Rank::Minion {
+            self.speed *= 1.1;
+        }
+    }
+
+    pub fn label(&self) -> String {
+        match &self.name {
+            Some(n) => n.clone(),
+            None => def(self.kind).label.to_string(),
+        }
+    }
+
+    /// Name colour on the health bar (D2: blue champions, gold elites).
+    pub fn name_col(&self) -> u32 {
+        match self.rank {
+            Rank::Champion => 0x7090ff,
+            Rank::Elite => 0xd8a850,
+            _ => 0xffffff,
         }
     }
 
@@ -226,7 +320,7 @@ impl Game {
         let in_safe = |x: f32, y: f32, pad: f32| safe.map_or(false, |(x0, y0, x1, y1)| x > x0 - pad && x < x1 + pad && y > y0 - pad && y < y1 + pad);
         let overworld = self.level == crate::world::LevelId::Overworld;
         let n = self.mobs.len();
-        let mut hits: Vec<f32> = vec![];
+        let mut hits: Vec<(f32, usize)> = vec![];
         let mut aggro_at: Vec<(f32, f32)> = vec![];
         let mut spawns: Vec<(Kind, f32, f32, f32)> = vec![];
         let mut shots: Vec<(f32, f32, f32, f32, f32, ShotKind)> = vec![];
@@ -411,7 +505,7 @@ impl Game {
                             _ => shots.push((m.x, m.y, ux * 9.0, uy * 9.0, dmg, ShotKind::Arrow)),
                         }
                     } else if player_alive && dist < m.reach + 0.4 {
-                        hits.push(dmg);
+                        hits.push((dmg, i));
                     } else {
                         self.sfx.push(Sfx::Swing);
                     }
@@ -454,8 +548,20 @@ impl Game {
                 self.kill(i);
             }
         }
-        for dmg in hits {
+        for (dmg, i) in hits {
+            let before = self.p.hp;
             self.hurt_player(dmg);
+            let dealt = (before - self.p.hp).max(0.0);
+            let mods = self.mobs[i].mods;
+            if mods & M_VAMPIRE != 0 {
+                let m = &mut self.mobs[i];
+                m.hp = (m.hp + dealt * 1.5).min(m.max_hp);
+            }
+            if mods & M_MANABURN != 0 {
+                self.p.mana = (self.p.mana - dealt * 1.5).max(0.0);
+                let (x, y) = (self.p.x, self.p.y);
+                self.spray_at(x, y, PKind::Magic, 12.0);
+            }
         }
     }
 
