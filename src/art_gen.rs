@@ -29,7 +29,7 @@ pub static CHARS: &[CharDef] = &[
     CharDef { name: "boss_giant", cell: (108, 129), anchor: (32, 105), data: include_bytes!("../assets/art/boss_giant.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 7 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 9 }] },
     CharDef { name: "boss_yeti", cell: (45, 90), anchor: (23, 82), data: include_bytes!("../assets/art/boss_yeti.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
     CharDef { name: "boss_witch", cell: (41, 88), anchor: (20, 83), data: include_bytes!("../assets/art/boss_witch.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
-    CharDef { name: "boss_dragon", cell: (180, 164), anchor: (90, 143), data: include_bytes!("../assets/art/boss_dragon.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 7 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 9 }] },
+    CharDef { name: "boss_dragon", cell: (164, 152), anchor: (80, 134), data: include_bytes!("../assets/art/boss_dragon.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 7 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 9 }] },
 ];
 
 pub static TILES: &[TileDef] = &[
