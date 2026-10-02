@@ -37,6 +37,8 @@ pub fn to_text(g: &Game) -> String {
         seals,
         g.kills
     ) + &p.skills.save_text()
+        + &format!("waypoints={}
+", g.waypoints.iter().map(|w| crate::levels::id_string(*w)).collect::<Vec<_>>().join(","))
         + &p.gear.save_text()
 }
 
@@ -75,6 +77,13 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
     // Saves from before equipment existed keep the starting staff.
     if text.lines().any(|l| l.starts_with("worn") || l.starts_with("bag")) {
         g.p.gear = crate::items::Gear::load_text(text);
+    }
+    if let Some(w) = get("waypoints") {
+        for id in w.split(',').filter_map(crate::levels::parse_id) {
+            if !g.waypoints.contains(&id) {
+                g.waypoints.push(id);
+            }
+        }
     }
     g.p.recalc();
     g.p.hp = g.p.max_hp;

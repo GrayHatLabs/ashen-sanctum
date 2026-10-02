@@ -29,6 +29,8 @@ take back their Seals, unseal the Sanctum and end the Ash King.
   2. **The Rotting Warrens** (southeast, 2 floors): the **Plague Warden** spits poison pools.
   3. **The Hexed Catacombs** (northeast, 3 floors): the **Hex Warden** fires bolt volleys and blinks away.
   4. **The Ashen Sanctum** (northwest, 3 floors, sealed until you have all three Seals): the **Ash King**.
+- **Waypoints** (D2 style): a rune circle in Hollowmere and near the start of every dungeon floor.
+  Step on one to activate it; stepping onto any waypoint lets you travel to every one you've activated.
 - Each Warden drops a **Seal** (more life, mana and fireball power) and opens a portal home.
   Levels remember what you killed. If you die, you wake in Hollowmere and lose 10% of your gold.
 

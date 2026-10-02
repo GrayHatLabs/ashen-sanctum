@@ -71,8 +71,13 @@ impl Bot {
             inp.confirm = t % 60 == 0;
             return inp;
         }
-        if g.dialog.is_some() {
-            inp.confirm = t % 20 == 0;
+        if let Some(d) = g.dialog.as_ref() {
+            // Waypoints: the bot walks everywhere (cancel the travel menu).
+            if d.name == "WAYPOINT" {
+                inp.cancel = t % 20 == 0;
+            } else {
+                inp.confirm = t % 20 == 0;
+            }
             return inp;
         }
         // The elder first, and again with three seals.
@@ -330,6 +335,25 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         g.tree.as_mut().unwrap().sel = Skill::Phoenix as usize;
         save(&mut g, scr, "skills_tree3");
         g.tree = None;
+    }
+    // A waypoint in a dungeon, with the travel menu open.
+    {
+        let mut g = Game::new(7, h);
+        g.waypoints.push(LevelId::Dungeon(0, 0));
+        g.waypoints.push(LevelId::Dungeon(2, 1));
+        g.debug_goto(LevelId::Dungeon(0, 1));
+        g.banner_t = 0.0;
+        let (wx, wy) = g.waypoint;
+        g.p.x = wx + 1.3;
+        g.p.y = wy + 0.4;
+        idle(&mut g, 30);
+        g.p.x = wx;
+        g.p.y = wy;
+        g.update(&Input::default());
+        g.sfx.clear();
+        idle(&mut g, 20);
+        save(&mut g, scr, "waypoint");
+        g.dialog = None;
     }
     // An elite pack: gold-named leader with minions, its name and modifiers on the bar.
     {

@@ -11,6 +11,7 @@ use crate::story::{self, Act, Dialog, Npc, Quest, Role, Ware};
 use crate::world::{self, Level, LevelId, Portal, PortalKind, Prop, Theme, SANCTUM};
 #[cfg(test)]
 use crate::world::DUNGEONS;
+use crate::world::DUNGEONS as DUNGEONS_LIST;
 use std::collections::HashMap;
 
 pub const DT: f32 = 1.0 / 60.0;
@@ -370,6 +371,11 @@ pub struct Game {
     pub tree: Option<crate::skills::TreeUi>,
     /// The inventory screen, while open.
     pub inv: Option<crate::inventory::InvUi>,
+    /// Waypoints you have touched (D2 fast travel), and this level's waypoint.
+    pub waypoints: Vec<LevelId>,
+    pub(crate) waypoint: (f32, f32),
+    /// Stepping onto the waypoint opens the travel menu; step off to re-arm it.
+    wp_armed: bool,
     /// HUD skill buttons from the last draw (x, y, w, h): clicking one opens the tree.
     pub(crate) hud_skill_rects: Vec<(i32, i32, i32, i32)>,
     /// HUD bag button from the last draw: clicking it opens the inventory.
@@ -441,6 +447,9 @@ impl Game {
             hydras: vec![],
             tree: None,
             inv: None,
+            waypoints: vec![LevelId::Overworld],
+            waypoint: (0.0, 0.0),
+            wp_armed: true,
             hud_skill_rects: vec![],
             hud_bag: (0, 0, 0, 0),
             shots: vec![],
@@ -543,6 +552,98 @@ impl Game {
         self.light_ready = false;
         self.portal_cd = 0.8;
         self.banner_t = 3.0;
+        self.waypoint = self.find_waypoint();
+        self.wp_armed = true;
+    }
+
+    /// Where this level's waypoint stands: beside the town square, or near a floor's way in.
+    fn find_waypoint(&self) -> (f32, f32) {
+        let base = match self.level {
+            LevelId::Overworld => (self.town_start.0 + 3.0, self.town_start.1 + 2.0),
+            LevelId::Dungeon(..) => self.portals.iter().find(|p| p.kind == PortalKind::Up).map(|p| (p.x + 2.0, p.y + 1.0)).unwrap_or(self.start),
+        };
+        let clear = |x: f32, y: f32| {
+            !self.d.blocked(x, y, 0.6)
+                && self.portals.iter().all(|p| (p.x - x).powi(2) + (p.y - y).powi(2) > 4.0)
+                && self.npcs.iter().all(|n| (n.x - x).powi(2) + (n.y - y).powi(2) > 2.0)
+        };
+        for r in 0..8i32 {
+            for dy in -r..=r {
+                for dx in -r..=r {
+                    if dx.abs().max(dy.abs()) != r {
+                        continue;
+                    }
+                    let (x, y) = ((base.0 + dx as f32).floor() + 0.5, (base.1 + dy as f32).floor() + 0.5);
+                    if clear(x, y) {
+                        return (x, y);
+                    }
+                }
+            }
+        }
+        self.start
+    }
+
+    /// Waypoint name in the travel menu.
+    pub fn waypoint_name(id: LevelId) -> String {
+        match id {
+            LevelId::Overworld => "HOLLOWMERE".into(),
+            LevelId::Dungeon(k, f) => format!("{} - LEVEL {}", DUNGEONS_LIST[k].name, f + 1),
+        }
+    }
+
+    /// Touching a waypoint activates it; stepping onto it opens the travel menu.
+    fn check_waypoint(&mut self) {
+        let (wx, wy) = self.waypoint;
+        let d2 = (self.p.x - wx).powi(2) + (self.p.y - wy).powi(2);
+        if d2 > 1.6 {
+            self.wp_armed = true;
+            return;
+        }
+        if d2 > 0.5 || !self.wp_armed {
+            return;
+        }
+        self.wp_armed = false;
+        if !self.waypoints.contains(&self.level) {
+            self.waypoints.push(self.level);
+            self.sfx.push(Sfx::Descend);
+            self.say("WAYPOINT ACTIVATED".into());
+            self.save_due = true;
+            for _ in 0..24 {
+                self.spray_at(wx, wy, PKind::Magic, 6.0);
+            }
+        }
+        let mut options: Vec<(String, Act)> = self
+            .waypoints
+            .iter()
+            .filter(|id| **id != self.level)
+            .map(|&id| (Self::waypoint_name(id), Act::Travel(id)))
+            .collect();
+        if options.is_empty() {
+            return;
+        }
+        options.sort_by_key(|o| match o.1 {
+            Act::Travel(LevelId::Overworld) => 0,
+            Act::Travel(LevelId::Dungeon(k, f)) => 1 + k * 10 + f,
+            _ => 999,
+        });
+        options.push(("STAY HERE".into(), Act::Close));
+        let mut d = Dialog { name: "WAYPOINT", pages: vec!["THE RUNES HUM. WHERE WILL YOU GO?".into()], page: 0, options: vec![], sel: 0, advance_to: None, heals: false };
+        d.options = options;
+        self.dialog = Some(d);
+    }
+
+    /// Waypoint travel: you arrive standing on the other waypoint.
+    pub(crate) fn travel(&mut self, id: LevelId) {
+        self.dialog = None;
+        if id != self.level {
+            self.go_to(id, None);
+        }
+        (self.p.x, self.p.y) = self.waypoint;
+        self.wp_armed = false;
+        for _ in 0..24 {
+            let (x, y) = (self.p.x, self.p.y);
+            self.spray_at(x, y, PKind::Magic, 8.0);
+        }
     }
 
     /// Moves to another level and places the player at the matching entrance.
@@ -834,6 +935,9 @@ impl Game {
         } else if self.state == State::Playing {
             self.update_player(inp, p_cast, p_lmb);
             self.check_portals();
+            if self.dialog.is_none() && self.state == State::Playing {
+                self.check_waypoint();
+            }
         }
         self.update_npcs();
         self.explore();
@@ -1043,6 +1147,7 @@ impl Game {
                 self.dialog = None;
             }
             Some(Act::Buy(w)) => self.buy(w),
+            Some(Act::Travel(id)) => self.travel(id),
             Some(Act::Respec(price)) => {
                 if self.p.gold < price {
                     self.say("NOT ENOUGH GOLD".into());
@@ -2511,6 +2616,37 @@ mod tests {
             g.update(&Input::default());
         }
         assert!(g.p.hp < hp, "standing in the burst hurts");
+    }
+
+    #[test]
+    fn waypoints_activate_and_take_you_back() {
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        g.debug_goto(LevelId::Dungeon(1, 1));
+        let (wx, wy) = g.waypoint;
+        assert!(!g.d.blocked(wx, wy, 0.5), "waypoint on open floor");
+        g.p.x = wx;
+        g.p.y = wy;
+        g.update(&Input::default());
+        assert!(g.waypoints.contains(&LevelId::Dungeon(1, 1)), "touching activates it");
+        let d = g.dialog.as_ref().expect("travel menu");
+        assert_eq!(d.options[0].1, Act::Travel(LevelId::Overworld));
+        g.update(&Input { confirm: true, ..Input::default() });
+        assert_eq!(g.level, LevelId::Overworld);
+        assert!((g.p.x - g.waypoint.0).abs() < 0.01 && g.in_safe(g.p.x, g.p.y), "arrive on the town waypoint");
+        // Standing on arrival doesn't reopen the menu; stepping off and back on does.
+        g.update(&Input::default());
+        assert!(g.dialog.is_none());
+        g.p.x += 2.0;
+        g.update(&Input::default());
+        g.p.x -= 2.0;
+        g.update(&Input::default());
+        let d = g.dialog.as_ref().expect("menu again");
+        assert!(d.options.iter().any(|o| o.0 == "THE ROTTING WARRENS - LEVEL 2"));
+        // Saved with the character.
+        let text = crate::save::to_text(&g);
+        let mut h = Game::new(5, crate::gfx::SH_WIDE);
+        crate::save::apply(&mut h, &text);
+        assert!(h.waypoints.contains(&LevelId::Dungeon(1, 1)));
     }
 
     #[test]

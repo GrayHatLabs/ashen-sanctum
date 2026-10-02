@@ -97,6 +97,24 @@ impl Game {
             let (sx, sy) = to_scr(h.x, h.y);
             draw_hazard(scr, h.kind, sx, sy, h.r, h.t, h.warn, h.live, self.tick);
         }
+        // The waypoint: a rune circle in the floor, lit blue once activated.
+        {
+            let (sx, sy) = to_scr(self.waypoint.0, self.waypoint.1);
+            let on = self.waypoints.contains(&self.level);
+            let pulse = ((self.tick as f32) * 0.06).sin() * 0.5 + 0.5;
+            blend_ellipse(scr, sx, sy, 22, 9, rgb(0x141418), 0.85);
+            let c = if on { mix(rgb(0x4060c0), rgb(0x90b0ff), pulse) } else { rgb(0x585060) };
+            ring(scr, sx, sy, 20, 8, c);
+            ring(scr, sx, sy, 14, 5, c);
+            for k in 0..8 {
+                let a = k as f32 * std::f32::consts::FRAC_PI_4 + self.tick as f32 * if on { 0.01 } else { 0.0 };
+                let (rx, ry) = ((a.cos() * 17.0) as i32, (a.sin() * 6.5) as i32);
+                scr.fill(sx + rx - 1, sy + ry, 3, 1, c);
+            }
+            if on {
+                blend_ellipse(scr, sx, sy, 12, 4, rgb(0x6080ff), 0.25 + 0.2 * pulse);
+            }
+        }
         for k in &self.pickups {
             let (sx, sy) = to_scr(k.x, k.y);
             draw_pickup(scr, k, sx, sy, self.tick, &self.art);
@@ -251,6 +269,10 @@ impl Game {
                 let (sx, sy) = to_scr(p.x, p.y);
                 scr.add_light(sx, sy - 10, 90.0, 0.7);
             }
+        }
+        if self.waypoints.contains(&self.level) && in_view(self.waypoint.0, self.waypoint.1) {
+            let (sx, sy) = to_scr(self.waypoint.0, self.waypoint.1);
+            scr.add_light(sx, sy, 70.0, 0.5);
         }
         for hy in &self.hydras {
             let (sx, sy) = to_scr(hy.x, hy.y);
@@ -524,6 +546,12 @@ impl Game {
                 _ => rgb(0xffd040),
             };
             scr.fill(sx - 2, sy - 2, 5, 5, col);
+        }
+        {
+            let (sx, sy) = proj(self.waypoint.0, self.waypoint.1);
+            let col = if self.waypoints.contains(&self.level) { rgb(0x80a0ff) } else { rgb(0x707080) };
+            scr.fill(sx - 3, sy, 7, 1, col);
+            scr.fill(sx, sy - 3, 1, 7, col);
         }
         for n in &self.npcs {
             let (sx, sy) = proj(n.x, n.y);

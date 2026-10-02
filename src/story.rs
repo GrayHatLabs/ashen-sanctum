@@ -85,6 +85,8 @@ pub enum Act {
     Buy(Ware),
     /// Reset skill points (Brother Aldric), for this much gold.
     Respec(i32),
+    /// Waypoint travel.
+    Travel(crate::world::LevelId),
 }
 
 pub struct Dialog {

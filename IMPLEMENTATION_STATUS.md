@@ -80,6 +80,12 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | `--cheats`: F9 char level, F10 loot | built | |
 | Champion packs (blue, 1 modifier) and elites (gold name, 2 modifiers, minions); 6 modifiers; better drops; name bar shows modifiers | H S | `world::add_elites` runs on generated and hand-made levels. Unit test: counts, toughness, drops, fiery burst |
 
+## Waypoints (2026-10-01)
+
+| Feature | Status | Notes |
+|---|---|---|
+| Waypoint in town and on every dungeon floor (placed clear of stairs); touch to activate; step on to open the travel menu; arrive standing on the target waypoint; saved | H S | Unit test: activate, travel, re-arm, save. Bot cancels the menu |
+
 ## Music (2026-10-01)
 
 | Feature | Status | Notes |
