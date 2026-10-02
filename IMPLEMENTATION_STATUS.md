@@ -92,7 +92,7 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Chill (frost slows moving / casting), cold creatures take +25% fire, troll regeneration | H | Unit test |
 | Story: Captain Brenna, 3 Frost Runes, glacier seal, Rime Wyrm, second epilogue; Nightmare moved after the wyrm; saved (stage2, runes, act) | H | |
 | Snowfall (gusting) on the Frostmarch, frost motes in ice dungeons | S | |
-| Art: 8 tiles, 12 props, 13 characters, 14 of 19 animations (Yeti Matriarch, Rime Witch and fisherman animations still to generate: `python tools/act2_art.py chars` resumes) | S | Snow road tile lightened, snow tiles softened in pack.py |
+| Art: 8 tiles, 12 props, 13 characters, 12 of 19 animations (Yeti Matriarch, Rime Witch and fisherman animations still to generate: `python tools/act2_art.py chars` resumes) | S | Snow road tile lightened, snow tiles softened in pack.py |
 | Level editor catalog (themes, props, portals, monsters, NPCs, checks) | built | |
 
 ## Difficulties (2026-10-01)
