@@ -86,7 +86,7 @@ without errors) but not played by a human yet. Nothing is HW yet.
 
 | Feature | Status | Notes |
 |---|---|---|
-| Nightmare and Hell after the Ash King (Elder Maren): new layouts, monsters x2.6 / x5 life, x1.9 / x3 damage, more XP, higher item levels; quests and waypoints reset; hero kept; saved | H | Unit test: offer, reset, scaling, save/load. Balance untested by a human |
+| Nightmare and Hell after the Ash King (Elder Maren): new layouts, monsters x3.5 / x8 life, x2 / x3.2 damage; damage per char level +7% to level 20, +3% after, more XP, higher item levels; quests and waypoints reset; hero kept; saved | H | Unit test: offer, reset, scaling, save/load. Balance untested by a human |
 
 ## Waypoints (2026-10-01)
 

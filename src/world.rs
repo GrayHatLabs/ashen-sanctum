@@ -256,8 +256,8 @@ pub fn build_at(id: LevelId, seed: u64, difficulty: u8) -> Level {
     add_elites(&mut lv, seed);
     let (hp, dmg, xp, tier) = match difficulty {
         0 => (1.0, 1.0, 1.0, 1.0),
-        1 => (2.6, 1.9, 2.8, 2.0),
-        _ => (5.0, 3.0, 5.5, 3.2),
+        1 => (3.5, 2.0, 2.8, 2.0),
+        _ => (8.0, 3.2, 5.5, 3.2),
     };
     if difficulty > 0 {
         lv.tier *= tier;

@@ -2032,7 +2032,8 @@ impl Game {
             self.p.base_hp += 8.0;
             self.p.base_mana += 4.0;
             self.p.recalc();
-            self.p.power *= 1.07;
+            // Damage grows fast early and slower past level 20 (so Nightmare and Hell still bite).
+            self.p.power *= if self.p.clvl <= 20 { 1.07 } else { 1.03 };
             self.p.hp = self.p.max_hp;
             self.p.mana = self.p.max_mana;
             self.level_up_t = 2.5;
