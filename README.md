@@ -20,7 +20,8 @@ take back their Seals, unseal the Sanctum and end the Ash King.
 
 - **Hollowmere** (the starting town) is safe: no monsters, no hunger. Talk to everyone:
   - **Elder Maren** (by the campfire): the story and your quests. A **!** means she has news.
-  - **Gerta** (market stall): healing and mana potions, bread and roasts for gold.
+  - **Gerta** (market stall): healing and mana potions, bread and roasts for gold, and gear
+    ("SHOW ME YOUR GEAR"): her shelf restocks each time you come back from a dungeon.
   - **Brother Aldric**: heals you fully whenever you talk to him.
   - **Captain Rolf** and the villagers: hints.
 - **The Ashlands** (overworld): forests, roads, roaming wolves, goblins and undead, wild food.

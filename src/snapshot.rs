@@ -417,6 +417,16 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         g.inv.as_mut().unwrap().sel = crate::inventory::Cell::Bag(14);
         save(&mut g, scr, "inventory_unique");
         g.inv = None;
+        // Trading with Gerta.
+        g.debug_goto(LevelId::Overworld);
+        g.p.gold = 900;
+        g.restock();
+        g.open_inventory();
+        let ui = g.inv.as_mut().unwrap();
+        ui.shop = true;
+        ui.sel = crate::inventory::Cell::Shop(2);
+        save(&mut g, scr, "shop_gear");
+        g.inv = None;
     }
     // HUD details: out of mana (EMBER), hungry, low stamina, food on the floor.
     let mut g = Game::new(7, h);

@@ -19,6 +19,8 @@ pub enum Slot {
 pub const WORN: [Slot; 9] = [Slot::Weapon, Slot::Helm, Slot::Armor, Slot::Gloves, Slot::Boots, Slot::Belt, Slot::Ring, Slot::Ring, Slot::Amulet];
 pub const BAG: usize = 30;
 pub const BAG_COLS: usize = 10;
+/// Gerta's shelf (two rows).
+pub const SHOP: usize = 20;
 
 pub fn slot_name(s: Slot) -> &'static str {
     match s {
@@ -279,6 +281,11 @@ impl Item {
     pub fn stat(&self, s: Stat) -> i32 {
         self.stats.iter().filter(|(t, _)| *t == s).map(|(_, v)| *v).sum()
     }
+    /// What Gerta charges for it.
+    pub fn cost(&self) -> i32 {
+        self.price() * 4
+    }
+
     /// What Gerta pays for it.
     pub fn price(&self) -> i32 {
         let mult = match self.rarity {

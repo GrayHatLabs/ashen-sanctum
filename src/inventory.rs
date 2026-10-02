@@ -4,12 +4,14 @@
 use crate::art::Art;
 use crate::game::{Drop, Game, Input, Pickup, Sfx, HUD_H};
 use crate::gfx::{rgb, Align, Fx, Screen, BLACK};
-use crate::items::{self, Item, Rarity, Slot, Stat, BAG, BAG_COLS, WORN};
+use crate::items::{self, Item, Rarity, Slot, Stat, BAG, BAG_COLS, SHOP, WORN};
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Cell {
     Worn(usize),
     Bag(usize),
+    /// Gerta's shelf.
+    Shop(usize),
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
@@ -26,6 +28,8 @@ pub struct InvUi {
     pub rects: Vec<(i32, i32, i32, i32, InvAct)>,
     /// Cell centres from the last draw (for stick / arrow navigation).
     pub centres: Vec<(Cell, i32, i32)>,
+    /// Trading with Gerta: her shelf shows under the bag.
+    pub shop: bool,
 }
 
 /// Paper-doll grid position of each worn slot (column, row).
@@ -39,7 +43,7 @@ impl Game {
         } else {
             Cell::Worn(0)
         };
-        self.inv = Some(InvUi { sel, rects: vec![], centres: vec![] });
+        self.inv = Some(InvUi { sel, rects: vec![], centres: vec![], shop: false });
         self.dialog = None;
     }
 
@@ -47,6 +51,25 @@ impl Game {
         match c {
             Cell::Worn(i) => self.p.gear.worn[i].as_ref(),
             Cell::Bag(i) => self.p.gear.bag[i].as_ref(),
+            Cell::Shop(i) => self.shop_stock.get(i).and_then(Option::as_ref),
+        }
+    }
+
+    /// Buys the item on Gerta's shelf.
+    fn buy_gear(&mut self, i: usize) {
+        let Some(it) = self.shop_stock.get(i).and_then(Option::as_ref) else { return };
+        let cost = it.cost();
+        if self.p.gold < cost {
+            self.say("NOT ENOUGH GOLD".into());
+        } else if self.p.gear.free() == 0 {
+            self.say("YOUR BAG IS FULL".into());
+        } else {
+            let it = self.shop_stock[i].take().unwrap();
+            self.p.gold -= cost;
+            self.sfx.push(Sfx::Pickup);
+            self.say(format!("BOUGHT {}", it.name));
+            let _ = self.p.gear.add(it);
+            self.save_due = true;
         }
     }
 
@@ -116,6 +139,10 @@ impl Game {
                 let r = match sel {
                     Cell::Bag(i) => self.p.gear.equip(i, self.p.clvl),
                     Cell::Worn(w) => self.p.gear.unequip(w),
+                    Cell::Shop(i) => {
+                        self.buy_gear(i);
+                        Err(String::new())
+                    }
                 };
                 match r {
                     Ok(()) => {
@@ -138,6 +165,7 @@ impl Game {
         let it = match c {
             Cell::Worn(i) => self.p.gear.worn[i].take(),
             Cell::Bag(i) => self.p.gear.bag[i].take(),
+            Cell::Shop(i) => return self.buy_gear(i),
         };
         let Some(it) = it else { return };
         if matches!(c, Cell::Worn(_)) {
@@ -173,7 +201,8 @@ impl Game {
             scr.fill(x, y, w, h, rgb(0x8a7050));
         }
         let in_town = self.in_safe(self.p.x, self.p.y);
-        scr.text("INVENTORY", x0 + 10, y0 + 8, rgb(0xffd080), Align::Left, 1);
+        let shop = ui.shop;
+        scr.text(if shop { "INVENTORY - TRADING WITH GERTA" } else { "INVENTORY" }, x0 + 10, y0 + 8, rgb(0xffd080), Align::Left, 1);
         scr.text(&format!("GOLD {}", self.p.gold), x0 + 400, y0 + 8, rgb(0xe8c050), Align::Right, 1);
         let mut rects = vec![];
         let mut centres = vec![];
@@ -243,7 +272,12 @@ impl Game {
         match self.sel_item(sel) {
             Some(it) => {
                 ty = tooltip(scr, it, tx, ty, wrap_at, self.p.clvl);
-                if let Cell::Bag(_) = sel {
+                if let Cell::Shop(_) = sel {
+                    let col = if it.cost() > self.p.gold { rgb(0xe04040) } else { rgb(0xe8c050) };
+                    scr.text(&format!("COSTS {} GOLD", it.cost()), tx, ty, col, Align::Left, 1);
+                    ty += 10;
+                }
+                if let Cell::Bag(_) | Cell::Shop(_) = sel {
                     if let Some(w) = gear.worn[gear.target(it)].as_ref() {
                         ty += 6;
                         scr.text("YOU ARE WEARING:", tx, ty, rgb(0x7a6a5a), Align::Left, 1);
@@ -255,20 +289,44 @@ impl Game {
             None => {
                 let what = match sel {
                     Cell::Worn(w) => format!("NO {} WORN", items::slot_name(WORN[w])),
-                    Cell::Bag(_) => "EMPTY".into(),
+                    Cell::Bag(_) | Cell::Shop(_) => "EMPTY".into(),
                 };
                 scr.text(&what, tx, ty, rgb(0x7a6a5a), Align::Left, 1);
             }
         }
 
-        // ---- under the bag: hints ----
+        // ---- under the bag: Gerta's shelf, or hints ----
         let mut hy = by0 + 3 * CELL + 16;
+        if shop {
+            scr.text("GERTA'S GEAR", bx0, hy, rgb(0xd8b878), Align::Left, 1);
+            let sy0 = hy + 12;
+            for i in 0..SHOP {
+                let (c, r) = ((i % BAG_COLS) as i32, (i / BAG_COLS) as i32);
+                let (cx, cy) = (bx0 + c * CELL, sy0 + r * CELL);
+                let it = self.shop_stock.get(i).and_then(Option::as_ref);
+                cell_box(scr, cx, cy, CELL - 2, sel == Cell::Shop(i), it);
+                if let Some(it) = it {
+                    draw_icon(scr, &self.art, it, cx + CELL / 2 - 1, cy + CELL / 2 - 1, 0.85);
+                    if it.cost() > self.p.gold {
+                        scr.blend(cx + 1, cy + 1, CELL - 4, CELL - 4, BLACK, 0.45);
+                    }
+                }
+                rects.push((cx, cy, CELL - 2, CELL - 2, InvAct::Select(Cell::Shop(i))));
+                centres.push((Cell::Shop(i), cx + CELL / 2, cy + CELL / 2));
+            }
+            hy = sy0 + 2 * CELL + 4;
+            scr.text("ENTER/A BUYS FROM GERTA. X SELLS YOURS.", bx0, hy, rgb(0x6a5a4a), Align::Left, 1);
+            hy = 10_000;
+        }
         let hints = [
             "WALK OVER GEAR TO PICK IT UP.",
             "BLUE: MAGIC  YELLOW: RARE  GOLD: UNIQUE",
             if in_town { "X / RIGHT CLICK SELLS IT." } else { "X / RIGHT CLICK DROPS. SELL IN TOWN." },
         ];
         for h in hints {
+            if hy > y0 + ph {
+                break;
+            }
             scr.text(h, bx0, hy, rgb(0x6a5a4a), Align::Left, 1);
             hy += 10;
         }
@@ -277,8 +335,12 @@ impl Game {
         let by = y0 + ph - 22;
         let mut bx = x0 + 10;
         let has = self.sel_item(sel).is_some();
-        let use_label = if matches!(sel, Cell::Worn(_)) { "TAKE OFF (ENTER/A)" } else { "WEAR (ENTER/A)" };
-        let toss_label = if in_town { "SELL (X)" } else { "DROP (X)" };
+        let use_label = match sel {
+            Cell::Worn(_) => "TAKE OFF (ENTER/A)",
+            Cell::Bag(_) => "WEAR (ENTER/A)",
+            Cell::Shop(_) => "BUY (ENTER/A)",
+        };
+        let toss_label = if matches!(sel, Cell::Shop(_)) { "BUY (X)" } else if in_town { "SELL (X)" } else { "DROP (X)" };
         let buttons: [(&str, InvAct, bool); 3] = [(use_label, InvAct::Use, has), (toss_label, InvAct::Toss, has), ("CLOSE (I/START)", InvAct::Close, true)];
         for (label, a, on) in buttons {
             let w = crate::gfx::text_width(label, 1) + 12;

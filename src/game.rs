@@ -376,6 +376,9 @@ pub struct Game {
     pub(crate) waypoint: (f32, f32),
     /// Stepping onto the waypoint opens the travel menu; step off to re-arm it.
     wp_armed: bool,
+    /// Gerta's gear for sale; restocked when you come back from a dungeon.
+    pub shop_stock: Vec<Option<crate::items::Item>>,
+    pub(crate) shop_stale: bool,
     /// HUD skill buttons from the last draw (x, y, w, h): clicking one opens the tree.
     pub(crate) hud_skill_rects: Vec<(i32, i32, i32, i32)>,
     /// HUD bag button from the last draw: clicking it opens the inventory.
@@ -450,6 +453,8 @@ impl Game {
             waypoints: vec![LevelId::Overworld],
             waypoint: (0.0, 0.0),
             wp_armed: true,
+            shop_stock: vec![],
+            shop_stale: true,
             hud_skill_rects: vec![],
             hud_bag: (0, 0, 0, 0),
             shots: vec![],
@@ -554,6 +559,33 @@ impl Game {
         self.banner_t = 3.0;
         self.waypoint = self.find_waypoint();
         self.wp_armed = true;
+        if lv.id != LevelId::Overworld {
+            self.shop_stale = true;
+        }
+    }
+
+    /// Gerta's stock: mostly magic gear around your level, now and then a rare.
+    pub(crate) fn restock(&mut self) {
+        use crate::items::{self, Rarity, SHOP};
+        let ilvl = (self.p.clvl as u8 + 1).clamp(2, 30);
+        self.shop_stock = (0..SHOP)
+            .map(|k| {
+                if k >= 12 {
+                    return None;
+                }
+                let r = if self.rng.chance(0.12) {
+                    Rarity::Rare
+                } else if self.rng.chance(0.75) {
+                    Rarity::Magic
+                } else {
+                    Rarity::Normal
+                };
+                let mut it = items::roll(ilvl, r, &mut self.rng);
+                it.req = it.req.min(self.p.clvl.max(1) + 2);
+                Some(it)
+            })
+            .collect();
+        self.shop_stale = false;
     }
 
     /// Where this level's waypoint stands: beside the town square, or near a floor's way in.
@@ -1148,6 +1180,13 @@ impl Game {
             }
             Some(Act::Buy(w)) => self.buy(w),
             Some(Act::Travel(id)) => self.travel(id),
+            Some(Act::Shop) => {
+                if self.shop_stale || self.shop_stock.is_empty() {
+                    self.restock();
+                }
+                self.open_inventory();
+                self.inv.as_mut().unwrap().shop = true;
+            }
             Some(Act::Respec(price)) => {
                 if self.p.gold < price {
                     self.say("NOT ENOUGH GOLD".into());
@@ -2616,6 +2655,40 @@ mod tests {
             g.update(&Input::default());
         }
         assert!(g.p.hp < hp, "standing in the burst hurts");
+    }
+
+    #[test]
+    fn gerta_sells_gear_and_restocks_after_a_dungeon() {
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        g.p.gold = 5000;
+        g.debug_talk(Role::Merchant);
+        let k = g.dialog.as_ref().unwrap().options.iter().position(|o| o.1 == Act::Shop).unwrap();
+        g.dialog.as_mut().unwrap().sel = k;
+        g.update(&Input { confirm: true, ..Input::default() });
+        assert!(g.inv.as_ref().map_or(false, |u| u.shop), "trading opens the inventory");
+        let n = g.shop_stock.iter().flatten().count();
+        assert!(n >= 10);
+        let first = g.shop_stock[0].clone().unwrap();
+        g.update(&Input::default());
+        g.inv.as_mut().unwrap().sel = crate::inventory::Cell::Shop(0);
+        g.update(&Input { confirm: true, ..Input::default() });
+        assert_eq!(g.p.gold, 5000 - first.cost());
+        assert_eq!(g.p.gear.bag[0].as_ref(), Some(&first));
+        assert!(g.shop_stock[0].is_none());
+        // The same stock until you've been to a dungeon.
+        g.inv = None;
+        let before: Vec<_> = g.shop_stock.clone();
+        g.debug_talk(Role::Merchant);
+        g.dialog.as_mut().unwrap().sel = k;
+        g.update(&Input { confirm: true, ..Input::default() });
+        assert_eq!(g.shop_stock, before);
+        g.inv = None;
+        g.debug_goto(LevelId::Dungeon(0, 0));
+        g.debug_goto(LevelId::Overworld);
+        g.debug_talk(Role::Merchant);
+        g.dialog.as_mut().unwrap().sel = k;
+        g.update(&Input { confirm: true, ..Input::default() });
+        assert_ne!(g.shop_stock, before, "restocked");
     }
 
     #[test]

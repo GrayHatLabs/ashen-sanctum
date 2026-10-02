@@ -87,6 +87,8 @@ pub enum Act {
     Respec(i32),
     /// Waypoint travel.
     Travel(crate::world::LevelId),
+    /// Gerta's gear (opens the inventory with her stock).
+    Shop,
 }
 
 pub struct Dialog {
@@ -170,6 +172,7 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
                 (format!("MANA POTION  {} GOLD", Ware::ManaPotion.price()), Act::Buy(Ware::ManaPotion)),
                 (format!("LOAF OF BREAD  {} GOLD", Ware::Bread.price()), Act::Buy(Ware::Bread)),
                 (format!("ROAST  {} GOLD", Ware::Roast.price()), Act::Buy(Ware::Roast)),
+                ("SHOW ME YOUR GEAR (AND BUY MINE)".into(), Act::Shop),
                 ("LEAVE".into(), Act::Close),
             ];
             d
