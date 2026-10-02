@@ -7,7 +7,9 @@ mod audio;
 mod dungeon;
 mod game;
 mod gfx;
+mod inventory;
 mod iso;
+mod items;
 mod levels;
 mod mobs;
 mod render;
@@ -128,6 +130,9 @@ fn main() -> Result<(), String> {
             None => eprintln!("--level: unknown level {name:?} (try overworld, bone_crypt_floor1, ...)"),
         }
     }
+    if args.iter().any(|a| a == "--cheats") {
+        game.say("CHEATS ON: F9 = CHAR LEVEL, F10 = LOOT".into());
+    }
     let mut scr = gfx::Screen::new(view_h);
     let mut keys = Keys::default();
     let mut pad = Pad::default();
@@ -141,6 +146,9 @@ fn main() -> Result<(), String> {
     // One-shot presses, cleared after each simulated tick.
     let (mut confirm, mut pot_hp, mut pot_mp, mut map, mut run_toggle, mut cancel) = (false, false, false, false, false, false);
     let (mut skills_key, mut cycle, mut slot): (bool, bool, Option<u8>) = (false, false, None);
+    let mut inv_key = false;
+    let cheats = args.iter().any(|a| a == "--cheats");
+    let (mut cheat_level, mut cheat_loot) = (false, false);
     let mut back_down: Option<Instant> = None;
 
     'main: loop {
@@ -157,6 +165,9 @@ fn main() -> Result<(), String> {
                         F => keys.cast = true,
                         Space => keys.cast2 = true,
                         K if !repeat => skills_key = true,
+                        I | C if !repeat => inv_key = true,
+                        F9 if cheats => cheat_level = true,
+                        F10 if cheats && !repeat => cheat_loot = true,
                         Num1 | Num2 | Num3 | Num4 if !repeat => {
                             slot = Some(match sc {
                                 Num1 => 0,
@@ -219,7 +230,11 @@ fn main() -> Result<(), String> {
                         }
                         // SELECT + START quits (the usual handheld hotkey).
                         Button::Start if back_held => break 'main,
-                        Button::Start => confirm = true,
+                        // START confirms in conversations / after death, and opens the inventory otherwise.
+                        Button::Start => {
+                            confirm = true;
+                            inv_key = true;
+                        }
                         Button::A => pad.cast = true,
                         Button::X => pad.cast2 = true,
                         Button::RightShoulder => cycle = true,
@@ -301,6 +316,9 @@ fn main() -> Result<(), String> {
             inp.run_toggle = run_toggle;
             inp.cancel = cancel;
             inp.skills = skills_key;
+            inp.inv = inv_key;
+            inp.cheat_level = cheat_level;
+            inp.cheat_loot = cheat_loot;
             inp.cycle = cycle;
             inp.slot = slot;
             game.update(&inp);
@@ -311,6 +329,9 @@ fn main() -> Result<(), String> {
             run_toggle = false;
             cancel = false;
             skills_key = false;
+            inv_key = false;
+            cheat_level = false;
+            cheat_loot = false;
             cycle = false;
             slot = None;
             for s in game.sfx.drain(..) {

@@ -23,6 +23,9 @@ Project rules and reference. Read this before every major change.
   (kinds, footprints, validation) in sync with `levels.rs` when adding props/monsters/NPCs.
 - `skills.rs`: skill points, ranks, slots, Inferno / Fire Nova / Warmth, the skill tree screen. Plan for
   the remaining skills: `docs/SKILLS_PLAN.md` (all 3 steps done: 11 skills).
+- `items.rs`: equipment (bases, affixes, uniques, rarity rolls, bag + worn gear, `Bonus` totals).
+  `inventory.rs`: the inventory screen. Player max life / mana = `base_hp` / `base_mana` + gear, via
+  `Player::recalc()` (call it after any gear, level or seal change).
 - `render.rs`: all drawing (world, lighting, HUD, dialogue, overlays). `art.rs` themes and stand-in art.
 - Unit tests cover the world graph, stairs, the whole story, shop/healer, death, XP, run/food.
 

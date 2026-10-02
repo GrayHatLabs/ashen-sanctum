@@ -331,6 +331,49 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         save(&mut g, scr, "skills_tree3");
         g.tree = None;
     }
+    // Equipment: loot on the floor, then the inventory with gear worn and a full-ish bag.
+    {
+        use crate::items::{self, Rarity};
+        let mut g = Game::new(11, h);
+        g.debug_goto(LevelId::Dungeon(1, 0));
+        idle(&mut g, 60);
+        let (px, py) = (g.p.x, g.p.y);
+        let mut rng = crate::rng::Rng::new(4);
+        let loot = [Rarity::Normal, Rarity::Magic, Rarity::Rare, Rarity::Magic, Rarity::Unique];
+        for (k, r) in loot.iter().enumerate() {
+            let it = if *r == Rarity::Unique { items::unique(5) } else { items::roll(8, *r, &mut rng) };
+            let a = k as f32 * 1.25;
+            let (x, y) = (px + a.cos() * 1.6, py + a.sin() * 1.6);
+            if !g.d.blocked(x, y, 0.2) {
+                g.pickups.push(crate::game::Pickup { x, y, kind: crate::game::Drop::Item(Box::new(it)), t: 1.0 });
+            }
+        }
+        g.banner_t = 0.0;
+        idle(&mut g, 2);
+        save(&mut g, scr, "loot");
+        g.pickups.retain(|k| !matches!(k.kind, crate::game::Drop::Item(_)));
+        g.p.clvl = 14;
+        for (w, r) in [(0, Rarity::Rare), (1, Rarity::Magic), (2, Rarity::Magic), (4, Rarity::Rare), (6, Rarity::Magic)] {
+            let slot = items::WORN[w];
+            let base = (0..items::BASES.len()).rev().find(|&b| items::BASES[b].slot == slot && items::BASES[b].lvl <= 10 && !items::BASES[b].unique_only).unwrap();
+            g.p.gear.worn[w] = Some(items::roll_base(base, 10, r, &mut rng));
+        }
+        g.p.gear.worn[8] = Some(items::unique(5));
+        for i in 0..14 {
+            let r = [Rarity::Normal, Rarity::Magic, Rarity::Magic, Rarity::Rare][i % 4];
+            g.p.gear.bag[i] = Some(items::roll(3 + i as u8, r, &mut rng));
+        }
+        g.p.gear.bag[14] = Some(items::unique(2));
+        g.p.recalc();
+        g.update(&Input { inv: true, ..Input::default() });
+        if let Some(ui) = g.inv.as_mut() {
+            ui.sel = crate::inventory::Cell::Bag(3);
+        }
+        save(&mut g, scr, "inventory");
+        g.inv.as_mut().unwrap().sel = crate::inventory::Cell::Bag(14);
+        save(&mut g, scr, "inventory_unique");
+        g.inv = None;
+    }
     // HUD details: out of mana (EMBER), hungry, low stamina, food on the floor.
     let mut g = Game::new(7, h);
     g.debug_goto(LevelId::Dungeon(0, 0));

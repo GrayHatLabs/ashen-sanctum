@@ -438,6 +438,33 @@ impl Game {
                 scr.text("!", sx - 2, sy - 66 + bob, rgb(0xffd040), Align::Center, 2);
             }
         }
+        // Item names on the floor (D2 labels) for gear near you, stacked so they don't overlap.
+        let mut labels: Vec<(i32, i32, &crate::items::Item)> = vec![];
+        for k in &self.pickups {
+            if let Drop::Item(it) = &k.kind {
+                let d2 = (k.x - self.p.x).powi(2) + (k.y - self.p.y).powi(2);
+                if d2 < 49.0 || (it.rarity >= crate::items::Rarity::Rare && d2 < 200.0) {
+                    let (sx, sy) = to_scr(k.x, k.y);
+                    labels.push((sx, sy, it));
+                }
+            }
+        }
+        labels.sort_by_key(|l| -l.1);
+        let mut placed: Vec<(i32, i32, i32)> = vec![];
+        for (sx, sy, it) in labels {
+            let w = crate::gfx::text_width(&it.name, 1) + 4;
+            let mut y = sy - 16;
+            for _ in 0..8 {
+                if placed.iter().any(|&(px, py, pw)| (y - py).abs() < 11 && (sx - px).abs() * 2 < w + pw) {
+                    y -= 11;
+                } else {
+                    break;
+                }
+            }
+            placed.push((sx, y, w));
+            scr.blend(sx - w / 2, y - 1, w, 10, BLACK, 0.65);
+            scr.text(&it.name, sx, y, it.col(), Align::Center, 1);
+        }
         for f in &self.floaters {
             let (sx, sy) = to_scr(f.x, f.y);
             let rise = (f.t * 30.0) as i32;
@@ -448,12 +475,13 @@ impl Game {
         if self.show_map {
             self.draw_map(scr);
         }
-        self.hud_skill_rects = self.draw_hud(scr);
+        (self.hud_skill_rects, self.hud_bag) = self.draw_hud(scr);
         self.dlg_rects.clear();
         if self.dialog.is_some() {
             self.draw_dialog(scr);
         }
         self.draw_tree(scr);
+        self.draw_inventory(scr);
         self.draw_overlays(scr);
     }
 
@@ -626,7 +654,7 @@ impl Game {
     }
 
     /// Draws the HUD; returns the clickable skill button rectangles.
-    fn draw_hud(&self, scr: &mut Screen) -> Vec<(i32, i32, i32, i32)> {
+    fn draw_hud(&self, scr: &mut Screen) -> (Vec<(i32, i32, i32, i32)>, (i32, i32, i32, i32)) {
         let (w, h) = (scr.w, self.view_h);
         let top = h - HUD_H;
         for y in top..h {
@@ -692,6 +720,13 @@ impl Game {
         scr.text(if self.p.running { "RUN" } else { "WALK" }, rx + 12, iy + 8, col, Align::Center, 1);
         let label = if self.p.winded { "TIRED" } else { "R/B" };
         scr.text(label, rx + 12, iy + 28, if self.p.winded { col } else { rgb(0x908070) }, Align::Center, 1);
+        // Bag button (inventory).
+        let gx = rx + 32;
+        scr.fill(gx - 2, iy - 2, 28, 28, rgb(0x5a4a38));
+        scr.fill(gx, iy, 24, 24, rgb(0x1a1410));
+        scr.text("BAG", gx + 12, iy + 8, rgb(0xd8c090), Align::Center, 1);
+        scr.text("I/ST", gx + 12, iy + 28, rgb(0x908070), Align::Center, 1);
+        let bag = (gx - 2, iy - 2, 28, 28);
         // Stamina and food bars.
         let (bar_x, bar_w) = (156, 100);
         let st = self.p.stamina / MAX_STAMINA;
@@ -760,11 +795,11 @@ impl Game {
                 scr.text("HOLLOWMERE, ON THE EDGE OF THE ASHLANDS", w / 2, top / 2 - 30, mix(BLACK, rgb(0xb0a090), a), Align::Center, 1);
                 let hint = mix(BLACK, rgb(0x8a7a68), a);
                 scr.text("CLICK PEOPLE (OR PRESS A / F NEAR THEM) TO TALK. FIND ELDER MAREN BY THE FIRE.", w / 2, top - 46, hint, Align::Center, 1);
-                scr.text("LEFT CLICK: MOVE   RIGHT CLICK: SKILL   K: SKILL TREE   R: RUN   Q / E: POTIONS   TAB: MAP", w / 2, top - 34, hint, Align::Center, 1);
-                scr.text("PAD: LEFT STICK MOVE   A / X: SKILLS   B: RUN / WALK   SELECT: MAP (HOLD: SKILL TREE)", w / 2, top - 22, hint, Align::Center, 1);
+                scr.text("LEFT CLICK: MOVE   RIGHT CLICK: SKILL   K: SKILLS   I: BAG   R: RUN   Q / E: POTIONS   TAB: MAP", w / 2, top - 34, hint, Align::Center, 1);
+                scr.text("PAD: STICK MOVE   A / X: SKILLS   B: RUN   START: BAG   SELECT: MAP (HOLD: SKILLS)", w / 2, top - 22, hint, Align::Center, 1);
             }
         }
-        skill_rects
+        (skill_rects, bag)
     }
 
     fn draw_dialog(&mut self, scr: &mut Screen) {
@@ -967,23 +1002,29 @@ fn draw_pickup(scr: &mut Screen, k: &Pickup, sx: i32, sy: i32, tick: u32, art: &
     let bob = (((tick as f32) * 0.1 + k.x).sin() * 1.5) as i32;
     let pop = if k.t < 0.3 { ((0.3 - k.t) * 40.0) as i32 } else { 0 };
     blend_ellipse(scr, sx, sy, 5, 2, BLACK, 0.5);
-    match k.kind {
+    match &k.kind {
+        Drop::Item(it) => {
+            if it.rarity >= crate::items::Rarity::Rare {
+                scr.glow(sx, sy - 4 - pop, 14.0, it.col(), 0.35);
+            }
+            crate::inventory::draw_icon(scr, art, it, sx, sy - 5 - pop, 0.5);
+        }
         Drop::Health => potion(scr, sx - 5, sy - 16 - pop + bob, rgb(0xc02020)),
         Drop::Mana => potion(scr, sx - 5, sy - 16 - pop + bob, rgb(0x2040c0)),
-        Drop::Gold(_) => {
+        &Drop::Gold(_) => {
             for (dx, dy) in [(-3, 0), (2, -1), (0, -3), (-1, 1)] {
                 scr.fill(sx + dx, sy - 3 + dy - pop, 3, 2, rgb(0xe8c050));
                 scr.pset(sx + dx, sy - 3 + dy - pop, rgb(0xfff0a0));
             }
         }
-        Drop::Food(i) => {
+        &Drop::Food(i) => {
             let name = ["food_apple", "food_bread", "food_roast"][i];
             match art.item(name) {
                 Some(s) => scr.blit(s, sx, sy + 1 - pop, Fx::default()),
                 None => draw_food_fallback(scr, i, sx, sy - 4 - pop),
             }
         }
-        Drop::Seal(i) => {
+        &Drop::Seal(i) => {
             let tint = [rgb(0xe0d8c0), rgb(0x80d040), rgb(0xb070ff)][i];
             let y = sy - 10 - pop + bob;
             scr.glow(sx, y, 20.0, tint, 0.8);

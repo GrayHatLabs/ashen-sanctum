@@ -38,6 +38,8 @@ const FOOD_DRAIN_RUN: f32 = 0.8;
 const STARVE_DPS: f32 = 1.2;
 /// Apple, bread, roast: food restored, bonus life.
 pub const FOODS: [(&str, f32, f32); 3] = [("APPLE", 20.0, 0.0), ("BREAD", 35.0, 0.0), ("ROAST", 60.0, 10.0)];
+/// Chance a normal monster drops a piece of equipment.
+pub const ITEM_DROP: f32 = 0.1;
 /// Talking range to people in town.
 const TALK_RANGE: f32 = 1.8;
 
@@ -74,6 +76,11 @@ pub struct Input {
     pub cycle: bool,
     /// K / hold SELECT: open the skill tree (one-shot).
     pub skills: bool,
+    /// I / START: open or close the inventory (one-shot).
+    pub inv: bool,
+    /// `--cheats` only: F9 gains a level, F10 drops loot (one-shot).
+    pub cheat_level: bool,
+    pub cheat_loot: bool,
     /// Esc: close a conversation or the map; with nothing open, quit.
     pub cancel: bool,
 }
@@ -134,7 +141,7 @@ pub struct Floater {
     pub col: u32,
 }
 
-#[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub enum Drop {
     Health,
     Mana,
@@ -143,6 +150,8 @@ pub enum Drop {
     Food(usize),
     /// A Warden's seal (0 bone, 1 plague, 2 hex).
     Seal(usize),
+    /// Equipment.
+    Item(Box<crate::items::Item>),
 }
 
 pub struct Pickup {
@@ -214,6 +223,12 @@ pub struct Player {
     /// Ash Phoenix time left, and the rank it was cast at (for the final burst).
     pub phoenix_t: f32,
     pub phoenix_rank: u8,
+    /// Life and mana from levels and seals (gear adds on top: `recalc`).
+    pub base_hp: f32,
+    pub base_mana: f32,
+    pub gear: crate::items::Gear,
+    /// Totals of the worn gear's stats.
+    pub bonus: crate::items::Bonus,
 }
 
 impl Player {
@@ -254,7 +269,42 @@ impl Player {
             blaze_from: (0.0, 0.0),
             phoenix_t: 0.0,
             phoenix_rank: 1,
+            base_hp: 70.0,
+            base_mana: 50.0,
+            gear: crate::items::Gear::default(),
+            bonus: crate::items::Bonus::default(),
         }
+    }
+
+    /// The gear you start with: a plain gnarled staff in hand.
+    pub fn starting_gear(&mut self) {
+        let staff = crate::items::Item {
+            base: crate::items::base_by_key("gnarled").unwrap(),
+            rarity: crate::items::Rarity::Normal,
+            ilvl: 1,
+            name: "GNARLED STAFF".into(),
+            stats: vec![(crate::items::Stat::Fire, 5)],
+            req: 1,
+        };
+        self.gear.worn[0] = Some(staff);
+        self.recalc();
+    }
+
+    /// Applies the worn gear: max life / mana, +skills and fire damage.
+    pub fn recalc(&mut self) {
+        use crate::items::Stat;
+        self.bonus = self.gear.bonus();
+        self.max_hp = self.base_hp + self.bonus.get(Stat::Life) as f32;
+        self.max_mana = self.base_mana + self.bonus.get(Stat::Mana) as f32;
+        self.hp = self.hp.min(self.max_hp);
+        self.mana = self.mana.min(self.max_mana);
+        self.skills.bonus = self.bonus.get(Stat::Skills).clamp(0, 5) as u8;
+        self.skills.gear_fire = self.bonus.frac(Stat::Fire, 300);
+    }
+
+    /// Damage taken after armor (armor 50 halves it).
+    pub fn armored(&self, dmg: f32) -> f32 {
+        dmg * 50.0 / (50.0 + self.bonus.get(crate::items::Stat::Armor).max(0) as f32)
     }
 }
 
@@ -318,8 +368,12 @@ pub struct Game {
     pub(crate) hydras: Vec<crate::skills::HydraFx>,
     /// The skill tree screen, while open.
     pub tree: Option<crate::skills::TreeUi>,
+    /// The inventory screen, while open.
+    pub inv: Option<crate::inventory::InvUi>,
     /// HUD skill buttons from the last draw (x, y, w, h): clicking one opens the tree.
     pub(crate) hud_skill_rects: Vec<(i32, i32, i32, i32)>,
+    /// HUD bag button from the last draw: clicking it opens the inventory.
+    pub(crate) hud_bag: (i32, i32, i32, i32),
     pub(crate) shots: Vec<Shot>,
     pub(crate) hazards: Vec<Hazard>,
     pub(crate) parts: Vec<Particle>,
@@ -386,7 +440,9 @@ impl Game {
             meteors: vec![],
             hydras: vec![],
             tree: None,
+            inv: None,
             hud_skill_rects: vec![],
+            hud_bag: (0, 0, 0, 0),
             shots: vec![],
             hazards: vec![],
             parts: vec![],
@@ -418,6 +474,7 @@ impl Game {
         };
         g.swap_in(lv);
         (g.p.x, g.p.y) = g.start;
+        g.p.starting_gear();
         g
     }
 
@@ -728,8 +785,21 @@ impl Game {
             self.prev = inp.clone();
             return;
         }
+        if self.inv.is_some() {
+            self.update_inventory(inp, p_confirm, p_lmb);
+            self.prev = inp.clone();
+            return;
+        }
         if inp.skills && self.dialog.is_none() && self.state == State::Playing {
             self.open_tree();
+            self.prev = inp.clone();
+            return;
+        }
+        if self.state == State::Playing && (inp.cheat_level || inp.cheat_loot) {
+            self.cheat(inp.cheat_level);
+        }
+        if inp.inv && self.dialog.is_none() && self.state == State::Playing {
+            self.open_inventory();
             self.prev = inp.clone();
             return;
         }
@@ -1038,13 +1108,17 @@ impl Game {
     fn update_player(&mut self, inp: &Input, p_cast: bool, p_lmb: bool) {
         let p = &mut self.p;
         p.flash = (p.flash - DT).max(0.0);
-        p.cast_cd = (p.cast_cd - DT).max(0.0);
-        p.cast_t = (p.cast_t - DT).max(0.0);
-        p.mana = (p.mana + 2.2 * p.skills.regen_mult() * DT).min(p.max_mana);
+        use crate::items::Stat;
+        // Faster cast rate: cast animations and recoveries run quicker.
+        let fcr = 1.0 + p.bonus.frac(Stat::Cast, 60);
+        p.cast_cd = (p.cast_cd - DT * fcr).max(0.0);
+        p.cast_t = (p.cast_t - DT * fcr).max(0.0);
+        let mregen = 1.0 + p.bonus.frac(Stat::ManaRegen, 200);
+        p.mana = (p.mana + 2.2 * p.skills.regen_mult() * mregen * DT).min(p.max_mana);
         p.inferno = (p.inferno - DT).max(0.0);
         let starving = p.food <= 0.0;
         if !starving {
-            p.hp = (p.hp + 0.4 * DT).min(p.max_hp);
+            p.hp = (p.hp + (0.4 + p.bonus.get(Stat::LifeRegen) as f32) * DT).min(p.max_hp);
         }
         p.hunger_msg = (p.hunger_msg - DT).max(0.0);
         if inp.run_toggle {
@@ -1090,6 +1164,11 @@ impl Game {
         if let (Some((mx, my)), true) = (inp.mouse, p_lmb) {
             if self.hud_skill_rects.iter().any(|&(x, y, w, h)| mx >= x && mx < x + w && my >= y && my < y + h) {
                 self.open_tree();
+                return;
+            }
+            let (x, y, w, h) = self.hud_bag;
+            if mx >= x && mx < x + w && my >= y && my < y + h {
+                self.open_inventory();
                 return;
             }
         }
@@ -1212,8 +1291,9 @@ impl Game {
         self.p.moving = mv.0 != 0.0 || mv.1 != 0.0;
         let run = self.p.running && !self.p.winded && self.p.moving && !casting;
         let starving = self.p.food <= 0.0;
+        let gear = self.p.bonus;
         if run {
-            self.p.stamina -= STAMINA_DRAIN * DT;
+            self.p.stamina -= STAMINA_DRAIN * (1.0 - gear.frac(crate::items::Stat::Stamina, 75)) * DT;
             self.stats.run_time += DT;
             if self.p.stamina <= 0.0 {
                 self.p.stamina = 0.0;
@@ -1228,10 +1308,12 @@ impl Game {
         }
         // Hunger doesn't tick in the safety of town.
         if !in_town {
-            self.p.food = (self.p.food - if run { FOOD_DRAIN_RUN } else { FOOD_DRAIN } * DT).max(0.0);
+            let drain = if run { FOOD_DRAIN_RUN } else { FOOD_DRAIN } * (1.0 - gear.frac(crate::items::Stat::Hunger, 75));
+            self.p.food = (self.p.food - drain * DT).max(0.0);
         }
         let base = if run { RUN_SPEED } else { WALK_SPEED };
         let base = if self.p.phoenix_t > 0.0 { base * 1.4 } else { base };
+        let base = base * (1.0 + gear.frac(crate::items::Stat::Move, 50));
         let speed = if casting { base * 0.25 } else { base };
         if self.p.moving {
             if !casting {
@@ -1251,16 +1333,29 @@ impl Game {
     fn collect_pickups(&mut self) {
         let (px, py) = (self.p.x, self.p.y);
         let full = self.p.food > MAX_FOOD - 8.0;
+        let mut bag_free = self.p.gear.free();
+        let mut bag_full = false;
         let mut got = vec![];
         self.pickups.retain(|k| {
             let food_but_full = matches!(k.kind, Drop::Food(_)) && full;
-            if (k.x - px).powi(2) + (k.y - py).powi(2) < 0.5 && k.t > 0.3 && !food_but_full {
-                got.push(k.kind);
+            let near = (k.x - px).powi(2) + (k.y - py).powi(2) < 0.5 && k.t > 0.3;
+            let no_room = matches!(k.kind, Drop::Item(_)) && bag_free == 0;
+            if near && no_room {
+                bag_full = true;
+            }
+            if near && !food_but_full && !no_room {
+                if matches!(k.kind, Drop::Item(_)) {
+                    bag_free -= 1;
+                }
+                got.push(k.kind.clone());
                 false
             } else {
                 true
             }
         });
+        if bag_full && self.message.is_none() {
+            self.say("YOUR BAG IS FULL. SELL OR DROP SOMETHING (I)".into());
+        }
         for k in got {
             self.sfx.push(Sfx::Pickup);
             match k {
@@ -1273,6 +1368,7 @@ impl Game {
                     self.floater(px, py, "MANA POTION".into(), rgb(0x6090ff));
                 }
                 Drop::Gold(n) => {
+                    let n = (n as f32 * (1.0 + self.p.bonus.frac(crate::items::Stat::Gold, 300))).round() as i32;
                     self.p.gold += n;
                     self.floater(px, py, format!("{n} GOLD"), rgb(0xe8c050));
                 }
@@ -1286,11 +1382,16 @@ impl Game {
                     self.sfx.push(Sfx::Eat);
                     self.floater(px, py, name.into(), rgb(0xe0b060));
                 }
+                Drop::Item(it) => {
+                    self.floater(px, py, it.name.clone(), it.col());
+                    let _ = self.p.gear.add(*it);
+                }
                 Drop::Seal(i) => {
                     self.quest.seals[i] = true;
                     self.p.skills.points += 1;
-                    self.p.max_hp += 15.0;
-                    self.p.max_mana += 10.0;
+                    self.p.base_hp += 15.0;
+                    self.p.base_mana += 10.0;
+                    self.p.recalc();
                     self.p.power *= 1.15;
                     self.p.hp = self.p.max_hp;
                     self.p.mana = self.p.max_mana;
@@ -1401,6 +1502,7 @@ impl Game {
         if matches!(self.state, State::Dead(_)) {
             return;
         }
+        let dmg = self.p.armored(dmg);
         if dmg > 0.0 {
             self.p.hp -= dmg;
             self.stats.damage_taken += dmg;
@@ -1593,6 +1695,13 @@ impl Game {
             self.decals.push(Decal { x, y, r: if boss { 1.0 } else { 0.4 }, col: rgb(0x301008), a: 0.5 });
         }
         self.gain_xp(xp);
+        {
+            use crate::items::Stat;
+            let p = &mut self.p;
+            p.hp = (p.hp + p.bonus.get(Stat::LifeOnKill) as f32).min(p.max_hp);
+            p.mana = (p.mana + p.bonus.get(Stat::ManaOnKill) as f32).min(p.max_mana);
+        }
+        self.drop_gear(x, y, boss, kind);
         // Goblins panic when one of their own falls (like D2's Fallen).
         if kind == Kind::Goblin {
             for m in self.mobs.iter_mut() {
@@ -1649,14 +1758,72 @@ impl Game {
         }
     }
 
+    /// Test keys (`--cheats`): a character level, or a handful of loot at your feet.
+    fn cheat(&mut self, level: bool) {
+        if level {
+            let need = xp_to_next(self.p.clvl) - self.p.xp;
+            self.gain_xp(need.max(0.0) + 0.01);
+            return;
+        }
+        let ilvl = (self.p.clvl as u8).max(crate::items::ilvl_for(self.tier));
+        for k in 0..4 {
+            let r = [crate::items::Rarity::Magic, crate::items::Rarity::Magic, crate::items::Rarity::Rare, crate::items::Rarity::Rare][k];
+            let it = if k == 3 && self.rng.chance(0.3) { crate::items::drop(ilvl, 400, true, &mut self.rng) } else { crate::items::roll(ilvl, r, &mut self.rng) };
+            let a = k as f32 * 1.57 + 0.4;
+            let (mut x, mut y) = (self.p.x + a.cos() * 1.2, self.p.y + a.sin() * 1.2);
+            if self.d.blocked(x, y, 0.2) {
+                (x, y) = (self.p.x, self.p.y);
+            }
+            self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(it)), t: 0.0 });
+        }
+    }
+
+    /// Equipment drops: about one monster in ten drops something; bosses drop their unique
+    /// and two magic-or-better items.
+    fn drop_gear(&mut self, x: f32, y: f32, boss: bool, kind: Kind) {
+        use crate::items;
+        let ilvl = items::ilvl_for(self.tier) + if boss { 3 } else { 0 };
+        let mf = self.p.bonus.get(items::Stat::Magic);
+        let mut drops = vec![];
+        if boss {
+            let key = match kind {
+                Kind::BoneWarden => "bone",
+                Kind::PlagueWarden => "plague",
+                Kind::HexWarden => "hex",
+                _ => "ashking",
+            };
+            drops.extend(items::boss_unique(key));
+            for _ in 0..2 {
+                let mut it = items::drop(ilvl, mf, true, &mut self.rng);
+                if it.rarity == items::Rarity::Normal {
+                    it = items::roll(ilvl, items::Rarity::Magic, &mut self.rng);
+                }
+                drops.push(it);
+            }
+        } else if self.rng.chance(ITEM_DROP) {
+            drops.push(items::drop(ilvl, mf, false, &mut self.rng));
+        }
+        let n = drops.len();
+        for (k, it) in drops.into_iter().enumerate() {
+            let a = k as f32 / n.max(1) as f32 * std::f32::consts::TAU + 0.5;
+            let r = if n > 1 { 0.9 } else { 0.25 };
+            let (mut ix, mut iy) = (x + a.cos() * r, y + a.sin() * r);
+            if self.d.blocked(ix, iy, 0.2) {
+                (ix, iy) = (x, y);
+            }
+            self.pickups.push(Pickup { x: ix, y: iy, kind: Drop::Item(Box::new(it)), t: 0.0 });
+        }
+    }
+
     fn gain_xp(&mut self, xp: f32) {
         self.p.xp += xp;
         while self.p.xp >= xp_to_next(self.p.clvl) {
             self.p.xp -= xp_to_next(self.p.clvl);
             self.p.clvl += 1;
             self.p.skills.points += 1;
-            self.p.max_hp += 8.0;
-            self.p.max_mana += 4.0;
+            self.p.base_hp += 8.0;
+            self.p.base_mana += 4.0;
+            self.p.recalc();
             self.p.power *= 1.07;
             self.p.hp = self.p.max_hp;
             self.p.mana = self.p.max_mana;
@@ -2225,5 +2392,87 @@ mod tests {
         g.gain_xp(xp_to_next(1) + 1.0);
         assert_eq!(g.p.clvl, 2);
         assert!(g.p.max_hp > hp);
+    }
+
+    #[test]
+    fn monsters_drop_gear_you_pick_up_and_wear() {
+        use crate::items::{self, Rarity, Stat};
+        let mut g = quiet_game();
+        assert!(g.p.gear.worn[0].is_some(), "you start with a staff");
+        // About one kill in ten drops gear.
+        let mut drops = 0;
+        for _ in 0..400 {
+            g.pickups.clear();
+            let m = Mob::new(Kind::Zombie, g.p.x + 3.0, g.p.y, 1.0, &mut g.rng);
+            g.mobs.push(m);
+            let i = g.mobs.len() - 1;
+            g.kill(i);
+            drops += g.pickups.iter().filter(|k| matches!(k.kind, Drop::Item(_))).count();
+        }
+        assert!((20..70).contains(&drops), "{drops} drops in 400 kills");
+        // Bosses drop their unique and two magic-or-better items.
+        g.pickups.clear();
+        let m = Mob::new(Kind::BoneWarden, g.p.x + 3.0, g.p.y, 1.0, &mut g.rng);
+        g.mobs.push(m);
+        let i = g.mobs.len() - 1;
+        g.mobs[i].boss = true;
+        g.kill(i);
+        let loot: Vec<_> = g.pickups.iter().filter_map(|k| if let Drop::Item(it) = &k.kind { Some(it.clone()) } else { None }).collect();
+        assert_eq!(loot.len(), 3);
+        assert!(loot.iter().any(|it| it.name == "MARROWGRIP"));
+        assert!(loot.iter().all(|it| it.rarity >= Rarity::Magic));
+        // Walking over gear picks it up; a full bag leaves it on the floor.
+        g.pickups.clear();
+        g.state = State::Playing;
+        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Item(Box::new(items::unique(0))), t: 1.0 });
+        g.collect_pickups();
+        assert_eq!(g.p.gear.bag[0].as_ref().map(|i| i.name.as_str()), Some("MARROWGRIP"));
+        // Wear it from the inventory screen.
+        g.p.clvl = 5;
+        let hp = g.p.max_hp;
+        g.update(&Input { inv: true, ..Input::default() });
+        assert!(g.inv.is_some());
+        g.inv.as_mut().unwrap().sel = crate::inventory::Cell::Bag(0);
+        g.update(&Input { confirm: true, ..Input::default() });
+        assert!(g.p.gear.worn[3].is_some());
+        assert_eq!(g.p.max_hp, hp + 20.0, "gear life is added");
+        assert_eq!(g.p.bonus.get(Stat::Armor), 8);
+        g.update(&Input { inv: true, ..Input::default() });
+        assert!(g.inv.is_none());
+        // Armor softens hits.
+        assert!(g.p.armored(10.0) < 10.0);
+        for i in 0..items::BAG {
+            g.p.gear.bag[i] = Some(items::unique(1));
+        }
+        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Item(Box::new(items::unique(2))), t: 1.0 });
+        g.collect_pickups();
+        assert_eq!(g.pickups.len(), 1, "no room: it stays on the floor");
+    }
+
+    #[test]
+    fn gear_sells_in_town_and_drops_outside() {
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        assert!(g.in_safe(g.p.x, g.p.y), "you start in Hollowmere");
+        g.p.gear.bag[0] = Some(crate::items::unique(4));
+        let gold = g.p.gold;
+        g.update(&Input { inv: true, ..Input::default() });
+        g.inv.as_mut().unwrap().sel = crate::inventory::Cell::Bag(0);
+        g.update(&Input { cast2: true, ..Input::default() });
+        assert!(g.p.gear.bag[0].is_none());
+        assert!(g.p.gold > gold, "sold to Gerta");
+        g.inv = None;
+        g.debug_goto(LevelId::Dungeon(0, 0));
+        g.p.gear.bag[0] = Some(crate::items::unique(4));
+        let n = g.pickups.len();
+        g.update(&Input { inv: true, ..Input::default() });
+        g.inv.as_mut().unwrap().sel = crate::inventory::Cell::Bag(0);
+        g.update(&Input { cast2: true, ..Input::default() });
+        assert_eq!(g.pickups.len(), n + 1, "dropped on the floor");
+        // Taking off the staff loses its fire bonus.
+        let f = g.p.skills.fire_mult();
+        g.inv.as_mut().unwrap().sel = crate::inventory::Cell::Worn(0);
+        g.update(&Input { confirm: true, ..Input::default() });
+        assert!(g.p.gear.worn[0].is_none());
+        assert!(g.p.skills.fire_mult() < f);
     }
 }

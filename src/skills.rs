@@ -75,6 +75,10 @@ pub struct Skills {
     pub secondary: Skill,
     /// Seconds left before each skill can be cast again (Hydra, Ash Phoenix).
     pub cooldown: [f32; ALL.len()],
+    /// + to all fire skills from gear (only skills you have learned).
+    pub bonus: u8,
+    /// Extra fire damage from gear (0.25 = +25%).
+    pub gear_fire: f32,
 }
 
 impl Default for Skills {
@@ -82,19 +86,28 @@ impl Default for Skills {
         // You start knowing Fireball, with one point to spend.
         let mut rank = [0; ALL.len()];
         rank[Skill::Fireball as usize] = 1;
-        Skills { rank, points: 1, primary: Skill::Fireball, secondary: Skill::Fireball, cooldown: [0.0; ALL.len()] }
+        Skills { rank, points: 1, primary: Skill::Fireball, secondary: Skill::Fireball, cooldown: [0.0; ALL.len()], bonus: 0, gear_fire: 0.0 }
     }
 }
 
 impl Skills {
+    /// Effective rank: learned points plus gear's + to skills.
     pub fn rank(&self, s: Skill) -> u8 {
+        match self.rank[s as usize] {
+            0 => 0,
+            r => r + self.bonus,
+        }
+    }
+
+    /// Points you put in yourself.
+    pub fn learned(&self, s: Skill) -> u8 {
         self.rank[s as usize]
     }
 
     /// Why you can't put a point into this skill right now (None = you can).
     pub fn blocker(&self, s: Skill, clvl: u32) -> Option<String> {
         let d = def(s);
-        if self.rank(s) >= MAX_RANK {
+        if self.learned(s) >= MAX_RANK {
             return Some("MAXED".into());
         }
         if clvl < d.level {
@@ -128,13 +141,13 @@ impl Skills {
     /// Refund everything except Fireball's first rank.
     pub fn respec(&mut self) -> u32 {
         let spent: u32 = self.rank.iter().map(|r| *r as u32).sum::<u32>() - 1;
-        *self = Skills { points: self.points + spent, ..Skills::default() };
+        *self = Skills { points: self.points + spent, bonus: self.bonus, gear_fire: self.gear_fire, ..Skills::default() };
         spent
     }
 
     /// Fire damage multiplier from Fire Mastery.
     pub fn fire_mult(&self) -> f32 {
-        1.0 + 0.08 * self.rank(Skill::Mastery) as f32
+        1.0 + 0.08 * self.rank(Skill::Mastery) as f32 + self.gear_fire
     }
 
     /// Burn duration multiplier from Fire Mastery.
@@ -151,7 +164,7 @@ impl Skills {
     }
 
     pub fn save_text(&self) -> String {
-        let ranks: Vec<String> = ALL.iter().map(|s| format!("{}:{}", def(*s).key, self.rank(*s))).collect();
+        let ranks: Vec<String> = ALL.iter().map(|s| format!("{}:{}", def(*s).key, self.learned(*s))).collect();
         format!("skills={}\npoints={}\nprimary={}\nsecondary={}\n", ranks.join(","), self.points, def(self.primary).key, def(self.secondary).key)
     }
 
@@ -164,6 +177,8 @@ impl Skills {
             primary: Skill::Fireball,
             secondary: Skill::Fireball,
             cooldown: [0.0; ALL.len()],
+            bonus: 0,
+            gear_fire: 0.0,
         };
         for part in get("skills")?.split(',') {
             let (k, v) = part.split_once(':')?;
@@ -171,7 +186,7 @@ impl Skills {
                 sk.rank[s as usize] = r.min(MAX_RANK);
             }
         }
-        sk.rank[Skill::Fireball as usize] = sk.rank(Skill::Fireball).max(1);
+        sk.rank[Skill::Fireball as usize] = sk.learned(Skill::Fireball).max(1);
         let ranks = sk.rank;
         let slot = |k: &str| get(k).and_then(by_key).filter(|s| !def(*s).passive && ranks[*s as usize] > 0).unwrap_or(Skill::Fireball);
         let (p, q) = (slot("primary"), slot("secondary"));
@@ -1089,12 +1104,14 @@ impl Game {
             scr.text(d.name, cx + 36, cy + 6, ncol, Align::Left, 1);
 
             let cd = sk.cooldown[i];
+            let lr = sk.learned(*s);
+            let plus = if r > lr { format!(" +{}", r - lr) } else { String::new() };
             let sub = if locked {
                 format!("LV{}", d.level)
             } else if cd > 0.0 {
-                format!("{r}/{MAX_RANK}  {:.0}S", cd.ceil())
+                format!("{lr}/{MAX_RANK}{plus}  {:.0}S", cd.ceil())
             } else {
-                format!("{r}/{MAX_RANK}")
+                format!("{lr}/{MAX_RANK}{plus}")
             };
             scr.text(&sub, cx + 36, cy + 19, if locked { rgb(0x6a5a4a) } else { rgb(0x9a8a78) }, Align::Left, 1);
             let mut tag = String::new();

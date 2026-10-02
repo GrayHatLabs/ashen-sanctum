@@ -178,7 +178,7 @@ const NPCS: [(&str, Role, &str, &str); 8] = [
     ("villager3", Role::Villager(3), "FARMER", "npc_villager"),
 ];
 
-fn item_name(d: Drop) -> Option<String> {
+fn item_name(d: &Drop) -> Option<String> {
     Some(match d {
         Drop::Food(0) => "apple".into(),
         Drop::Food(1) => "bread".into(),
@@ -186,7 +186,7 @@ fn item_name(d: Drop) -> Option<String> {
         Drop::Health => "health_potion".into(),
         Drop::Mana => "mana_potion".into(),
         Drop::Gold(n) => format!("gold{n}"),
-        Drop::Seal(_) => return None,
+        Drop::Seal(_) | Drop::Item(_) => return None,
     })
 }
 
@@ -255,7 +255,7 @@ pub fn to_file(lv: &Level) -> LevelFile {
             .iter()
             .filter_map(|n| NPCS.iter().find(|e| e.1 == n.role).map(|e| ent(e.0.into(), n.x, n.y)))
             .collect(),
-        items: lv.pickups.iter().filter_map(|k| item_name(k.kind).map(|n| ent(n, k.x, k.y))).collect(),
+        items: lv.pickups.iter().filter_map(|k| item_name(&k.kind).map(|n| ent(n, k.x, k.y))).collect(),
     }
 }
 

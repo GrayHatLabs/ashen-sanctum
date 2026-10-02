@@ -1,6 +1,6 @@
 # Implementation Status — Ashen Sanctum
 
-Last updated: 2026-09-30
+Last updated: 2026-10-01
 
 ## Verification levels
 
@@ -67,6 +67,17 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Old saves get the points they would have earned | H | |
 | Step 2: Fire Wall (flame line, 0.2 s burn ticks), Blaze (fire trail while moving), Combust (detonates burning foes, scales with burn time, Fire Wall synergy); 3-tier tree | H S | Unit tests for each |
 | Step 3: Meteor (1 s telegraph, burning ground, Fireball synergy), Fire Mastery (passive), Hydra and Ash Phoenix (cooldowns, HUD sweep); 4-tier tree | H S | Unit tests for each; balance untested by a human |
+
+## Equipment (2026-10-01)
+
+| Feature | Status | Notes |
+|---|---|---|
+| Items (`items.rs`): 19 base types over 8 slots, white / magic / rare / unique, 15 affixes scaling with item level, rare names, 7 uniques (one per boss) | H | Unit tests: rarity rules, deeper rolls higher, magic find, equip/swap/rings, save/load |
+| Drops: 10% of kills, bosses drop their unique + 2 magic-or-better; walk-over pickup, full bag leaves it on the floor; floor labels in rarity colours | H S | Unit test: drop rate, boss loot, pickup, full bag |
+| Inventory screen (`inventory.rs`, I / START / BAG button): paper doll, 10x3 bag, tooltips with comparison, totals; world pauses; sell in town, drop outside | H S | Unit tests: wear, take off, sell, drop |
+| Gear stats applied: life, mana, fire %, armor (50 halves damage), regen, cast rate, move, stamina, hunger, + skills, gold, magic find, on-kill | H | |
+| PixelLab inventory icons (19, bitforge side view) | S | `tools/items_art.py` in the art repo |
+| `--cheats`: F9 char level, F10 loot | built | |
 
 ## Art status
 

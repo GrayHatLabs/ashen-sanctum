@@ -1,0 +1,412 @@
+//! The inventory screen (I / START): worn gear on a D2-style paper doll, a 10x3 bag, item
+//! tooltips with a comparison against what you're wearing, and your totals. The world pauses
+//! while it's open. In town you sell to Gerta from here; outside you drop things on the floor.
+use crate::art::Art;
+use crate::game::{Drop, Game, Input, Pickup, Sfx, HUD_H};
+use crate::gfx::{rgb, Align, Fx, Screen, BLACK};
+use crate::items::{self, Item, Rarity, Slot, Stat, BAG, BAG_COLS, WORN};
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum Cell {
+    Worn(usize),
+    Bag(usize),
+}
+
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub enum InvAct {
+    Select(Cell),
+    Use,
+    Toss,
+    Close,
+}
+
+pub struct InvUi {
+    pub sel: Cell,
+    /// Clickable rectangles from the last draw.
+    pub rects: Vec<(i32, i32, i32, i32, InvAct)>,
+    /// Cell centres from the last draw (for stick / arrow navigation).
+    pub centres: Vec<(Cell, i32, i32)>,
+}
+
+/// Paper-doll grid position of each worn slot (column, row).
+const DOLL: [(i32, i32); WORN.len()] = [(0, 1), (1, 0), (1, 1), (0, 3), (2, 3), (1, 2), (0, 2), (2, 2), (2, 0)];
+const CELL: i32 = 26;
+
+impl Game {
+    pub(crate) fn open_inventory(&mut self) {
+        let sel = if self.p.gear.bag.iter().any(Option::is_some) {
+            Cell::Bag(self.p.gear.bag.iter().position(Option::is_some).unwrap())
+        } else {
+            Cell::Worn(0)
+        };
+        self.inv = Some(InvUi { sel, rects: vec![], centres: vec![] });
+        self.dialog = None;
+    }
+
+    fn sel_item(&self, c: Cell) -> Option<&Item> {
+        match c {
+            Cell::Worn(i) => self.p.gear.worn[i].as_ref(),
+            Cell::Bag(i) => self.p.gear.bag[i].as_ref(),
+        }
+    }
+
+    /// Inventory controls (the world is paused while it's open).
+    pub(crate) fn update_inventory(&mut self, inp: &Input, pressed_confirm: bool, click: bool) {
+        let prev = self.prev.clone();
+        let edge = |now: f32, before: f32, neg: bool| if neg { now < -0.5 && before >= -0.5 } else { now > 0.5 && before <= 0.5 };
+        let Some(ui) = self.inv.as_mut() else { return };
+        let mut act: Option<InvAct> = None;
+        let dir = if edge(inp.move_x, prev.move_x, false) {
+            Some((1, 0))
+        } else if edge(inp.move_x, prev.move_x, true) {
+            Some((-1, 0))
+        } else if edge(inp.move_y, prev.move_y, false) {
+            Some((0, 1))
+        } else if edge(inp.move_y, prev.move_y, true) {
+            Some((0, -1))
+        } else {
+            None
+        };
+        if let (Some((dx, dy)), Some(&(_, sx, sy))) = (dir, ui.centres.iter().find(|c| c.0 == ui.sel)) {
+            // Nearest cell in that direction (sideways distance counts double).
+            let best = ui
+                .centres
+                .iter()
+                .filter(|&&(_, x, y)| (x - sx) * dx + (y - sy) * dy > 4)
+                .min_by_key(|&&(_, x, y)| {
+                    let along = (x - sx) * dx + (y - sy) * dy;
+                    let side = ((x - sx) * dy - (y - sy) * dx).abs();
+                    along + side * 3
+                })
+                .map(|c| c.0);
+            if let Some(c) = best {
+                ui.sel = c;
+            }
+        }
+        let mut right_click = false;
+        if let Some((mx, my)) = inp.mouse {
+            let hit = ui.rects.iter().find(|&&(x, y, w, h, _)| mx >= x && mx < x + w && my >= y && my < y + h).map(|r| r.4);
+            if let (true, Some(a)) = (click, hit) {
+                act = Some(match a {
+                    // Clicking the selected item again wears / takes it off.
+                    InvAct::Select(c) if c == ui.sel => InvAct::Use,
+                    a => a,
+                });
+            }
+            if inp.rmb && !prev.rmb {
+                if let Some(InvAct::Select(c)) = hit {
+                    ui.sel = c;
+                    right_click = true;
+                }
+            }
+        }
+        if pressed_confirm {
+            act = Some(InvAct::Use);
+        }
+        if (inp.cast2 && !prev.cast2) || right_click {
+            act = Some(InvAct::Toss);
+        }
+        if inp.inv || inp.cancel || inp.run_toggle || inp.skills {
+            act = Some(InvAct::Close);
+        }
+        let sel = ui.sel;
+        match act {
+            Some(InvAct::Select(c)) => self.inv.as_mut().unwrap().sel = c,
+            Some(InvAct::Use) => {
+                let r = match sel {
+                    Cell::Bag(i) => self.p.gear.equip(i, self.p.clvl),
+                    Cell::Worn(w) => self.p.gear.unequip(w),
+                };
+                match r {
+                    Ok(()) => {
+                        self.sfx.push(Sfx::Pickup);
+                        self.p.recalc();
+                        self.save_due = true;
+                    }
+                    Err(why) if !why.is_empty() => self.say(why),
+                    Err(_) => {}
+                }
+            }
+            Some(InvAct::Toss) => self.toss(sel),
+            Some(InvAct::Close) => self.inv = None,
+            None => {}
+        }
+    }
+
+    /// Sells (in town) or drops (outside) the selected item.
+    fn toss(&mut self, c: Cell) {
+        let it = match c {
+            Cell::Worn(i) => self.p.gear.worn[i].take(),
+            Cell::Bag(i) => self.p.gear.bag[i].take(),
+        };
+        let Some(it) = it else { return };
+        if matches!(c, Cell::Worn(_)) {
+            self.p.recalc();
+        }
+        if self.in_safe(self.p.x, self.p.y) {
+            let price = it.price();
+            self.p.gold += price;
+            self.sfx.push(Sfx::Pickup);
+            self.say(format!("SOLD {} FOR {price} GOLD", it.name));
+        } else {
+            self.sfx.push(Sfx::Swing);
+            // A step away, so you don't pick it straight back up.
+            let (dx, dy) = crate::game::dir_vec(self.p.dir);
+            let (mut x, mut y) = (self.p.x + dx, self.p.y + dy);
+            if self.d.blocked(x, y, 0.2) {
+                (x, y) = (self.p.x - dx, self.p.y - dy);
+            }
+            self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(it)), t: 0.0 });
+        }
+        self.save_due = true;
+    }
+
+    pub(crate) fn draw_inventory(&mut self, scr: &mut Screen) {
+        let Some(ui) = self.inv.as_ref() else { return };
+        let sel = ui.sel;
+        let top = self.view_h - HUD_H;
+        let (pw, ph) = (620, (top - 12).min(310));
+        let (x0, y0) = (scr.w / 2 - pw / 2, (top - ph) / 2);
+        scr.blend(0, 0, scr.w, top, BLACK, 0.45);
+        scr.blend(x0, y0, pw, ph, rgb(0x0c0a08), 0.94);
+        for (x, y, w, h) in [(x0, y0, pw, 1), (x0, y0 + ph - 1, pw, 1), (x0, y0, 1, ph), (x0 + pw - 1, y0, 1, ph)] {
+            scr.fill(x, y, w, h, rgb(0x8a7050));
+        }
+        let in_town = self.in_safe(self.p.x, self.p.y);
+        scr.text("INVENTORY", x0 + 10, y0 + 8, rgb(0xffd080), Align::Left, 1);
+        scr.text(&format!("GOLD {}", self.p.gold), x0 + 400, y0 + 8, rgb(0xe8c050), Align::Right, 1);
+        let mut rects = vec![];
+        let mut centres = vec![];
+        let gear = &self.p.gear;
+
+        // ---- paper doll ----
+        let (dx0, dy0) = (x0 + 12, y0 + 24);
+        let dcell = 30;
+        for (w, &(c, r)) in DOLL.iter().enumerate() {
+            let (cx, cy) = (dx0 + c * (dcell + 4), dy0 + r * (dcell + 4));
+            let it = gear.worn[w].as_ref();
+            cell_box(scr, cx, cy, dcell, sel == Cell::Worn(w), it);
+            match it {
+                Some(it) => draw_icon(scr, &self.art, it, cx + dcell / 2, cy + dcell / 2, 1.0),
+                None => {
+                    let label = &items::slot_name(WORN[w])[..2];
+                    scr.text(label, cx + dcell / 2, cy + dcell / 2 - 3, rgb(0x4a3e30), Align::Center, 1);
+                }
+            }
+            rects.push((cx, cy, dcell, dcell, InvAct::Select(Cell::Worn(w))));
+            centres.push((Cell::Worn(w), cx + dcell / 2, cy + dcell / 2));
+        }
+
+        // ---- your totals, under the doll ----
+        let b = self.p.bonus;
+        let reduce = 100.0 - self.p.armored(100.0);
+        let mut sy = dy0 + 4 * (dcell + 4) + 4;
+        let totals = [
+            format!("LIFE {}", self.p.max_hp as i32),
+            format!("MANA {}", self.p.max_mana as i32),
+            format!("FIRE DMG +{}%", ((self.p.skills.fire_mult() - 1.0) * 100.0).round() as i32),
+            format!("ARMOR {} (-{:.0}%)", b.get(Stat::Armor), reduce),
+            format!("CAST +{}%  MOVE +{}%", b.get(Stat::Cast), b.get(Stat::Move)),
+            format!("MAGIC FIND +{}%", b.get(Stat::Magic)),
+        ];
+        for t in totals {
+            scr.text(&t, dx0, sy, rgb(0xb8a890), Align::Left, 1);
+            sy += 10;
+        }
+        if b.get(Stat::Skills) > 0 {
+            scr.text(&format!("+{} TO FIRE SKILLS", b.get(Stat::Skills)), dx0, sy, rgb(0x7090ff), Align::Left, 1);
+        }
+
+        // ---- the bag ----
+        let (bx0, by0) = (x0 + 132, y0 + 24);
+        for i in 0..BAG {
+            let (c, r) = ((i % BAG_COLS) as i32, (i / BAG_COLS) as i32);
+            let (cx, cy) = (bx0 + c * CELL, by0 + r * CELL);
+            let it = gear.bag[i].as_ref();
+            cell_box(scr, cx, cy, CELL - 2, sel == Cell::Bag(i), it);
+            if let Some(it) = it {
+                draw_icon(scr, &self.art, it, cx + CELL / 2 - 1, cy + CELL / 2 - 1, 0.85);
+                if it.req > self.p.clvl {
+                    scr.blend(cx + 1, cy + 1, CELL - 4, CELL - 4, rgb(0xa01010), 0.3);
+                }
+            }
+            rects.push((cx, cy, CELL - 2, CELL - 2, InvAct::Select(Cell::Bag(i))));
+            centres.push((Cell::Bag(i), cx + CELL / 2, cy + CELL / 2));
+        }
+        let free = gear.free();
+        scr.text(&format!("{free} FREE"), bx0 + BAG_COLS as i32 * CELL - 2, by0 + 3 * CELL + 2, rgb(0x7a6a5a), Align::Right, 1);
+
+        // ---- tooltip: selected item, then what it would replace ----
+        let (tx, mut ty) = (x0 + 410, y0 + 24);
+        let tw = pw - (tx - x0) - 10;
+        let wrap_at = (tw / 6) as usize;
+        match self.sel_item(sel) {
+            Some(it) => {
+                ty = tooltip(scr, it, tx, ty, wrap_at, self.p.clvl);
+                if let Cell::Bag(_) = sel {
+                    if let Some(w) = gear.worn[gear.target(it)].as_ref() {
+                        ty += 6;
+                        scr.text("YOU ARE WEARING:", tx, ty, rgb(0x7a6a5a), Align::Left, 1);
+                        ty += 11;
+                        tooltip(scr, w, tx, ty, wrap_at, self.p.clvl);
+                    }
+                }
+            }
+            None => {
+                let what = match sel {
+                    Cell::Worn(w) => format!("NO {} WORN", items::slot_name(WORN[w])),
+                    Cell::Bag(_) => "EMPTY".into(),
+                };
+                scr.text(&what, tx, ty, rgb(0x7a6a5a), Align::Left, 1);
+            }
+        }
+
+        // ---- under the bag: hints ----
+        let mut hy = by0 + 3 * CELL + 16;
+        let hints = [
+            "WALK OVER GEAR TO PICK IT UP.",
+            "BLUE: MAGIC  YELLOW: RARE  GOLD: UNIQUE",
+            if in_town { "X / RIGHT CLICK SELLS IT." } else { "X / RIGHT CLICK DROPS. SELL IN TOWN." },
+        ];
+        for h in hints {
+            scr.text(h, bx0, hy, rgb(0x6a5a4a), Align::Left, 1);
+            hy += 10;
+        }
+
+        // ---- buttons ----
+        let by = y0 + ph - 22;
+        let mut bx = x0 + 10;
+        let has = self.sel_item(sel).is_some();
+        let use_label = if matches!(sel, Cell::Worn(_)) { "TAKE OFF (ENTER/A)" } else { "WEAR (ENTER/A)" };
+        let toss_label = if in_town { "SELL (X)" } else { "DROP (X)" };
+        let buttons: [(&str, InvAct, bool); 3] = [(use_label, InvAct::Use, has), (toss_label, InvAct::Toss, has), ("CLOSE (I/START)", InvAct::Close, true)];
+        for (label, a, on) in buttons {
+            let w = crate::gfx::text_width(label, 1) + 12;
+            scr.fill(bx, by, w, 15, if on { rgb(0x5a3a10) } else { rgb(0x221c16) });
+            scr.text(label, bx + 6, by + 4, if on { rgb(0xffe0a0) } else { rgb(0x6a5a4a) }, Align::Left, 1);
+            rects.push((bx, by, w, 15, a));
+            bx += w + 6;
+        }
+        let ui = self.inv.as_mut().unwrap();
+        ui.rects = rects;
+        ui.centres = centres;
+    }
+}
+
+fn cell_box(scr: &mut Screen, x: i32, y: i32, s: i32, selected: bool, it: Option<&Item>) {
+    let bg = match it.map(|i| i.rarity) {
+        Some(Rarity::Magic) => rgb(0x141a2e),
+        Some(Rarity::Rare) => rgb(0x26240e),
+        Some(Rarity::Unique) => rgb(0x2a1e0e),
+        _ => rgb(0x161210),
+    };
+    scr.fill(x, y, s, s, bg);
+    let edge = if selected { rgb(0xffcf70) } else { rgb(0x3a3026) };
+    for (ex, ey, ew, eh) in [(x, y, s, 1), (x, y + s - 1, s, 1), (x, y, 1, s), (x + s - 1, y, 1, s)] {
+        scr.fill(ex, ey, ew, eh, edge);
+    }
+}
+
+/// Draws an item's name and stats; returns the y below the last line.
+fn tooltip(scr: &mut Screen, it: &Item, x: i32, mut y: i32, wrap_at: usize, clvl: u32) -> i32 {
+    for l in crate::story::wrap(&it.name, wrap_at) {
+        scr.text(&l, x, y, rgb(it.col()), Align::Left, 1);
+        y += 10;
+    }
+    for line in it.lines() {
+        let col = if line.starts_with("REQUIRED") {
+            if it.req > clvl {
+                rgb(0xe04040)
+            } else {
+                rgb(0x9a8a78)
+            }
+        } else if line == it.base().name {
+            rgb(0x9a8a78)
+        } else {
+            rgb(0x8098ff)
+        };
+        for l in crate::story::wrap(&line, wrap_at) {
+            scr.text(&l, x, y, col, Align::Left, 1);
+            y += 10;
+        }
+    }
+    scr.text(&format!("SELLS FOR {}", it.price()), x, y, rgb(0x7a6a5a), Align::Left, 1);
+    y + 10
+}
+
+/// An item's icon centred on (cx, cy): generated art when it exists, a drawn stand-in otherwise.
+pub fn draw_icon(scr: &mut Screen, art: &Art, it: &Item, cx: i32, cy: i32, scale: f32) {
+    let tint = match it.rarity {
+        Rarity::Unique => Some(rgb(0xffb040)),
+        _ => None,
+    };
+    let fx = Fx { tint: tint.unwrap_or(BLACK), tint_a: if tint.is_some() { 0.12 } else { 0.0 }, ..Fx::default() };
+    if let Some(s) = art.item(it.base().icon) {
+        let (w, h) = ((s.w as f32 * scale) as i32, (s.h as f32 * scale) as i32);
+        // Icons are anchored at their feet: offset so they sit centred.
+        scr.blit_scaled(s, cx, cy + h / 2, scale, fx);
+        let _ = w;
+        return;
+    }
+    fallback_icon(scr, it.slot(), cx, cy, scale, it.rarity);
+}
+
+fn fallback_icon(scr: &mut Screen, slot: Slot, cx: i32, cy: i32, scale: f32, rarity: Rarity) {
+    let k = |v: i32| (v as f32 * scale).round() as i32;
+    let gem = match rarity {
+        Rarity::Normal => rgb(0xa09080),
+        Rarity::Magic => rgb(0x5070ff),
+        Rarity::Rare => rgb(0xf0e060),
+        Rarity::Unique => rgb(0xffa030),
+    };
+    match slot {
+        Slot::Weapon => {
+            for i in -k(9)..=k(9) {
+                scr.fill(cx + i, cy - i, 2, 2, rgb(0x6a4424));
+            }
+            scr.disc(cx + k(9), cy - k(9), k(3).max(1), gem);
+        }
+        Slot::Helm => {
+            scr.disc(cx, cy, k(7), rgb(0x585048));
+            scr.fill(cx - k(7), cy, k(14), k(5), rgb(0x161210));
+            scr.fill(cx - k(8), cy, k(16), k(2), rgb(0x787068));
+            scr.disc(cx, cy - k(3), k(1).max(1), gem);
+        }
+        Slot::Armor => {
+            scr.fill(cx - k(7), cy - k(7), k(14), k(15), rgb(0x6a2a20));
+            scr.fill(cx - k(10), cy - k(7), k(3), k(8), rgb(0x6a2a20));
+            scr.fill(cx + k(7), cy - k(7), k(3), k(8), rgb(0x6a2a20));
+            scr.fill(cx - 1, cy - k(7), 2, k(15), gem);
+        }
+        Slot::Gloves => {
+            for s in [-1, 1] {
+                scr.fill(cx + s * k(5) - k(3), cy - k(5), k(6), k(10), rgb(0x5a4030));
+                scr.fill(cx + s * k(5) - k(3), cy + k(3), k(6), k(2), gem);
+            }
+        }
+        Slot::Boots => {
+            for s in [-1, 1] {
+                let x = cx + s * k(5) - k(3);
+                scr.fill(x, cy - k(7), k(5), k(11), rgb(0x4a3424));
+                scr.fill(x, cy + k(3), k(8), k(4), rgb(0x4a3424));
+                scr.fill(x, cy - k(7), k(5), k(2), gem);
+            }
+        }
+        Slot::Belt => {
+            scr.fill(cx - k(10), cy - k(2), k(20), k(5), rgb(0x5a4030));
+            scr.fill(cx - k(2), cy - k(3), k(5), k(7), gem);
+        }
+        Slot::Ring => {
+            scr.disc(cx, cy + k(1), k(5), rgb(0xc8a040));
+            scr.disc(cx, cy + k(1), k(3), rgb(0x161210));
+            scr.disc(cx, cy - k(4), k(2).max(1), gem);
+        }
+        Slot::Amulet => {
+            for i in -k(6)..=k(6) {
+                scr.pset(cx + i, cy - k(6) + i.abs() / 2, rgb(0xa08050));
+            }
+            scr.disc(cx, cy + k(2), k(4), rgb(0xa08050));
+            scr.disc(cx, cy + k(2), k(2).max(1), gem);
+        }
+    }
+}

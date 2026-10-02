@@ -54,6 +54,16 @@ take back their Seals, unseal the Sanctum and end the Ash King.
   - **Ash Phoenix** (char level 18, needs Meteor, 30 s cooldown): fiery wings; you move faster and skills
     cost no mana, then you explode in flame.
   Out of mana, any skill fires the free Ember Bolt. Brother Aldric resets your skills for gold.
+- **Equipment** (D2 style): about one monster in ten drops gear. Walk over it to pick it up.
+  - Nine slots: staff, helm, armor, gloves, boots, belt, two rings and an amulet. You start with a gnarled staff.
+  - **White** items are plain, **blue** (magic) have 1-2 random stats, **yellow** (rare) 3-5, and
+    **gold** (unique) are fixed, named items. Each Warden and the Ash King drops its own unique.
+  - Stats: life, mana, fire damage, armor (less damage taken), life / mana regeneration, faster cast
+    rate, faster run/walk, slower stamina drain, slower hunger, + to fire skills, extra gold, better
+    chance of magic items, life / mana after each kill. Deeper areas drop better gear; some items
+    need a character level.
+  - Open the **inventory** with I, START or the BAG button. Wear / take off with Enter / A (or click
+    the item twice). X or right click drops an item, or sells it in Hollowmere.
 - **Monsters**: zombies are slow and hit hard, skeletons are fast and fragile, wolves hunt in fast
   packs, goblins panic and flee when one of their own dies, and skeleton archers keep their distance.
   Bosses telegraph their big attacks with markers on the floor: step out of them.
@@ -67,6 +77,7 @@ take back their Seals, unseal the Sanctum and end the Ash King.
 | Secondary skill (R slot) | Right click, Space | X |
 | Pick the secondary skill | 1-4 | R1 (cycles) |
 | Skill tree | K, or click the skill slots / the + button | Hold SELECT |
+| Inventory | I, or click BAG | START |
 | Run / walk toggle | R | B |
 | Health potion | Q or 1 | L1 / L2 |
 | Talk to someone | Left click them, or F / Space next to them | A next to them |
@@ -94,7 +105,9 @@ instead of the generated map. Test with `--level <name>`. Details: `docs/LEVEL_F
 Your character saves automatically (whenever you reach the overworld, after boss kills and
 when you quit) to `~/.local/share/ashensanctum/save.txt`. Like Diablo 2, your hero, gold,
 potions and quest progress carry over, while the monsters and loot are fresh each time you
-start the game. Start a brand-new character with `--new`.
+start the game. Start a brand-new character with `--new`. Your gear and bag are saved too.
+
+For testing, `--cheats` turns on F9 (gain a character level) and F10 (drop loot at your feet).
 
 ## Building
 
