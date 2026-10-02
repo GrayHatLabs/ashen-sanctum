@@ -26,6 +26,7 @@ Project rules and reference. Read this before every major change.
 - `items.rs`: equipment (bases, affixes, uniques, rarity rolls, bag + worn gear, `Bonus` totals).
   `inventory.rs`: the inventory screen. Player max life / mana = `base_hp` / `base_mana` + gear, via
   `Player::recalc()` (call it after any gear, level or seal change).
+- `music.rs`: synthesised music loops; `audio.rs` mixes them with the SFX (`Game::music_track` picks one).
 - `render.rs`: all drawing (world, lighting, HUD, dialogue, overlays). `art.rs` themes and stand-in art.
 - Unit tests cover the world graph, stairs, the whole story, shop/healer, death, XP, run/food.
 

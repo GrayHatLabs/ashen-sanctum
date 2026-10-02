@@ -12,6 +12,7 @@ mod iso;
 mod items;
 mod levels;
 mod mobs;
+mod music;
 mod render;
 mod rng;
 mod save;
@@ -70,6 +71,18 @@ fn main() -> Result<(), String> {
     let handheld = cfg!(target_arch = "aarch64");
     let tall = args.iter().any(|a| a == "--tall") || (handheld && !args.iter().any(|a| a == "--wide"));
     let seed_arg = args.iter().position(|a| a == "--seed").and_then(|i| args.get(i + 1)).and_then(|s| s.parse::<u64>().ok());
+    // --export-music [dir]: write the music loops as WAV files (to listen to them outside the game).
+    if let Some(i) = args.iter().position(|a| a == "--export-music") {
+        let dir = args.get(i + 1).map(String::as_str).filter(|d| !d.starts_with("--")).unwrap_or("music");
+        std::fs::create_dir_all(dir).map_err(|e| e.to_string())?;
+        for t in music::TRACKS {
+            let s = music::render(t);
+            let path = format!("{dir}/{}.wav", format!("{t:?}").to_lowercase());
+            std::fs::write(&path, music::wav(&s)).map_err(|e| e.to_string())?;
+            println!("wrote {path} ({:.0} s)", s.len() as f32 / music::RATE as f32);
+        }
+        return Ok(());
+    }
     if let Some(i) = args.iter().position(|a| a == "--export-levels") {
         // Writes every level as JSON for the level editor (generated, or the hand-made one).
         let dir = args.get(i + 1).map(String::as_str).filter(|d| !d.starts_with("--")).unwrap_or("levels");
@@ -166,6 +179,12 @@ fn main() -> Result<(), String> {
                         Space => keys.cast2 = true,
                         K if !repeat => skills_key = true,
                         I | C if !repeat => inv_key = true,
+                        N if !repeat => {
+                            if let Some(a) = audio.as_mut() {
+                                let on = a.toggle_music();
+                                game.say(if on { "MUSIC ON (N)".into() } else { "MUSIC OFF (N)".into() });
+                            }
+                        }
                         F9 if cheats => cheat_level = true,
                         F10 if cheats && !repeat => cheat_loot = true,
                         Num1 | Num2 | Num3 | Num4 if !repeat => {
@@ -342,6 +361,9 @@ fn main() -> Result<(), String> {
             acc -= step;
         }
 
+        if let Some(a) = audio.as_mut() {
+            a.set_music(game.music_track());
+        }
         if game.save_due {
             game.save_due = false;
             save::write(&game);

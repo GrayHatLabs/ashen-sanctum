@@ -6,7 +6,8 @@ potions, cleanse each level and descend deeper.
 
 Written in Rust with SDL2. Renders a 640x360 software framebuffer (640x480 on the
 ANBERNIC RG35XX H), with pixel art generated with PixelLab and embedded in the binary.
-Sound effects are synthesised in code.
+Sound effects and music are synthesised in code: a plucked-guitar theme in town, wind and
+drones in the wilds, bells and a heartbeat in the dungeons, drums for boss fights.
 
 ## The story
 
@@ -87,6 +88,7 @@ take back their Seals, unseal the Sanctum and end the Ash King.
 | Choose in a conversation | Up / Down + Enter, or click | D-pad + A |
 | Map | Tab or M | SELECT |
 | Mana potion | E or 2 | Y |
+| Music on / off | N | |
 | Continue after death / the ending | Enter | START |
 | Close menu / quit | Esc (closes a conversation or the map first) | SELECT + START |
 
@@ -109,6 +111,8 @@ Your character saves automatically (whenever you reach the overworld, after boss
 when you quit) to `~/.local/share/ashensanctum/save.txt`. Like Diablo 2, your hero, gold,
 potions and quest progress carry over, while the monsters and loot are fresh each time you
 start the game. Start a brand-new character with `--new`. Your gear and bag are saved too.
+
+To listen to the music outside the game: `--export-music music` writes the loops as WAV files.
 
 For testing, `--cheats` turns on F9 (gain a character level) and F10 (drop loot at your feet).
 

@@ -80,6 +80,12 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | `--cheats`: F9 char level, F10 loot | built | |
 | Champion packs (blue, 1 modifier) and elites (gold name, 2 modifiers, minions); 6 modifiers; better drops; name bar shows modifiers | H S | `world::add_elites` runs on generated and hand-made levels. Unit test: counts, toughness, drops, fiery burst |
 
+## Music (2026-10-01)
+
+| Feature | Status | Notes |
+|---|---|---|
+| 4 synthesised loops (`music.rs`): town (plucked guitar, D minor), wilds, dungeon, boss; rendered on a background thread; 2.5 s crossfades by area; N toggles | built | Unit test: loops render, levels sane. Spectrum checked; **not listened to by a human yet**. `--export-music` writes WAVs |
+
 ## Art status
 
 - Complete for the MVP: 3 characters x 8 rotations, 7 animations, 2 floor tiles, 1 wall block.

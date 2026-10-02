@@ -735,6 +735,20 @@ impl Game {
     }
 
     /// True while fire is on screen (for picking interesting snapshot frames).
+    /// Which music loop fits where you are.
+    pub fn music_track(&self) -> crate::music::Track {
+        use crate::music::Track;
+        if self.mobs.iter().any(|m| m.boss && m.alive() && m.state != MobState::Idle) {
+            Track::Boss
+        } else if self.in_safe(self.p.x, self.p.y) || matches!(self.state, State::Victory(_)) {
+            Track::Town
+        } else if self.level == LevelId::Overworld {
+            Track::Wilds
+        } else {
+            Track::Dungeon
+        }
+    }
+
     pub fn fire_active(&self) -> bool {
         !self.balls.is_empty() && !self.lights.is_empty()
     }
