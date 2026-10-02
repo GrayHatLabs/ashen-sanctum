@@ -420,7 +420,7 @@ pub struct Game {
 impl Game {
     pub fn new(seed: u64, view_h: i32) -> Self {
         let world_seed = seed;
-        let lv = world::build(LevelId::Overworld, world_seed);
+        let lv = world::build_at(LevelId::Overworld, world_seed, 0);
         let mut g = Game {
             rng: Rng::new(seed),
             art: Art::load(),
@@ -559,6 +559,9 @@ impl Game {
         self.banner_t = 3.0;
         self.waypoint = self.find_waypoint();
         self.wp_armed = true;
+        if self.quest.difficulty > 0 {
+            self.level_name = format!("{} ({})", self.level_name, story::DIFFICULTIES[self.quest.difficulty as usize]);
+        }
         if lv.id != LevelId::Overworld {
             self.shop_stale = true;
         }
@@ -659,9 +662,34 @@ impl Game {
             _ => 999,
         });
         options.push(("STAY HERE".into(), Act::Close));
-        let mut d = Dialog { name: "WAYPOINT", pages: vec!["THE RUNES HUM. WHERE WILL YOU GO?".into()], page: 0, options: vec![], sel: 0, advance_to: None, heals: false };
+        let mut d = Dialog { name: "WAYPOINT", pages: vec!["THE RUNES HUM. WHERE WILL YOU GO?".into()], page: 0, options: vec![], sel: 0, advance_to: None, heals: false, last_options: vec![] };
         d.options = options;
         self.dialog = Some(d);
+    }
+
+    /// Rebuilds the overworld at the current difficulty (after loading a Nightmare / Hell save).
+    pub(crate) fn rebuild_world(&mut self) {
+        self.parked.clear();
+        let lv = world::build_at(LevelId::Overworld, self.world_seed, self.quest.difficulty);
+        self.swap_in(lv);
+        (self.p.x, self.p.y) = self.town_start;
+    }
+
+    /// Nightmare / Hell: the world is rebuilt harder, the quests start over, your hero carries on.
+    pub(crate) fn next_difficulty(&mut self) {
+        let d = (self.quest.difficulty + 1).min(2);
+        self.quest = Quest { stage: 1, seals: [false; 3], difficulty: d };
+        self.parked.clear();
+        self.waypoints = vec![LevelId::Overworld];
+        self.shop_stale = true;
+        let lv = world::build_at(LevelId::Overworld, self.world_seed, d);
+        self.swap_in(lv);
+        (self.p.x, self.p.y) = self.town_start;
+        self.p.hp = self.p.max_hp;
+        self.p.mana = self.p.max_mana;
+        self.sfx.push(Sfx::Descend);
+        self.say(format!("{} BEGINS. SLAY THE THREE WARDENS AGAIN", story::DIFFICULTIES[d as usize]));
+        self.save_due = true;
     }
 
     /// Waypoint travel: you arrive standing on the other waypoint.
@@ -684,7 +712,7 @@ impl Game {
         self.parked.insert(cur.id, cur);
         let lv = match self.parked.remove(&id) {
             Some(lv) => lv,
-            None => world::build(id, self.world_seed),
+            None => world::build_at(id, self.world_seed, self.quest.difficulty),
         };
         self.swap_in(lv);
         self.stats.levels_entered += 1;
@@ -1180,6 +1208,10 @@ impl Game {
             }
             Some(Act::Buy(w)) => self.buy(w),
             Some(Act::Travel(id)) => self.travel(id),
+            Some(Act::NextDifficulty) => {
+                self.dialog = None;
+                self.next_difficulty();
+            }
             Some(Act::Shop) => {
                 if self.shop_stale || self.shop_stock.is_empty() {
                     self.restock();
@@ -2689,6 +2721,43 @@ mod tests {
         g.dialog.as_mut().unwrap().sel = k;
         g.update(&Input { confirm: true, ..Input::default() });
         assert_ne!(g.shop_stock, before, "restocked");
+    }
+
+    #[test]
+    fn nightmare_follows_the_ash_king() {
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        let normal_hp: f32 = g.mobs.iter().map(|m| m.max_hp).sum();
+        g.quest.stage = 3;
+        g.quest.seals = [true; 3];
+        g.p.gear.bag[0] = Some(crate::items::unique(0));
+        let clvl = g.p.clvl;
+        g.debug_talk(Role::Elder);
+        for _ in 0..3 {
+            let d = g.dialog.as_ref().unwrap();
+            if d.options.iter().any(|o| o.1 == Act::NextDifficulty) {
+                break;
+            }
+            g.update(&Input { confirm: true, ..Input::default() });
+            g.update(&Input::default());
+        }
+        let d = g.dialog.as_mut().unwrap();
+        d.sel = d.options.iter().position(|o| o.1 == Act::NextDifficulty).expect("elder offers nightmare");
+        g.update(&Input { confirm: true, ..Input::default() });
+        assert_eq!(g.quest.difficulty, 1);
+        assert_eq!((g.quest.stage, g.quest.seal_count()), (1, 0), "quests start over");
+        assert!(g.p.gear.bag[0].is_some() && g.p.clvl == clvl, "you keep your hero");
+        assert!(g.level_name.contains("NIGHTMARE"));
+        let nm_hp: f32 = g.mobs.iter().map(|m| m.max_hp).sum();
+        assert!(nm_hp > normal_hp * 2.0, "monsters are much tougher");
+        assert!(g.tier > 1.5);
+        // Saved and loaded as nightmare.
+        let text = crate::save::to_text(&g);
+        let mut h = Game::new(5, crate::gfx::SH_WIDE);
+        crate::save::apply(&mut h, &text);
+        assert_eq!(h.quest.difficulty, 1);
+        assert!(h.level_name.contains("NIGHTMARE"));
+        h.debug_goto(LevelId::Dungeon(0, 0));
+        assert!(h.tier >= 1.99, "dungeons are harder too");
     }
 
     #[test]

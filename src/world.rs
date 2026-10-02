@@ -245,8 +245,30 @@ pub fn generate(id: LevelId, seed: u64) -> Level {
 
 /// A level as the game plays it: the hand-made file if there is one, else generated.
 pub fn build(id: LevelId, seed: u64) -> Level {
+    build_at(id, seed, 0)
+}
+
+/// A level at a difficulty (0 normal, 1 nightmare, 2 hell): tougher monsters, richer drops,
+/// and fresh layouts for the generated levels.
+pub fn build_at(id: LevelId, seed: u64, difficulty: u8) -> Level {
+    let seed = seed.wrapping_add(difficulty as u64 * 7919);
     let mut lv = crate::levels::load(id, seed).unwrap_or_else(|| generate(id, seed));
     add_elites(&mut lv, seed);
+    let (hp, dmg, xp, tier) = match difficulty {
+        0 => (1.0, 1.0, 1.0, 1.0),
+        1 => (2.6, 1.9, 2.8, 2.0),
+        _ => (5.0, 3.0, 5.5, 3.2),
+    };
+    if difficulty > 0 {
+        lv.tier *= tier;
+        for m in lv.mobs.iter_mut() {
+            m.max_hp *= hp;
+            m.hp = m.max_hp;
+            m.dmg = (m.dmg.0 * dmg, m.dmg.1 * dmg);
+            m.xp *= xp;
+            m.tier *= tier;
+        }
+    }
     lv
 }
 

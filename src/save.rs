@@ -36,7 +36,9 @@ pub fn to_text(g: &Game) -> String {
         q.stage,
         seals,
         g.kills
-    ) + &p.skills.save_text()
+    ) + &format!("difficulty={}
+", g.quest.difficulty)
+        + &p.skills.save_text()
         + &format!("waypoints={}
 ", g.waypoints.iter().map(|w| crate::levels::id_string(*w)).collect::<Vec<_>>().join(","))
         + &p.gear.save_text()
@@ -62,6 +64,7 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
     g.p.food = (num("food").unwrap_or(100.0) as f32).max(40.0);
     g.p.running = num("running").unwrap_or(1.0) != 0.0;
     g.quest.stage = num("stage").unwrap_or(0.0) as u8;
+    g.quest.difficulty = (num("difficulty").unwrap_or(0.0) as u8).min(2);
     if let Some(s) = get("seals") {
         for (i, c) in s.chars().take(3).enumerate() {
             g.quest.seals[i] = c == '1';
@@ -84,6 +87,9 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
                 g.waypoints.push(id);
             }
         }
+    }
+    if g.quest.difficulty > 0 {
+        g.rebuild_world();
     }
     g.p.recalc();
     g.p.hp = g.p.max_hp;

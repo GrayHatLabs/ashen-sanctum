@@ -75,6 +75,12 @@ take back their Seals, unseal the Sanctum and end the Ash King.
   burn, or fire enchanted (bursts into flame when it dies: step away). They drop more and better gear.
   Bosses telegraph their big attacks with markers on the floor: step out of them.
 
+## After the Ash King
+
+Like Diablo 2, beating the game opens **Nightmare**, then **Hell**: talk to Elder Maren. The
+world is rebuilt with much tougher monsters and richer drops, and the quests start over, while
+your character, skills and gear carry on.
+
 ## Controls
 
 | Action | Mouse + keyboard | Gamepad / handheld |

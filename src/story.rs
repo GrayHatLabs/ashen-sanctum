@@ -36,7 +36,11 @@ pub struct Quest {
     pub stage: u8,
     /// Seals taken from the Bone, Plague and Hex Wardens.
     pub seals: [bool; 3],
+    /// 0 normal, 1 nightmare, 2 hell (D2 style: the world gets harder, your hero carries on).
+    pub difficulty: u8,
 }
+
+pub const DIFFICULTIES: [&str; 3] = ["NORMAL", "NIGHTMARE", "HELL"];
 
 impl Quest {
     pub fn seal_count(&self) -> usize {
@@ -50,13 +54,14 @@ impl Quest {
             1 if self.seal_count() < 3 => format!("SLAY THE THREE WARDENS  ({}/3 SEALS)", self.seal_count()),
             1 => "RETURN THE SEALS TO ELDER MAREN".into(),
             2 => "ENTER THE ASHEN SANCTUM. SLAY THE ASH KING".into(),
+            _ if self.difficulty < 2 => "THE ASH KING IS DEAD. ELDER MAREN WANTS A WORD".into(),
             _ => "THE ASH KING IS DEAD. HOLLOWMERE IS SAFE".into(),
         }
     }
 
     /// Does the elder have something new to say (shows a marker over her head)?
     pub fn elder_has_news(&self) -> bool {
-        self.stage == 0 || (self.stage == 1 && self.seal_count() == 3)
+        self.stage == 0 || (self.stage == 1 && self.seal_count() == 3) || (self.stage == 3 && self.difficulty < 2)
     }
 }
 
@@ -89,6 +94,8 @@ pub enum Act {
     Travel(crate::world::LevelId),
     /// Gerta's gear (opens the inventory with her stock).
     Shop,
+    /// After the Ash King: start the next difficulty.
+    NextDifficulty,
 }
 
 pub struct Dialog {
@@ -101,12 +108,14 @@ pub struct Dialog {
     pub advance_to: Option<u8>,
     /// Heal the player when the dialog opens (Brother Aldric).
     pub heals: bool,
+    /// Options for the last page of a multi-page conversation.
+    pub last_options: Vec<(String, Act)>,
 }
 
 impl Dialog {
     fn new(name: &'static str, pages: &[&str]) -> Self {
         let pages: Vec<String> = pages.iter().map(|s| s.to_string()).collect();
-        let mut d = Dialog { name, pages, page: 0, options: vec![], sel: 0, advance_to: None, heals: false };
+        let mut d = Dialog { name, pages, page: 0, options: vec![], sel: 0, advance_to: None, heals: false, last_options: vec![] };
         d.refresh_options();
         d
     }
@@ -115,6 +124,8 @@ impl Dialog {
     pub fn refresh_options(&mut self) {
         if self.page + 1 < self.pages.len() {
             self.options = vec![("CONTINUE".into(), Act::Next)];
+        } else if !self.last_options.is_empty() {
+            self.options = self.last_options.clone();
         } else if self.options.iter().all(|o| o.1 == Act::Next) {
             self.options = vec![("FAREWELL".into(), Act::Close)];
         }
@@ -160,9 +171,22 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
                 Dialog::new("ELDER MAREN", &[&line])
             }
             2 => Dialog::new("ELDER MAREN", &["THE SANCTUM AWAITS, TO THE NORTHWEST. MAY THE FLAME GUIDE YOU, CHILD."]),
+            _ if q.difficulty < 2 => {
+                let next = DIFFICULTIES[q.difficulty as usize + 1];
+                let mut d = Dialog::new(
+                    "ELDER MAREN",
+                    &[
+                        "THE ASH HAS STOPPED FALLING. FOR THE FIRST TIME IN YEARS, CHILDREN PLAY IN THE SQUARE. THANK YOU, SORCERESS.",
+                        "AND YET... I DREAM OF HIM STILL. THE ASH KING'S FIRE SANK DEEPER THAN WE KNEW. THE WARDENS STIR AGAIN, AND STRONGER.",
+                        "IF YOU WOULD FACE HIM ONCE MORE, THE WORLD WILL BE HARDER, BUT ITS TREASURES RICHER. YOU KEEP ALL YOU HAVE LEARNED AND CARRY.",
+                    ],
+                );
+                d.last_options = vec![(format!("BEGIN {next}"), Act::NextDifficulty), ("NOT YET".into(), Act::Close)];
+                d
+            }
             _ => Dialog::new(
                 "ELDER MAREN",
-                &["THE ASH HAS STOPPED FALLING. FOR THE FIRST TIME IN YEARS, CHILDREN PLAY IN THE SQUARE. THANK YOU, SORCERESS."],
+                &["EVEN HELL COULD NOT HOLD YOU. THE ASH KING IS ASH AT LAST, AND HOLLOWMERE SLEEPS IN PEACE. THANK YOU, SORCERESS."],
             ),
         },
         Role::Merchant => {

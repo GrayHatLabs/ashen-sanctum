@@ -81,6 +81,12 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Gerta's gear shelf (12 items around your level, restocks after a dungeon), buy at 4x the sell price, from the inventory screen | H S | Unit test: buy, stock kept, restock |
 | Champion packs (blue, 1 modifier) and elites (gold name, 2 modifiers, minions); 6 modifiers; better drops; name bar shows modifiers | H S | `world::add_elites` runs on generated and hand-made levels. Unit test: counts, toughness, drops, fiery burst |
 
+## Difficulties (2026-10-01)
+
+| Feature | Status | Notes |
+|---|---|---|
+| Nightmare and Hell after the Ash King (Elder Maren): new layouts, monsters x2.6 / x5 life, x1.9 / x3 damage, more XP, higher item levels; quests and waypoints reset; hero kept; saved | H | Unit test: offer, reset, scaling, save/load. Balance untested by a human |
+
 ## Waypoints (2026-10-01)
 
 | Feature | Status | Notes |
