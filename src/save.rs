@@ -38,6 +38,15 @@ pub fn to_text(g: &Game) -> String {
         g.kills
     ) + &format!("difficulty={}
 ", g.quest.difficulty)
+        + &format!(
+            "stage2={}
+runes={}
+act={}
+",
+            g.quest.stage2,
+            g.quest.runes.iter().map(|s| if *s { '1' } else { '0' }).collect::<String>(),
+            g.level.act()
+        )
         + &p.skills.save_text()
         + &format!("waypoints={}
 ", g.waypoints.iter().map(|w| crate::levels::id_string(*w)).collect::<Vec<_>>().join(","))
@@ -65,6 +74,13 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
     g.p.running = num("running").unwrap_or(1.0) != 0.0;
     g.quest.stage = num("stage").unwrap_or(0.0) as u8;
     g.quest.difficulty = (num("difficulty").unwrap_or(0.0) as u8).min(2);
+    g.quest.stage2 = (num("stage2").unwrap_or(0.0) as u8).min(3);
+    if let Some(s) = get("runes") {
+        for (i, c) in s.chars().take(3).enumerate() {
+            g.quest.runes[i] = c == '1';
+        }
+    }
+    let act = if g.quest.north_open() { num("act").unwrap_or(0.0) as usize } else { 0 };
     if let Some(s) = get("seals") {
         for (i, c) in s.chars().take(3).enumerate() {
             g.quest.seals[i] = c == '1';
@@ -88,8 +104,9 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
             }
         }
     }
-    if g.quest.difficulty > 0 {
-        g.rebuild_world();
+    // You wake in the town of the act you saved in.
+    if g.quest.difficulty > 0 || act == 1 {
+        g.rebuild_world(act.min(1));
     }
     g.p.recalc();
     g.p.hp = g.p.max_hp;

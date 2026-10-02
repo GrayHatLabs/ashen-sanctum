@@ -460,6 +460,12 @@ pub static UNIQUES: &[UniqueDef] = &[
     UniqueDef { name: "CINDERWALKERS", base: "cboots", req: 3, stats: &[(Stat::Armor, 6), (Stat::Move, 20), (Stat::Stamina, 50), (Stat::Fire, 10)], boss: None },
     UniqueDef { name: "EMBERHEART", base: "amulet", req: 6, stats: &[(Stat::Fire, 25), (Stat::ManaRegen, 30), (Stat::Life, 15)], boss: None },
     UniqueDef { name: "THE KINDLING", base: "gnarled", req: 1, stats: &[(Stat::Fire, 35), (Stat::Mana, 20), (Stat::Cast, 10)], boss: None },
+    // ---- Act 2 ----
+    UniqueDef { name: "OVERSEER'S GIRDLE", base: "hbelt", req: 16, stats: &[(Stat::Armor, 12), (Stat::Life, 45), (Stat::Stamina, 50), (Stat::LifeRegen, 4)], boss: Some("giant") },
+    UniqueDef { name: "MATRIARCH'S MANTLE", base: "chain", req: 18, stats: &[(Stat::Armor, 34), (Stat::Life, 40), (Stat::Hunger, 50), (Stat::LifeOnKill, 6)], boss: Some("yeti") },
+    UniqueDef { name: "RIME CIRCLET", base: "circlet", req: 20, stats: &[(Stat::Skills, 1), (Stat::Mana, 55), (Stat::ManaRegen, 60), (Stat::Cast, 20)], boss: Some("witch") },
+    UniqueDef { name: "WYRMHEART", base: "amulet", req: 22, stats: &[(Stat::Skills, 2), (Stat::Fire, 45), (Stat::Life, 50), (Stat::Magic, 30)], boss: Some("dragon") },
+    UniqueDef { name: "SKALD'S STRIDE", base: "iboots", req: 16, stats: &[(Stat::Armor, 12), (Stat::Move, 25), (Stat::Stamina, 40), (Stat::Gold, 40)], boss: None },
 ];
 
 pub fn unique(i: usize) -> Item {

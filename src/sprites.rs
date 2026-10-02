@@ -159,15 +159,40 @@ pub fn fallback_ground(v: i32, base: u32, hi: u32) -> Sprite {
 }
 
 /// Props that have code-drawn stand-ins.
-pub const PROP_NAMES: [&str; 16] = [
+pub const PROP_NAMES: [&str; 28] = [
     "tree_oak", "tree_pine", "tree_dead", "rock1", "bush1", "house1", "house2", "tent1", "campfire", "well", "ent_crypt",
-    "ent_warrens", "ent_catacombs", "ent_sanctum", "stairs_down", "stairs_up",
+    "ent_warrens", "ent_catacombs", "ent_sanctum", "stairs_down", "stairs_up", "tree_snowpine", "tree_snowdead", "rock_snow",
+    "ice_crystal", "longhouse1", "longhouse2", "stall_furs", "ent_mines", "ent_caves", "ent_temple", "ent_glacier", "pass_gate",
 ];
 
 /// Simple stand-in shapes for props (anchored at the bottom centre).
 pub fn fallback_prop(name: &str) -> Sprite {
     let mut s;
+    // Act 2 props reuse the Act 1 shapes, frosted.
+    let frost = |base: &str, tint: u32, a: f32| {
+        let mut f = fallback_prop(base);
+        for p in f.px.iter_mut() {
+            if *p != 0 && *p != BLACK {
+                *p = mix(*p, rgb(tint), a);
+            }
+        }
+        f
+    };
     match name {
+        "tree_snowpine" => return frost("tree_pine", 0xf0f8ff, 0.45),
+        "tree_snowdead" => return frost("tree_dead", 0xe8f0f8, 0.4),
+        "rock_snow" => return frost("rock1", 0xf0f4ff, 0.4),
+        "longhouse1" | "longhouse2" => return frost("house1", 0xe8f0ff, 0.25),
+        "stall_furs" => return frost("tent1", 0x8a6a48, 0.5),
+        "ent_mines" | "pass_gate" => return frost("ent_crypt", 0xd0e0f0, 0.3),
+        "ent_caves" | "ent_temple" | "ent_glacier" => return frost("ent_crypt", 0x90c8f0, 0.5),
+        "ice_crystal" => {
+            s = Sprite::new(20, 30);
+            for k in 0..3 {
+                let (x, h) = (4 + k * 6, 14 + (k % 2) * 12);
+                s.fill(x, 30 - h, 5, h, mix(rgb(0x8ac8f0), rgb(0xe0f4ff), k as f32 * 0.3));
+            }
+        }
         "tree_oak" | "tree_pine" | "tree_dead" | "bush1" => {
             let (w, h) = if name == "bush1" { (24, 20) } else { (40, 64) };
             s = Sprite::new(w, h);

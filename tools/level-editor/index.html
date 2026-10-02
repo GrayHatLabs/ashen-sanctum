@@ -109,7 +109,7 @@
     <div class="row"><label>Id</label><span id="lv-id" class="hint"></span></div>
     <div class="row"><label>Name</label><input id="lv-name" style="flex:1"></div>
     <div class="row"><label>Theme</label>
-      <select id="lv-theme"><option>overworld</option><option>crypt</option><option>warrens</option><option>catacombs</option><option>sanctum</option></select></div>
+      <select id="lv-theme"><option>overworld</option><option>crypt</option><option>warrens</option><option>catacombs</option><option>sanctum</option><option>tundra</option><option>mines</option><option>icecaves</option><option>rime</option><option>glacier</option></select></div>
     <div class="row"><label>Tier</label><input id="lv-tier" type="number" step="0.1" min="0.1">
       <span class="hint">difficulty</span></div>
     <div class="row"><label>Size</label><span id="lv-size" class="hint"></span>
@@ -148,6 +148,10 @@ const PROPS = [
   ["tree_oak", 1, 1], ["tree_pine", 1, 1], ["tree_dead", 1, 1], ["rock1", 1, 1], ["bush1", 1, 1],
   ["house1", 4, 4], ["house2", 4, 4], ["tent1", 3, 2], ["campfire", 1, 1], ["well", 1, 1],
   ["ent_crypt", 3, 3], ["ent_warrens", 3, 3], ["ent_catacombs", 3, 3], ["ent_sanctum", 3, 3],
+  // Act 2 (the Frostmarch)
+  ["tree_snowpine", 1, 1], ["tree_snowdead", 1, 1], ["rock_snow", 1, 1], ["ice_crystal", 1, 1],
+  ["longhouse1", 5, 4], ["longhouse2", 4, 4], ["stall_furs", 3, 2], ["pass_gate", 3, 2],
+  ["ent_mines", 3, 3], ["ent_caves", 3, 3], ["ent_temple", 3, 3], ["ent_glacier", 4, 3],
 ].map(([kind, w, h]) => ({ kind, w, h, img: kind, name: kind.replace(/_/g, " ").replace(/^ent /, "door: ").replace(/1$/, "") }));
 const PORTALS = [
   { kind: "up", name: "Stairs up", color: "#ffd040", img: "stairs_up" },
@@ -157,26 +161,43 @@ const PORTALS = [
   { kind: "entrance2", name: "Door: Catacombs", color: "#b070ff" },
   { kind: "entrance3", name: "Door: Sanctum", color: "#ff4030" },
   { kind: "townportal", name: "Town portal", color: "#6080ff" },
+  { kind: "pass1", name: "Pass north (to Act 2)", color: "#c0e0ff" },
+  { kind: "pass0", name: "Pass south (to Act 1)", color: "#c0e0ff" },
+  { kind: "entrance4", name: "Door: Frozen Mines", color: "#90a8c0" },
+  { kind: "entrance5", name: "Door: Howling Caves", color: "#c0e8ff" },
+  { kind: "entrance6", name: "Door: Rime Temple", color: "#80d0ff" },
+  { kind: "entrance7", name: "Door: Glacier's Heart", color: "#4080ff" },
 ];
 const MONSTERS = [
   ["zombie", "Zombie"], ["skeleton", "Skeleton"], ["wolf", "Wolf"], ["goblin", "Goblin"], ["archer", "Archer"],
   ["boss_bone", "Bone Warden"], ["boss_plague", "Plague Warden"], ["boss_hex", "Hex Warden"], ["boss_ashking", "Ash King"],
+  ["frost_wolf", "Winter wolf"], ["raider", "Raider"], ["yeti", "Yeti"], ["ice_troll", "Ice troll"], ["ice_wraith", "Ice wraith"],
+  ["boss_giant", "Frost Giant"], ["boss_yeti", "Yeti Matriarch"], ["boss_witch", "Rime Witch"], ["boss_dragon", "Rime Wyrm"],
 ].map(([kind, name]) => ({ kind, name, img: kind, boss: kind.startsWith("boss") }));
 const NPCS = [
   ["elder", "Elder", "npc_elder"], ["merchant", "Merchant", "npc_merchant"], ["healer", "Healer", "npc_healer"],
   ["guard", "Guard", "npc_guard"], ["villager0", "Villager 1", "npc_villager"], ["villager1", "Farmer 1", "npc_villager"],
   ["villager2", "Villager 2", "npc_villager"], ["villager3", "Farmer 2", "npc_villager"],
+  ["captain", "Captain Brenna", "npc_captain"], ["trader", "Old Sigurd", "npc_trader"], ["seer", "Mother Ylva", "npc_seer"],
+  ["fisher0", "Fisherman 1", "npc_fisher"], ["fisher1", "Fisherman 2", "npc_fisher"], ["fisher2", "Fisherwife", "npc_fisher"],
 ].map(([kind, name, img]) => ({ kind, name, img }));
 const ITEMS = [
   { kind: "apple", name: "Apple", img: "food_apple" }, { kind: "bread", name: "Bread", img: "food_bread" },
   { kind: "roast", name: "Roast", img: "food_roast" }, { kind: "health_potion", name: "Heal potion", color: "#c02020" },
   { kind: "mana_potion", name: "Mana potion", color: "#2040c0" }, { kind: "gold25", name: "25 gold", color: "#e8c050" },
 ];
-const THEME_FLOOR = { overworld: "#3e6a2a", crypt: "#4e5254", warrens: "#5a4a34", catacombs: "#4a4260", sanctum: "#4a2620" };
-const THEME_WALL = { overworld: "#3a2414", crypt: "#22281e", warrens: "#2e2214", catacombs: "#241e36", sanctum: "#2a0e0a" };
+const THEME_FLOOR = { overworld: "#3e6a2a", crypt: "#4e5254", warrens: "#5a4a34", catacombs: "#4a4260", sanctum: "#4a2620",
+  tundra: "#d8e2ee", mines: "#5a6a78", icecaves: "#9ac8e8", rime: "#a8c8e0", glacier: "#4a70a8" };
+const THEME_WALL = { overworld: "#3a2414", crypt: "#22281e", warrens: "#2e2214", catacombs: "#241e36", sanctum: "#2a0e0a",
+  tundra: "#4a3424", mines: "#2a3440", icecaves: "#3a6a90", rime: "#4a6a88", glacier: "#1a3a6a" };
 const DUNGEONS = [["bone_crypt", "THE BONE CRYPT", 2, "crypt", 1.0], ["rotting_warrens", "THE ROTTING WARRENS", 2, "warrens", 1.6],
-  ["hexed_catacombs", "THE HEXED CATACOMBS", 3, "catacombs", 2.3], ["ashen_sanctum", "THE ASHEN SANCTUM", 3, "sanctum", 3.2]];
-const BOSSES = ["boss_bone", "boss_plague", "boss_hex", "boss_ashking"];
+  ["hexed_catacombs", "THE HEXED CATACOMBS", 3, "catacombs", 2.3], ["ashen_sanctum", "THE ASHEN SANCTUM", 3, "sanctum", 3.2],
+  ["frozen_mines", "THE FROZEN MINES", 2, "mines", 3.8], ["howling_caves", "THE HOWLING CAVES", 2, "icecaves", 4.2],
+  ["rime_temple", "THE RIME TEMPLE", 3, "rime", 4.6], ["glaciers_heart", "THE GLACIER'S HEART", 3, "glacier", 5.2]];
+const BOSSES = ["boss_bone", "boss_plague", "boss_hex", "boss_ashking", "boss_giant", "boss_yeti", "boss_witch", "boss_dragon"];
+// Open-air themes have ground (grass / dirt / road, or snow / lake ice / snowy road).
+const isOpen = theme => theme === "overworld" || theme === "tundra";
+const OVERLANDS = ["overworld", "frostmarch"];
 
 const images = {};
 function img(name) {
@@ -202,12 +223,12 @@ let dirty = false;
 const cv = document.getElementById("cv"), ctx = cv.getContext("2d");
 
 function levelIdToName(id) {
-  if (id === "overworld") return "overworld";
+  if (OVERLANDS.includes(id)) return id;
   const m = /^dungeon:(\d+):(\d+)$/.exec(id || "");
   return m ? `${DUNGEONS[+m[1]][0]}_floor${+m[2] + 1}` : null;
 }
 function nameToLevelId(name) {
-  if (name === "overworld") return "overworld";
+  if (OVERLANDS.includes(name)) return name;
   for (let k = 0; k < DUNGEONS.length; k++)
     for (let f = 0; f < DUNGEONS[k][2]; f++)
       if (`${DUNGEONS[k][0]}_floor${f + 1}` === name) return `dungeon:${k}:${f}`;
@@ -231,7 +252,7 @@ function load(obj, name) {
 function serialize() {
   const out = JSON.parse(JSON.stringify(L));
   out.tiles = L.tiles.map(r => r.join(""));
-  out.ground = L.theme === "overworld" ? L.ground.map(r => r.join("")) : [];
+  out.ground = isOpen(L.theme) ? L.ground.map(r => r.join("")) : [];
   out.name = document.getElementById("lv-name").value || L.name;
   out.tier = +document.getElementById("lv-tier").value || L.tier;
   out.theme = document.getElementById("lv-theme").value;
@@ -303,7 +324,7 @@ let reach = null;
 function draw() {
   ctx.fillStyle = "#0b0a09"; ctx.fillRect(0, 0, cv.width, cv.height);
   if (!L) return;
-  const s = view.s, ow = L.theme === "overworld";
+  const s = view.s, ow = isOpen(L.theme);
   const [x0, y0] = toTile(0, 0).map(v => Math.max(0, Math.floor(v)));
   const [x1, y1] = toTile(cv.width, cv.height);
   const xe = Math.min(L.width, Math.ceil(x1)), ye = Math.min(L.height, Math.ceil(y1));
@@ -565,7 +586,7 @@ function status(fx, fy) {
   if (!hover) { document.getElementById("st-under").textContent = ""; return; }
   const t = { ".": "floor", "#": "wall", "o": "blocked", " ": "void" }[L.tiles[ty][tx]];
   const h = hit(fx, fy);
-  const g = L.theme === "overworld" ? " · " + ({ g: "grass", d: "dirt", r: "road" }[L.ground[ty][tx]]) : "";
+  const g = isOpen(L.theme) ? " · " + ((L.theme === "tundra" ? { g: "snow", d: "lake ice", r: "snowy road" } : { g: "grass", d: "dirt", r: "road" })[L.ground[ty][tx]]) : "";
   document.getElementById("st-under").textContent = t + g + (h ? " · " + L[h.list][h.index].kind : "");
 }
 function msg(t, bad) { const el = document.getElementById("st-msg"); el.textContent = t; el.style.color = bad ? "var(--bad)" : "var(--accent2)"; }
@@ -592,12 +613,16 @@ function check() {
     }
   }
   const ok = e => reach && reach[Math.floor(e.y) * W + Math.floor(e.x)];
-  const isOw = L.id === "overworld";
+  const isOw = OVERLANDS.includes(L.id);
   const m = /^dungeon:(\d+):(\d+)$/.exec(L.id);
   if (isOw) {
-    for (let k = 0; k < 4; k++) if (!L.portals.some(p => p.kind === "entrance" + k)) out.push(["bad", `Missing the door to ${DUNGEONS[k][1]} (portal entrance${k}).`]);
-    if (!L.npcs.some(n => n.kind === "elder")) out.push(["bad", "Elder Maren is missing: the story can't start."]);
-    for (const k of ["merchant", "healer"]) if (!L.npcs.some(n => n.kind === k)) out.push(["warn", `No ${k} in town.`]);
+    const act2 = L.id === "frostmarch";
+    for (let k = act2 ? 4 : 0; k < (act2 ? 8 : 4); k++) if (!L.portals.some(p => p.kind === "entrance" + k)) out.push(["bad", `Missing the door to ${DUNGEONS[k][1]} (portal entrance${k}).`]);
+    const pass = act2 ? "pass0" : "pass1";
+    if (!L.portals.some(p => p.kind === pass)) out.push(["bad", `Missing the mountain pass (portal ${pass}) between the acts.`]);
+    const story = act2 ? "captain" : "elder";
+    if (!L.npcs.some(n => n.kind === story)) out.push(["bad", `${act2 ? "Captain Brenna" : "Elder Maren"} is missing: the story can't go on.`]);
+    for (const k of act2 ? ["trader", "seer"] : ["merchant", "healer"]) if (!L.npcs.some(n => n.kind === k)) out.push(["warn", `No ${k} in town.`]);
     if (!L.safe) out.push(["warn", "No safe zone: monsters can follow you into town."]);
   } else if (m) {
     const k = +m[1], f = +m[2], last = f + 1 === DUNGEONS[k][2];
@@ -651,10 +676,10 @@ document.getElementById("btn-resize").onclick = () => {
 
 // ------------------------------------------------------------------ new level
 document.getElementById("btn-new").onclick = () => {
-  const names = ["overworld"]; for (const d of DUNGEONS) for (let f = 0; f < d[2]; f++) names.push(`${d[0]}_floor${f + 1}`);
+  const names = [...OVERLANDS]; for (const d of DUNGEONS) for (let f = 0; f < d[2]; f++) names.push(`${d[0]}_floor${f + 1}`);
   const name = prompt("Which level? One of:\n" + names.join("\n"), "bone_crypt_floor1");
   if (!name || !names.includes(name)) { if (name) msg("Unknown level name", true); return; }
-  const id = nameToLevelId(name), ow = id === "overworld";
+  const id = nameToLevelId(name), ow = OVERLANDS.includes(id);
   const size = prompt("Size (width x height)", ow ? "112x112" : "48x48");
   const m = /^(\d+)\s*[x× ]\s*(\d+)$/.exec(size || ""); if (!m) return;
   const w = Math.max(8, Math.min(512, +m[1])), h = Math.max(8, Math.min(512, +m[2]));
@@ -663,8 +688,9 @@ document.getElementById("btn-new").onclick = () => {
   const tiles = Array.from({ length: h }, (_, y) => Array.from({ length: w }, (_, x) =>
     ow ? (x === 0 || y === 0 || x === w - 1 || y === h - 1 ? "o" : ".") : (x === 0 || y === 0 || x === w - 1 || y === h - 1 ? "#" : ".")).join(""));
   load({
-    version: 1, id, name: ow ? "THE ASHLANDS" : `${def[1]} - LEVEL ${+dm[2] + 1}`, theme: ow ? "overworld" : def[3],
-    tier: ow ? 1 : def[4] + +dm[2] * 0.25, width: w, height: h, tiles, ground: ow ? Array(h).fill("g".repeat(w)) : [],
+    version: 1, id, name: ow ? (id === "frostmarch" ? "THE FROSTMARCH" : "THE ASHLANDS") : `${def[1]} - LEVEL ${+dm[2] + 1}`,
+    theme: ow ? (id === "frostmarch" ? "tundra" : "overworld") : def[3],
+    tier: ow ? (id === "frostmarch" ? 3.4 : 1) : def[4] + +dm[2] * 0.25, width: w, height: h, tiles, ground: ow ? Array(h).fill("g".repeat(w)) : [],
     start: [Math.floor(w / 2) + 0.5, Math.floor(h / 2) + 0.5], safe: null, props: [],
     portals: ow ? [] : [{ kind: "up", x: Math.floor(w / 2) + 0.5, y: Math.floor(h / 2) - 1.5 }], monsters: [], npcs: [], items: [],
   }, name);

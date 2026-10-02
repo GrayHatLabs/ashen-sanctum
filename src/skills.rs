@@ -911,7 +911,7 @@ impl Game {
         let burn = burn * self.p.skills.burn_mult();
         let m = &mut self.mobs[i];
         let (mx, my, boss, r) = (m.x, m.y, m.boss, m.r);
-        m.hp -= dmg;
+        m.hp -= dmg * crate::mobs::fire_taken(m.kind);
         m.flash = m.flash.max(if show { 0.12 } else { 0.04 });
         m.burn = m.burn.max(burn);
         m.stun = m.stun.max(if boss { stun * 0.2 } else { stun });

@@ -1,4 +1,5 @@
-//! The world: the overworld with the town of Hollowmere, and the four dungeons.
+//! The world: Act 1 (the Ashlands overworld with Hollowmere and four dungeons) and Act 2
+//! (the snowy Frostmarch with Kaldholm and four ice dungeons, see docs/ACT2_PLAN.md).
 //! Each map is a `Level`; levels you leave are parked and come back as you left them.
 use crate::dungeon::{Dungeon, Room, Tile};
 use crate::game::{Decal, Drop, Pickup};
@@ -8,9 +9,37 @@ use crate::story::{Npc, Role};
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum LevelId {
+    /// Act 1's overland: the Ashlands and Hollowmere.
     Overworld,
+    /// Act 2's overland: the Frostmarch and Kaldholm.
+    Frostmarch,
     /// (dungeon index into DUNGEONS, floor from 0)
     Dungeon(usize, usize),
+}
+
+impl LevelId {
+    /// An open-air map with a town (one per act).
+    pub fn overland(self) -> bool {
+        matches!(self, LevelId::Overworld | LevelId::Frostmarch)
+    }
+
+    /// 0 for Act 1, 1 for Act 2.
+    pub fn act(self) -> usize {
+        match self {
+            LevelId::Overworld => 0,
+            LevelId::Frostmarch => 1,
+            LevelId::Dungeon(k, _) => DUNGEONS[k].act,
+        }
+    }
+
+    /// The overland (and town) of an act.
+    pub fn land(act: usize) -> LevelId {
+        if act == 0 {
+            LevelId::Overworld
+        } else {
+            LevelId::Frostmarch
+        }
+    }
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -20,10 +49,37 @@ pub enum Theme {
     Warrens,
     Catacombs,
     Sanctum,
+    /// Act 2 overland: snow.
+    Tundra,
+    Mines,
+    IceCaves,
+    Rime,
+    Glacier,
 }
 
 impl Theme {
-    pub const ALL: [Theme; 5] = [Theme::Overworld, Theme::Crypt, Theme::Warrens, Theme::Catacombs, Theme::Sanctum];
+    pub const ALL: [Theme; 10] = [
+        Theme::Overworld,
+        Theme::Crypt,
+        Theme::Warrens,
+        Theme::Catacombs,
+        Theme::Sanctum,
+        Theme::Tundra,
+        Theme::Mines,
+        Theme::IceCaves,
+        Theme::Rime,
+        Theme::Glacier,
+    ];
+
+    /// Open-air (grass or snow ground, palisade walls).
+    pub fn open(self) -> bool {
+        matches!(self, Theme::Overworld | Theme::Tundra)
+    }
+
+    /// Act 2 themes (snowfall outside, frost motes inside).
+    pub fn cold(self) -> bool {
+        matches!(self, Theme::Tundra | Theme::Mines | Theme::IceCaves | Theme::Rime | Theme::Glacier)
+    }
 
     pub fn index(self) -> usize {
         self as usize
@@ -33,7 +89,12 @@ impl Theme {
     pub fn light(self) -> (f32, f32) {
         match self {
             Theme::Overworld => (360.0, 0.5),
+            Theme::Tundra => (380.0, 0.56),
             Theme::Sanctum => (230.0, 0.08),
+            // Ice catches the light: a little brighter than stone.
+            Theme::IceCaves | Theme::Rime => (270.0, 0.16),
+            Theme::Glacier => (250.0, 0.12),
+            Theme::Mines => (240.0, 0.1),
             _ => (250.0, 0.10),
         }
     }
@@ -46,11 +107,13 @@ pub struct DungeonDef {
     pub boss: Kind,
     pub monsters: &'static [Kind],
     pub tier: f32,
-    /// Overworld tile in front of the entrance.
+    /// Overland tile in front of the entrance (on its act's overland).
     pub entrance: (i32, i32),
+    /// 0 = Act 1 (the Ashlands), 1 = Act 2 (the Frostmarch).
+    pub act: usize,
 }
 
-pub const DUNGEONS: [DungeonDef; 4] = [
+pub const DUNGEONS: [DungeonDef; 8] = [
     DungeonDef {
         name: "THE BONE CRYPT",
         floors: 2,
@@ -59,6 +122,7 @@ pub const DUNGEONS: [DungeonDef; 4] = [
         monsters: &[Kind::Skeleton, Kind::Zombie, Kind::Archer],
         tier: 1.0,
         entrance: (20, 92),
+        act: 0,
     },
     DungeonDef {
         name: "THE ROTTING WARRENS",
@@ -68,6 +132,7 @@ pub const DUNGEONS: [DungeonDef; 4] = [
         monsters: &[Kind::Zombie, Kind::Goblin, Kind::Wolf],
         tier: 1.6,
         entrance: (94, 92),
+        act: 0,
     },
     DungeonDef {
         name: "THE HEXED CATACOMBS",
@@ -77,6 +142,7 @@ pub const DUNGEONS: [DungeonDef; 4] = [
         monsters: &[Kind::Archer, Kind::Skeleton, Kind::Goblin],
         tier: 2.3,
         entrance: (92, 22),
+        act: 0,
     },
     DungeonDef {
         name: "THE ASHEN SANCTUM",
@@ -86,11 +152,54 @@ pub const DUNGEONS: [DungeonDef; 4] = [
         monsters: &[Kind::Goblin, Kind::Skeleton, Kind::Archer, Kind::Zombie],
         tier: 3.2,
         entrance: (22, 20),
+        act: 0,
+    },
+    DungeonDef {
+        name: "THE FROZEN MINES",
+        floors: 2,
+        theme: Theme::Mines,
+        boss: Kind::FrostGiant,
+        monsters: &[Kind::Raider, Kind::IceTroll, Kind::Raider],
+        tier: 3.8,
+        entrance: (18, 78),
+        act: 1,
+    },
+    DungeonDef {
+        name: "THE HOWLING CAVES",
+        floors: 2,
+        theme: Theme::IceCaves,
+        boss: Kind::YetiMatriarch,
+        monsters: &[Kind::FrostWolf, Kind::Yeti, Kind::FrostWolf],
+        tier: 4.2,
+        entrance: (96, 30),
+        act: 1,
+    },
+    DungeonDef {
+        name: "THE RIME TEMPLE",
+        floors: 3,
+        theme: Theme::Rime,
+        boss: Kind::RimeWitch,
+        monsters: &[Kind::IceWraith, Kind::Raider, Kind::IceTroll],
+        tier: 4.6,
+        entrance: (20, 24),
+        act: 1,
+    },
+    DungeonDef {
+        name: "THE GLACIER'S HEART",
+        floors: 3,
+        theme: Theme::Glacier,
+        boss: Kind::WhiteDragon,
+        monsters: &[Kind::IceWraith, Kind::Yeti, Kind::IceTroll, Kind::FrostWolf],
+        tier: 5.2,
+        entrance: (58, 12),
+        act: 1,
     },
 ];
 
 /// The Ashen Sanctum (needs all three seals).
 pub const SANCTUM: usize = 3;
+/// The Glacier's Heart (needs all three frost runes).
+pub const GLACIER: usize = 7;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum PortalKind {
@@ -99,8 +208,10 @@ pub enum PortalKind {
     /// Stairs up (to the floor above, or out to the overworld from the first floor).
     Up,
     Down,
-    /// Opens where a boss dies: straight back to Hollowmere.
+    /// Opens where a boss dies: straight back to the act's town.
     TownPortal,
+    /// The mountain pass between the acts (to this act).
+    Pass(usize),
 }
 
 pub struct Portal {
@@ -124,6 +235,16 @@ pub enum PropKind {
     Entrance(usize),
     StairsDown,
     StairsUp,
+    // ---- Act 2 ----
+    SnowPine,
+    SnowDead,
+    SnowRock,
+    IceCrystal,
+    Longhouse1,
+    Longhouse2,
+    FurStall,
+    /// The mountain pass between the acts.
+    Pass,
 }
 
 impl PropKind {
@@ -142,9 +263,21 @@ impl PropKind {
             PropKind::Entrance(0) => "ent_crypt",
             PropKind::Entrance(1) => "ent_warrens",
             PropKind::Entrance(2) => "ent_catacombs",
-            PropKind::Entrance(_) => "ent_sanctum",
+            PropKind::Entrance(3) => "ent_sanctum",
+            PropKind::Entrance(4) => "ent_mines",
+            PropKind::Entrance(5) => "ent_caves",
+            PropKind::Entrance(6) => "ent_temple",
+            PropKind::Entrance(_) => "ent_glacier",
             PropKind::StairsDown => "stairs_down",
             PropKind::StairsUp => "stairs_up",
+            PropKind::SnowPine => "tree_snowpine",
+            PropKind::SnowDead => "tree_snowdead",
+            PropKind::SnowRock => "rock_snow",
+            PropKind::IceCrystal => "ice_crystal",
+            PropKind::Longhouse1 => "longhouse1",
+            PropKind::Longhouse2 => "longhouse2",
+            PropKind::FurStall => "stall_furs",
+            PropKind::Pass => "pass_gate",
         }
     }
 
@@ -239,6 +372,7 @@ pub fn empty_level(id: LevelId, name: String, theme: Theme, tier: f32, d: Dungeo
 pub fn generate(id: LevelId, seed: u64) -> Level {
     match id {
         LevelId::Overworld => overworld(seed),
+        LevelId::Frostmarch => frostmarch(seed),
         LevelId::Dungeon(k, f) => dungeon_floor(k, f, seed),
     }
 }
@@ -278,11 +412,12 @@ pub fn add_elites(lv: &mut Level, seed: u64) {
     use crate::mobs::{elite_name, roll_mods, Rank};
     let salt = match lv.id {
         LevelId::Overworld => 0x0e11,
+        LevelId::Frostmarch => 0x0f11,
         LevelId::Dungeon(k, f) => 0x0e12 + k as u64 * 16 + f as u64,
     };
     let mut rng = Rng::new(seed ^ salt.wrapping_mul(0x9e37_79b9));
     let (champs, elites) = match lv.id {
-        LevelId::Overworld => (5, 3),
+        LevelId::Overworld | LevelId::Frostmarch => (5, 3),
         LevelId::Dungeon(_, f) => (1 + (f > 0) as usize, 1),
     };
     let mut order: Vec<usize> = (0..lv.mobs.len()).filter(|&i| !lv.mobs[i].boss).collect();
@@ -320,6 +455,14 @@ pub fn add_elites(lv: &mut Level, seed: u64) {
         }
     }
 }
+
+/// Where the pass between the acts starts on each overland (the door tile).
+pub const PASS_ASH: (i32, i32) = (57, 7);
+pub const PASS_FROST: (i32, i32) = (56, 104);
+/// Kaldholm: palisade rectangle (inclusive tile bounds) on the Frostmarch.
+pub const KALDHOLM: (i32, i32, i32, i32) = (44, 66, 68, 86);
+/// The frozen lake beside Kaldholm: centre and radii.
+const LAKE: (f32, f32, f32, f32) = (84.0, 70.0, 15.0, 10.0);
 
 pub const WORLD_W: i32 = 112;
 pub const WORLD_H: i32 = 112;
@@ -428,7 +571,7 @@ pub fn overworld(seed: u64) -> Level {
 
     // ---- roads to each dungeon ----
     let gates = [(55, ty1 + 1), (tx1 + 1, 60), (55, ty0 - 1), (tx0 - 1, 60)];
-    for (k, def) in DUNGEONS.iter().enumerate() {
+    for (k, def) in DUNGEONS.iter().enumerate().filter(|(_, d)| d.act == 0) {
         let (ex, ey) = def.entrance;
         // Leave by the nearest gate, then wander toward the entrance.
         let &(gx, gy) = gates.iter().min_by_key(|(gx, gy)| (gx - ex).pow(2) + (gy - ey).pow(2)).unwrap();
@@ -453,6 +596,26 @@ pub fn overworld(seed: u64) -> Level {
         // Entrance building behind the door tile.
         prop(&mut lv, &mut d, PropKind::Entrance(k), ex - 1, ey - 3, 3, 3);
         lv.portals.push(Portal { x: ex as f32 + 0.5, y: ey as f32 + 0.5, kind: PortalKind::Entrance(k) });
+    }
+
+    // ---- the mountain pass north (to Act 2; open after the Ash King) ----
+    {
+        let (px, py) = PASS_ASH;
+        let (mut x, mut y) = (55.0f32, (ty0 - 1) as f32);
+        while y > py as f32 + 0.5 {
+            y -= 1.0;
+            x += (px as f32 - x).clamp(-0.5, 0.5) + ((y * 0.37).sin() * 0.4);
+            for (ox, oy) in [(0, 0), (1, 0)] {
+                let (rx, ry) = (x as i32 + ox, y as i32 + oy);
+                if d.get(rx, ry) == Tile::Floor {
+                    d.set_ground(rx, ry, 2);
+                }
+            }
+            clear(&mut keep, x as i32, y as i32, 2);
+        }
+        clear(&mut keep, px, py, 4);
+        prop(&mut lv, &mut d, PropKind::Pass, px - 1, py - 3, 3, 2);
+        lv.portals.push(Portal { x: px as f32 + 0.5, y: py as f32 + 0.5, kind: PortalKind::Pass(1) });
     }
 
     // ---- forests, rocks and bushes ----
@@ -490,7 +653,11 @@ pub fn overworld(seed: u64) -> Level {
         let x = rng.range(6, w - 6) as f32 + 0.5;
         let y = rng.range(6, h - 6) as f32 + 0.5;
         let far = ((x - cx).powi(2) + (y - cy).powi(2)).sqrt();
-        if far < 20.0 || d.blocked(x, y, 0.4) || DUNGEONS.iter().any(|def| (def.entrance.0 as f32 - x).abs() + (def.entrance.1 as f32 - y).abs() < 6.0) {
+        if far < 20.0
+            || d.blocked(x, y, 0.4)
+            || DUNGEONS.iter().filter(|d| d.act == 0).any(|def| (def.entrance.0 as f32 - x).abs() + (def.entrance.1 as f32 - y).abs() < 6.0)
+            || ((x - PASS_ASH.0 as f32).abs() < 5.0 && y < 16.0)
+        {
             continue;
         }
         let tier = if far < 34.0 { 0.8 } else { 1.1 };
@@ -523,6 +690,200 @@ pub fn overworld(seed: u64) -> Level {
     lv.explored = vec![false; (w * h) as usize];
     lv.d = d;
     lv.start = town_center();
+    lv
+}
+
+/// Kaldholm's town square.
+pub fn kaldholm_center() -> (f32, f32) {
+    (56.5, 75.5)
+}
+
+/// Builds Act 2's overland: Kaldholm by a frozen lake, snowy forests, roads to the ice
+/// dungeons, the pass back south, raiders, frost wolves and yetis.
+pub fn frostmarch(seed: u64) -> Level {
+    let mut rng = Rng::new(seed ^ 0x5A0F_7777);
+    let (w, h) = (WORLD_W, WORLD_H);
+    let mut d = Dungeon::blank(w, h, Tile::Floor);
+    for v in d.var.iter_mut() {
+        *v = rng.range(0, 100) as u8;
+    }
+    let mut lv = Level::new(LevelId::Frostmarch, "THE FROSTMARCH".into(), Theme::Tundra, 3.4, Dungeon::blank(1, 1, Tile::Void));
+    let mut keep = vec![false; (w * h) as usize];
+    let clear = |keep: &mut Vec<bool>, x: i32, y: i32, r: i32| {
+        for yy in y - r..=y + r {
+            for xx in x - r..=x + r {
+                if xx >= 0 && yy >= 0 && xx < w && yy < h {
+                    keep[(yy * w + xx) as usize] = true;
+                }
+            }
+        }
+    };
+    let prop = |lv: &mut Level, d: &mut Dungeon, kind: PropKind, x0: i32, y0: i32, fw: i32, fh: i32| {
+        for y in y0..y0 + fh {
+            for x in x0..x0 + fw {
+                d.set(x, y, Tile::Prop);
+            }
+        }
+        lv.props.push(Prop::on(kind, x0, y0, fw, fh));
+    };
+
+    // ---- the frozen lake (walkable ice: ground 1) ----
+    let (lx, ly, lrx, lry) = LAKE;
+    for y in 0..h {
+        for x in 0..w {
+            let (dx, dy) = ((x as f32 - lx) / lrx, (y as f32 - ly) / lry);
+            let wob = ((x as f32 * 0.4).sin() + (y as f32 * 0.31).cos()) * 0.06;
+            if dx * dx + dy * dy < 1.0 + wob {
+                d.set_ground(x, y, 1);
+                keep[(y * w + x) as usize] = true;
+            }
+        }
+    }
+
+    // ---- Kaldholm ----
+    let (tx0, ty0, tx1, ty1) = KALDHOLM;
+    let (mx, my) = ((tx0 + tx1) / 2, (ty0 + ty1) / 2);
+    for y in ty0..=ty1 {
+        for x in tx0..=tx1 {
+            let edge = x == tx0 || x == tx1 || y == ty0 || y == ty1;
+            let gate = (y == ty0 || y == ty1) && (mx - 1..=mx + 2).contains(&x) || (x == tx0 || x == tx1) && (my - 1..=my + 2).contains(&y);
+            if edge && !gate {
+                d.set(x, y, Tile::Wall);
+            }
+        }
+    }
+    clear(&mut keep, mx, my, 16);
+    for x in tx0..=tx1 {
+        for y in my..=my + 1 {
+            d.set_ground(x, y, 2);
+        }
+    }
+    for y in ty0..=ty1 {
+        for x in mx..=mx + 1 {
+            d.set_ground(x, y, 2);
+        }
+    }
+    prop(&mut lv, &mut d, PropKind::Longhouse1, 46, 68, 5, 4);
+    prop(&mut lv, &mut d, PropKind::Longhouse2, 62, 68, 4, 4);
+    prop(&mut lv, &mut d, PropKind::Longhouse2, 46, 80, 4, 4);
+    prop(&mut lv, &mut d, PropKind::Longhouse1, 61, 80, 5, 4);
+    prop(&mut lv, &mut d, PropKind::FurStall, 59, 72, 3, 2);
+    prop(&mut lv, &mut d, PropKind::Campfire, 58, 78, 1, 1);
+    lv.safe = Some((tx0 as f32 - 1.0, ty0 as f32 - 1.0, tx1 as f32 + 2.0, ty1 as f32 + 2.0));
+    lv.npcs = vec![
+        Npc::new("CAPTAIN BRENNA", Role::Captain, "npc_captain", 57.5, 79.0, 6),
+        Npc::new("OLD SIGURD", Role::Trader, "npc_trader", 60.5, 74.8, 0),
+        Npc::new("MOTHER YLVA", Role::Seer, "npc_seer", 50.5, 74.5, 2),
+        Npc::new("FISHERMAN", Role::Fisher(0), "npc_fisher", 53.5, 78.5, 1),
+        Npc::new("FISHERMAN", Role::Fisher(1), "npc_fisher", 64.0, 76.5, 5),
+        Npc::new("FISHERWIFE", Role::Fisher(2), "npc_fisher", 52.0, 71.5, 3),
+    ];
+
+    // ---- roads: to each ice dungeon, and south to the pass ----
+    let gates = [(mx, ty1 + 1), (tx1 + 1, my), (mx, ty0 - 1), (tx0 - 1, my)];
+    let road = |d: &mut Dungeon, keep: &mut Vec<bool>, (gx, gy): (i32, i32), (ex, ey): (i32, i32), salt: f32| {
+        let (mut x, mut y) = (gx as f32, gy as f32);
+        let mut guard = 0;
+        while ((x - ex as f32).abs() > 0.8 || (y - ey as f32).abs() > 0.8) && guard < 400 {
+            guard += 1;
+            let (dx, dy) = (ex as f32 - x, ey as f32 - y);
+            let l = (dx * dx + dy * dy).sqrt();
+            let wob = (guard as f32 * 0.19 + salt).sin() * 0.6;
+            x += dx / l + (-dy / l) * wob * 0.5;
+            y += dy / l + (dx / l) * wob * 0.5;
+            for (ox, oy) in [(0, 0), (1, 0), (0, 1), (1, 1)] {
+                let (rx, ry) = (x as i32 + ox, y as i32 + oy);
+                if d.get(rx, ry) == Tile::Floor && d.ground_at(rx, ry) != 1 {
+                    d.set_ground(rx, ry, 2);
+                }
+            }
+            clear(keep, x as i32, y as i32, 2);
+        }
+    };
+    for (k, def) in DUNGEONS.iter().enumerate().filter(|(_, d)| d.act == 1) {
+        let (ex, ey) = def.entrance;
+        let &g = gates.iter().min_by_key(|(gx, gy)| (gx - ex).pow(2) + (gy - ey).pow(2)).unwrap();
+        road(&mut d, &mut keep, g, (ex, ey), k as f32);
+        clear(&mut keep, ex, ey, 5);
+        let (fw, fh) = if k == GLACIER { (4, 3) } else { (3, 3) };
+        prop(&mut lv, &mut d, PropKind::Entrance(k), ex - fw / 2, ey - 3, fw, fh);
+        lv.portals.push(Portal { x: ex as f32 + 0.5, y: ey as f32 + 0.5, kind: PortalKind::Entrance(k) });
+    }
+    let (px, py) = PASS_FROST;
+    road(&mut d, &mut keep, (mx, ty1 + 1), (px, py), 9.0);
+    clear(&mut keep, px, py, 4);
+    prop(&mut lv, &mut d, PropKind::Pass, px - 1, py + 1, 3, 2);
+    lv.portals.push(Portal { x: px as f32 + 0.5, y: py as f32 + 0.5, kind: PortalKind::Pass(0) });
+
+    // ---- snowy forests, rocks and ice crystals ----
+    let forest = Noise::new(&mut rng, 16, 8.0);
+    for y in 0..h {
+        for x in 0..w {
+            if d.get(x, y) != Tile::Floor || keep[(y * w + x) as usize] {
+                continue;
+            }
+            let border = x < 4 || y < 4 || x >= w - 4 || y >= h - 4;
+            let f = forest.at(x as f32, y as f32);
+            let r = rng.f();
+            let tree = if border { r < 0.85 } else { f > 0.56 && r < 0.55 || r < 0.012 };
+            if tree {
+                let kind = if rng.chance(0.18) { PropKind::SnowDead } else { PropKind::SnowPine };
+                prop(&mut lv, &mut d, kind, x, y, 1, 1);
+            } else if r < 0.028 {
+                prop(&mut lv, &mut d, PropKind::SnowRock, x, y, 1, 1);
+            } else if r < 0.036 && f < 0.4 {
+                prop(&mut lv, &mut d, PropKind::IceCrystal, x, y, 1, 1);
+            }
+        }
+    }
+
+    // ---- roaming packs and a little food ----
+    let (cx, cy) = kaldholm_center();
+    let mut packs = 0;
+    for _ in 0..600 {
+        if packs >= 30 {
+            break;
+        }
+        let x = rng.range(6, w - 6) as f32 + 0.5;
+        let y = rng.range(6, h - 6) as f32 + 0.5;
+        let far = ((x - cx).powi(2) + (y - cy).powi(2)).sqrt();
+        if far < 20.0
+            || d.blocked(x, y, 0.4)
+            || DUNGEONS.iter().filter(|d| d.act == 1).any(|def| (def.entrance.0 as f32 - x).abs() + (def.entrance.1 as f32 - y).abs() < 6.0)
+            || ((x - px as f32).abs() < 6.0 && y > 96.0)
+        {
+            continue;
+        }
+        let tier = if far < 34.0 { 3.4 } else { 3.8 };
+        let kinds: &[Kind] = if far < 34.0 { &[Kind::FrostWolf, Kind::Raider] } else { &[Kind::FrostWolf, Kind::Raider, Kind::Yeti, Kind::IceTroll] };
+        let kind = kinds[rng.range(0, kinds.len() as i32) as usize];
+        let n = if kind == Kind::Yeti { rng.range(1, 3) } else { rng.range(3, 6) };
+        for _ in 0..n {
+            for _try in 0..10 {
+                let (mx, my) = (x + rng.rf(-2.0, 2.0), y + rng.rf(-2.0, 2.0));
+                if !d.blocked(mx, my, 0.35) {
+                    lv.mobs.push(Mob::new(kind, mx, my, tier, &mut rng));
+                    break;
+                }
+            }
+        }
+        packs += 1;
+    }
+    let mut food = 0;
+    for _ in 0..400 {
+        if food >= 10 {
+            break;
+        }
+        let x = rng.range(6, w - 6) as f32 + 0.5;
+        let y = rng.range(6, h - 6) as f32 + 0.5;
+        if ((x - cx).powi(2) + (y - cy).powi(2)).sqrt() > 16.0 && !d.blocked(x, y, 0.3) {
+            lv.pickups.push(Pickup { x, y, kind: Drop::Food(if rng.chance(0.6) { 1 } else { 2 }), t: 1.0 });
+            food += 1;
+        }
+    }
+    lv.explored = vec![false; (w * h) as usize];
+    lv.d = d;
+    lv.start = kaldholm_center();
     lv
 }
 
@@ -605,6 +966,35 @@ mod tests {
         assert!(lv.mobs.len() > 60, "overworld has {} monsters", lv.mobs.len());
         let (x0, y0, x1, y1) = lv.safe.unwrap();
         assert!(lv.mobs.iter().all(|m| !(m.x > x0 && m.x < x1 && m.y > y0 && m.y < y1)), "monsters spawned in town");
+    }
+
+    #[test]
+    fn the_frostmarch_connects_kaldholm_to_every_ice_dungeon_and_the_pass() {
+        let lv = frostmarch(7);
+        let (cx, cy) = kaldholm_center();
+        assert!(lv.d.walkable(cx as i32, cy as i32));
+        let mut kinds = vec![];
+        for p in &lv.portals {
+            assert!(lv.d.walkable(p.x as i32, p.y as i32), "portal {:?} blocked", p.kind);
+            assert!(lv.d.path((cx as i32, cy as i32), (p.x as i32, p.y as i32), 100_000).is_some(), "no road to {:?}", p.kind);
+            kinds.push(p.kind);
+        }
+        for k in 4..8 {
+            assert!(kinds.contains(&PortalKind::Entrance(k)));
+        }
+        assert!(kinds.contains(&PortalKind::Pass(0)));
+        for n in &lv.npcs {
+            assert!(lv.d.walkable(n.x as i32, n.y as i32), "{} stands in a wall", n.name);
+        }
+        assert!(lv.mobs.len() > 50 && lv.mobs.iter().all(|m| crate::mobs::def(m.kind).cold));
+        let (x0, y0, x1, y1) = lv.safe.unwrap();
+        assert!(lv.mobs.iter().all(|m| !(m.x > x0 && m.x < x1 && m.y > y0 && m.y < y1)), "monsters spawned in town");
+        // And the Ashlands have the pass north.
+        let ow = overworld(7);
+        let pass = ow.portal(PortalKind::Pass(1)).expect("pass north");
+        let (cx, cy) = town_center();
+        assert!(ow.d.path((cx as i32, cy as i32), (pass.x as i32, pass.y as i32), 100_000).is_some());
+        assert!(ow.portals.iter().all(|p| !matches!(p.kind, PortalKind::Entrance(k) if k >= 4)));
     }
 
     #[test]

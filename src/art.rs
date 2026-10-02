@@ -105,6 +105,10 @@ pub struct Art {
     grass: Vec<Sprite>,
     dirt: Sprite,
     road: Sprite,
+    /// Act 2 overland ground: snow variants, lake ice, snowy road.
+    snow: Vec<Sprite>,
+    lake: Sprite,
+    snow_road: Sprite,
     /// Item and prop sprites (anchored at the bottom centre, where they sit on the floor).
     items: Vec<(&'static str, Sprite)>,
     /// Code-drawn props for any prop sprite that hasn't been generated.
@@ -115,10 +119,13 @@ pub struct Art {
 /// Dungeon theme colour grading: (tint colour, amount, brightness).
 fn theme_grade(t: Theme) -> (u32, f32, f32) {
     match t {
-        Theme::Overworld | Theme::Crypt => (0, 0.0, 1.0),
+        Theme::Overworld | Theme::Crypt | Theme::Tundra | Theme::IceCaves => (0, 0.0, 1.0),
         Theme::Warrens => (0x6a4a24, 0.38, 0.95),
         Theme::Catacombs => (0x4a3a78, 0.38, 0.95),
         Theme::Sanctum => (0x6a1408, 0.42, 0.8),
+        Theme::Mines => (0x587890, 0.3, 0.88),
+        Theme::Rime => (0x80b0e0, 0.25, 0.95),
+        Theme::Glacier => (0x1a3a78, 0.3, 0.85),
     }
 }
 
@@ -175,17 +182,33 @@ impl Art {
             s
         };
         let named = |prefix: &str| -> Vec<Sprite> { TILES.iter().filter(|t| t.name.starts_with(prefix)).map(tile).collect() };
+        let exact = |name: &str| -> Option<Sprite> { TILES.iter().find(|t| t.name == name).map(tile) };
         let mut stone = named("floor");
         if stone.is_empty() {
             stone = (0..3).map(sprites::fallback_floor).collect();
         }
         let wall = named("wall").into_iter().next().unwrap_or_else(sprites::fallback_wall);
-        let palisade = named("palisade").into_iter().next().unwrap_or_else(|| grade(&sprites::fallback_wall(), (0x6a4a24, 0.6, 0.9)));
+        let palisade = exact("palisade").unwrap_or_else(|| grade(&sprites::fallback_wall(), (0x6a4a24, 0.6, 0.9)));
+        // Act 2: snowy palisade, ice walls and ice floors (stand-ins graded from the stone set).
+        let palisade_snow = exact("palisade_snow").unwrap_or_else(|| grade(&palisade, (0xe8f0ff, 0.45, 1.05)));
+        let ice_wall = exact("ice_wall").unwrap_or_else(|| grade(&wall, (0x9ad0ff, 0.5, 1.0)));
+        let ice1: Vec<Sprite> = exact("ice_floor1").map(|s| vec![s]).unwrap_or_else(|| stone.iter().map(|s| grade(s, (0xa8d8ff, 0.45, 1.0))).collect());
+        let ice2: Vec<Sprite> = exact("ice_floor2").map(|s| vec![s]).unwrap_or_else(|| stone.iter().map(|s| grade(s, (0xc0d8f0, 0.35, 1.0))).collect());
         let mut floors = vec![];
         let mut walls = vec![];
         for t in Theme::ALL {
-            floors.push(stone.iter().map(|s| grade(s, theme_grade(t))).collect());
-            walls.push(if t == Theme::Overworld { palisade.clone() } else { grade(&wall, theme_grade(t)) });
+            let set: Vec<Sprite> = match t {
+                Theme::IceCaves | Theme::Glacier => ice1.iter().chain(ice2.iter().take(1)).map(|s| grade(s, theme_grade(t))).collect(),
+                Theme::Rime | Theme::Mines => ice2.iter().chain(stone.iter().take(1)).map(|s| grade(s, theme_grade(t))).collect(),
+                _ => stone.iter().map(|s| grade(s, theme_grade(t))).collect(),
+            };
+            floors.push(set);
+            walls.push(match t {
+                Theme::Overworld => palisade.clone(),
+                Theme::Tundra => palisade_snow.clone(),
+                Theme::IceCaves | Theme::Rime | Theme::Glacier => grade(&ice_wall, theme_grade(t)),
+                _ => grade(&wall, theme_grade(t)),
+            });
         }
         let mut grass = named("grass");
         if grass.is_empty() {
@@ -193,6 +216,11 @@ impl Art {
         }
         let dirt = named("dirt").into_iter().next().unwrap_or_else(|| sprites::fallback_ground(0, 0x5a4428, 0x705838));
         let road = named("road").into_iter().next().unwrap_or_else(|| sprites::fallback_ground(1, 0x585450, 0x7a746c));
+        // Plain snow three times as often as the tufted variant.
+        let snow: Vec<Sprite> = ["snow1", "snow1", "snow1", "snow2"].iter().filter_map(|n| exact(n)).collect();
+        let snow = if snow.is_empty() { (0..2).map(|v| sprites::fallback_ground(v, 0xc8d4e0, 0xf4f8ff)).collect() } else { snow };
+        let lake = exact("lake_ice").unwrap_or_else(|| sprites::fallback_ground(2, 0x7aa8c8, 0xb8d8f0));
+        let snow_road = exact("snow_road").unwrap_or_else(|| sprites::fallback_ground(3, 0x8a8478, 0xb8b4a8));
         let items: Vec<(&'static str, Sprite)> = ITEMS
             .iter()
             .map(|d| {
@@ -204,7 +232,7 @@ impl Art {
             .collect();
         let fallback_props = sprites::PROP_NAMES.iter().filter(|n| !items.iter().any(|i| i.0 == **n)).map(|n| (*n, sprites::fallback_prop(n))).collect();
         let missing = sprites::fallback_prop("rock1");
-        Art { chars, floors, walls, grass, dirt, road, items, fallback_props, missing }
+        Art { chars, floors, walls, grass, dirt, road, snow, lake, snow_road, items, fallback_props, missing }
     }
 
     pub fn floor(&self, theme: Theme, ground: u8, var: usize) -> &Sprite {
@@ -213,6 +241,13 @@ impl Art {
                 1 => &self.dirt,
                 2 => &self.road,
                 _ => &self.grass[var % self.grass.len()],
+            };
+        }
+        if theme == Theme::Tundra {
+            return match ground {
+                1 => &self.lake,
+                2 => &self.snow_road,
+                _ => &self.snow[var % self.snow.len()],
             };
         }
         let set = &self.floors[theme.index()];
@@ -259,8 +294,23 @@ impl Art {
             "boss_plague" => ("zombie", 1.7, 0x60a020, 0.4),
             "boss_hex" => ("skeleton", 1.4, 0x8040c0, 0.45),
             "boss_ashking" => ("mage", 1.8, 0x400808, 0.55),
+            // ---- Act 2 stand-ins ----
+            "frost_wolf" => ("wolf", 1.0, 0xe0f0ff, 0.55),
+            "raider" => ("skeleton", 1.05, 0x8a6040, 0.6),
+            "yeti" => ("zombie", 1.35, 0xf0f4ff, 0.6),
+            "ice_troll" => ("goblin", 1.45, 0x70a8d8, 0.55),
+            "ice_wraith" => ("boss_hex", 0.6, 0xa0d8ff, 0.55),
+            "npc_captain" => ("npc_guard", 1.0, 0xc8b070, 0.3),
+            "npc_trader" => ("npc_merchant", 1.05, 0x6a4a30, 0.4),
+            "npc_seer" => ("npc_elder", 1.0, 0x9090a0, 0.4),
+            "npc_fisher" => ("npc_villager", 1.0, 0x506878, 0.4),
+            "boss_giant" => ("boss_bone", 1.25, 0x6090c0, 0.5),
+            "boss_yeti" => ("boss_plague", 1.0, 0xf0f4ff, 0.6),
+            "boss_witch" => ("boss_hex", 1.0, 0x80d0ff, 0.5),
+            "boss_dragon" => ("boss_ashking", 1.25, 0xe0f0ff, 0.6),
             _ => ("mage", 1.0, 0, 0.0),
         };
+        let base = if self.has_char(base) { base } else { "mage" };
         (self.char(base), scale, rgb(tint), a)
     }
 }

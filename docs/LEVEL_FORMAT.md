@@ -24,6 +24,11 @@ never loads from it.
 | The Rotting Warrens, floors 1-2 | `rotting_warrens_floor1`, `_floor2` | `dungeon:1:0`, `dungeon:1:1` |
 | The Hexed Catacombs, floors 1-3 | `hexed_catacombs_floor1` ... `_floor3` | `dungeon:2:0` ... `dungeon:2:2` |
 | The Ashen Sanctum, floors 1-3 | `ashen_sanctum_floor1` ... `_floor3` | `dungeon:3:0` ... `dungeon:3:2` |
+| Act 2: the Frostmarch + Kaldholm | `frostmarch` | `frostmarch` |
+| The Frozen Mines, floors 1-2 | `frozen_mines_floor1`, `_floor2` | `dungeon:4:0`, `dungeon:4:1` |
+| The Howling Caves, floors 1-2 | `howling_caves_floor1`, `_floor2` | `dungeon:5:0`, `dungeon:5:1` |
+| The Rime Temple, floors 1-3 | `rime_temple_floor1` ... `_floor3` | `dungeon:6:0` ... `dungeon:6:2` |
+| The Glacier's Heart, floors 1-3 | `glaciers_heart_floor1` ... `_floor3` | `dungeon:7:0` ... `dungeon:7:2` |
 
 ## Commands
 
@@ -58,30 +63,40 @@ scripts/dev-build.sh run --level bone_crypt_floor2
 ```
 
 - **id**: which map this replaces (must match the file name, see the table).
-- **theme**: `overworld`, `crypt`, `warrens`, `catacombs` or `sanctum` (art and lighting).
+- **theme**: `overworld`, `crypt`, `warrens`, `catacombs`, `sanctum`; Act 2: `tundra` (the Frostmarch),
+  `mines`, `icecaves`, `rime`, `glacier` (art, lighting and weather).
 - **tier**: difficulty. Monsters' life and damage scale with it (a monster's own `tier` wins).
   Bosses without a `tier` use half the level's tier plus 0.5, like the generator.
 - **tiles**: one string per row. `.` floor (walkable), `#` wall (dungeon wall; on the overworld,
   the town palisade), `o` blocked by a prop, space = void.
-- **ground**: overworld only, one string per row: `g` grass, `d` dirt, `r` road.
+- **ground**: overland maps only, one string per row: `g` grass, `d` dirt, `r` road. On the
+  `tundra` theme the same letters mean snow, frozen lake ice and snowy road.
 - **start**: where you arrive when there's no matching portal (and, on the overworld, where you
   wake after dying). Must be on a floor tile.
 - **safe**: the town's safe zone `[x0, y0, x1, y1]`: no casting, no hunger, monsters give up.
 - **props**: `x`, `y` = top-left tile of the footprint, `w` x `h` tiles, all marked `o`.
   Kinds: `tree_oak`, `tree_pine`, `tree_dead`, `rock1`, `bush1`, `house1`, `house2`, `tent1`
   (market stall), `campfire`, `well`, `ent_crypt`, `ent_warrens`, `ent_catacombs`, `ent_sanctum`
-  (dungeon entrance buildings). Stairs are drawn automatically for `up` / `down` portals.
+  (dungeon entrance buildings). Act 2: `tree_snowpine`, `tree_snowdead`, `rock_snow`, `ice_crystal`,
+  `longhouse1` (5x4), `longhouse2` (4x4), `stall_furs` (3x2), `pass_gate` (3x2), `ent_mines`, `ent_caves`,
+  `ent_temple`, `ent_glacier` (4x3). Stairs are drawn automatically for `up` / `down` portals.
 - **portals**: tile centres (`x.5`). Kinds: `up`, `down`, `entrance0` ... `entrance3`
-  (overworld doors to the Crypt, Warrens, Catacombs, Sanctum), `townportal`.
+  (overworld doors to the Crypt, Warrens, Catacombs, Sanctum), `entrance4` ... `entrance7` (Frostmarch
+  doors to the Mines, Caves, Temple, Glacier), `pass1` (the pass north on the Ashlands, open after the
+  Ash King), `pass0` (the pass back south on the Frostmarch), `townportal`.
 - **monsters**: `zombie`, `skeleton`, `wolf`, `goblin` (old files may say `imp`), `archer`, `boss_bone`, `boss_plague`,
-  `boss_hex`, `boss_ashking`.
-- **npcs**: `elder`, `merchant`, `healer`, `guard`, `villager0` ... `villager3`.
+  `boss_hex`, `boss_ashking`; Act 2: `frost_wolf`, `raider`, `yeti`, `ice_troll`, `ice_wraith`, `boss_giant`,
+  `boss_yeti`, `boss_witch`, `boss_dragon`.
+- **npcs**: `elder`, `merchant`, `healer`, `guard`, `villager0` ... `villager3`; Kaldholm: `captain`,
+  `trader`, `seer`, `fisher0` ... `fisher2`.
 - **items**: `apple`, `bread`, `roast`, `health_potion`, `mana_potion`, `gold<N>` (e.g. `gold25`).
 
 ## What a level needs (the editor checks these)
 
-- Overworld: the four doors `entrance0..3`, Elder Maren (the story starts with her), ideally
-  Gerta, Brother Aldric and a safe zone.
+- Overworld: the four doors `entrance0..3`, the pass `pass1`, Elder Maren (the story starts with her),
+  ideally Gerta, Brother Aldric and a safe zone.
+- Frostmarch: the doors `entrance4..7`, the pass `pass0`, Captain Brenna, ideally Old Sigurd, Mother
+  Ylva and a safe zone.
 - Dungeon floors: stairs `up`; stairs `down` on every floor but the last; the dungeon's boss on
   the last floor (Bone Warden / Plague Warden / Hex Warden / Ash King). The seals and the
   ending depend on the bosses.

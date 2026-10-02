@@ -12,7 +12,9 @@ HERE = Path(__file__).resolve().parent
 ART = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(r"D:\projects\AshenSanctum-art")
 OUT = HERE / "art"
 CHARS = ["mage", "zombie", "skeleton", "wolf", "goblin", "archer", "boss_bone", "boss_plague", "boss_hex", "boss_ashking",
-         "npc_elder", "npc_merchant", "npc_healer", "npc_guard", "npc_villager"]
+         "npc_elder", "npc_merchant", "npc_healer", "npc_guard", "npc_villager",
+         "frost_wolf", "raider", "yeti", "ice_troll", "ice_wraith", "boss_giant", "boss_yeti", "boss_witch", "boss_dragon",
+         "npc_captain", "npc_trader", "npc_seer", "npc_fisher"]
 
 
 def save(src, name):

@@ -26,8 +26,16 @@ pub static TILES: &[TileDef] = &[
     TileDef { name: "grass2", anchor: (16, 8), data: include_bytes!("../assets/art/tile_grass2.bin") },
     TileDef { name: "dirt1", anchor: (16, 8), data: include_bytes!("../assets/art/tile_dirt1.bin") },
     TileDef { name: "road1", anchor: (16, 8), data: include_bytes!("../assets/art/tile_road1.bin") },
+    TileDef { name: "snow1", anchor: (16, 8), data: include_bytes!("../assets/art/tile_snow1.bin") },
+    TileDef { name: "snow2", anchor: (16, 13), data: include_bytes!("../assets/art/tile_snow2.bin") },
+    TileDef { name: "snow_road", anchor: (16, 7), data: include_bytes!("../assets/art/tile_snow_road.bin") },
+    TileDef { name: "lake_ice", anchor: (16, 5), data: include_bytes!("../assets/art/tile_lake_ice.bin") },
+    TileDef { name: "ice_floor1", anchor: (16, 8), data: include_bytes!("../assets/art/tile_ice_floor1.bin") },
+    TileDef { name: "ice_floor2", anchor: (16, 8), data: include_bytes!("../assets/art/tile_ice_floor2.bin") },
     TileDef { name: "wall", anchor: (16, 56), data: include_bytes!("../assets/art/tile_wall.bin") },
     TileDef { name: "palisade", anchor: (16, 40), data: include_bytes!("../assets/art/tile_palisade.bin") },
+    TileDef { name: "ice_wall", anchor: (16, 56), data: include_bytes!("../assets/art/tile_ice_wall.bin") },
+    TileDef { name: "palisade_snow", anchor: (16, 40), data: include_bytes!("../assets/art/tile_palisade_snow.bin") },
 ];
 
 pub static ITEMS: &[ItemDef] = &[
@@ -70,4 +78,16 @@ pub static ITEMS: &[ItemDef] = &[
     ItemDef { name: "ent_sanctum", data: include_bytes!("../assets/art/item_ent_sanctum.bin") },
     ItemDef { name: "stairs_down", data: include_bytes!("../assets/art/item_stairs_down.bin") },
     ItemDef { name: "stairs_up", data: include_bytes!("../assets/art/item_stairs_up.bin") },
+    ItemDef { name: "tree_snowpine", data: include_bytes!("../assets/art/item_tree_snowpine.bin") },
+    ItemDef { name: "tree_snowdead", data: include_bytes!("../assets/art/item_tree_snowdead.bin") },
+    ItemDef { name: "rock_snow", data: include_bytes!("../assets/art/item_rock_snow.bin") },
+    ItemDef { name: "ice_crystal", data: include_bytes!("../assets/art/item_ice_crystal.bin") },
+    ItemDef { name: "longhouse1", data: include_bytes!("../assets/art/item_longhouse1.bin") },
+    ItemDef { name: "longhouse2", data: include_bytes!("../assets/art/item_longhouse2.bin") },
+    ItemDef { name: "stall_furs", data: include_bytes!("../assets/art/item_stall_furs.bin") },
+    ItemDef { name: "ent_mines", data: include_bytes!("../assets/art/item_ent_mines.bin") },
+    ItemDef { name: "ent_caves", data: include_bytes!("../assets/art/item_ent_caves.bin") },
+    ItemDef { name: "ent_temple", data: include_bytes!("../assets/art/item_ent_temple.bin") },
+    ItemDef { name: "ent_glacier", data: include_bytes!("../assets/art/item_ent_glacier.bin") },
+    ItemDef { name: "pass_gate", data: include_bytes!("../assets/art/item_pass_gate.bin") },
 ];

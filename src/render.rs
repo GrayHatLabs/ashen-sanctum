@@ -31,7 +31,7 @@ impl Game {
         };
         let view_h = self.view_h;
         let theme = self.theme;
-        let overworld = self.level == LevelId::Overworld;
+        let overworld = self.level.overland();
 
         // Visible tile range: invert the four screen corners.
         let corners = [(0.0, -60.0), (scr.w as f32, -60.0), (0.0, view_h as f32 + 120.0), (scr.w as f32, view_h as f32 + 120.0)];
@@ -326,6 +326,16 @@ impl Game {
                     scr.glow(sx, sy - 20, 18.0, rgb(0xff3010), 1.0);
                     scr.disc(sx + scr.shake.0, sy - 20 + scr.shake.1, 2, rgb(0x301008));
                 }
+                ShotKind::Ice => {
+                    scr.glow(sx, sy - 18, 14.0, rgb(0x60b0ff), 0.9);
+                    scr.disc(sx + scr.shake.0, sy - 18 + scr.shake.1, 2, rgb(0xf0faff));
+                }
+                ShotKind::Boulder => {
+                    scr.glow(sx, sy - 22, 14.0, rgb(0x6090c0), 0.5);
+                    scr.disc(sx + scr.shake.0, sy - 22 + scr.shake.1, 6, rgb(0x1a2a3a));
+                    scr.disc(sx + scr.shake.0, sy - 22 + scr.shake.1, 5, rgb(0x9ac8e8));
+                    scr.disc(sx - 2 + scr.shake.0, sy - 24 + scr.shake.1, 2, rgb(0xe8f6ff));
+                }
                 ShotKind::Arrow => {}
             }
         }
@@ -432,9 +442,45 @@ impl Game {
                 }
                 PKind::Bone => scr.fill(sx, sy, 2, 1, rgb(0xb0a888)),
                 PKind::Blood => scr.fill(sx, sy, 1, 1, rgb(0x801010)),
+                PKind::Frost => {
+                    let i = (sy * scr.w + sx) as usize;
+                    scr.px[i] = add(scr.px[i], rgb(0xc0e8ff), 0.4 + k);
+                    scr.pset(sx + 1, sy, rgb(0xf0faff));
+                }
             }
         }
         scr.shake = (0, 0);
+
+        // Weather: snowfall over the Frostmarch (gusting), frost motes in the ice dungeons.
+        if self.theme.cold() {
+            let open = self.theme.open();
+            let (cx, cy) = iso::to_screen(self.p.x, self.p.y);
+            let t = self.tick as f32 / 60.0;
+            let gust = if open { 0.6 + 0.4 * (t * 0.13).sin() } else { 0.25 };
+            let n = if open { (170.0 * gust) as i32 } else { 40 };
+            let (w, hgt) = (scr.w as f32, view_h as f32);
+            for i in 0..n {
+                let h1 = ((i as u32).wrapping_mul(2654435761) >> 8) as f32 / 16_777_216.0;
+                let h2 = ((i as u32).wrapping_mul(40503).wrapping_add(977) % 1000) as f32 / 1000.0;
+                let speed = if open { 30.0 + h2 * 40.0 } else { 6.0 + h2 * 6.0 };
+                let drift = if open { 25.0 + gust * 35.0 } else { 3.0 };
+                let x = (h1 * w * 3.0 - cx + t * drift + (t * 1.3 + h2 * 9.0).sin() * 6.0).rem_euclid(w);
+                let y = (h2 * hgt * 3.0 - cy + t * speed).rem_euclid(hgt);
+                let (xi, yi) = (x as i32, y as i32);
+                if yi >= view_h - crate::game::HUD_H {
+                    continue;
+                }
+                let c = if open { rgb(0xf4f8ff) } else { rgb(0x9ad4ff) };
+                if open && h2 > 0.7 {
+                    scr.fill(xi, yi, 2, 2, c);
+                } else {
+                    let idx = (yi * scr.w + xi) as usize;
+                    if idx < scr.px.len() {
+                        scr.px[idx] = mix(scr.px[idx], c, if open { 0.85 } else { 0.5 + 0.5 * (t * 3.0 + h1 * 20.0).sin().abs() });
+                    }
+                }
+            }
+        }
 
         // Health bars over wounded monsters, names over people.
         for m in &self.mobs {
@@ -455,7 +501,7 @@ impl Game {
             if self.hover_npc == Some(i) || near {
                 scr.text(n.name, sx, sy - 62, rgb(0xe0d0a0), Align::Center, 1);
             }
-            if n.role == Role::Elder && self.quest.elder_has_news() {
+            if (n.role == Role::Elder && self.quest.elder_has_news()) || (n.role == Role::Captain && self.quest.captain_has_news()) {
                 let bob = (((self.tick as f32) * 0.12).sin() * 2.0) as i32;
                 scr.text("!", sx - 2, sy - 66 + bob, rgb(0xffd040), Align::Center, 2);
             }
@@ -511,7 +557,7 @@ impl Game {
     fn draw_map(&self, scr: &mut Screen) {
         let (cx, cy) = (scr.w / 2, (self.view_h - HUD_H) / 2);
         let (px, py) = (self.p.x, self.p.y);
-        let k = if self.level == LevelId::Overworld { 2 } else { 3 };
+        let k = if self.level.overland() { 2 } else { 3 };
         let proj = |x: f32, y: f32| -> (i32, i32) { (cx + ((x - px) - (y - py)) as i32 * k, cy + ((x - px) + (y - py)) as i32 * k / 2) };
         let wall = rgb(0xc8b088);
         let floor = rgb(0x3a3024);
@@ -557,7 +603,7 @@ impl Game {
             let (sx, sy) = proj(n.x, n.y);
             scr.fill(sx - 1, sy - 1, 2, 2, rgb(0x60d060));
         }
-        let few = self.alive_mobs() <= 5 && self.level != LevelId::Overworld;
+        let few = self.alive_mobs() <= 5 && !self.level.overland();
         for m in &self.mobs {
             if !m.alive() {
                 continue;
@@ -615,6 +661,10 @@ impl Game {
             return;
         }
         let _ = CAST_TIME;
+        if self.p.chill > 0.0 && fx.tint_a == 0.0 {
+            fx.tint = rgb(0x80c8ff);
+            fx.tint_a = 0.35;
+        }
         self.blit_char(scr, "mage", anim, (sx, sy), fx, self.p.moving);
     }
 
@@ -794,7 +844,8 @@ impl Game {
 
         // Area name and quest log (top left).
         scr.text(&self.level_name, 6, 6, rgb(0xd8b878), Align::Left, 1);
-        scr.text(&self.quest.log(), 6, 17, rgb(0x9a8a78), Align::Left, 1);
+        let log = if self.level.act() == 1 { self.quest.log2() } else { self.quest.log() };
+        scr.text(&log, 6, 17, rgb(0x9a8a78), Align::Left, 1);
 
         // Boss bar (big, top centre) while a boss is fighting you; else the hovered monster.
         let boss = self.mobs.iter().position(|m| m.boss && m.alive() && m.state != MobState::Idle);
@@ -888,12 +939,14 @@ impl Game {
                 scr.blend(0, 0, w, top, BLACK, (t * 0.4).min(0.5));
                 scr.text("YOU HAVE DIED", w / 2, top / 2 - 20, rgb(0xc02020), Align::Center, 3);
                 if t > 1.5 {
-                    scr.text("PRESS ENTER OR START TO WAKE IN HOLLOWMERE", w / 2, top / 2 + 14, rgb(0xb0a090), Align::Center, 1);
+                    let town = Game::waypoint_name(LevelId::land(self.level.act()));
+                    scr.text(&format!("PRESS ENTER OR START TO WAKE IN {town}"), w / 2, top / 2 + 14, rgb(0xb0a090), Align::Center, 1);
                 }
             }
             State::Victory(t) => {
                 scr.blend(0, 0, w, top, BLACK, (t * 0.3).min(0.7));
-                for (i, line) in story::EPILOGUE.iter().enumerate() {
+                let epilogue = if self.quest.stage2 >= 3 { story::EPILOGUE2 } else { story::EPILOGUE };
+                for (i, line) in epilogue.iter().enumerate() {
                     let a = ((t - i as f32 * 1.2) * 0.8).clamp(0.0, 1.0);
                     if a <= 0.0 {
                         continue;
@@ -938,9 +991,26 @@ fn draw_hazard(scr: &mut Screen, kind: HazardKind, sx: i32, sy: i32, r: f32, t: 
     if t < warn {
         // Telegraph: a growing marker and a pulsing ring.
         let k = t / warn;
-        let col = if kind == HazardKind::Poison { rgb(0x60c020) } else { rgb(0xff3010) };
+        let col = match kind {
+            HazardKind::Poison => rgb(0x60c020),
+            HazardKind::Frost | HazardKind::Icicle | HazardKind::Quake => rgb(0x60b0ff),
+            HazardKind::Nova => rgb(0xff3010),
+        };
         blend_ellipse(scr, sx, sy, (rx as f32 * k) as i32, (ry as f32 * k) as i32, col, 0.35);
         ring(scr, sx, sy, rx, ry, if (tick / 4) % 2 == 0 { col } else { rgb(0xffffff) });
+    } else if kind == HazardKind::Frost {
+        let fade = (1.0 - (t - warn) / live.max(0.01)).clamp(0.0, 1.0);
+        blend_ellipse(scr, sx, sy, rx, ry, rgb(0xb0e0ff), 0.5 * fade + 0.1);
+        for k in 0..6 {
+            let a = k as f32 * 1.05 + tick as f32 * 0.02;
+            let (dx, dy) = ((a.cos() * rx as f32 * 0.7) as i32, (a.sin() * ry as f32 * 0.7) as i32);
+            scr.fill(sx + dx - 1, sy + dy, 3, 1, rgb(0xf0faff));
+        }
+    } else if matches!(kind, HazardKind::Icicle | HazardKind::Quake) && t < warn + 0.3 {
+        // The impact: a burst of white.
+        let k = ((t - warn) / 0.3).clamp(0.0, 1.0);
+        blend_ellipse(scr, sx, sy, rx, ry, rgb(0xe8f4ff), 0.6 * (1.0 - k));
+        ring(scr, sx, sy, (rx as f32 * (0.6 + k * 0.5)) as i32, (ry as f32 * (0.6 + k * 0.5)) as i32, rgb(0xffffff));
     } else if kind == HazardKind::Poison {
         let fade = (1.0 - (t - warn) / live.max(0.01)).clamp(0.0, 1.0);
         blend_ellipse(scr, sx, sy, rx, ry, rgb(0x40a018), 0.45 * fade + 0.1);
@@ -1068,6 +1138,18 @@ fn draw_pickup(scr: &mut Screen, k: &Pickup, sx: i32, sy: i32, tick: u32, art: &
             match art.item(name) {
                 Some(s) => scr.blit(s, sx, sy + 1 - pop, Fx::default()),
                 None => draw_food_fallback(scr, i, sx, sy - 4 - pop),
+            }
+        }
+        &Drop::Rune(i) => {
+            let tint = [rgb(0x6090c0), rgb(0xf0f8ff), rgb(0x80e0ff)][i];
+            let y = sy - 10 - pop + bob;
+            scr.glow(sx, y, 22.0, rgb(0x80c0ff), 0.8);
+            match art.item("seal") {
+                Some(s) => scr.blit(s, sx, y + 7, Fx { tint, tint_a: 0.55, ..Fx::default() }),
+                None => {
+                    scr.disc(sx, y, 5, BLACK);
+                    scr.disc(sx, y, 4, tint);
+                }
             }
         }
         &Drop::Seal(i) => {

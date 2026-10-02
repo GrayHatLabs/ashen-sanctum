@@ -8,7 +8,7 @@ use crate::iso;
 use crate::mobs::{Hazard, Kind, Mob, MobState, Shot};
 use crate::rng::Rng;
 use crate::story::{self, Act, Dialog, Npc, Quest, Role, Ware};
-use crate::world::{self, Level, LevelId, Portal, PortalKind, Prop, Theme, SANCTUM};
+use crate::world::{self, Level, LevelId, Portal, PortalKind, Prop, Theme, GLACIER, SANCTUM};
 #[cfg(test)]
 use crate::world::DUNGEONS;
 use crate::world::DUNGEONS as DUNGEONS_LIST;
@@ -120,6 +120,8 @@ pub enum PKind {
     Blood,
     /// Violet magic (seals, hex bolts, portals).
     Magic,
+    /// Ice shards and snow puffs.
+    Frost,
 }
 
 pub struct Particle {
@@ -151,6 +153,8 @@ pub enum Drop {
     Food(usize),
     /// A Warden's seal (0 bone, 1 plague, 2 hex).
     Seal(usize),
+    /// A Frost Herald's rune (0 giant, 1 yeti matriarch, 2 rime witch).
+    Rune(usize),
     /// Equipment.
     Item(Box<crate::items::Item>),
 }
@@ -230,6 +234,8 @@ pub struct Player {
     pub gear: crate::items::Gear,
     /// Totals of the worn gear's stats.
     pub bonus: crate::items::Bonus,
+    /// Chilled by frost: slower moving and casting while this lasts.
+    pub chill: f32,
 }
 
 impl Player {
@@ -274,6 +280,7 @@ impl Player {
             base_mana: 50.0,
             gear: crate::items::Gear::default(),
             bonus: crate::items::Bonus::default(),
+            chill: 0.0,
         }
     }
 
@@ -532,7 +539,7 @@ impl Game {
         self.npcs = lv.npcs;
         self.safe = lv.safe;
         self.start = lv.start;
-        if lv.id == LevelId::Overworld {
+        if lv.id.overland() {
             self.town_start = lv.start;
         }
         self.balls.clear();
@@ -562,7 +569,7 @@ impl Game {
         if self.quest.difficulty > 0 {
             self.level_name = format!("{} ({})", self.level_name, story::DIFFICULTIES[self.quest.difficulty as usize]);
         }
-        if lv.id != LevelId::Overworld {
+        if !lv.id.overland() {
             self.shop_stale = true;
         }
     }
@@ -594,7 +601,7 @@ impl Game {
     /// Where this level's waypoint stands: beside the town square, or near a floor's way in.
     fn find_waypoint(&self) -> (f32, f32) {
         let base = match self.level {
-            LevelId::Overworld => (self.town_start.0 + 3.0, self.town_start.1 + 2.0),
+            LevelId::Overworld | LevelId::Frostmarch => (self.town_start.0 + 3.0, self.town_start.1 + 2.0),
             LevelId::Dungeon(..) => self.portals.iter().find(|p| p.kind == PortalKind::Up).map(|p| (p.x + 2.0, p.y + 1.0)).unwrap_or(self.start),
         };
         let clear = |x: f32, y: f32| {
@@ -622,6 +629,7 @@ impl Game {
     pub fn waypoint_name(id: LevelId) -> String {
         match id {
             LevelId::Overworld => "HOLLOWMERE".into(),
+            LevelId::Frostmarch => "KALDHOLM".into(),
             LevelId::Dungeon(k, f) => format!("{} - LEVEL {}", DUNGEONS_LIST[k].name, f + 1),
         }
     }
@@ -657,8 +665,8 @@ impl Game {
             return;
         }
         options.sort_by_key(|o| match o.1 {
-            Act::Travel(LevelId::Overworld) => 0,
-            Act::Travel(LevelId::Dungeon(k, f)) => 1 + k * 10 + f,
+            Act::Travel(id @ LevelId::Dungeon(k, f)) => id.act() * 100 + 1 + k * 10 + f,
+            Act::Travel(id) => id.act() * 100,
             _ => 999,
         });
         options.push(("STAY HERE".into(), Act::Close));
@@ -667,10 +675,10 @@ impl Game {
         self.dialog = Some(d);
     }
 
-    /// Rebuilds the overworld at the current difficulty (after loading a Nightmare / Hell save).
-    pub(crate) fn rebuild_world(&mut self) {
+    /// Rebuilds an act's overland at the current difficulty (after loading a save).
+    pub(crate) fn rebuild_world(&mut self, act: usize) {
         self.parked.clear();
-        let lv = world::build_at(LevelId::Overworld, self.world_seed, self.quest.difficulty);
+        let lv = world::build_at(LevelId::land(act), self.world_seed, self.quest.difficulty);
         self.swap_in(lv);
         (self.p.x, self.p.y) = self.town_start;
     }
@@ -678,7 +686,7 @@ impl Game {
     /// Nightmare / Hell: the world is rebuilt harder, the quests start over, your hero carries on.
     pub(crate) fn next_difficulty(&mut self) {
         let d = (self.quest.difficulty + 1).min(2);
-        self.quest = Quest { stage: 1, seals: [false; 3], difficulty: d };
+        self.quest = Quest { stage: 1, seals: [false; 3], difficulty: d, stage2: 0, runes: [false; 3] };
         self.parked.clear();
         self.waypoints = vec![LevelId::Overworld];
         self.shop_stale = true;
@@ -716,13 +724,14 @@ impl Game {
         };
         self.swap_in(lv);
         self.stats.levels_entered += 1;
-        if id == LevelId::Overworld {
+        if id.overland() {
             self.save_due = true;
         }
         self.sfx.push(Sfx::Descend);
         // Where do we arrive?
         let spot = match (id, from) {
-            (LevelId::Overworld, Some(LevelId::Dungeon(k, _))) => self.portal_spot(PortalKind::Entrance(k)),
+            (land, Some(LevelId::Dungeon(k, _))) if land.overland() => self.portal_spot(PortalKind::Entrance(k)),
+            (land, Some(other)) if land.overland() && other.overland() => self.portal_spot(PortalKind::Pass(other.act())),
             (LevelId::Dungeon(_, f), Some(LevelId::Dungeon(_, g))) if g > f => self.portal_spot(PortalKind::Down),
             (LevelId::Dungeon(..), _) => self.portal_spot(PortalKind::Up),
             _ => None,
@@ -784,6 +793,7 @@ impl Game {
             PortalKind::Entrance(k) => k == self.bot_dungeon(),
             PortalKind::TownPortal => true,
             PortalKind::Up => self.mobs.iter().all(|m| !m.boss || !m.alive()) && self.portal_kind_exists_not(PortalKind::Down),
+            PortalKind::Pass(_) => false,
         };
         self.portals.iter().find(want).map(|p| (p.x, p.y))
     }
@@ -903,7 +913,7 @@ impl Game {
             Track::Boss
         } else if self.in_safe(self.p.x, self.p.y) || matches!(self.state, State::Victory(_)) {
             Track::Town
-        } else if self.level == LevelId::Overworld {
+        } else if self.level.overland() {
             Track::Wilds
         } else {
             Track::Dungeon
@@ -1040,15 +1050,17 @@ impl Game {
                 m.state = MobState::Idle;
             }
         }
-        let from = self.level;
-        if from != LevelId::Overworld {
-            self.go_to(LevelId::Overworld, None);
+        // You wake in the town of the act you fell in.
+        let home = LevelId::land(self.level.act());
+        if self.level != home {
+            self.go_to(home, None);
         }
         (self.p.x, self.p.y) = self.town_start;
+        let town = Self::waypoint_name(home);
         if lost > 0 {
-            self.say(format!("YOU WAKE IN HOLLOWMERE. LOST {lost} GOLD."));
+            self.say(format!("YOU WAKE IN {town}. LOST {lost} GOLD."));
         } else {
-            self.say("YOU WAKE IN HOLLOWMERE.".into());
+            self.say(format!("YOU WAKE IN {town}."));
         }
     }
 
@@ -1078,12 +1090,29 @@ impl Game {
                     self.say(format!("A WALL OF ASH BARS THE GATE. ({n}/3 SEALS)"));
                     return;
                 }
+                if k == GLACIER && self.quest.stage2 < 2 {
+                    self.portal_cd = 2.0;
+                    let n = self.quest.rune_count();
+                    self.say(format!("A WALL OF BLACK ICE SEALS THE GLACIER. ({n}/3 RUNES)"));
+                    return;
+                }
                 self.go_to(LevelId::Dungeon(k, 0), Some(here));
             }
+            PortalKind::Pass(act) => {
+                if act == 1 && !self.quest.north_open() {
+                    self.portal_cd = 2.0;
+                    self.say("THE PASS IS CHOKED WITH ASH AND SNOW. NOT WHILE THE ASH KING LIVES.".into());
+                    return;
+                }
+                self.go_to(LevelId::land(act), Some(here));
+                if act == 1 && !self.waypoints.contains(&LevelId::Frostmarch) {
+                    self.say("THE FROSTMARCH. FIND KALDHOLM, BY THE FROZEN LAKE".into());
+                }
+            }
             PortalKind::Up => match here {
-                LevelId::Dungeon(k, 0) => self.go_to(LevelId::Overworld, Some(LevelId::Dungeon(k, 0))),
+                LevelId::Dungeon(k, 0) => self.go_to(LevelId::land(world::DUNGEONS[k].act), Some(LevelId::Dungeon(k, 0))),
                 LevelId::Dungeon(k, f) => self.go_to(LevelId::Dungeon(k, f - 1), Some(here)),
-                LevelId::Overworld => {}
+                _ => {}
             },
             PortalKind::Down => {
                 if let LevelId::Dungeon(k, f) = here {
@@ -1091,7 +1120,7 @@ impl Game {
                 }
             }
             PortalKind::TownPortal => {
-                self.go_to(LevelId::Overworld, None);
+                self.go_to(LevelId::land(here.act()), None);
                 (self.p.x, self.p.y) = self.town_start;
             }
         }
@@ -1115,7 +1144,7 @@ impl Game {
                 }
                 continue;
             }
-            if !matches!(n.role, Role::Villager(_)) {
+            if !matches!(n.role, Role::Villager(_) | Role::Fisher(_)) {
                 continue;
             }
             n.wander.2 -= DT;
@@ -1236,6 +1265,20 @@ impl Game {
     }
 
     fn advance_quest(&mut self, stage: u8) {
+        // 11 and 12 are Act 2's stages 1 and 2 (Captain Brenna).
+        if stage > 10 {
+            let s2 = stage - 10;
+            if s2 > self.quest.stage2 {
+                self.quest.stage2 = s2;
+                self.sfx.push(Sfx::Pickup);
+                match s2 {
+                    1 => self.say("NEW QUEST: SLAY THE THREE FROST HERALDS".into()),
+                    2 => self.say("THE GLACIER'S HEART IS UNSEALED".into()),
+                    _ => {}
+                }
+            }
+            return;
+        }
         if stage > self.quest.stage {
             self.quest.stage = stage;
             self.sfx.push(Sfx::Pickup);
@@ -1299,8 +1342,9 @@ impl Game {
         let p = &mut self.p;
         p.flash = (p.flash - DT).max(0.0);
         use crate::items::Stat;
-        // Faster cast rate: cast animations and recoveries run quicker.
-        let fcr = 1.0 + p.bonus.frac(Stat::Cast, 60);
+        // Faster cast rate: cast animations and recoveries run quicker (slower while chilled).
+        p.chill = (p.chill - DT).max(0.0);
+        let fcr = (1.0 + p.bonus.frac(Stat::Cast, 60)) * if p.chill > 0.0 { 0.75 } else { 1.0 };
         p.cast_cd = (p.cast_cd - DT * fcr).max(0.0);
         p.cast_t = (p.cast_t - DT * fcr).max(0.0);
         let mregen = 1.0 + p.bonus.frac(Stat::ManaRegen, 200);
@@ -1504,6 +1548,7 @@ impl Game {
         let base = if run { RUN_SPEED } else { WALK_SPEED };
         let base = if self.p.phoenix_t > 0.0 { base * 1.4 } else { base };
         let base = base * (1.0 + gear.frac(crate::items::Stat::Move, 50));
+        let base = if self.p.chill > 0.0 { base * 0.6 } else { base };
         let speed = if casting { base * 0.25 } else { base };
         if self.p.moving {
             if !casting {
@@ -1576,6 +1621,25 @@ impl Game {
                     self.floater(px, py, it.name.clone(), it.col());
                     let _ = self.p.gear.add(*it);
                 }
+                Drop::Rune(i) => {
+                    self.quest.runes[i] = true;
+                    self.p.skills.points += 1;
+                    self.p.base_hp += 18.0;
+                    self.p.base_mana += 12.0;
+                    self.p.recalc();
+                    self.p.power *= 1.12;
+                    self.p.hp = self.p.max_hp;
+                    self.p.mana = self.p.max_mana;
+                    self.sfx.push(Sfx::Descend);
+                    let name = ["THE GIANT", "THE MATRIARCH", "THE WITCH"][i];
+                    self.floater(px, py, format!("FROST RUNE OF {name}"), rgb(0x90d0ff));
+                    let n = self.quest.rune_count();
+                    if n == 3 {
+                        self.say("ALL THREE RUNES. RETURN TO CAPTAIN BRENNA".into());
+                    } else {
+                        self.say(format!("THE RUNE'S COLD POWER FLOWS INTO YOU ({n}/3)"));
+                    }
+                }
                 Drop::Seal(i) => {
                     self.quest.seals[i] = true;
                     self.p.skills.points += 1;
@@ -1605,7 +1669,7 @@ impl Game {
             return;
         }
         let (px, py) = (self.p.x, self.p.y);
-        let r = if self.level == LevelId::Overworld { 13 } else { 9 };
+        let r = if self.level.overland() { 13 } else { 9 };
         for ty in py as i32 - r..=py as i32 + r {
             for tx in px as i32 - r..=px as i32 + r {
                 if tx < 0 || ty < 0 || tx >= self.d.w || ty >= self.d.h {
@@ -1621,7 +1685,7 @@ impl Game {
                 }
                 // Walls are seen when the floor next to them is visible.
                 let (lx, ly) = (cx + (px - cx).signum() * 0.6, cy + (py - cy).signum() * 0.6);
-                if self.level == LevelId::Overworld || self.d.los(px, py, cx, cy) || self.d.los(px, py, lx, ly) {
+                if self.level.overland() || self.d.los(px, py, cx, cy) || self.d.los(px, py, lx, ly) {
                     self.explored[i] = true;
                 }
             }
@@ -1686,6 +1750,15 @@ impl Game {
             }
         }
         best.map(|b| b.0)
+    }
+
+    /// Frost slows you for a moment.
+    pub(crate) fn chill(&mut self, t: f32) {
+        if self.p.chill <= 0.0 {
+            let (x, y) = (self.p.x, self.p.y);
+            self.floater(x, y, "CHILLED".into(), rgb(0x90d0ff));
+        }
+        self.p.chill = self.p.chill.max(t);
     }
 
     pub(crate) fn hurt_player(&mut self, dmg: f32) {
@@ -1789,7 +1862,7 @@ impl Game {
         self.stats.hits += 1;
         self.sfx.push(Sfx::Hit);
         let m = &mut self.mobs[i];
-        m.hp -= dmg;
+        m.hp -= dmg * crate::mobs::fire_taken(m.kind);
         m.flash = 0.1;
         if m.state == MobState::Idle {
             m.state = MobState::Chase;
@@ -1837,7 +1910,7 @@ impl Game {
             hit_any = true;
             let (mx, my, boss, r) = (m.x, m.y, m.boss, m.r);
             let m = &mut self.mobs[i];
-            m.hp -= dmg;
+            m.hp -= dmg * crate::mobs::fire_taken(m.kind);
             m.flash = 0.12;
             m.burn = 2.0 * self.p.skills.burn_mult();
             // Bosses shrug off most of the stagger.
@@ -1920,6 +1993,14 @@ impl Game {
                     self.state = State::Victory(0.0);
                     self.dialog = None;
                 }
+                Kind::FrostGiant => self.pickups.push(Pickup { x, y, kind: Drop::Rune(0), t: 0.0 }),
+                Kind::YetiMatriarch => self.pickups.push(Pickup { x, y, kind: Drop::Rune(1), t: 0.0 }),
+                Kind::RimeWitch => self.pickups.push(Pickup { x, y, kind: Drop::Rune(2), t: 0.0 }),
+                Kind::WhiteDragon => {
+                    self.quest.stage2 = 3;
+                    self.state = State::Victory(0.0);
+                    self.dialog = None;
+                }
                 _ => {}
             }
             for k in 0..3 {
@@ -1987,6 +2068,10 @@ impl Game {
                 Kind::BoneWarden => "bone",
                 Kind::PlagueWarden => "plague",
                 Kind::HexWarden => "hex",
+                Kind::FrostGiant => "giant",
+                Kind::YetiMatriarch => "yeti",
+                Kind::RimeWitch => "witch",
+                Kind::WhiteDragon => "dragon",
                 _ => "ashking",
             };
             drops.extend(items::boss_unique(key));
@@ -2075,6 +2160,7 @@ impl Game {
             p.z += p.vz * DT;
             match p.kind {
                 PKind::Fire | PKind::Magic => p.vz += 12.0 * DT,
+                PKind::Frost => p.vz -= 60.0 * DT,
                 PKind::Smoke => p.vz = 14.0,
                 PKind::Bone | PKind::Blood => {
                     p.vz -= 160.0 * DT;
@@ -2322,6 +2408,130 @@ mod tests {
         assert!(g.debug_kill_boss());
         assert!(matches!(g.state, State::Victory(_)));
         assert_eq!(g.quest.stage, 3);
+    }
+
+    fn read_through(g: &mut Game) {
+        for _ in 0..12 {
+            if g.dialog.is_none() {
+                break;
+            }
+            g.update(&Input { confirm: true, ..Input::default() });
+            g.update(&Input::default());
+        }
+    }
+
+    fn walk_onto(g: &mut Game, kind: PortalKind) {
+        let s = g.portals.iter().find(|p| p.kind == kind).map(|p| (p.x, p.y)).expect("portal");
+        (g.p.x, g.p.y) = s;
+        g.portal_cd = 0.0;
+        g.update(&Input::default());
+    }
+
+    #[test]
+    fn act_two_opens_after_the_ash_king_and_can_be_finished() {
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        // The pass north is shut while the Ash King lives.
+        walk_onto(&mut g, PortalKind::Pass(1));
+        assert_eq!(g.level, LevelId::Overworld, "pass closed");
+        g.quest.stage = 3;
+        g.portal_cd = 0.0;
+        g.update(&Input::default());
+        assert_eq!(g.level, LevelId::Frostmarch, "through the pass");
+        assert!(g.portals.iter().any(|p| p.kind == PortalKind::Pass(0) && (p.x - g.p.x).abs() + (p.y - g.p.y).abs() < 3.0), "arrive by the pass");
+        assert!(g.level_name.contains("FROSTMARCH"));
+        // Captain Brenna gives the quest.
+        assert!(g.debug_talk(Role::Captain));
+        read_through(&mut g);
+        assert_eq!(g.quest.stage2, 1);
+        // The glacier is sealed.
+        walk_onto(&mut g, PortalKind::Entrance(GLACIER));
+        assert_eq!(g.level, LevelId::Frostmarch, "black ice holds");
+        // The three heralds and their runes.
+        let power = g.p.power;
+        for (i, k) in (4..7).enumerate() {
+            g.debug_goto(LevelId::Dungeon(k, DUNGEONS[k].floors - 1));
+            assert!(g.debug_kill_boss());
+            g.debug_collect_all();
+            assert!(g.quest.runes[i], "rune {i}");
+        }
+        assert!(g.p.power > power * 1.3, "runes make you stronger");
+        // Town portal back to Kaldholm (not Hollowmere).
+        walk_onto(&mut g, PortalKind::TownPortal);
+        assert_eq!(g.level, LevelId::Frostmarch);
+        assert!(g.in_safe(g.p.x, g.p.y));
+        assert!(g.debug_talk(Role::Captain));
+        read_through(&mut g);
+        assert_eq!(g.quest.stage2, 2);
+        walk_onto(&mut g, PortalKind::Entrance(GLACIER));
+        assert_eq!(g.level, LevelId::Dungeon(GLACIER, 0));
+        // Up the stairs comes out on the Frostmarch, by the glacier gate.
+        walk_onto(&mut g, PortalKind::Up);
+        assert_eq!(g.level, LevelId::Frostmarch);
+        g.debug_goto(LevelId::Dungeon(GLACIER, DUNGEONS[GLACIER].floors - 1));
+        assert!(g.mobs.iter().any(|m| m.kind == crate::mobs::Kind::WhiteDragon));
+        assert!(g.debug_kill_boss());
+        assert!(matches!(g.state, State::Victory(_)));
+        assert_eq!(g.quest.stage2, 3);
+        assert!(g.quest.captain_has_news(), "she offers nightmare");
+    }
+
+    #[test]
+    fn dying_in_the_north_wakes_you_in_kaldholm() {
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        g.quest.stage = 3;
+        g.debug_goto(LevelId::Dungeon(5, 0));
+        g.hurt_player(99_999.0);
+        for _ in 0..120 {
+            g.update(&Input { confirm: true, ..Input::default() });
+        }
+        assert_eq!(g.level, LevelId::Frostmarch);
+        assert!(g.in_safe(g.p.x, g.p.y));
+    }
+
+    #[test]
+    fn the_cold_chills_you_and_burns_well() {
+        use crate::mobs::Rank;
+        let mut g = quiet_game();
+        // Chill slows you down.
+        let x0 = g.p.x;
+        for _ in 0..30 {
+            g.update(&Input { move_x: 1.0, ..Input::default() });
+        }
+        let free = g.p.x - x0;
+        let mut h = quiet_game();
+        let x0 = h.p.x;
+        for _ in 0..30 {
+            h.chill(5.0);
+            h.update(&Input { move_x: 1.0, ..Input::default() });
+        }
+        assert!((h.p.x - x0) < free * 0.8, "chilled: {} vs {}", h.p.x - x0, free);
+        // Creatures of the cold take more fire damage.
+        let mut g = quiet_game();
+        for kind in [Kind::Zombie, Kind::Yeti] {
+            let mut m = Mob::new(kind, g.p.x + 3.0, g.p.y, 1.0, &mut g.rng);
+            m.max_hp = 1000.0;
+            m.hp = 1000.0;
+            m.rank = Rank::Normal;
+            g.mobs.push(m);
+        }
+        g.hit_mob(0, 100.0, 0.0, 0.0, None, false);
+        g.hit_mob(1, 100.0, 0.0, 0.0, None, false);
+        assert!(g.mobs[1].hp < g.mobs[0].hp, "the yeti burns better");
+        // Ice trolls regenerate unless burning.
+        let mut t = Mob::new(Kind::IceTroll, g.p.x + 6.0, g.p.y + 6.0, 1.0, &mut g.rng);
+        t.hp = t.max_hp * 0.5;
+        g.mobs.push(t);
+        let hp = g.mobs[2].hp;
+        for _ in 0..60 {
+            g.update(&Input::default());
+        }
+        assert!(g.mobs[2].hp > hp, "troll heals");
+        g.mobs[2].burn = 5.0;
+        let hp = g.mobs[2].hp;
+        for _ in 0..60 {
+            g.update(&Input::default());
+        }
+        assert!(g.mobs[2].hp < hp, "but not while burning");
     }
 
     #[test]
@@ -2725,14 +2935,18 @@ mod tests {
     }
 
     #[test]
-    fn nightmare_follows_the_ash_king() {
+    fn nightmare_follows_the_rime_wyrm() {
         let mut g = Game::new(5, crate::gfx::SH_WIDE);
         let normal_hp: f32 = g.mobs.iter().map(|m| m.max_hp).sum();
         g.quest.stage = 3;
         g.quest.seals = [true; 3];
         g.p.gear.bag[0] = Some(crate::items::unique(0));
         let clvl = g.p.clvl;
-        g.debug_talk(Role::Elder);
+        // The Ash King only opens the north; the next difficulty follows the Rime Wyrm.
+        g.quest.stage2 = 3;
+        g.quest.runes = [true; 3];
+        g.debug_goto(LevelId::Frostmarch);
+        assert!(g.debug_talk(Role::Captain));
         for _ in 0..3 {
             let d = g.dialog.as_ref().unwrap();
             if d.options.iter().any(|o| o.1 == Act::NextDifficulty) {
@@ -2745,7 +2959,7 @@ mod tests {
         d.sel = d.options.iter().position(|o| o.1 == Act::NextDifficulty).expect("elder offers nightmare");
         g.update(&Input { confirm: true, ..Input::default() });
         assert_eq!(g.quest.difficulty, 1);
-        assert_eq!((g.quest.stage, g.quest.seal_count()), (1, 0), "quests start over");
+        assert_eq!((g.quest.stage, g.quest.seal_count(), g.quest.stage2, g.quest.rune_count()), (1, 0, 0, 0), "quests start over");
         assert!(g.p.gear.bag[0].is_some() && g.p.clvl == clvl, "you keep your hero");
         assert!(g.level_name.contains("NIGHTMARE"));
         let nm_hp: f32 = g.mobs.iter().map(|m| m.max_hp).sum();
@@ -2790,6 +3004,18 @@ mod tests {
         let mut h = Game::new(5, crate::gfx::SH_WIDE);
         crate::save::apply(&mut h, &text);
         assert!(h.waypoints.contains(&LevelId::Dungeon(1, 1)));
+        // Act 2 progress, and you wake in Kaldholm if you saved in the north.
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        g.quest.stage = 3;
+        g.quest.stage2 = 1;
+        g.quest.runes = [true, false, true];
+        g.debug_goto(LevelId::Frostmarch);
+        let text = crate::save::to_text(&g);
+        let mut h = Game::new(5, crate::gfx::SH_WIDE);
+        crate::save::apply(&mut h, &text);
+        assert_eq!((h.quest.stage2, h.quest.runes), (1, [true, false, true]));
+        assert_eq!(h.level, LevelId::Frostmarch);
+        assert!(h.in_safe(h.p.x, h.p.y));
     }
 
     #[test]

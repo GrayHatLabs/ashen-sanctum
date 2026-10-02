@@ -82,6 +82,19 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Gerta's gear shelf (12 items around your level, restocks after a dungeon), buy at 4x the sell price, from the inventory screen | H S | Unit test: buy, stock kept, restock |
 | Champion packs (blue, 1 modifier) and elites (gold name, 2 modifiers, minions); 6 modifiers; better drops; name bar shows modifiers | H S | `world::add_elites` runs on generated and hand-made levels. Unit test: counts, toughness, drops, fiery burst |
 
+## Act 2: the Frostmarch (2026-10-02, in progress)
+
+| Feature | Status | Notes |
+|---|---|---|
+| Acts: `LevelId::Frostmarch`, `act()` / `land()`, pass portals (closed until the Ash King), arrival by the pass / entrances, town portal and death return to the act's town, waypoints across acts | H S | Unit tests: pass closed/open, full Act 2 quest line, dying in the north |
+| Frostmarch overland: Kaldholm palisade + longhouses, frozen lake, snowy forests, roads to 4 ice dungeons, 30 packs | H S | Unit test: everything reachable, no monsters in town |
+| 4 dungeons (themes mines / icecaves / rime / glacier), 5 monsters, 4 bosses with abilities (slam + boulder, icicles + brood, ice volleys + frost floor + blink, frost breath + icicles) | H S | Bosses on stand-in art until their sheets land |
+| Chill (frost slows moving / casting), cold creatures take +25% fire, troll regeneration | H | Unit test |
+| Story: Captain Brenna, 3 Frost Runes, glacier seal, Rime Wyrm, second epilogue; Nightmare moved after the wyrm; saved (stage2, runes, act) | H | |
+| Snowfall (gusting) on the Frostmarch, frost motes in ice dungeons | S | |
+| Art: 8 tiles + 12 props done; 13 characters + 19 animations generating (`tools/act2_art.py`) | S | Snow road tile lightened, snow tiles softened in pack.py |
+| Level editor catalog (themes, props, portals, monsters, NPCs, checks) | built | |
+
 ## Difficulties (2026-10-01)
 
 | Feature | Status | Notes |

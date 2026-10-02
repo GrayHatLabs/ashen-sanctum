@@ -15,6 +15,16 @@ pub enum Kind {
     PlagueWarden,
     HexWarden,
     AshKing,
+    // ---- Act 2: the Frostmarch ----
+    FrostWolf,
+    Raider,
+    Yeti,
+    IceTroll,
+    IceWraith,
+    FrostGiant,
+    YetiMatriarch,
+    RimeWitch,
+    WhiteDragon,
 }
 
 pub struct Def {
@@ -33,6 +43,17 @@ pub struct Def {
     pub reach: f32,
     pub boss: bool,
     pub ranged: bool,
+    /// Creature of the cold: takes extra fire damage; its hits chill you.
+    pub cold: bool,
+}
+
+/// Fire damage multiplier: creatures of the cold burn better.
+pub fn fire_taken(k: Kind) -> f32 {
+    if def(k).cold {
+        1.25
+    } else {
+        1.0
+    }
 }
 
 pub fn def(k: Kind) -> Def {
@@ -49,6 +70,7 @@ pub fn def(k: Kind) -> Def {
         reach: 0.85,
         boss: false,
         ranged: false,
+        cold: false,
     };
     match k {
         Kind::Zombie => d("zombie", "ROTTING ZOMBIE", 34.0, 1.25, (5.0, 9.0), 0.55, 1.5, 14.0),
@@ -79,6 +101,39 @@ pub fn def(k: Kind) -> Def {
             reach: 1.4,
             boss: true,
             ..d("boss_ashking", "THE ASH KING", 700.0, 1.6, (18.0, 26.0), 0.7, 1.6, 1500.0)
+        },
+        Kind::FrostWolf => Def { r: 0.3, cold: true, ..d("frost_wolf", "WINTER WOLF", 18.0, 3.8, (4.0, 6.0), 0.3, 0.9, 11.0) },
+        Kind::Raider => Def { cold: true, ..d("raider", "NORTHERN RAIDER", 30.0, 2.6, (6.0, 10.0), 0.45, 1.2, 15.0) },
+        Kind::Yeti => Def { r: 0.42, reach: 1.0, cold: true, ..d("yeti", "YETI", 55.0, 1.6, (9.0, 14.0), 0.65, 1.7, 24.0) },
+        Kind::IceTroll => Def { r: 0.36, cold: true, ..d("ice_troll", "ICE TROLL", 40.0, 2.2, (6.0, 9.0), 0.4, 1.0, 20.0) },
+        Kind::IceWraith => Def { ranged: true, cold: true, ..d("ice_wraith", "ICE WRAITH", 22.0, 2.4, (5.0, 8.0), 0.55, 1.8, 16.0) },
+        Kind::FrostGiant => Def {
+            r: 0.65,
+            reach: 1.5,
+            boss: true,
+            cold: true,
+            ..d("boss_giant", "THE FROST GIANT OVERSEER", 420.0, 1.4, (16.0, 24.0), 0.8, 1.8, 500.0)
+        },
+        Kind::YetiMatriarch => Def {
+            r: 0.6,
+            reach: 1.4,
+            boss: true,
+            cold: true,
+            ..d("boss_yeti", "THE YETI MATRIARCH", 400.0, 1.9, (14.0, 20.0), 0.6, 1.5, 550.0)
+        },
+        Kind::RimeWitch => Def {
+            r: 0.5,
+            boss: true,
+            ranged: true,
+            cold: true,
+            ..d("boss_witch", "THE RIME WITCH", 360.0, 1.8, (10.0, 14.0), 0.6, 2.0, 650.0)
+        },
+        Kind::WhiteDragon => Def {
+            r: 0.9,
+            reach: 1.9,
+            boss: true,
+            cold: true,
+            ..d("boss_dragon", "VORTHRAX THE RIME WYRM", 1100.0, 1.5, (22.0, 32.0), 0.8, 1.7, 2500.0)
         },
     }
 }
@@ -276,6 +331,10 @@ pub enum ShotKind {
     Arrow,
     Hex,
     Ash,
+    /// Ice bolts (wraiths, the Rime Witch): they chill you.
+    Ice,
+    /// The frost giant's thrown ice boulder.
+    Boulder,
 }
 
 pub struct Shot {
@@ -294,6 +353,12 @@ pub enum HazardKind {
     Poison,
     /// Ash King's telegraphed ash nova.
     Nova,
+    /// Freezing ground (Rime Witch, dragon breath): hurts and chills while you stand in it.
+    Frost,
+    /// A telegraphed icicle falling from the ceiling.
+    Icicle,
+    /// The frost giant's ground slam.
+    Quake,
 }
 
 pub struct Hazard {
@@ -318,7 +383,7 @@ impl Game {
         let player_safe = self.in_safe(px, py);
         let safe = self.safe;
         let in_safe = |x: f32, y: f32, pad: f32| safe.map_or(false, |(x0, y0, x1, y1)| x > x0 - pad && x < x1 + pad && y > y0 - pad && y < y1 + pad);
-        let overworld = self.level == crate::world::LevelId::Overworld;
+        let overworld = self.level.overland();
         let n = self.mobs.len();
         let mut hits: Vec<(f32, usize)> = vec![];
         let mut aggro_at: Vec<(f32, f32)> = vec![];
@@ -340,7 +405,7 @@ impl Game {
             if m.burn > 0.0 {
                 m.burned += DT;
                 m.burn -= DT;
-                m.hp -= 3.0 * m.tier.max(1.0) * DT;
+                m.hp -= 3.0 * m.tier.max(1.0) * fire_taken(m.kind) * DT;
                 if tick % 4 == 0 {
                     self.parts.push(Particle {
                         x: m.x + rv * 0.4 - 0.2,
@@ -360,6 +425,10 @@ impl Game {
                 }
             } else {
                 m.burned = 0.0;
+                // Ice trolls knit back together unless they're burning.
+                if m.kind == Kind::IceTroll && m.hp < m.max_hp {
+                    m.hp = (m.hp + m.max_hp * 0.03 * DT).min(m.max_hp);
+                }
             }
             if m.stun > 0.0 {
                 m.stun -= DT;
@@ -434,7 +503,7 @@ impl Game {
                     if m.flee > 0.0 {
                         away = true;
                     } else if m.ranged {
-                        let keep = if m.kind == Kind::HexWarden { 3.5 } else { 2.8 };
+                        let keep = if matches!(m.kind, Kind::HexWarden | Kind::RimeWitch) { 3.5 } else { 2.8 };
                         if dist < keep {
                             away = true;
                         } else if dist <= 8.5 && los {
@@ -502,6 +571,14 @@ impl Game {
                                     shots.push((m.x, m.y, a.cos() * 7.0, a.sin() * 7.0, dmg, ShotKind::Hex));
                                 }
                             }
+                            Kind::RimeWitch => {
+                                let n = if m.enraged { 5 } else { 3 };
+                                for k in 0..n {
+                                    let a = uy.atan2(ux) + (k as f32 - (n - 1) as f32 * 0.5) * 0.24;
+                                    shots.push((m.x, m.y, a.cos() * 7.5, a.sin() * 7.5, dmg, ShotKind::Ice));
+                                }
+                            }
+                            Kind::IceWraith => shots.push((m.x, m.y, ux * 7.5, uy * 7.5, dmg, ShotKind::Ice)),
                             _ => shots.push((m.x, m.y, ux * 9.0, uy * 9.0, dmg, ShotKind::Arrow)),
                         }
                     } else if player_alive && dist < m.reach + 0.4 {
@@ -551,6 +628,9 @@ impl Game {
         for (dmg, i) in hits {
             let before = self.p.hp;
             self.hurt_player(dmg);
+            if def(self.mobs[i].kind).cold {
+                self.chill(1.4);
+            }
             let dealt = (before - self.p.hp).max(0.0);
             let mods = self.mobs[i].mods;
             if mods & M_VAMPIRE != 0 {
@@ -622,16 +702,25 @@ impl Game {
                     s.life = 0.0;
                     break;
                 }
-                if (s.x - px).powi(2) + (s.y - py).powi(2) < (PLAYER_R + 0.12).powi(2) {
-                    hits.push(s.dmg);
+                let size = if s.kind == ShotKind::Boulder { 0.4 } else { 0.12 };
+                if (s.x - px).powi(2) + (s.y - py).powi(2) < (PLAYER_R + size).powi(2) {
+                    hits.push((s.dmg, s.kind));
                     s.life = 0.0;
                     break;
                 }
             }
         }
         self.shots.retain(|s| s.life > 0.0);
-        for d in hits {
+        for (d, kind) in hits {
             self.hurt_player(d);
+            match kind {
+                ShotKind::Ice => self.chill(2.0),
+                ShotKind::Boulder => {
+                    self.chill(1.0);
+                    self.shake = self.shake.max(0.6);
+                }
+                _ => {}
+            }
         }
     }
 
@@ -640,9 +729,17 @@ impl Game {
         let (px, py) = (self.p.x, self.p.y);
         let mut dmg = 0.0;
         let mut burst = 0.0;
+        let mut frozen = false;
+        let mut quakes = vec![];
         for h in self.hazards.iter_mut() {
             h.t += DT;
             let inside = (h.x - px).powi(2) + (h.y - py).powi(2) < h.r * h.r;
+            if h.kind == HazardKind::Frost && inside && h.t >= h.warn && h.t < h.warn + h.live {
+                frozen = true;
+            }
+            if matches!(h.kind, HazardKind::Icicle | HazardKind::Quake) && h.t >= h.warn && !h.fired {
+                quakes.push((h.x, h.y, h.kind));
+            }
             if h.t >= h.warn {
                 if h.burst > 0.0 && !h.fired {
                     h.fired = true;
@@ -662,6 +759,16 @@ impl Game {
             for _ in 0..40 {
                 self.spray_at(x, y, PKind::Fire, 3.0);
             }
+        }
+        for (x, y, kind) in quakes {
+            self.sfx.push(if kind == HazardKind::Quake { Sfx::Boom } else { Sfx::Hit });
+            self.shake = self.shake.max(if kind == HazardKind::Quake { 0.8 } else { 0.3 });
+            for _ in 0..if kind == HazardKind::Quake { 30 } else { 10 } {
+                self.spray_at(x, y, PKind::Frost, 3.0);
+            }
+        }
+        if frozen {
+            self.chill(0.5);
         }
         self.hazards.retain(|h| h.t < h.warn + h.live.max(0.3));
         if burst > 0.0 {
@@ -752,6 +859,120 @@ fn boss_specials(
             if m.special2 <= 0.0 && m.enraged {
                 m.special2 = 12.0;
                 around(rng, 3, Kind::Archer, m.tier, spawns);
+            }
+        }
+        Kind::FrostGiant => {
+            // Ground slam around itself, and an ice boulder thrown at range.
+            if m.special <= 0.0 && dist < 3.2 {
+                m.special = if m.enraged { 3.5 } else { 5.0 };
+                hazards.push(Hazard { x: m.x, y: m.y, r: 2.6, warn: 1.0, live: 0.0, dps: 0.0, burst: 20.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Quake });
+                texts.push((m.x, m.y, "THE GROUND SHAKES!"));
+            }
+            if m.special2 <= 0.0 && (3.0..11.0).contains(&dist) {
+                m.special2 = if m.enraged { 3.0 } else { 4.5 };
+                let a = (py - m.y).atan2(px - m.x);
+                shots.push((m.x, m.y, a.cos() * 6.0, a.sin() * 6.0, 15.0 * m.tier.powf(0.8), ShotKind::Boulder));
+            }
+            if m.enraged && summons < 4 && rng.chance(DT / 10.0) {
+                around(rng, 2, Kind::Raider, m.tier, spawns);
+                texts.push((m.x, m.y, "TO ME, RAIDERS!"));
+            }
+        }
+        Kind::YetiMatriarch => {
+            // Shakes icicles loose over you, and calls her brood.
+            if m.special <= 0.0 && dist < 10.0 {
+                m.special = if m.enraged { 4.0 } else { 6.0 };
+                for _ in 0..if m.enraged { 6 } else { 4 } {
+                    let (a, rr) = (rng.f() * std::f32::consts::TAU, rng.rf(0.0, 2.4));
+                    let (x, y) = (px + a.cos() * rr, py + a.sin() * rr);
+                    if !d.blocked(x, y, 0.2) {
+                        hazards.push(Hazard { x, y, r: 0.9, warn: 1.1, live: 0.0, dps: 0.0, burst: 13.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Icicle });
+                    }
+                }
+                texts.push((m.x, m.y, "ROOAAAR!"));
+            }
+            if m.special2 <= 0.0 {
+                m.special2 = 11.0;
+                if summons < 6 {
+                    if rng.chance(0.5) {
+                        around(rng, 2, Kind::Yeti, m.tier * 0.8, spawns);
+                    } else {
+                        around(rng, 3, Kind::FrostWolf, m.tier, spawns);
+                    }
+                    texts.push((m.x, m.y, "THE BROOD COMES!"));
+                }
+            }
+        }
+        Kind::RimeWitch => {
+            if m.special <= 0.0 && dist < 2.5 {
+                m.special = 5.0;
+                for _ in 0..30 {
+                    let a = rng.f() * std::f32::consts::TAU;
+                    let rr = rng.rf(5.0, 7.0);
+                    let (nx, ny) = (px + a.cos() * rr, py + a.sin() * rr);
+                    if !d.blocked(nx, ny, m.r) && d.los(nx, ny, px, py) {
+                        m.x = nx;
+                        m.y = ny;
+                        m.path.clear();
+                        texts.push((m.x, m.y, "BLINK"));
+                        break;
+                    }
+                }
+            }
+            if m.special2 <= 0.0 && dist < 10.0 {
+                m.special2 = if m.enraged { 4.0 } else { 6.0 };
+                hazards.push(Hazard { x: px, y: py, r: 1.4, warn: 0.8, live: 4.0, dps: 6.0 * m.tier, burst: 0.0, t: 0.0, fired: false, kind: HazardKind::Frost });
+                if m.enraged && summons < 4 {
+                    around(rng, 2, Kind::IceWraith, m.tier, spawns);
+                }
+            }
+        }
+        Kind::WhiteDragon => {
+            // Frost breath: a cone of freezing ground toward you.
+            if m.special <= 0.0 && dist < 9.0 {
+                m.special = if m.enraged { 3.2 } else { 4.5 };
+                let a = (py - m.y).atan2(px - m.x);
+                for k in 0..6 {
+                    let dd = 1.6 + k as f32 * 1.1;
+                    for side in [-1.0f32, 0.0, 1.0] {
+                        if k < 2 && side != 0.0 {
+                            continue;
+                        }
+                        let aa = a + side * 0.14 * (k as f32 * 0.5 + 0.5);
+                        let (x, y) = (m.x + aa.cos() * dd, m.y + aa.sin() * dd);
+                        if d.blocked(x, y, 0.1) {
+                            continue;
+                        }
+                        hazards.push(Hazard {
+                            x,
+                            y,
+                            r: 0.7 + k as f32 * 0.07,
+                            warn: 0.7 + k as f32 * 0.05,
+                            live: 1.6,
+                            dps: 16.0 * m.tier.powf(0.8),
+                            burst: 0.0,
+                            t: 0.0,
+                            fired: false,
+                            kind: HazardKind::Frost,
+                        });
+                    }
+                }
+                texts.push((m.x, m.y, "FROST BREATH!"));
+            }
+            // Icicles shaken from the cavern roof.
+            if m.special2 <= 0.0 && dist < 12.0 {
+                m.special2 = if m.enraged { 5.0 } else { 7.5 };
+                for _ in 0..if m.enraged { 8 } else { 5 } {
+                    let (a, rr) = (rng.f() * std::f32::consts::TAU, rng.rf(0.0, 3.0));
+                    let (x, y) = (px + a.cos() * rr, py + a.sin() * rr);
+                    if !d.blocked(x, y, 0.2) {
+                        hazards.push(Hazard { x, y, r: 1.0, warn: 1.2, live: 0.0, dps: 0.0, burst: 16.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Icicle });
+                    }
+                }
+            }
+            if m.enraged && summons < 4 && rng.chance(DT / 12.0) {
+                around(rng, 2, Kind::IceWraith, m.tier, spawns);
+                texts.push((m.x, m.y, "THE COLD ANSWERS ME"));
             }
         }
         Kind::AshKing => {

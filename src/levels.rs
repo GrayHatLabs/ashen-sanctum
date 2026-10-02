@@ -65,12 +65,14 @@ pub struct LevelFile {
 
 // ---------------------------------------------------------------- names
 
-pub const DUNGEON_SLUGS: [&str; 4] = ["bone_crypt", "rotting_warrens", "hexed_catacombs", "ashen_sanctum"];
+pub const DUNGEON_SLUGS: [&str; 8] =
+    ["bone_crypt", "rotting_warrens", "hexed_catacombs", "ashen_sanctum", "frozen_mines", "howling_caves", "rime_temple", "glaciers_heart"];
 
 /// File name (without .json) for a level.
 pub fn file_name(id: LevelId) -> String {
     match id {
         LevelId::Overworld => "overworld".into(),
+        LevelId::Frostmarch => "frostmarch".into(),
         LevelId::Dungeon(k, f) => format!("{}_floor{}", DUNGEON_SLUGS[k], f + 1),
     }
 }
@@ -78,6 +80,7 @@ pub fn file_name(id: LevelId) -> String {
 pub fn id_string(id: LevelId) -> String {
     match id {
         LevelId::Overworld => "overworld".into(),
+        LevelId::Frostmarch => "frostmarch".into(),
         LevelId::Dungeon(k, f) => format!("dungeon:{k}:{f}"),
     }
 }
@@ -85,6 +88,9 @@ pub fn id_string(id: LevelId) -> String {
 pub fn parse_id(s: &str) -> Option<LevelId> {
     if s == "overworld" {
         return Some(LevelId::Overworld);
+    }
+    if s == "frostmarch" {
+        return Some(LevelId::Frostmarch);
     }
     let mut it = s.strip_prefix("dungeon:")?.split(':');
     let k: usize = it.next()?.parse().ok()?;
@@ -94,7 +100,7 @@ pub fn parse_id(s: &str) -> Option<LevelId> {
 
 /// Every level in the game, in order.
 pub fn all_ids() -> Vec<LevelId> {
-    let mut v = vec![LevelId::Overworld];
+    let mut v = vec![LevelId::Overworld, LevelId::Frostmarch];
     for (k, d) in DUNGEONS.iter().enumerate() {
         for f in 0..d.floors {
             v.push(LevelId::Dungeon(k, f));
@@ -109,15 +115,20 @@ pub fn id_from_name(name: &str) -> Option<LevelId> {
     all_ids().into_iter().find(|id| file_name(*id) == stem)
 }
 
-const THEMES: [(&str, Theme); 5] = [
+const THEMES: [(&str, Theme); 10] = [
     ("overworld", Theme::Overworld),
     ("crypt", Theme::Crypt),
     ("warrens", Theme::Warrens),
     ("catacombs", Theme::Catacombs),
     ("sanctum", Theme::Sanctum),
+    ("tundra", Theme::Tundra),
+    ("mines", Theme::Mines),
+    ("icecaves", Theme::IceCaves),
+    ("rime", Theme::Rime),
+    ("glacier", Theme::Glacier),
 ];
 
-const PROPS: [PropKind; 16] = [
+const PROPS: [PropKind; 28] = [
     PropKind::TreeOak,
     PropKind::TreePine,
     PropKind::TreeDead,
@@ -134,9 +145,21 @@ const PROPS: [PropKind; 16] = [
     PropKind::Entrance(3),
     PropKind::StairsDown,
     PropKind::StairsUp,
+    PropKind::SnowPine,
+    PropKind::SnowDead,
+    PropKind::SnowRock,
+    PropKind::IceCrystal,
+    PropKind::Longhouse1,
+    PropKind::Longhouse2,
+    PropKind::FurStall,
+    PropKind::Entrance(4),
+    PropKind::Entrance(5),
+    PropKind::Entrance(6),
+    PropKind::Entrance(7),
+    PropKind::Pass,
 ];
 
-const KINDS: [Kind; 9] = [
+const KINDS: [Kind; 18] = [
     Kind::Zombie,
     Kind::Skeleton,
     Kind::Wolf,
@@ -146,6 +169,15 @@ const KINDS: [Kind; 9] = [
     Kind::PlagueWarden,
     Kind::HexWarden,
     Kind::AshKing,
+    Kind::FrostWolf,
+    Kind::Raider,
+    Kind::Yeti,
+    Kind::IceTroll,
+    Kind::IceWraith,
+    Kind::FrostGiant,
+    Kind::YetiMatriarch,
+    Kind::RimeWitch,
+    Kind::WhiteDragon,
 ];
 
 fn portal_name(k: PortalKind) -> String {
@@ -154,6 +186,7 @@ fn portal_name(k: PortalKind) -> String {
         PortalKind::Up => "up".into(),
         PortalKind::Down => "down".into(),
         PortalKind::TownPortal => "townportal".into(),
+        PortalKind::Pass(a) => format!("pass{a}"),
     }
 }
 
@@ -162,12 +195,14 @@ fn portal_kind(s: &str) -> Option<PortalKind> {
         "up" => Some(PortalKind::Up),
         "down" => Some(PortalKind::Down),
         "townportal" => Some(PortalKind::TownPortal),
+        "pass0" => Some(PortalKind::Pass(0)),
+        "pass1" => Some(PortalKind::Pass(1)),
         _ => s.strip_prefix("entrance")?.parse().ok().filter(|i: &usize| *i < DUNGEONS.len()).map(PortalKind::Entrance),
     }
 }
 
 /// NPC kinds: file name, role, display name, art.
-const NPCS: [(&str, Role, &str, &str); 8] = [
+const NPCS: [(&str, Role, &str, &str); 14] = [
     ("elder", Role::Elder, "ELDER MAREN", "npc_elder"),
     ("merchant", Role::Merchant, "GERTA", "npc_merchant"),
     ("healer", Role::Healer, "BROTHER ALDRIC", "npc_healer"),
@@ -176,6 +211,12 @@ const NPCS: [(&str, Role, &str, &str); 8] = [
     ("villager1", Role::Villager(1), "FARMER", "npc_villager"),
     ("villager2", Role::Villager(2), "VILLAGER", "npc_villager"),
     ("villager3", Role::Villager(3), "FARMER", "npc_villager"),
+    ("captain", Role::Captain, "CAPTAIN BRENNA", "npc_captain"),
+    ("trader", Role::Trader, "OLD SIGURD", "npc_trader"),
+    ("seer", Role::Seer, "MOTHER YLVA", "npc_seer"),
+    ("fisher0", Role::Fisher(0), "FISHERMAN", "npc_fisher"),
+    ("fisher1", Role::Fisher(1), "FISHERMAN", "npc_fisher"),
+    ("fisher2", Role::Fisher(2), "FISHERWIFE", "npc_fisher"),
 ];
 
 fn item_name(d: &Drop) -> Option<String> {
@@ -186,7 +227,7 @@ fn item_name(d: &Drop) -> Option<String> {
         Drop::Health => "health_potion".into(),
         Drop::Mana => "mana_potion".into(),
         Drop::Gold(n) => format!("gold{n}"),
-        Drop::Seal(_) | Drop::Item(_) => return None,
+        Drop::Seal(_) | Drop::Rune(_) | Drop::Item(_) => return None,
     })
 }
 
@@ -217,7 +258,7 @@ pub fn to_file(lv: &Level) -> LevelFile {
                 .collect()
         })
         .collect();
-    let ground = if lv.theme == Theme::Overworld {
+    let ground = if lv.theme.open() {
         (0..d.h).map(|y| (0..d.w).map(|x| ['g', 'd', 'r'][d.ground_at(x, y).min(2) as usize]).collect()).collect()
     } else {
         vec![]
@@ -322,7 +363,7 @@ pub fn from_file(f: &LevelFile, seed: u64) -> Result<Level, String> {
                 lv.portals.push(Portal { x: p.x, y: p.y, kind });
                 let (tx, ty) = (p.x.floor() as i32, p.y.floor() as i32);
                 match kind {
-                    PortalKind::Up if theme != Theme::Overworld => lv.props.push(Prop::stairs(PropKind::StairsUp, tx, ty)),
+                    PortalKind::Up if !theme.open() => lv.props.push(Prop::stairs(PropKind::StairsUp, tx, ty)),
                     PortalKind::Down => lv.props.push(Prop::stairs(PropKind::StairsDown, tx, ty)),
                     _ => {}
                 }

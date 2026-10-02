@@ -336,6 +336,41 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         save(&mut g, scr, "skills_tree3");
         g.tree = None;
     }
+    // Act 2: Kaldholm, the Frostmarch, each ice dungeon and its herald.
+    {
+        let mut g = Game::new(7, h);
+        g.quest.stage = 3;
+        g.debug_goto(LevelId::Frostmarch);
+        (g.p.x, g.p.y) = g.start;
+        g.banner_t = 0.0;
+        idle(&mut g, 60);
+        save(&mut g, scr, "act2_town");
+        g.debug_talk(Role::Captain);
+        save(&mut g, scr, "act2_dialog");
+        g.dialog = None;
+        if let Some((x, y)) = g.bot_target().map(|t| (t.0, t.1)) {
+            g.debug_place_near(x, y, 4.0);
+            idle(&mut g, 40);
+            save(&mut g, scr, "act2_wilds");
+        }
+        for k in 4..8 {
+            g.debug_goto(LevelId::Dungeon(k, 0));
+            g.banner_t = 0.0;
+            idle(&mut g, 20);
+            save(&mut g, scr, &format!("dungeon{k}"));
+            g.debug_goto(LevelId::Dungeon(k, DUNGEONS[k].floors - 1));
+            g.p.base_hp = 9999.0;
+            g.p.recalc();
+            g.p.hp = 9999.0;
+            if g.debug_near_boss() {
+                for t in 0..170 {
+                    g.update(&Input { cast: t % 30 < 10, ..Input::default() });
+                    g.sfx.clear();
+                }
+                save(&mut g, scr, &format!("boss{k}"));
+            }
+        }
+    }
     // A waypoint in a dungeon, with the travel menu open.
     {
         let mut g = Game::new(7, h);

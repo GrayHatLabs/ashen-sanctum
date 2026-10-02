@@ -16,7 +16,10 @@ Project rules and reference. Read this before every major change.
 
 - `game.rs`: Game state, level swapping (`go_to`, parked levels), player, combat, pickups, dialogue flow.
 - `mobs.rs`: monster definitions (`def`), AI incl. boss abilities, enemy shots, ground hazards.
-- `world.rs`: `Level`, overworld + Hollowmere generation, dungeon floors, portals, props, `DUNGEONS`.
+- `world.rs`: `Level`, overworld + Hollowmere generation, the Act 2 Frostmarch + Kaldholm, dungeon floors,
+  portals (incl. the `Pass` between acts), props, `DUNGEONS` (entries 4-7 are Act 2; `act` field).
+  `LevelId::act()` / `LevelId::land(act)` / `overland()`: use them instead of checking `Overworld`.
+  Act 2 plan: `docs/ACT2_PLAN.md`.
 - `story.rs`: quest stages, NPC dialogue, shop wares, epilogue.
 - `levels.rs` + `build.rs`: JSON level files (folder override, embedded at build, generator fallback).
   Editor: `tools/level-editor/index.html`. Format: `docs/LEVEL_FORMAT.md`. Keep the editor's catalog

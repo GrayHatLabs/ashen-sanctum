@@ -77,9 +77,28 @@ take back their Seals, unseal the Sanctum and end the Ash King.
   burn, or fire enchanted (bursts into flame when it dies: step away). They drop more and better gear.
   Bosses telegraph their big attacks with markers on the floor: step out of them.
 
-## After the Ash King
+## Act 2: the Frostmarch
 
-Like Diablo 2, beating the game opens **Nightmare**, then **Hell**: talk to Elder Maren. The
+Killing the Ash King opens the **mountain pass** north of Hollowmere. Beyond it lies the
+**Frostmarch**: snowfields, snowy pine forests, a frozen lake and the frontier town of **Kaldholm**.
+
+- **Captain Brenna** (story), **Old Sigurd** (fur trader: potions, food and gear) and **Mother Ylva**
+  (seer: heals and resets skills).
+- **Vorthrax the Rime Wyrm**, an ancient white dragon, has woken under the glacier. Her three Frost
+  Heralds hold the **Frost Runes** that unseal her lair:
+  - **The Frozen Mines** (west): the **Frost Giant Overseer** slams the ground and hurls ice boulders.
+  - **The Howling Caves** (northeast): the **Yeti Matriarch** shakes icicles from the roof and calls her brood.
+  - **The Rime Temple** (northwest): the **Rime Witch** fires ice-bolt volleys, freezes the floor and blinks away.
+  - **The Glacier's Heart** (far north, needs all three runes): the dragon herself. Frost breath, icicles,
+    and she enrages at half life.
+- **Monsters**: winter wolves, northern raiders, yetis, ice trolls (they regenerate unless burning) and
+  ice wraiths (ice bolts).
+- **The cold**: frost attacks **chill** you (slower moving and casting). Creatures of the cold take 25%
+  more fire damage.
+
+## After the Rime Wyrm
+
+Like Diablo 2, beating the game opens **Nightmare**, then **Hell**: talk to Captain Brenna. The
 world is rebuilt with much tougher monsters and richer drops, and the quests start over, while
 your character, skills and gear carry on.
 
