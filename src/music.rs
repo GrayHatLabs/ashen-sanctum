@@ -12,9 +12,13 @@ pub enum Track {
     Wilds,
     Dungeon,
     Boss,
+    /// Act 2: the Frostmarch and Kaldholm.
+    Frost,
+    /// Act 2: the ice dungeons.
+    Ice,
 }
 
-pub const TRACKS: [Track; 4] = [Track::Town, Track::Wilds, Track::Dungeon, Track::Boss];
+pub const TRACKS: [Track; 6] = [Track::Town, Track::Wilds, Track::Dungeon, Track::Boss, Track::Frost, Track::Ice];
 
 fn hz(midi: f32) -> f32 {
     440.0 * 2f32.powf((midi - 69.0) / 12.0)
@@ -223,12 +227,16 @@ pub fn render(track: Track) -> Vec<f32> {
         Track::Wilds => 23,
         Track::Dungeon => 37,
         Track::Boss => 41,
+        Track::Frost => 53,
+        Track::Ice => 67,
     });
     match track {
         Track::Town => town(&mut rng),
         Track::Wilds => wilds(&mut rng),
         Track::Dungeon => dungeon(&mut rng),
         Track::Boss => boss(&mut rng),
+        Track::Frost => frost(&mut rng),
+        Track::Ice => ice(&mut rng),
     }
 }
 
@@ -319,6 +327,55 @@ fn dungeon(rng: &mut Rng) -> Vec<f32> {
         b.bell(3.0 + k as f32 * 6.3 + rng.rf(0.0, 1.5), *m, 0.12);
     }
     b.finish(0.55, 0.6)
+}
+
+/// The Frostmarch: howling wind, open fifths, and a slow harp-like melody in D dorian.
+fn frost(rng: &mut Rng) -> Vec<f32> {
+    let secs = 56.0;
+    let mut b = Buf::new(secs);
+    b.wind(0.55, rng);
+    b.drone(38.0, 0.035); // D2
+    b.drone(45.0, 0.025); // A2: the open fifth
+    let chords = [(50.0, 57.0, 62.0), (48.0, 55.0, 64.0), (53.0, 57.0, 60.0), (50.0, 57.0, 65.0)];
+    for (c, &(a, bb, cc)) in chords.iter().enumerate() {
+        b.pad(c as f32 * 14.0, 13.0, &[a, bb, cc], 0.07, 420.0);
+    }
+    // A slow melody (D dorian), each note with a soft octave echo.
+    let tune = [62.0, 64.0, 65.0, 69.0, 67.0, 65.0, 64.0, 62.0, 60.0, 62.0, 69.0, 71.0, 69.0, 67.0, 64.0, 62.0];
+    let mut t = 2.0;
+    for (k, m) in tune.iter().enumerate() {
+        b.pluck(t, *m, 0.32, 0.55, 0.9975, rng);
+        if k % 4 == 3 {
+            b.pluck(t + 0.9, m - 12.0, 0.18, 0.4, 0.998, rng);
+        }
+        t += if k % 4 == 3 { 4.2 } else { 2.6 };
+        if t > secs - 2.0 {
+            break;
+        }
+    }
+    b.finish(0.5, 0.6)
+}
+
+/// Ice dungeons: a deep cold drone, glassy bells and groaning ice.
+fn ice(rng: &mut Rng) -> Vec<f32> {
+    let secs = 44.0;
+    let mut b = Buf::new(secs);
+    b.drone(26.0, 0.06);
+    for c in 0..4 {
+        let root = [38.0, 41.0, 36.0, 39.0][c];
+        b.pad(c as f32 * 11.0, 10.5, &[root, root + 7.0, root + 14.0], 0.08, 300.0);
+    }
+    let bells = [86.0, 81.0, 84.0, 79.0, 88.0, 83.0, 81.0];
+    for (k, m) in bells.iter().enumerate() {
+        let t = 1.5 + k as f32 * 6.0 + rng.rf(0.0, 1.8);
+        b.bell(t, *m, 0.08);
+        b.bell(t + 0.18, m - 12.0, 0.05);
+    }
+    // Ice groans: very low, slowly falling plucks.
+    for k in 0..4 {
+        b.pluck(4.0 + k as f32 * 10.5, 31.0 + (k % 2) as f32 * 2.0, 0.22, 0.2, 0.9985, rng);
+    }
+    b.finish(0.6, 0.6)
 }
 
 /// Boss fights: drums and a driving low ostinato in E phrygian.

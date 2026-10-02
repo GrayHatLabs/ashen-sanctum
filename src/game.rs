@@ -911,6 +911,13 @@ impl Game {
         use crate::music::Track;
         if self.mobs.iter().any(|m| m.boss && m.alive() && m.state != MobState::Idle) {
             Track::Boss
+        } else if self.level.act() == 1 {
+            // The north has its own music: Kaldholm and the snowfields share the windy theme.
+            if self.level.overland() {
+                Track::Frost
+            } else {
+                Track::Ice
+            }
         } else if self.in_safe(self.p.x, self.p.y) || matches!(self.state, State::Victory(_)) {
             Track::Town
         } else if self.level.overland() {
