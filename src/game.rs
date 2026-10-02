@@ -2792,6 +2792,28 @@ mod tests {
     }
 
     #[test]
+    fn the_stash_keeps_gear_in_town() {
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        g.p.gear.bag[2] = Some(crate::items::unique(3));
+        g.update(&Input { inv: true, ..Input::default() });
+        g.inv.as_mut().unwrap().sel = crate::inventory::Cell::Bag(2);
+        g.update(&Input { potion_mp: true, ..Input::default() });
+        assert!(g.p.gear.bag[2].is_none());
+        assert_eq!(g.p.gear.stash[0].as_ref().map(|i| i.name.as_str()), Some("CROWN OF ASH"));
+        g.inv.as_mut().unwrap().sel = crate::inventory::Cell::Stash(0);
+        g.update(&Input::default());
+        g.update(&Input { confirm: true, ..Input::default() });
+        assert!(g.p.gear.stash[0].is_none() && g.p.gear.bag[0].is_some(), "taken back to the bag");
+        // Outside town there is no stash.
+        g.inv = None;
+        g.debug_goto(LevelId::Dungeon(0, 0));
+        g.update(&Input { inv: true, ..Input::default() });
+        g.inv.as_mut().unwrap().sel = crate::inventory::Cell::Bag(0);
+        g.update(&Input { potion_mp: true, ..Input::default() });
+        assert!(g.p.gear.bag[0].is_some());
+    }
+
+    #[test]
     fn gear_sells_in_town_and_drops_outside() {
         let mut g = Game::new(5, crate::gfx::SH_WIDE);
         assert!(g.in_safe(g.p.x, g.p.y), "you start in Hollowmere");

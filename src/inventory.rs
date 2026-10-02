@@ -4,7 +4,7 @@
 use crate::art::Art;
 use crate::game::{Drop, Game, Input, Pickup, Sfx, HUD_H};
 use crate::gfx::{rgb, Align, Fx, Screen, BLACK};
-use crate::items::{self, Item, Rarity, Slot, Stat, BAG, BAG_COLS, SHOP, WORN};
+use crate::items::{self, Item, Rarity, Slot, Stat, BAG, BAG_COLS, SHOP, STASH, WORN};
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Cell {
@@ -12,6 +12,8 @@ pub enum Cell {
     Bag(usize),
     /// Gerta's shelf.
     Shop(usize),
+    /// The stash chest (in town).
+    Stash(usize),
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
@@ -19,6 +21,8 @@ pub enum InvAct {
     Select(Cell),
     Use,
     Toss,
+    /// Bag <-> stash.
+    Store,
     Close,
 }
 
@@ -52,6 +56,52 @@ impl Game {
             Cell::Worn(i) => self.p.gear.worn[i].as_ref(),
             Cell::Bag(i) => self.p.gear.bag[i].as_ref(),
             Cell::Shop(i) => self.shop_stock.get(i).and_then(Option::as_ref),
+            Cell::Stash(i) => self.p.gear.stash[i].as_ref(),
+        }
+    }
+
+    /// Moves an item between the bag (or your body) and the stash chest.
+    fn store(&mut self, c: Cell) {
+        let gear = &mut self.p.gear;
+        let r: Result<(), &str> = match c {
+            Cell::Stash(i) => match (gear.stash[i].take(), gear.bag.iter().position(Option::is_none)) {
+                (Some(it), Some(j)) => {
+                    gear.bag[j] = Some(it);
+                    Ok(())
+                }
+                (Some(it), None) => {
+                    gear.stash[i] = Some(it);
+                    Err("YOUR BAG IS FULL")
+                }
+                (None, _) => Err(""),
+            },
+            Cell::Bag(_) | Cell::Worn(_) => match gear.stash.iter().position(Option::is_none) {
+                None => Err("THE STASH IS FULL"),
+                Some(j) => {
+                    let it = match c {
+                        Cell::Bag(i) => gear.bag[i].take(),
+                        Cell::Worn(i) => gear.worn[i].take(),
+                        _ => None,
+                    };
+                    match it {
+                        Some(it) => {
+                            gear.stash[j] = Some(it);
+                            Ok(())
+                        }
+                        None => Err(""),
+                    }
+                }
+            },
+            Cell::Shop(_) => Err(""),
+        };
+        match r {
+            Ok(()) => {
+                self.sfx.push(Sfx::Pickup);
+                self.p.recalc();
+                self.save_due = true;
+            }
+            Err(why) if !why.is_empty() => self.say(why.into()),
+            Err(_) => {}
         }
     }
 
@@ -129,6 +179,10 @@ impl Game {
         if (inp.cast2 && !prev.cast2) || right_click {
             act = Some(InvAct::Toss);
         }
+        let stash_open = !ui.shop && self.safe.map_or(false, |(x0, y0, x1, y1)| self.p.x >= x0 && self.p.x <= x1 && self.p.y >= y0 && self.p.y <= y1);
+        if inp.potion_mp && stash_open {
+            act = Some(InvAct::Store);
+        }
         if inp.inv || inp.cancel || inp.run_toggle || inp.skills {
             act = Some(InvAct::Close);
         }
@@ -143,6 +197,10 @@ impl Game {
                         self.buy_gear(i);
                         Err(String::new())
                     }
+                    Cell::Stash(_) => {
+                        self.store(sel);
+                        Err(String::new())
+                    }
                 };
                 match r {
                     Ok(()) => {
@@ -155,6 +213,7 @@ impl Game {
                 }
             }
             Some(InvAct::Toss) => self.toss(sel),
+            Some(InvAct::Store) => self.store(sel),
             Some(InvAct::Close) => self.inv = None,
             None => {}
         }
@@ -166,6 +225,7 @@ impl Game {
             Cell::Worn(i) => self.p.gear.worn[i].take(),
             Cell::Bag(i) => self.p.gear.bag[i].take(),
             Cell::Shop(i) => return self.buy_gear(i),
+            Cell::Stash(i) => self.p.gear.stash[i].take(),
         };
         let Some(it) = it else { return };
         if matches!(c, Cell::Worn(_)) {
@@ -289,7 +349,7 @@ impl Game {
             None => {
                 let what = match sel {
                     Cell::Worn(w) => format!("NO {} WORN", items::slot_name(WORN[w])),
-                    Cell::Bag(_) | Cell::Shop(_) => "EMPTY".into(),
+                    Cell::Bag(_) | Cell::Shop(_) | Cell::Stash(_) => "EMPTY".into(),
                 };
                 scr.text(&what, tx, ty, rgb(0x7a6a5a), Align::Left, 1);
             }
@@ -317,6 +377,22 @@ impl Game {
             hy = sy0 + 2 * CELL + 4;
             scr.text("ENTER/A BUYS FROM GERTA. X SELLS YOURS.", bx0, hy, rgb(0x6a5a4a), Align::Left, 1);
             hy = 10_000;
+        } else if in_town {
+            scr.text("STASH", bx0, hy, rgb(0xd8b878), Align::Left, 1);
+            scr.text("Y / E: BAG <-> STASH", bx0 + BAG_COLS as i32 * CELL - 2, hy, rgb(0x6a5a4a), Align::Right, 1);
+            let sy0 = hy + 12;
+            for i in 0..STASH {
+                let (c, r) = ((i % BAG_COLS) as i32, (i / BAG_COLS) as i32);
+                let (cx, cy) = (bx0 + c * CELL, sy0 + r * CELL);
+                let it = self.p.gear.stash[i].as_ref();
+                cell_box(scr, cx, cy, CELL - 2, sel == Cell::Stash(i), it);
+                if let Some(it) = it {
+                    draw_icon(scr, &self.art, it, cx + CELL / 2 - 1, cy + CELL / 2 - 1, 0.85);
+                }
+                rects.push((cx, cy, CELL - 2, CELL - 2, InvAct::Select(Cell::Stash(i))));
+                centres.push((Cell::Stash(i), cx + CELL / 2, cy + CELL / 2));
+            }
+            hy = 10_000;
         }
         let hints = [
             "WALK OVER GEAR TO PICK IT UP.",
@@ -339,9 +415,14 @@ impl Game {
             Cell::Worn(_) => "TAKE OFF (ENTER/A)",
             Cell::Bag(_) => "WEAR (ENTER/A)",
             Cell::Shop(_) => "BUY (ENTER/A)",
+            Cell::Stash(_) => "TAKE (ENTER/A)",
         };
         let toss_label = if matches!(sel, Cell::Shop(_)) { "BUY (X)" } else if in_town { "SELL (X)" } else { "DROP (X)" };
-        let buttons: [(&str, InvAct, bool); 3] = [(use_label, InvAct::Use, has), (toss_label, InvAct::Toss, has), ("CLOSE (I/START)", InvAct::Close, true)];
+        let mut buttons: Vec<(&str, InvAct, bool)> = vec![(use_label, InvAct::Use, has), (toss_label, InvAct::Toss, has)];
+        if in_town && !shop && !matches!(sel, Cell::Stash(_)) {
+            buttons.push(("STASH (Y/E)", InvAct::Store, has));
+        }
+        buttons.push(("CLOSE (I/START)", InvAct::Close, true));
         for (label, a, on) in buttons {
             let w = crate::gfx::text_width(label, 1) + 12;
             scr.fill(bx, by, w, 15, if on { rgb(0x5a3a10) } else { rgb(0x221c16) });

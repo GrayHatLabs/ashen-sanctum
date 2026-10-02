@@ -78,7 +78,7 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
         sk
     });
     // Saves from before equipment existed keep the starting staff.
-    if text.lines().any(|l| l.starts_with("worn") || l.starts_with("bag")) {
+    if text.lines().any(|l| l.starts_with("worn") || l.starts_with("bag") || l.starts_with("stash")) {
         g.p.gear = crate::items::Gear::load_text(text);
     }
     if let Some(w) = get("waypoints") {

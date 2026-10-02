@@ -417,8 +417,18 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         g.inv.as_mut().unwrap().sel = crate::inventory::Cell::Bag(14);
         save(&mut g, scr, "inventory_unique");
         g.inv = None;
-        // Trading with Gerta.
+        // The stash, in town.
         g.debug_goto(LevelId::Overworld);
+        (g.p.x, g.p.y) = g.start;
+        for i in 0..7 {
+            g.p.gear.stash[i] = Some(items::roll(6 + i as u8, [Rarity::Rare, Rarity::Magic][i % 2], &mut rng));
+        }
+        g.p.gear.stash[7] = Some(items::unique(3));
+        g.open_inventory();
+        g.inv.as_mut().unwrap().sel = crate::inventory::Cell::Stash(7);
+        save(&mut g, scr, "stash");
+        g.inv = None;
+        // Trading with Gerta.
         g.p.gold = 900;
         g.restock();
         g.open_inventory();

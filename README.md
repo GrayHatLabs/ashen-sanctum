@@ -68,6 +68,8 @@ take back their Seals, unseal the Sanctum and end the Ash King.
     need a character level.
   - Open the **inventory** with I, START or the BAG button. Wear / take off with Enter / A (or click
     the item twice). X or right click drops an item, or sells it in Hollowmere.
+  - In Hollowmere the inventory also shows your **stash** (30 slots, saved): Y / E moves an item
+    between your bag and the stash.
 - **Monsters**: zombies are slow and hit hard, skeletons are fast and fragile, wolves hunt in fast
   packs, goblins panic and flee when one of their own dies, and skeleton archers keep their distance.
   **Champion packs** (blue names, tinted blue) are tougher, with one modifier; **elites** (gold

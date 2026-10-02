@@ -21,6 +21,8 @@ pub const BAG: usize = 30;
 pub const BAG_COLS: usize = 10;
 /// Gerta's shelf (two rows).
 pub const SHOP: usize = 20;
+/// The stash chest in Hollowmere (three rows).
+pub const STASH: usize = 30;
 
 pub fn slot_name(s: Slot) -> &'static str {
     match s {
@@ -491,11 +493,12 @@ pub fn drop(ilvl: u8, mf: i32, boost: bool, rng: &mut Rng) -> Item {
 pub struct Gear {
     pub worn: [Option<Item>; WORN.len()],
     pub bag: Vec<Option<Item>>,
+    pub stash: Vec<Option<Item>>,
 }
 
 impl Default for Gear {
     fn default() -> Self {
-        Gear { worn: Default::default(), bag: vec![None; BAG] }
+        Gear { worn: Default::default(), bag: vec![None; BAG], stash: vec![None; STASH] }
     }
 }
 
@@ -578,6 +581,11 @@ impl Gear {
                 s += &format!("bag{i}={}\n", enc(it));
             }
         }
+        for (i, it) in self.stash.iter().enumerate() {
+            if let Some(it) = it {
+                s += &format!("stash{i}={}\n", enc(it));
+            }
+        }
         s
     }
 
@@ -605,6 +613,8 @@ impl Gear {
                 g.worn[i] = dec(v);
             } else if let Some(i) = k.strip_prefix("bag").and_then(|n| n.parse::<usize>().ok()).filter(|&i| i < BAG) {
                 g.bag[i] = dec(v);
+            } else if let Some(i) = k.strip_prefix("stash").and_then(|n| n.parse::<usize>().ok()).filter(|&i| i < STASH) {
+                g.stash[i] = dec(v);
             }
         }
         g
@@ -690,9 +700,11 @@ mod tests {
         g.worn[3] = Some(unique(0));
         g.bag[4] = Some(roll(3, Rarity::Magic, &mut rng));
         g.bag[29] = Some(roll(1, Rarity::Normal, &mut rng));
+        g.stash[17] = Some(unique(3));
         let h = Gear::load_text(&g.save_text());
         assert_eq!(h.worn, g.worn);
         assert_eq!(h.bag, g.bag);
+        assert_eq!(h.stash, g.stash);
         assert_eq!(h.bonus(), g.bonus());
     }
 
