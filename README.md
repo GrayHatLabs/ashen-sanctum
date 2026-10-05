@@ -161,9 +161,29 @@ and graveyards, with the walled village of **Mournhold** and the dark spires of 
 - **Monsters**: ghouls, werewolves (they regenerate), banshees, will-o'-wisps, cultists and vampire bats.
 - Fog banks and drifting wisp-lights over the forest; a haunted waltz in the woods, an organ in the crypts.
 
-## After Count Vardak
+## Act 4: Mechanus
 
-Like Diablo 2, beating the game opens **Nightmare**, then **Hell**: talk to Abelard the Hunter. The
+When Count Vardak falls, a ring of brass **gears** behind his castle starts to turn. Through it lies
+**Mechanus, the Clockwork Dominion**: the Grinding Fields, an island of sooty brass plates over the void,
+with gear towers, boilers and steam vents, and the refuge town of **the Last Escapement**, where clockwork
+servants who grew souls hide from their maker.
+
+- **Tally** (story), **Madame Vesper** (tinkerer shop) and **Brother Piston** (heals and resets skills).
+- **The Clockmaker** wound the Ash King, the Wyrm and the Count. His great clock is locked with three
+  **Winding Keys**, held by his heralds:
+  - **The Foundry of Souls**: **the Forgemother** pours slag pools and rebuilds her fallen automatons.
+  - **The Choir Engine**: **the Cantor**, an organ on spider legs, fires rings of sound with a turning gap to dodge through.
+  - **The Archive of Gears**: **the Archivist** "files" you elsewhere and summons records of old bosses.
+  - **The Heart of the Clock** (needs all three keys): **the Clockmaker**. He throws spirals of clock-hand
+    blades and **rewinds** you to where you stood three seconds ago. Below half life he climbs into his great
+    engine and swings pendulum slams across the arena.
+- **Monsters**: cog-hounds, inquisitor automatons (steam censers), gearwraiths (they phase out), spring-heeled
+  jacks (leap in), boiler brutes (they explode when they fall) and ordinal drones.
+- Drifting steam and brass sparks; a ticking harpsichord outside, an engine's clangour in the works.
+
+## After the Clockmaker
+
+Like Diablo 2, beating the game opens **Nightmare**, then **Hell**: talk to Tally. The
 world is rebuilt with much tougher monsters and richer drops, and the quests start over, while
 your character, skills and gear carry on.
 
@@ -209,7 +229,8 @@ start the game. Start a brand-new character with `--new`. Your gear and bag are 
 
 To listen to the music outside the game: `--export-music music` writes the loops as WAV files.
 
-To try Act 2 straight away, `--act2` starts a ready-made level 18 sorceress in Kaldholm (Act 1
+To try a later act straight away, `--act3` (level 26 in Mournhold) or `--act4` (level 34 in the Last
+Escapement) work like `--act2`, each with its own save file. `--act2` starts a ready-made level 18 sorceress in Kaldholm (Act 1
 done, skill points to spend, a full set of gear). It has its own save file (`save_act2.txt`), so your
 real character is untouched; `--act2 --new` starts it over.
 

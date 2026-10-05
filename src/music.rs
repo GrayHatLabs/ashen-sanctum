@@ -20,9 +20,14 @@ pub enum Track {
     Mist,
     /// Act 3: the dungeons and Castle Vardak (a cathedral organ).
     Crypt,
+    /// Act 4: the Grinding Fields (a ticking harpsichord).
+    Gears,
+    /// Act 4: the works and the Heart of the Clock (clanking engine).
+    Engine,
 }
 
-pub const TRACKS: [Track; 8] = [Track::Town, Track::Wilds, Track::Dungeon, Track::Boss, Track::Frost, Track::Ice, Track::Mist, Track::Crypt];
+pub const TRACKS: [Track; 10] =
+    [Track::Town, Track::Wilds, Track::Dungeon, Track::Boss, Track::Frost, Track::Ice, Track::Mist, Track::Crypt, Track::Gears, Track::Engine];
 
 fn hz(midi: f32) -> f32 {
     440.0 * 2f32.powf((midi - 69.0) / 12.0)
@@ -235,6 +240,8 @@ pub fn render(track: Track) -> Vec<f32> {
         Track::Ice => 67,
         Track::Mist => 71,
         Track::Crypt => 83,
+        Track::Gears => 97,
+        Track::Engine => 101,
     });
     match track {
         Track::Town => town(&mut rng),
@@ -245,6 +252,8 @@ pub fn render(track: Track) -> Vec<f32> {
         Track::Ice => ice(&mut rng),
         Track::Mist => mist(&mut rng),
         Track::Crypt => crypt(&mut rng),
+        Track::Gears => gears(&mut rng),
+        Track::Engine => engine(&mut rng),
     }
 }
 
@@ -408,6 +417,61 @@ fn crypt(rng: &mut Rng) -> Vec<f32> {
     }
     for (k, m) in [62.0, 61.0, 58.0, 57.0].iter().enumerate() {
         b.bell(4.0 + k as f32 * 12.0, *m + 12.0, 0.05);
+    }
+    b.finish(0.6, 0.6)
+}
+
+/// Mechanus: a clock ticks under a running harpsichord figure (A minor), with an organ swell.
+fn gears(rng: &mut Rng) -> Vec<f32> {
+    let bpm = 112.0;
+    let beat = 60.0 / bpm;
+    let bars = 16;
+    let mut b = Buf::new(bars as f32 * 4.0 * beat);
+    b.drone(33.0, 0.035);
+    let chords: [f32; 4] = [57.0, 53.0, 55.0, 52.0];
+    for bar in 0..bars {
+        let t0 = bar as f32 * 4.0 * beat;
+        let root = chords[bar % 4];
+        let minor = if bar % 4 == 3 { 4.0 } else { 3.0 };
+        // Tick, tock.
+        for k in 0..4 {
+            b.drum(t0 + k as f32 * beat, if k % 2 == 0 { 0.08 } else { 0.05 }, if k % 2 == 0 { 96.0 } else { 88.0 }, rng);
+        }
+        // An arpeggio in sixteenths, like clockwork.
+        let arp = [0.0, minor, 7.0, 12.0, 7.0, minor, 0.0, minor];
+        for k in 0..16 {
+            let n = root + arp[k % 8] + if bar >= 8 && k % 4 == 0 { 12.0 } else { 0.0 };
+            b.pluck(t0 + k as f32 * beat * 0.25, n, 0.1, 0.8, 0.993, rng);
+        }
+        b.pad(t0, 4.0 * beat, &[root - 12.0, root - 12.0 + minor, root - 5.0], 0.06, 500.0);
+        if bar % 4 == 0 {
+            b.bell(t0, root + 24.0, 0.04);
+        }
+    }
+    b.finish(0.55, 0.55)
+}
+
+/// Act 4's works: a heavy engine pulse, hissing steam and grinding metal over a low organ.
+fn engine(rng: &mut Rng) -> Vec<f32> {
+    let secs = 48.0;
+    let mut b = Buf::new(secs);
+    b.drone(28.0, 0.07);
+    b.wind(0.08, rng);
+    let chords = [(40.0, 43.0, 47.0), (38.0, 41.0, 45.0), (36.0, 40.0, 43.0), (35.0, 38.0, 42.0)];
+    for (k, &(a, c, e)) in chords.iter().enumerate() {
+        b.pad(k as f32 * 12.0, 11.5, &[a, c, e], 0.1, 450.0);
+    }
+    let mut t = 0.5;
+    let mut k = 0;
+    while t < secs {
+        // Piston: thump - clank.
+        b.drum(t, 0.2, 40.0, rng);
+        b.drum(t + 0.375, 0.07, 92.0, rng);
+        if k % 4 == 3 {
+            b.drum(t + 0.56, 0.05, 100.0, rng);
+        }
+        t += 0.75;
+        k += 1;
     }
     b.finish(0.6, 0.6)
 }

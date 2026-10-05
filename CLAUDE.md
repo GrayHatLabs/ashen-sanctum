@@ -17,10 +17,11 @@ Project rules and reference. Read this before every major change.
 - `game.rs`: Game state, level swapping (`go_to`, parked levels), player, combat, pickups, dialogue flow.
 - `mobs.rs`: monster definitions (`def`), AI incl. boss abilities, enemy shots, ground hazards.
 - `world.rs`: `Level`, overworld + Hollowmere generation, the Act 2 Frostmarch + Kaldholm, the Act 3 Mistwood
-  + Mournhold, dungeon floors, portals (incl. the `Pass` between acts), props, `DUNGEONS` (entries 4-7 are
-  Act 2, 8-11 Act 3; `act` field).
+  + Mournhold, the Act 4 Mechanus + Last Escapement, dungeon floors, portals (incl. the `Pass(n)` gates
+  between acts: Pass(n) leads to act n), props, `DUNGEONS` (4-7 Act 2, 8-11 Act 3, 12-15 Act 4; `act` field).
   `LevelId::act()` / `LevelId::land(act)` / `overland()`: use them instead of checking `Overworld`.
-  Act plans: `docs/ACT2_PLAN.md`, `docs/ACT3_PLAN.md`; Act 4 ideas: `docs/ACT4_IDEAS.md`.
+  Act plans: `docs/ACT2_PLAN.md`, `docs/ACT3_PLAN.md`; Act 4 ideas and plan: `docs/ACT4_IDEAS.md`.
+  Bosses can send one-off orders to the game through `Mob.cue` (rewind, file away), see `Game::mob_cues`.
 - `story.rs`: quest stages, NPC dialogue, shop wares, epilogue.
 - `levels.rs` + `build.rs`: JSON level files (folder override, embedded at build, generator fallback).
   Editor: `tools/level-editor/index.html`. Format: `docs/LEVEL_FORMAT.md`. Keep the editor's catalog

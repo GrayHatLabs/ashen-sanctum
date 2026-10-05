@@ -382,7 +382,7 @@ impl Menu {
                 scr.blit_scaled(p, lx + 20, y + 1 + (p.ay as f32 * s) as i32, s, fx);
             }
             scr.text(&hero.name, lx + 42, y + 5, if on { rgb(0xffe0a0) } else { rgb(0xd0c0a0) }, Align::Left, 1);
-            let act = ["ACT 1", "ACT 2", "ACT 3"][hero.act.min(2)];
+            let act = ["ACT 1", "ACT 2", "ACT 3", "ACT 4"][hero.act.min(3)];
             let diff = crate::story::DIFFICULTIES[hero.difficulty.min(2) as usize];
             let line = format!("LEVEL {} {}  {}  {}", hero.clvl, hero.class.name(), act, diff);
             scr.text(&line, lx + 42, y + 17, col, Align::Left, 1);

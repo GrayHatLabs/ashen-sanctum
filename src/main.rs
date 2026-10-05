@@ -132,13 +132,15 @@ fn main() -> Result<(), String> {
     let seed = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_nanos() as u64).unwrap_or(1);
     // --act2: a ready-made level 18 character in Kaldholm, with its own save file
     // (save_act2.txt) so your real character is never touched. --act2 --new starts it over.
-    let act2 = args.iter().any(|a| a == "--act2");
-    if act2 {
-        save::use_file("save_act2.txt");
+    // --act3 / --act4 likewise: level 26 in Mournhold, level 34 in the Last Escapement.
+    let test_act = [("--act2", 1), ("--act3", 2), ("--act4", 3)].iter().find(|(f, _)| args.iter().any(|a| a == f)).map(|&(_, n)| n);
+    let act2 = test_act.is_some();
+    if let Some(n) = test_act {
+        save::use_file(&format!("save_act{}.txt", n + 1));
     }
     // The title screen and character select (heroes in heroes/), unless a test flag skips them:
     // --new / --act2 / --vampire / --sorceress / --level use the old single save.txt flow.
-    let skip_menu = ["--new", "--act2", "--vampire", "--sorceress", "--inventor", "--level"].iter().any(|f| args.iter().any(|a| a == f));
+    let skip_menu = ["--new", "--act2", "--act3", "--act4", "--vampire", "--sorceress", "--inventor", "--level"].iter().any(|f| args.iter().any(|a| a == f));
     let mut menu: Option<menu::Menu> = if skip_menu { None } else { Some(menu::Menu::new(save::list_heroes())) };
     // Continue the saved character (fresh world from the same seed), unless --new.
     let saved = if menu.is_some() || args.iter().any(|a| a == "--new") { None } else { save::read() };
@@ -171,8 +173,8 @@ fn main() -> Result<(), String> {
     video.text_input().start();
     let (mut typed, mut backspace) = (String::new(), false);
     let mut menu_out: Option<menu::MenuOut> = None;
-    if act2 && !loaded {
-        game.act2_start();
+    if let (Some(n), false) = (test_act, loaded) {
+        game.act_start(n);
         save::write(&game);
     }
     // --level <name>: jump straight into a level to test it (e.g. bone_crypt_floor1).

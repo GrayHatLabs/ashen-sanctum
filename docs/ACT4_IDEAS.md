@@ -51,3 +51,10 @@ Hook: someone has been *winding the world*. The Ash King's fire, the Rime Wyrm's
    - Fight: the planets orbit as rotating hazards, and he speeds them up as he weakens.
 
 **Mechanic idea for the act:** *time*. Clocks you can strike to slow an area, rewind pulses, and timed doors. Combined with Mechanus's order, there could be "law zones" where only one type of damage works.
+
+## Built (2026-10-05)
+
+The user picked **the Clockmaker**, unlocked **after Count Vardak** (a gear gate on the castle grounds).
+As built: Tally / Madame Vesper / Brother Piston in the Last Escapement; Forgemother, Cantor, Archivist
+hold the three Winding Keys; the Clockmaker duels (blade spirals, rewind) then pilots his great engine
+(pendulum slams, ordinals). Not built yet: crows, ordinal formations, time-slowing clocks, law zones.

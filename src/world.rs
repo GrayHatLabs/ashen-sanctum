@@ -15,6 +15,8 @@ pub enum LevelId {
     Frostmarch,
     /// Act 3's overland: the Mistwood and Mournhold.
     Mistwood,
+    /// Act 4's overland: the Grinding Fields of Mechanus and the Last Escapement.
+    Mechanus,
     /// (dungeon index into DUNGEONS, floor from 0)
     Dungeon(usize, usize),
 }
@@ -22,15 +24,16 @@ pub enum LevelId {
 impl LevelId {
     /// An open-air map with a town (one per act).
     pub fn overland(self) -> bool {
-        matches!(self, LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood)
+        matches!(self, LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus)
     }
 
-    /// 0 for Act 1, 1 for Act 2.
+    /// 0 for Act 1, 1 for Act 2, 2 for Act 3, 3 for Act 4.
     pub fn act(self) -> usize {
         match self {
             LevelId::Overworld => 0,
             LevelId::Frostmarch => 1,
             LevelId::Mistwood => 2,
+            LevelId::Mechanus => 3,
             LevelId::Dungeon(k, _) => DUNGEONS[k].act,
         }
     }
@@ -40,7 +43,8 @@ impl LevelId {
         match act {
             0 => LevelId::Overworld,
             1 => LevelId::Frostmarch,
-            _ => LevelId::Mistwood,
+            2 => LevelId::Mistwood,
+            _ => LevelId::Mechanus,
         }
     }
 }
@@ -64,10 +68,16 @@ pub enum Theme {
     Gallows,
     Barrow,
     Castle,
+    /// Act 4 overland: brass plates over the void.
+    Mechanus,
+    Foundry,
+    Choir,
+    Archive,
+    Clock,
 }
 
 impl Theme {
-    pub const ALL: [Theme; 15] = [
+    pub const ALL: [Theme; 20] = [
         Theme::Overworld,
         Theme::Crypt,
         Theme::Warrens,
@@ -83,11 +93,21 @@ impl Theme {
         Theme::Gallows,
         Theme::Barrow,
         Theme::Castle,
+        Theme::Mechanus,
+        Theme::Foundry,
+        Theme::Choir,
+        Theme::Archive,
+        Theme::Clock,
     ];
 
     /// Open-air (grass or snow ground, palisade walls).
     pub fn open(self) -> bool {
-        matches!(self, Theme::Overworld | Theme::Tundra | Theme::Mistwood)
+        matches!(self, Theme::Overworld | Theme::Tundra | Theme::Mistwood | Theme::Mechanus)
+    }
+
+    /// Act 4 themes (drifting steam and brass sparks).
+    pub fn clockwork(self) -> bool {
+        matches!(self, Theme::Mechanus | Theme::Foundry | Theme::Choir | Theme::Archive | Theme::Clock)
     }
 
     /// Act 3 themes (fog and drifting wisp motes).
@@ -118,6 +138,11 @@ impl Theme {
             Theme::Mistwood => (300.0, 0.3),
             Theme::Castle => (240.0, 0.1),
             Theme::Chapel | Theme::Gallows | Theme::Barrow => (230.0, 0.08),
+            // Mechanus: a sooty amber dusk; the foundry glows.
+            Theme::Mechanus => (340.0, 0.36),
+            Theme::Foundry => (260.0, 0.16),
+            Theme::Clock => (260.0, 0.14),
+            Theme::Choir | Theme::Archive => (240.0, 0.1),
             _ => (250.0, 0.10),
         }
     }
@@ -136,7 +161,7 @@ pub struct DungeonDef {
     pub act: usize,
 }
 
-pub const DUNGEONS: [DungeonDef; 12] = [
+pub const DUNGEONS: [DungeonDef; 16] = [
     DungeonDef {
         name: "THE BONE CRYPT",
         floors: 2,
@@ -257,6 +282,46 @@ pub const DUNGEONS: [DungeonDef; 12] = [
         entrance: (40, 14),
         act: 2,
     },
+    DungeonDef {
+        name: "THE FOUNDRY OF SOULS",
+        floors: 2,
+        theme: Theme::Foundry,
+        boss: Kind::Forgemother,
+        monsters: &[Kind::BoilerBrute, Kind::CogHound, Kind::Ordinal],
+        tier: 7.8,
+        entrance: (20, 84),
+        act: 3,
+    },
+    DungeonDef {
+        name: "THE CHOIR ENGINE",
+        floors: 2,
+        theme: Theme::Choir,
+        boss: Kind::Cantor,
+        monsters: &[Kind::Inquisitor, Kind::Gearwraith, Kind::Ordinal],
+        tier: 8.2,
+        entrance: (92, 86),
+        act: 3,
+    },
+    DungeonDef {
+        name: "THE ARCHIVE OF GEARS",
+        floors: 3,
+        theme: Theme::Archive,
+        boss: Kind::Archivist,
+        monsters: &[Kind::Gearwraith, Kind::SpringJack, Kind::Inquisitor],
+        tier: 8.6,
+        entrance: (90, 24),
+        act: 3,
+    },
+    DungeonDef {
+        name: "THE HEART OF THE CLOCK",
+        floors: 3,
+        theme: Theme::Clock,
+        boss: Kind::Clockmaker,
+        monsters: &[Kind::SpringJack, Kind::BoilerBrute, Kind::CogHound, Kind::Ordinal],
+        tier: 9.2,
+        entrance: (54, 14),
+        act: 3,
+    },
 ];
 
 /// The Ashen Sanctum (needs all three seals).
@@ -265,6 +330,8 @@ pub const SANCTUM: usize = 3;
 pub const GLACIER: usize = 7;
 /// Castle Vardak (needs the three grave sigils).
 pub const CASTLE: usize = 11;
+/// The Heart of the Clock (needs the three winding keys).
+pub const HEART: usize = 15;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum PortalKind {
@@ -321,6 +388,18 @@ pub enum PropKind {
     Cart,
     /// The misty road between the Frostmarch and the Mistwood.
     PassMist,
+    // ---- Act 4 ----
+    GearTower,
+    SteamPipes,
+    SteamVent,
+    GasLamp,
+    CogPile,
+    Workshop1,
+    Workshop2,
+    ClockTower,
+    Pendulum,
+    /// The gear gate between the Mistwood and Mechanus.
+    GearGate,
 }
 
 impl PropKind {
@@ -347,7 +426,11 @@ impl PropKind {
             PropKind::Entrance(8) => "ent_chapel",
             PropKind::Entrance(9) => "ent_gallows",
             PropKind::Entrance(10) => "ent_barrow",
-            PropKind::Entrance(_) => "ent_castle",
+            PropKind::Entrance(11) => "ent_castle",
+            PropKind::Entrance(12) => "ent_foundry",
+            PropKind::Entrance(13) => "ent_choir",
+            PropKind::Entrance(14) => "ent_archive",
+            PropKind::Entrance(_) => "ent_clock",
             PropKind::StairsDown => "stairs_down",
             PropKind::StairsUp => "stairs_up",
             PropKind::SnowPine => "tree_snowpine",
@@ -367,6 +450,16 @@ impl PropKind {
             PropKind::Gallows => "gallows",
             PropKind::Cart => "merchant_cart",
             PropKind::PassMist => "pass_mist",
+            PropKind::GearTower => "gear_tower",
+            PropKind::SteamPipes => "steam_pipes",
+            PropKind::SteamVent => "steam_vent",
+            PropKind::GasLamp => "gas_lamp",
+            PropKind::CogPile => "cog_pile",
+            PropKind::Workshop1 => "workshop1",
+            PropKind::Workshop2 => "workshop2",
+            PropKind::ClockTower => "clock_tower",
+            PropKind::Pendulum => "pendulum",
+            PropKind::GearGate => "gear_gate",
         }
     }
 
@@ -463,6 +556,7 @@ pub fn generate(id: LevelId, seed: u64) -> Level {
         LevelId::Overworld => overworld(seed),
         LevelId::Frostmarch => frostmarch(seed),
         LevelId::Mistwood => mistwood(seed),
+        LevelId::Mechanus => mechanus(seed),
         LevelId::Dungeon(k, f) => dungeon_floor(k, f, seed),
     }
 }
@@ -504,11 +598,12 @@ pub fn add_elites(lv: &mut Level, seed: u64) {
         LevelId::Overworld => 0x0e11,
         LevelId::Frostmarch => 0x0f11,
         LevelId::Mistwood => 0x1011,
+        LevelId::Mechanus => 0x1111,
         LevelId::Dungeon(k, f) => 0x0e12 + k as u64 * 16 + f as u64,
     };
     let mut rng = Rng::new(seed ^ salt.wrapping_mul(0x9e37_79b9));
     let (champs, elites) = match lv.id {
-        LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood => (5, 3),
+        LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus => (5, 3),
         LevelId::Dungeon(_, f) => (1 + (f > 0) as usize, 1),
     };
     let mut order: Vec<usize> = (0..lv.mobs.len()).filter(|&i| !lv.mobs[i].boss).collect();
@@ -553,6 +648,11 @@ pub const PASS_FROST: (i32, i32) = (56, 104);
 /// The misty road east out of the Frostmarch, and where it comes out in the Mistwood.
 pub const PASS_FROST_EAST: (i32, i32) = (106, 52);
 pub const PASS_MIST: (i32, i32) = (6, 56);
+/// The gear gate behind Castle Vardak (opens when the Count dies), and where it comes out on Mechanus.
+pub const GEAR_GATE: (i32, i32) = (22, 16);
+pub const PASS_GEARS: (i32, i32) = (8, 56);
+/// The Last Escapement: the refuge town on Mechanus.
+pub const ESCAPEMENT: (i32, i32, i32, i32) = (44, 46, 64, 64);
 /// Mournhold: palisade rectangle on the Mistwood.
 pub const MOURNHOLD: (i32, i32, i32, i32) = (40, 48, 62, 66);
 /// Kaldholm: palisade rectangle (inclusive tile bounds) on the Frostmarch.
@@ -1110,6 +1210,12 @@ pub fn mistwood(seed: u64) -> Level {
     clear(&mut keep, px, py, 4);
     prop(&mut lv, &mut d, PropKind::PassMist, px - 3, py - 1, 2, 3);
     lv.portals.push(Portal { x: px as f32 + 0.5, y: py as f32 + 0.5, kind: PortalKind::Pass(1) });
+    // The gear gate on the castle grounds (to Mechanus, once the Count is dead).
+    let (gx, gy) = GEAR_GATE;
+    road(&mut d, &mut keep, (mx, ty0 - 1), (gx, gy), 11.0);
+    clear(&mut keep, gx, gy, 4);
+    prop(&mut lv, &mut d, PropKind::GearGate, gx - 1, gy - 3, 3, 2);
+    lv.portals.push(Portal { x: gx as f32 + 0.5, y: gy as f32 + 0.5, kind: PortalKind::Pass(3) });
 
     // ---- the haunted forest: twisted trees, gravestones, glowing mushrooms ----
     let forest = Noise::new(&mut rng, 16, 8.0);
@@ -1147,6 +1253,7 @@ pub fn mistwood(seed: u64) -> Level {
             || d.blocked(x, y, 0.4)
             || DUNGEONS.iter().filter(|d| d.act == 2).any(|def| (def.entrance.0 as f32 - x).abs() + (def.entrance.1 as f32 - y).abs() < 6.0)
             || ((x - px as f32).abs() < 7.0 && (y - py as f32).abs() < 7.0)
+            || ((x - GEAR_GATE.0 as f32).abs() < 7.0 && (y - GEAR_GATE.1 as f32).abs() < 7.0)
         {
             continue;
         }
@@ -1180,6 +1287,220 @@ pub fn mistwood(seed: u64) -> Level {
     lv.explored = vec![false; (w * h) as usize];
     lv.d = d;
     lv.start = mournhold_center();
+    lv
+}
+
+/// The Last Escapement's square.
+pub fn escapement_center() -> (f32, f32) {
+    (54.5, 55.5)
+}
+
+/// Builds Act 4's overland: the Grinding Fields of Mechanus, an island of brass plates over the
+/// void, with the refuge town of the Last Escapement, roads to the heralds' works and the
+/// great clock, and the gear gate back to the Mistwood.
+pub fn mechanus(seed: u64) -> Level {
+    let mut rng = Rng::new(seed ^ 0x4C0C_C10C);
+    let (w, h) = (WORLD_W, WORLD_H);
+    let mut d = Dungeon::blank(w, h, Tile::Floor);
+    for v in d.var.iter_mut() {
+        *v = rng.range(0, 100) as u8;
+    }
+    let mut lv = Level::new(LevelId::Mechanus, "THE GRINDING FIELDS".into(), Theme::Mechanus, 7.2, Dungeon::blank(1, 1, Tile::Void));
+    let mut keep = vec![false; (w * h) as usize];
+    let clear = |keep: &mut Vec<bool>, x: i32, y: i32, r: i32| {
+        for yy in y - r..=y + r {
+            for xx in x - r..=x + r {
+                if xx >= 0 && yy >= 0 && xx < w && yy < h {
+                    keep[(yy * w + xx) as usize] = true;
+                }
+            }
+        }
+    };
+    let prop = |lv: &mut Level, d: &mut Dungeon, kind: PropKind, x0: i32, y0: i32, fw: i32, fh: i32| {
+        for y in y0..y0 + fh {
+            for x in x0..x0 + fw {
+                d.set(x, y, Tile::Prop);
+            }
+        }
+        lv.props.push(Prop::on(kind, x0, y0, fw, fh));
+    };
+
+    // ---- verdigris copper (ground 1) in patches ----
+    let green = Noise::new(&mut rng, 14, 7.0);
+    for y in 0..h {
+        for x in 0..w {
+            if green.at(x as f32, y as f32) > 0.66 {
+                d.set_ground(x, y, 1);
+            }
+        }
+    }
+
+    // ---- the Last Escapement ----
+    let (tx0, ty0, tx1, ty1) = ESCAPEMENT;
+    let (mx, my) = ((tx0 + tx1) / 2, (ty0 + ty1) / 2);
+    for y in ty0..=ty1 {
+        for x in tx0..=tx1 {
+            d.set_ground(x, y, 0);
+            let edge = x == tx0 || x == tx1 || y == ty0 || y == ty1;
+            let gate = (y == ty0 || y == ty1) && (mx - 1..=mx + 2).contains(&x) || (x == tx0 || x == tx1) && (my - 1..=my + 2).contains(&y);
+            if edge && !gate {
+                d.set(x, y, Tile::Wall);
+            }
+        }
+    }
+    clear(&mut keep, mx, my, 14);
+    for x in tx0..=tx1 {
+        for y in my..=my + 1 {
+            d.set_ground(x, y, 2);
+        }
+    }
+    for y in ty0..=ty1 {
+        for x in mx..=mx + 1 {
+            d.set_ground(x, y, 2);
+        }
+    }
+    prop(&mut lv, &mut d, PropKind::Workshop1, 46, 48, 4, 4);
+    prop(&mut lv, &mut d, PropKind::Workshop2, 58, 48, 4, 4);
+    prop(&mut lv, &mut d, PropKind::Workshop1, 46, 59, 4, 3);
+    prop(&mut lv, &mut d, PropKind::ClockTower, 59, 59, 2, 2);
+    prop(&mut lv, &mut d, PropKind::GasLamp, 52, 53, 1, 1);
+    prop(&mut lv, &mut d, PropKind::GasLamp, 57, 58, 1, 1);
+    prop(&mut lv, &mut d, PropKind::SteamPipes, 62, 54, 1, 2);
+    lv.safe = Some((tx0 as f32 - 1.0, ty0 as f32 - 1.0, tx1 as f32 + 2.0, ty1 as f32 + 2.0));
+    lv.npcs = vec![
+        Npc::new("TALLY", Role::Tally, "npc_tally", 55.5, 56.8, 6),
+        Npc::new("MADAME VESPER", Role::Vesper, "npc_vesper", 58.0, 55.8, 0),
+        Npc::new("BROTHER PISTON", Role::Oiler, "npc_oiler", 50.5, 55.5, 2),
+        Npc::new("SERVANT", Role::Servant(0), "npc_servant", 52.0, 60.0, 1),
+        Npc::new("SERVANT", Role::Servant(1), "npc_servant", 61.5, 57.0, 5),
+        Npc::new("SERVANT", Role::Servant(2), "npc_servant", 49.5, 52.0, 3),
+    ];
+
+    // ---- conveyor roads ----
+    let gates = [(mx, ty1 + 1), (tx1 + 1, my), (mx, ty0 - 1), (tx0 - 1, my)];
+    let road = |d: &mut Dungeon, keep: &mut Vec<bool>, (gx, gy): (i32, i32), (ex, ey): (i32, i32), salt: f32| {
+        let (mut x, mut y) = (gx as f32, gy as f32);
+        let mut guard = 0;
+        while ((x - ex as f32).abs() > 0.8 || (y - ey as f32).abs() > 0.8) && guard < 400 {
+            guard += 1;
+            let (dx, dy) = (ex as f32 - x, ey as f32 - y);
+            let l = (dx * dx + dy * dy).sqrt();
+            // Machined roads: straighter than forest paths.
+            let wob = (guard as f32 * 0.17 + salt).sin() * 0.35;
+            x += dx / l + (-dy / l) * wob * 0.5;
+            y += dy / l + (dx / l) * wob * 0.5;
+            for (ox, oy) in [(0, 0), (1, 0), (0, 1), (1, 1)] {
+                let (rx, ry) = (x as i32 + ox, y as i32 + oy);
+                if d.get(rx, ry) == Tile::Floor {
+                    d.set_ground(rx, ry, 2);
+                }
+            }
+            clear(keep, x as i32, y as i32, 2);
+        }
+    };
+    for (k, def) in DUNGEONS.iter().enumerate().filter(|(_, d)| d.act == 3) {
+        let (ex, ey) = def.entrance;
+        let &g = gates.iter().min_by_key(|(gx, gy)| (gx - ex).pow(2) + (gy - ey).pow(2)).unwrap();
+        road(&mut d, &mut keep, g, (ex, ey), k as f32);
+        clear(&mut keep, ex, ey, 5);
+        let (fw, fh) = if k == HEART { (4, 3) } else { (3, 3) };
+        prop(&mut lv, &mut d, PropKind::Entrance(k), ex - fw / 2, ey - 3, fw, fh);
+        lv.portals.push(Portal { x: ex as f32 + 0.5, y: ey as f32 + 0.5, kind: PortalKind::Entrance(k) });
+    }
+    let (px, py) = PASS_GEARS;
+    road(&mut d, &mut keep, (tx0 - 1, my), (px, py), 7.0);
+    clear(&mut keep, px, py, 4);
+    prop(&mut lv, &mut d, PropKind::GearGate, px - 1, py - 3, 3, 2);
+    lv.portals.push(Portal { x: px as f32 + 0.5, y: py as f32 + 0.5, kind: PortalKind::Pass(2) });
+
+    // ---- the void: the island's ragged rim and a few chasms (never across a road) ----
+    let rim = Noise::new(&mut rng, 12, 6.0);
+    let pits = Noise::new(&mut rng, 18, 9.0);
+    for y in 0..h {
+        for x in 0..w {
+            if keep[(y * w + x) as usize] || d.get(x, y) != Tile::Floor {
+                continue;
+            }
+            let edge = x.min(y).min(w - 1 - x).min(h - 1 - y) as f32;
+            let ragged = edge < 3.0 + rim.at(x as f32, y as f32) * 4.0;
+            if ragged || pits.at(x as f32, y as f32) > 0.78 {
+                d.set(x, y, Tile::Void);
+            }
+        }
+    }
+
+    // ---- the works: gear towers, pipes, vents, cog piles, pendulums ----
+    let works = Noise::new(&mut rng, 16, 8.0);
+    for y in 0..h {
+        for x in 0..w {
+            if d.get(x, y) != Tile::Floor || keep[(y * w + x) as usize] {
+                continue;
+            }
+            let f = works.at(x as f32, y as f32);
+            let r = rng.f();
+            if f > 0.6 && r < 0.3 || r < 0.01 {
+                let kind = match rng.range(0, 10) {
+                    0..=3 => PropKind::GearTower,
+                    4..=6 => PropKind::SteamPipes,
+                    7 => PropKind::Pendulum,
+                    _ => PropKind::CogPile,
+                };
+                prop(&mut lv, &mut d, kind, x, y, 1, 1);
+            } else if r < 0.018 {
+                prop(&mut lv, &mut d, PropKind::SteamVent, x, y, 1, 1);
+            } else if r < 0.024 {
+                prop(&mut lv, &mut d, PropKind::GasLamp, x, y, 1, 1);
+            }
+        }
+    }
+
+    // ---- roaming packs and a little food ----
+    let (cx, cy) = escapement_center();
+    let mut packs = 0;
+    for _ in 0..800 {
+        if packs >= 30 {
+            break;
+        }
+        let x = rng.range(6, w - 6) as f32 + 0.5;
+        let y = rng.range(6, h - 6) as f32 + 0.5;
+        let far = ((x - cx).powi(2) + (y - cy).powi(2)).sqrt();
+        if far < 20.0
+            || d.blocked(x, y, 0.4)
+            || DUNGEONS.iter().filter(|d| d.act == 3).any(|def| (def.entrance.0 as f32 - x).abs() + (def.entrance.1 as f32 - y).abs() < 6.0)
+            || ((x - px as f32).abs() < 7.0 && (y - py as f32).abs() < 7.0)
+        {
+            continue;
+        }
+        let tier = if far < 34.0 { 7.2 } else { 7.7 };
+        let kinds: &[Kind] = if far < 34.0 { &[Kind::CogHound, Kind::Ordinal, Kind::Inquisitor] } else { &[Kind::CogHound, Kind::SpringJack, Kind::Inquisitor, Kind::BoilerBrute, Kind::Ordinal] };
+        let kind = kinds[rng.range(0, kinds.len() as i32) as usize];
+        let n = if kind == Kind::BoilerBrute { rng.range(1, 3) } else if kind == Kind::Ordinal { rng.range(4, 7) } else { rng.range(3, 6) };
+        for _ in 0..n {
+            for _try in 0..10 {
+                let (mx, my) = (x + rng.rf(-2.0, 2.0), y + rng.rf(-2.0, 2.0));
+                if !d.blocked(mx, my, 0.35) {
+                    lv.mobs.push(Mob::new(kind, mx, my, tier, &mut rng));
+                    break;
+                }
+            }
+        }
+        packs += 1;
+    }
+    let mut food = 0;
+    for _ in 0..400 {
+        if food >= 10 {
+            break;
+        }
+        let x = rng.range(6, w - 6) as f32 + 0.5;
+        let y = rng.range(6, h - 6) as f32 + 0.5;
+        if ((x - cx).powi(2) + (y - cy).powi(2)).sqrt() > 16.0 && !d.blocked(x, y, 0.3) {
+            lv.pickups.push(Pickup { x, y, kind: Drop::Food(if rng.chance(0.5) { 1 } else { 2 }), t: 1.0 });
+            food += 1;
+        }
+    }
+    lv.explored = vec![false; (w * h) as usize];
+    lv.d = d;
+    lv.start = escapement_center();
     lv
 }
 
@@ -1291,6 +1612,35 @@ mod tests {
         let (cx, cy) = town_center();
         assert!(ow.d.path((cx as i32, cy as i32), (pass.x as i32, pass.y as i32), 100_000).is_some());
         assert!(ow.portals.iter().all(|p| !matches!(p.kind, PortalKind::Entrance(k) if k >= 4)));
+    }
+
+    #[test]
+    fn mechanus_connects_the_escapement_to_every_works_and_the_gear_gate() {
+        let lv = mechanus(7);
+        let (cx, cy) = escapement_center();
+        assert!(lv.d.walkable(cx as i32, cy as i32));
+        let mut kinds = vec![];
+        for p in &lv.portals {
+            assert!(lv.d.walkable(p.x as i32, p.y as i32), "portal {:?} blocked", p.kind);
+            assert!(lv.d.path((cx as i32, cy as i32), (p.x as i32, p.y as i32), 100_000).is_some(), "no road to {:?}", p.kind);
+            kinds.push(p.kind);
+        }
+        for k in 12..16 {
+            assert!(kinds.contains(&PortalKind::Entrance(k)));
+        }
+        assert!(kinds.contains(&PortalKind::Pass(2)));
+        for n in &lv.npcs {
+            assert!(lv.d.walkable(n.x as i32, n.y as i32), "{} stands in a wall", n.name);
+        }
+        assert!(lv.mobs.len() > 50);
+        let (x0, y0, x1, y1) = lv.safe.unwrap();
+        assert!(lv.mobs.iter().all(|m| !(m.x > x0 && m.x < x1 && m.y > y0 && m.y < y1)), "monsters spawned in town");
+        assert!(lv.d.tiles.iter().any(|t| *t == Tile::Void), "an island over the void");
+        // The Mistwood has the gear gate, reachable from Mournhold.
+        let mw = mistwood(7);
+        let gate = mw.portal(PortalKind::Pass(3)).expect("gear gate");
+        let (cx, cy) = mournhold_center();
+        assert!(mw.d.path((cx as i32, cy as i32), (gate.x as i32, gate.y as i32), 100_000).is_some());
     }
 
     #[test]

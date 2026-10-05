@@ -470,6 +470,11 @@ pub static UNIQUES: &[UniqueDef] = &[
     UniqueDef { name: "GRAVEFIRE CIRCLET", base: "circlet", req: 26, stats: &[(Stat::Skills, 1), (Stat::Fire, 40), (Stat::Mana, 60), (Stat::ManaOnKill, 5)], boss: Some("grimhilde") },
     UniqueDef { name: "DEATHKNIGHT GAUNTLETS", base: "gauntlets", req: 28, stats: &[(Stat::Armor, 18), (Stat::Life, 50), (Stat::Cast, 20), (Stat::LifeRegen, 5)], boss: Some("malgrave") },
     UniqueDef { name: "VARDAK'S SIGNET", base: "ring", req: 30, stats: &[(Stat::Skills, 2), (Stat::Fire, 35), (Stat::LifeOnKill, 10), (Stat::Magic, 40)], boss: Some("vardak") },
+    // ---- Act 4 ----
+    UniqueDef { name: "FORGEMOTHER'S APRON", base: "leather", req: 32, stats: &[(Stat::Armor, 55), (Stat::Life, 80), (Stat::Fire, 30), (Stat::LifeRegen, 6)], boss: Some("forgemother") },
+    UniqueDef { name: "CANTOR'S HYMNAL", base: "circlet", req: 34, stats: &[(Stat::Skills, 2), (Stat::Mana, 80), (Stat::Cast, 20)], boss: Some("cantor") },
+    UniqueDef { name: "THE ARCHIVIST'S INDEX", base: "amulet", req: 36, stats: &[(Stat::Skills, 1), (Stat::Magic, 60), (Stat::ManaOnKill, 8), (Stat::Life, 50)], boss: Some("archivist") },
+    UniqueDef { name: "THE CLOCKMAKER'S HEART", base: "amulet", req: 38, stats: &[(Stat::Skills, 3), (Stat::Fire, 50), (Stat::Cast, 25), (Stat::LifeOnKill, 12)], boss: Some("clockmaker") },
     UniqueDef { name: "SKALD'S STRIDE", base: "iboots", req: 16, stats: &[(Stat::Armor, 12), (Stat::Move, 25), (Stat::Stamina, 40), (Stat::Gold, 40)], boss: None },
 ];
 

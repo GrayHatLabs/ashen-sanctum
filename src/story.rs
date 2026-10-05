@@ -23,6 +23,14 @@ pub enum Role {
     /// Father Lucian: heals and resets skills.
     Priest,
     Peasant(u8),
+    // ---- The Last Escapement (Act 4) ----
+    /// Tally, a clockwork servant who grew a soul: the Act 4 story.
+    Tally,
+    /// Madame Vesper the tinkerer: sells like Gerta.
+    Vesper,
+    /// Brother Piston: oils, mends and resets skills.
+    Oiler,
+    Servant(u8),
 }
 
 
@@ -65,6 +73,11 @@ pub struct Quest {
     pub stage3: u8,
     /// Grave sigils from Ossric, Grimhilde and Malgrave.
     pub sigils: [bool; 3],
+    /// Act 4: 0 = haven't met Tally, 1 = hunting the heralds of Mechanus, 2 = the Heart is open,
+    /// 3 = the Clockmaker is stopped.
+    pub stage4: u8,
+    /// Winding keys from the Forgemother, the Cantor and the Archivist.
+    pub keys: [bool; 3],
 }
 
 pub const DIFFICULTIES: [&str; 3] = ["NORMAL", "NIGHTMARE", "HELL"];
@@ -93,14 +106,38 @@ impl Quest {
             1 if self.sigil_count() < 3 => format!("SLAY THE THREE SKELETON LORDS  ({}/3 SIGILS)", self.sigil_count()),
             1 => "BRING THE SIGILS TO ABELARD".into(),
             2 => "STORM CASTLE VARDAK. DESTROY THE COUNT".into(),
-            _ if self.difficulty < 2 => "THE COUNT IS DUST. ABELARD WANTS A WORD".into(),
-            _ => "THE COUNT IS DUST. THE MISTS ARE LIFTING".into(),
+            _ => "THE COUNT IS DUST. A GATE OF GEARS TURNS BEHIND THE CASTLE".into(),
         }
     }
 
     /// Does Abelard have news (a marker over his head)?
     pub fn hunter_has_news(&self) -> bool {
-        self.stage3 == 0 || (self.stage3 == 1 && self.sigil_count() == 3) || (self.stage3 == 3 && self.difficulty < 2)
+        self.stage3 == 0 || (self.stage3 == 1 && self.sigil_count() == 3)
+    }
+
+    pub fn key_count(&self) -> usize {
+        self.keys.iter().filter(|s| **s).count()
+    }
+
+    /// Act 4 is open (Count Vardak is destroyed).
+    pub fn gears_open(&self) -> bool {
+        self.stage3 >= 3
+    }
+
+    pub fn log4(&self) -> String {
+        match self.stage4 {
+            0 => "FIND TALLY IN THE LAST ESCAPEMENT".into(),
+            1 if self.key_count() < 3 => format!("SILENCE THE THREE HERALDS  ({}/3 KEYS)", self.key_count()),
+            1 => "BRING THE WINDING KEYS TO TALLY".into(),
+            2 => "ENTER THE HEART OF THE CLOCK. STOP THE CLOCKMAKER".into(),
+            _ if self.difficulty < 2 => "THE CLOCK HAS STOPPED. TALLY WANTS A WORD".into(),
+            _ => "THE CLOCK HAS STOPPED. THE WORLD IS YOURS AGAIN".into(),
+        }
+    }
+
+    /// Does Tally have news (a marker over its head)?
+    pub fn tally_has_news(&self) -> bool {
+        self.stage4 == 0 || (self.stage4 == 1 && self.key_count() == 3) || (self.stage4 == 3 && self.difficulty < 2)
     }
 
     /// Act 2 is open (the Ash King is dead).
@@ -351,21 +388,88 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
                 Dialog::new("ABELARD THE HUNTER", &[&line])
             }
             2 => Dialog::new("ABELARD THE HUNTER", &["THE CASTLE AWAITS, ON THE CLIFF TO THE NORTH. GO, BEFORE HE SMELLS YOU COMING."]),
+            _ => Dialog::new(
+                "ABELARD THE HUNTER",
+                &[
+                    "THE COUNT IS DUST. THE MIST IS LIFTING FOR THE FIRST TIME IN THREE HUNDRED YEARS. I CAN SEE THE SUN. THE ACTUAL SUN.",
+                    "BUT LISTEN. BEHIND THE CASTLE THERE WAS ALWAYS A RING OF OLD STONE, AND NOW IT TICKS. GEARS OF BRASS, TURNING IN THE ROCK, AND LIGHT BETWEEN THEM.",
+                    "THE ASH KING, THE WYRM, THE COUNT... SOMETHING WOUND THEM ALL UP LIKE CLOCKS. WHATEVER IT IS, IT LIVES ON THE OTHER SIDE OF THAT GATE.",
+                ],
+            ),
+        },
+        Role::Tally => match q.stage4 {
+            0 => {
+                let mut d = Dialog::new(
+                    "TALLY",
+                    &[
+                        "A VISITOR. A WARM ONE. WELCOME TO THE LAST ESCAPEMENT. WE ARE THE SERVANTS WHO STOPPED SERVING. I AM TALLY.",
+                        "THIS IS MECHANUS, WHERE EVERYTHING TURNS ON TIME. ITS MASTER IS THE CLOCKMAKER. HE WOUND THE ASH KING, THE WYRM AND THE COUNT, TO SEE IF YOUR WORLD COULD BE MADE ORDERLY.",
+                        "HIS GREAT CLOCK IS SEALED WITH THREE WINDING KEYS. THE FORGEMOTHER HOLDS ONE IN THE FOUNDRY OF SOULS, SOUTHWEST. THE CANTOR SINGS OVER ANOTHER IN THE CHOIR ENGINE, SOUTHEAST. THE ARCHIVIST FILES THE LAST IN THE ARCHIVE OF GEARS, NORTHEAST.",
+                        "BRING ME THE KEYS. I WILL OPEN THE HEART OF THE CLOCK FOR YOU, AND YOU WILL STOP HIM. PLEASE.",
+                    ],
+                );
+                d.advance_to = Some(31);
+                d
+            }
+            1 if q.key_count() == 3 => {
+                let mut d = Dialog::new(
+                    "TALLY",
+                    &[
+                        "ALL THREE KEYS. THEY ARE STILL WARM FROM THEIR KEEPERS.",
+                        "I HAVE TURNED THEM IN THE DOOR. THE HEART OF THE CLOCK IS OPEN, NORTH OF HERE. HE WILL TRY TO WIND YOU BACK. DON'T LET HIM.",
+                    ],
+                );
+                d.advance_to = Some(32);
+                d
+            }
+            1 => {
+                let line = format!(
+                    "THE HERALDS STILL TURN. YOU HOLD {} OF 3 WINDING KEYS. MADAME VESPER TRADES, BROTHER PISTON WILL OIL YOUR JOINTS.",
+                    q.key_count()
+                );
+                Dialog::new("TALLY", &[&line])
+            }
+            2 => Dialog::new("TALLY", &["THE HEART OF THE CLOCK IS NORTH. I CAN HEAR IT FROM HERE. TICK. TOCK."]),
             _ if q.difficulty < 2 => {
                 let next = DIFFICULTIES[q.difficulty as usize + 1];
                 let mut d = Dialog::new(
-                    "ABELARD THE HUNTER",
+                    "TALLY",
                     &[
-                        "THE COUNT IS DUST. THE MIST IS LIFTING FOR THE FIRST TIME IN THREE HUNDRED YEARS. I CAN SEE THE SUN, SORCERESS. THE ACTUAL SUN.",
-                        "BUT I HAVE HUNTED LONG ENOUGH TO KNOW: THE ASH KING, THE WYRM, THE COUNT... SOMETHING WOUND THEM ALL UP LIKE CLOCKS. THEY WILL TICK AGAIN, AND STRONGER.",
+                        "THE CLOCK HAS STOPPED. FOR THE FIRST TIME IN MY LIFE, NOTHING IS TICKING. IT IS SO QUIET.",
+                        "BUT TIME IS STUBBORN. SOMEWHERE A SPRING STILL HOLDS A LITTLE TENSION. THE ASH KING, THE WYRM, THE COUNT, THE CLOCKMAKER... THEY WILL ALL TURN AGAIN, AND HARDER.",
                         "IF YOU WOULD FACE THEM ONCE MORE, THE WORLD WILL BE HARDER, BUT ITS TREASURES RICHER. YOU KEEP ALL YOU HAVE LEARNED AND CARRY.",
                     ],
                 );
                 d.last_options = vec![(format!("BEGIN {next}"), Act::NextDifficulty), ("NOT YET".into(), Act::Close)];
                 d
             }
-            _ => Dialog::new("ABELARD THE HUNTER", &["EVEN HELL COULD NOT HOLD YOU. ASH, ICE AND BLOOD ARE ALL BROKEN. GO IN PEACE."]),
+            _ => Dialog::new("TALLY", &["EVEN HELL RAN DOWN BEFORE YOU DID. ASH, ICE, BLOOD AND BRASS ARE ALL BROKEN. GO IN PEACE."]),
         },
+        Role::Vesper => {
+            let mut d = Dialog::new("MADAME VESPER", &["POTIONS IN BRASS VIALS, BREAD THAT ISN'T MADE OF GEARS, AND KIT THE AUTOMATONS DIDN'T NEED. TAKE A LOOK."]);
+            d.options = vec![
+                (format!("HEALING POTION  {} GOLD", Ware::HealthPotion.price()), Act::Buy(Ware::HealthPotion)),
+                (format!("MANA POTION  {} GOLD", Ware::ManaPotion.price()), Act::Buy(Ware::ManaPotion)),
+                (format!("LOAF OF BREAD  {} GOLD", Ware::Bread.price()), Act::Buy(Ware::Bread)),
+                (format!("ROAST  {} GOLD", Ware::Roast.price()), Act::Buy(Ware::Roast)),
+                ("SHOW ME YOUR GEAR (AND BUY MINE)".into(), Act::Shop),
+                ("LEAVE".into(), Act::Close),
+            ];
+            d
+        }
+        Role::Oiler => {
+            let mut d = Dialog::new("BROTHER PISTON", &["FLESH OR BRASS, EVERYTHING SQUEAKS IN THE END. HOLD STILL, AND I'LL OIL YOU UP."]);
+            d.heals = true;
+            d
+        }
+        Role::Servant(k) => {
+            let lines = [
+                "I USED TO POLISH HIS SPOONS. NINE THOUSAND SPOONS. NOW I POLISH WHATEVER I LIKE.",
+                "DO YOU HEAR THE TICKING? WE ALL HEAR THE TICKING. TALLY SAYS WE WILL STOP HEARING IT SOMEDAY.",
+                "THE ORDINALS MARCH IN SQUARES. BREAK THE LEADER AND THE SQUARE FORGETS ITS SHAPE.",
+            ];
+            Dialog::new("SERVANT", &[lines[k as usize % 3]])
+        }
         Role::Widow => {
             let mut d = Dialog::new("WIDOW KASIA", &["GARLIC, CANDLES, POTIONS, AND MY HUSBAND'S OLD GEAR. HE WON'T BE NEEDING IT."]);
             d.options = vec![
@@ -460,6 +564,13 @@ pub const EPILOGUE3: [&str; 4] = [
     "COUNT VARDAK CRUMBLES TO DUST.",
     "THE MIST TEARS LIKE OLD CLOTH, AND FOR THE FIRST TIME IN THREE HUNDRED YEARS THE SUN FALLS ON MOURNHOLD.",
     "ABELARD SITS ON THE CASTLE STEPS AND WATCHES IT RISE. ASH, ICE AND BLOOD ARE BROKEN.",
+    "BUT BEHIND THE CASTLE, IN A RING OF OLD STONE, GEARS OF BRASS BEGIN TO TURN...",
+];
+
+pub const EPILOGUE4: [&str; 4] = [
+    "THE CLOCKMAKER'S HEART WINDS DOWN, AND STOPS.",
+    "ACROSS MECHANUS THE GREAT GEARS SLOW AND FALL SILENT. IN THE LAST ESCAPEMENT THE SERVANTS LISTEN TO NOTHING AT ALL, AND LAUGH.",
+    "ASH, ICE, BLOOD AND BRASS ARE BROKEN. NO ONE WINDS THE WORLD ANY MORE.",
     "THANK YOU FOR PLAYING ASHEN SANCTUM.",
 ];
 

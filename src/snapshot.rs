@@ -557,6 +557,49 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             save(&mut g, scr, "vardak_bat");
         }
     }
+    // Act 4: the Last Escapement, the Grinding Fields, and the Clockmaker's duel and engine.
+    {
+        let mut g = Game::new(7, h);
+        g.quest.stage = 3;
+        g.quest.stage2 = 3;
+        g.quest.stage3 = 3;
+        g.debug_goto(LevelId::Mechanus);
+        (g.p.x, g.p.y) = g.start;
+        g.banner_t = 0.0;
+        idle(&mut g, 60);
+        save(&mut g, scr, "act4_town");
+        g.debug_talk(Role::Tally);
+        save(&mut g, scr, "act4_dialog");
+        g.dialog = None;
+        if let Some((x, y)) = g.bot_target().map(|t| (t.0, t.1)) {
+            g.debug_place_near(x, y, 4.0);
+            idle(&mut g, 40);
+            save(&mut g, scr, "act4_wilds");
+        }
+        let k = crate::world::HEART;
+        g.debug_goto(LevelId::Dungeon(k, DUNGEONS[k].floors - 1));
+        g.p.base_hp = 9999.0;
+        g.p.recalc();
+        g.p.hp = 9999.0;
+        g.debug_near_boss();
+        idle(&mut g, 20);
+        if let Some(i) = g.mobs.iter().position(|m| m.kind == crate::mobs::Kind::Clockmaker) {
+            g.mobs[i].special = 0.0;
+            for _ in 0..12 {
+                g.p.hp = 9999.0;
+                g.update(&Input::default());
+                g.sfx.clear();
+            }
+            save(&mut g, scr, "clockmaker_duel");
+            g.mobs[i].hp = g.mobs[i].max_hp * 0.4;
+            for _ in 0..90 {
+                g.p.hp = 9999.0;
+                g.update(&Input::default());
+                g.sfx.clear();
+            }
+            save(&mut g, scr, "clockmaker_engine");
+        }
+    }
     // A waypoint in a dungeon, with the travel menu open.
     {
         let mut g = Game::new(7, h);

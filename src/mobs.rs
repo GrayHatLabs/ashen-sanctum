@@ -37,6 +37,17 @@ pub enum Kind {
     Grimhilde,
     Malgrave,
     Vardak,
+    // ---- Act 4: Mechanus ----
+    CogHound,
+    Inquisitor,
+    Gearwraith,
+    SpringJack,
+    BoilerBrute,
+    Ordinal,
+    Forgemother,
+    Cantor,
+    Archivist,
+    Clockmaker,
 }
 
 pub struct Def {
@@ -180,6 +191,37 @@ pub fn def(k: Kind) -> Def {
             boss: true,
             ..d("boss_vardak", "COUNT VARDAK", 1400.0, 2.0, (24.0, 34.0), 0.6, 1.5, 4000.0)
         },
+        Kind::CogHound => Def { r: 0.34, ..d("cog_hound", "COG-HOUND", 50.0, 4.2, (9.0, 13.0), 0.3, 0.9, 26.0) },
+        Kind::Inquisitor => Def { ranged: true, ..d("inquisitor", "INQUISITOR AUTOMATON", 60.0, 2.1, (10.0, 14.0), 0.6, 1.9, 32.0) },
+        Kind::Gearwraith => d("gearwraith", "GEARWRAITH", 40.0, 3.0, (9.0, 13.0), 0.4, 1.2, 28.0),
+        Kind::SpringJack => d("spring_jack", "SPRING-HEELED JACK", 45.0, 3.4, (11.0, 16.0), 0.3, 1.0, 30.0),
+        Kind::BoilerBrute => Def { r: 0.5, reach: 1.1, ..d("boiler_brute", "BOILER BRUTE", 120.0, 1.7, (16.0, 24.0), 0.7, 1.6, 48.0) },
+        Kind::Ordinal => Def { r: 0.25, ranged: true, ..d("ordinal", "ORDINAL", 24.0, 3.0, (5.0, 8.0), 0.4, 1.4, 16.0) },
+        Kind::Forgemother => Def {
+            r: 0.6,
+            reach: 1.5,
+            boss: true,
+            ..d("boss_forgemother", "THE FORGEMOTHER", 700.0, 1.5, (20.0, 30.0), 0.7, 1.6, 1400.0)
+        },
+        Kind::Cantor => Def {
+            r: 0.7,
+            reach: 1.5,
+            boss: true,
+            ranged: true,
+            ..d("boss_cantor", "THE CANTOR", 760.0, 1.3, (16.0, 24.0), 0.6, 1.8, 1500.0)
+        },
+        Kind::Archivist => Def {
+            r: 0.55,
+            boss: true,
+            ranged: true,
+            ..d("boss_archivist", "THE ARCHIVIST", 680.0, 1.8, (14.0, 20.0), 0.6, 1.8, 1600.0)
+        },
+        Kind::Clockmaker => Def {
+            r: 0.55,
+            reach: 1.5,
+            boss: true,
+            ..d("boss_clockmaker", "THE CLOCKMAKER", 1800.0, 2.1, (26.0, 36.0), 0.6, 1.4, 6000.0)
+        },
     }
 }
 
@@ -286,8 +328,11 @@ pub struct Mob {
     pub invuln: f32,
     /// Boss form (Count Vardak: 1 = giant bat).
     pub form: u8,
-    /// Charging (Sir Malgrave): moves much faster while this lasts.
+    /// Charging (Sir Malgrave, spring-heeled jacks): moves much faster while this lasts.
     pub rush: f32,
+    /// A one-off order to the game (the Clockmaker: 1 = rewind the player; the Archivist:
+    /// 2 = file the player away elsewhere). The game clears it.
+    pub cue: u8,
 }
 
 impl Mob {
@@ -336,6 +381,7 @@ impl Mob {
             invuln: 0.0,
             form: 0,
             rush: 0.0,
+            cue: 0,
         }
     }
 
@@ -401,6 +447,12 @@ pub enum ShotKind {
     Bone,
     /// Count Vardak's blood bolts.
     Blood,
+    /// Scalding steam (inquisitors, the Cantor's sound waves).
+    Steam,
+    /// Spinning brass cogs and clock hands (the Clockmaker).
+    Gear,
+    /// Blue arcs from ordinals and the Archivist.
+    Spark,
 }
 
 pub struct Shot {
@@ -425,6 +477,8 @@ pub enum HazardKind {
     Icicle,
     /// The frost giant's ground slam.
     Quake,
+    /// The Forgemother's molten slag pool.
+    Slag,
 }
 
 pub struct Hazard {
@@ -498,6 +552,10 @@ impl Game {
                 if matches!(m.kind, Kind::IceTroll | Kind::Werewolf) && m.hp < m.max_hp {
                     m.hp = (m.hp + m.max_hp * 0.03 * DT).min(m.max_hp);
                 }
+            }
+            // Gearwraiths flicker out of phase now and then.
+            if m.kind == Kind::Gearwraith && m.alive() && m.invuln <= 0.0 && rv < DT / 4.0 {
+                m.invuln = 0.8;
             }
             m.invuln = (m.invuln - DT).max(0.0);
             m.rush = (m.rush - DT).max(0.0);
@@ -607,6 +665,9 @@ impl Game {
                     if m.boss {
                         boss_specials(m, dist, (px, py), &mut self.rng, &mut spawns, &mut shots, &mut hazards, &mut texts, summons, &self.d);
                     }
+                    if m.kind == Kind::SpringJack && m.rush <= 0.0 && (2.5..7.0).contains(&dist) && rv < DT / 1.5 {
+                        m.rush = 0.45;
+                    }
                     let los = self.d.los(m.x, m.y, px, py);
                     // Where to go this tick.
                     let mut away = false;
@@ -697,6 +758,25 @@ impl Game {
                                 }
                             }
                             Kind::Banshee | Kind::Wisp | Kind::Cultist => shots.push((m.x, m.y, ux * 7.0, uy * 7.0, dmg, ShotKind::Necro)),
+                            Kind::Inquisitor => {
+                                for k in 0..3 {
+                                    let a = uy.atan2(ux) + (k as f32 - 1.0) * 0.18;
+                                    shots.push((m.x, m.y, a.cos() * 6.0, a.sin() * 6.0, dmg * 0.6, ShotKind::Steam));
+                                }
+                            }
+                            Kind::Ordinal | Kind::Archivist => shots.push((m.x, m.y, ux * 9.5, uy * 9.5, dmg, ShotKind::Spark)),
+                            Kind::Cantor => {
+                                // A ring of sound with a gap that turns: dodge into the gap.
+                                let gap = (tick as f32 * 0.02).rem_euclid(std::f32::consts::TAU);
+                                for k in 0..16 {
+                                    let a = k as f32 / 16.0 * std::f32::consts::TAU;
+                                    let off = (a - gap).rem_euclid(std::f32::consts::TAU);
+                                    if off < 0.8 {
+                                        continue;
+                                    }
+                                    shots.push((m.x, m.y, a.cos() * 5.5, a.sin() * 5.5, dmg, ShotKind::Steam));
+                                }
+                            }
                             _ => shots.push((m.x, m.y, ux * 9.0, uy * 9.0, dmg, ShotKind::Arrow)),
                         }
                     } else if player_alive && dist < m.reach + 0.4 {
@@ -1151,6 +1231,102 @@ fn boss_specials(
                         texts.push((m.x, m.y, "CHILDREN OF THE NIGHT!"));
                     }
                 }
+            }
+        }
+        Kind::Forgemother => {
+            // Slag pools under you, and she rebuilds her fallen children.
+            if m.special <= 0.0 && dist < 10.0 {
+                m.special = if m.enraged { 3.0 } else { 4.5 };
+                hazards.push(Hazard { x: px, y: py, r: 1.5, warn: 0.9, live: 5.0, dps: 9.0 * m.tier, burst: 0.0, t: 0.0, fired: false, kind: HazardKind::Slag });
+                texts.push((m.x, m.y, "POUR!"));
+            }
+            if m.special2 <= 0.0 {
+                m.special2 = if m.enraged { 8.0 } else { 11.0 };
+                if summons < 6 {
+                    around(rng, 2, Kind::CogHound, m.tier, spawns);
+                    around(rng, 2, Kind::Ordinal, m.tier, spawns);
+                    texts.push((m.x, m.y, "REBUILD!"));
+                }
+            }
+            if m.enraged && m.special2 > 4.0 && m.special2 < 4.0 + DT * 1.5 && dist < 3.0 {
+                hazards.push(Hazard { x: m.x, y: m.y, r: 2.6, warn: 0.9, live: 0.0, dps: 0.0, burst: 24.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Quake });
+            }
+        }
+        Kind::Cantor => {
+            // The organ's deep chord: a slam around it, and the choir answers.
+            if m.special <= 0.0 && dist < 3.5 {
+                m.special = if m.enraged { 3.5 } else { 5.0 };
+                hazards.push(Hazard { x: m.x, y: m.y, r: 3.2, warn: 1.0, live: 0.0, dps: 0.0, burst: 22.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Quake });
+                texts.push((m.x, m.y, "FORTISSIMO!"));
+            }
+            if m.special2 <= 0.0 {
+                m.special2 = if m.enraged { 9.0 } else { 12.0 };
+                if summons < 5 {
+                    around(rng, 3, Kind::Inquisitor, m.tier, spawns);
+                }
+            }
+        }
+        Kind::Archivist => {
+            // Files you away to another shelf, and summons records of old foes.
+            if m.special <= 0.0 && dist < 3.0 {
+                m.special = if m.enraged { 5.0 } else { 7.0 };
+                m.cue = 2;
+                texts.push((m.x, m.y, "FILED!"));
+            }
+            if m.special2 <= 0.0 {
+                m.special2 = if m.enraged { 10.0 } else { 14.0 };
+                if summons < 4 {
+                    let past = [Kind::BoneWarden, Kind::HexWarden, Kind::Ossric, Kind::RimeWitch];
+                    let k = past[rng.range(0, 4) as usize];
+                    around(rng, 1, k, m.tier * 0.35, spawns);
+                    texts.push((m.x, m.y, "FROM THE RECORDS..."));
+                }
+            }
+        }
+        Kind::Clockmaker => {
+            let frac = m.hp / m.max_hp;
+            // Phase 2: he climbs into the great engine.
+            if frac < 0.5 && m.form == 0 {
+                m.form = 1;
+                m.speed *= 0.7;
+                m.reach = 2.0;
+                m.r = 0.8;
+                m.invuln = 1.5;
+                texts.push((m.x, m.y, "BEHOLD MY GREAT WORK!"));
+            }
+            if m.form == 1 {
+                // The pendulum: a line of slams sweeping across you.
+                if m.special <= 0.0 && dist < 9.0 {
+                    m.special = if frac < 0.25 { 3.0 } else { 4.2 };
+                    let (ux, uy) = ((px - m.x) / dist.max(0.01), (py - m.y) / dist.max(0.01));
+                    for k in -3..=3 {
+                        let (x, y) = (px + -uy * k as f32 * 1.2, py + ux * k as f32 * 1.2);
+                        let warn = 0.7 + (k + 3) as f32 * 0.12;
+                        hazards.push(Hazard { x, y, r: 0.9, warn, live: 0.0, dps: 0.0, burst: 20.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Quake });
+                    }
+                    texts.push((m.x, m.y, "TICK... TOCK..."));
+                }
+                if m.special2 <= 0.0 {
+                    m.special2 = 10.0;
+                    if summons < 6 {
+                        around(rng, 4, Kind::Ordinal, m.tier, spawns);
+                    }
+                }
+                return;
+            }
+            // Phase 1: the duel. Clock-hand blades in a spiral, and rewinds.
+            if m.special <= 0.0 && dist < 10.0 {
+                m.special = if m.enraged { 2.2 } else { 3.0 };
+                let base = (py - m.y).atan2(px - m.x);
+                for k in 0..8 {
+                    let a = base + k as f32 * std::f32::consts::TAU / 8.0;
+                    shots.push((m.x, m.y, a.cos() * 6.5, a.sin() * 6.5, 12.0 * m.tier.powf(0.8), ShotKind::Gear));
+                }
+            }
+            if m.special2 <= 0.0 && dist < 12.0 {
+                m.special2 = 8.0;
+                m.cue = 1;
+                texts.push((m.x, m.y, "NO. AGAIN."));
             }
         }
         Kind::RimeWitch => {

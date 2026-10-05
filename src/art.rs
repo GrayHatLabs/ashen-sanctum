@@ -113,6 +113,10 @@ pub struct Art {
     mist_earth: Vec<Sprite>,
     moss: Sprite,
     mist_road: Sprite,
+    /// Act 4 overland ground: brass plates, verdigris copper, conveyor road.
+    brass: Vec<Sprite>,
+    verdigris: Sprite,
+    conveyor: Sprite,
     /// Item and prop sprites (anchored at the bottom centre, where they sit on the floor).
     items: Vec<(&'static str, Sprite)>,
     /// Code-drawn props for any prop sprite that hasn't been generated.
@@ -130,7 +134,11 @@ fn theme_grade(t: Theme) -> (u32, f32, f32) {
         Theme::Mines => (0x587890, 0.3, 0.88),
         Theme::Rime => (0x80b0e0, 0.25, 0.95),
         Theme::Glacier => (0x1a3a78, 0.3, 0.85),
-        Theme::Mistwood | Theme::Castle => (0, 0.0, 1.0),
+        Theme::Mistwood | Theme::Castle | Theme::Mechanus => (0, 0.0, 1.0),
+        Theme::Foundry => (0x6a3010, 0.4, 0.85),
+        Theme::Choir => (0x3a2a40, 0.4, 0.8),
+        Theme::Archive => (0x4a3a20, 0.4, 0.8),
+        Theme::Clock => (0x1a1a20, 0.3, 0.85),
         Theme::Chapel => (0x305848, 0.4, 0.8),
         Theme::Gallows => (0x283a30, 0.45, 0.75),
         Theme::Barrow => (0x4a4838, 0.35, 0.8),
@@ -205,6 +213,12 @@ impl Art {
         let castle_floor: Vec<Sprite> = exact("castle_floor").map(|s| vec![s]).unwrap_or_else(|| stone.iter().map(|s| grade(s, (0x501020, 0.3, 0.7))).collect());
         let castle_wall = exact("castle_wall").unwrap_or_else(|| grade(&wall, (0x301020, 0.35, 0.7)));
         let fence = exact("palisade_mist").unwrap_or_else(|| grade(&palisade, (0x304030, 0.4, 0.8)));
+        let brass_floor: Vec<Sprite> = ["brass_plate1", "brass_plate2"].iter().filter_map(|n| exact(n)).collect();
+        let brass_floor = if brass_floor.is_empty() { stone.iter().map(|s| grade(s, (0x8a6a30, 0.45, 0.8))).collect() } else { brass_floor };
+        let grate = exact("grate_glow").unwrap_or_else(|| grade(&stone[0], (0x803010, 0.5, 0.8)));
+        let clock_floor = exact("clock_floor").unwrap_or_else(|| grade(&stone[0], (0x101018, 0.5, 0.8)));
+        let brass_wall = exact("brass_wall").unwrap_or_else(|| grade(&wall, (0x7a5a28, 0.45, 0.8)));
+        let iron_fence = exact("fence_iron").unwrap_or_else(|| grade(&palisade, (0x2a2a2a, 0.6, 0.8)));
         let mut floors = vec![];
         let mut walls = vec![];
         for t in Theme::ALL {
@@ -212,6 +226,9 @@ impl Art {
                 Theme::IceCaves | Theme::Glacier => ice1.iter().chain(ice2.iter().take(1)).map(|s| grade(s, theme_grade(t))).collect(),
                 Theme::Rime | Theme::Mines => ice2.iter().chain(stone.iter().take(1)).map(|s| grade(s, theme_grade(t))).collect(),
                 Theme::Castle => castle_floor.iter().chain(stone.iter().take(1)).map(|s| grade(s, (0x300818, 0.25, 0.8))).collect(),
+                Theme::Foundry => brass_floor.iter().chain(std::iter::once(&grate)).map(|s| grade(s, theme_grade(t))).collect(),
+                Theme::Choir | Theme::Archive => brass_floor.iter().map(|s| grade(s, theme_grade(t))).collect(),
+                Theme::Clock => std::iter::once(&clock_floor).chain(brass_floor.iter().take(1)).map(|s| grade(s, theme_grade(t))).collect(),
                 _ => stone.iter().map(|s| grade(s, theme_grade(t))).collect(),
             };
             floors.push(set);
@@ -220,6 +237,8 @@ impl Art {
                 Theme::Tundra => palisade_snow.clone(),
                 Theme::Mistwood => fence.clone(),
                 Theme::Castle => castle_wall.clone(),
+                Theme::Mechanus => iron_fence.clone(),
+                Theme::Foundry | Theme::Choir | Theme::Archive | Theme::Clock => grade(&brass_wall, theme_grade(t)),
                 Theme::IceCaves | Theme::Rime | Theme::Glacier => grade(&ice_wall, theme_grade(t)),
                 _ => grade(&wall, theme_grade(t)),
             });
@@ -239,6 +258,10 @@ impl Art {
         let mist_earth = if mist_earth.is_empty() { (0..2).map(|v| sprites::fallback_ground(v, 0x2a3440, 0x3a4652)).collect() } else { mist_earth };
         let moss = exact("mist_moss").unwrap_or_else(|| sprites::fallback_ground(4, 0x2a6a30, 0x50e060));
         let mist_road = exact("mist_road").unwrap_or_else(|| sprites::fallback_ground(5, 0x3a3630, 0x524a40));
+        let brass: Vec<Sprite> = ["brass_plate1", "brass_plate1", "brass_plate2"].iter().filter_map(|n| exact(n)).collect();
+        let brass = if brass.is_empty() { (0..2).map(|v| sprites::fallback_ground(v, 0x4a3a20, 0x6a5430)).collect() } else { brass };
+        let verdigris = exact("verdigris_floor").unwrap_or_else(|| sprites::fallback_ground(6, 0x2a5a4a, 0x407a64));
+        let conveyor = exact("conveyor_road").unwrap_or_else(|| sprites::fallback_ground(7, 0x2a2a2a, 0x4a4440));
         let items: Vec<(&'static str, Sprite)> = ITEMS
             .iter()
             .map(|d| {
@@ -250,7 +273,7 @@ impl Art {
             .collect();
         let fallback_props = sprites::PROP_NAMES.iter().filter(|n| !items.iter().any(|i| i.0 == **n)).map(|n| (*n, sprites::fallback_prop(n))).collect();
         let missing = sprites::fallback_prop("rock1");
-        Art { chars, floors, walls, grass, dirt, road, snow, lake, snow_road, mist_earth, moss, mist_road, items, fallback_props, missing }
+        Art { chars, floors, walls, grass, dirt, road, snow, lake, snow_road, mist_earth, moss, mist_road, brass, verdigris, conveyor, items, fallback_props, missing }
     }
 
     pub fn floor(&self, theme: Theme, ground: u8, var: usize) -> &Sprite {
@@ -273,6 +296,13 @@ impl Art {
                 1 => &self.moss,
                 2 => &self.mist_road,
                 _ => &self.mist_earth[var % self.mist_earth.len()],
+            };
+        }
+        if theme == Theme::Mechanus {
+            return match ground {
+                1 => &self.verdigris,
+                2 => &self.conveyor,
+                _ => &self.brass[var % self.brass.len()],
             };
         }
         let set = &self.floors[theme.index()];
@@ -349,6 +379,22 @@ impl Art {
             "boss_malgrave" => ("boss_bone", 1.05, 0x101820, 0.55),
             "boss_vardak" => ("boss_ashking", 0.9, 0x500818, 0.55),
             "boss_vardak_bat" => ("boss_dragon", 0.8, 0x100808, 0.7),
+            // ---- Act 4 stand-ins ----
+            "cog_hound" => ("wolf", 1.0, 0xc89040, 0.6),
+            "inquisitor" => ("archer", 1.0, 0x302820, 0.6),
+            "gearwraith" => ("boss_hex", 0.6, 0x80b0ff, 0.6),
+            "spring_jack" => ("skeleton", 1.15, 0xb08030, 0.55),
+            "boiler_brute" => ("yeti", 1.0, 0x402818, 0.6),
+            "ordinal" => ("boss_hex", 0.35, 0xd0a040, 0.7),
+            "npc_tally" => ("npc_guard", 1.0, 0xc0a060, 0.55),
+            "npc_vesper" => ("npc_merchant", 1.0, 0x6a4020, 0.4),
+            "npc_oiler" => ("npc_healer", 1.0, 0x606060, 0.5),
+            "npc_servant" => ("npc_villager", 0.9, 0xb08840, 0.55),
+            "boss_forgemother" => ("boss_plague", 1.0, 0xff8020, 0.55),
+            "boss_cantor" => ("boss_giant", 1.0, 0x8a6a30, 0.6),
+            "boss_archivist" => ("boss_hex", 1.0, 0x403020, 0.55),
+            "boss_clockmaker" => ("boss_ashking", 0.9, 0x302010, 0.5),
+            "boss_clockmaker_engine" => ("boss_giant", 1.3, 0xc09040, 0.6),
             "vampire" => ("mage", 1.0, 0x501060, 0.5),
             "inventor" => ("mage", 1.0, 0x704820, 0.5),
             "steam_suit" => ("boss_giant", 0.7, 0xb08840, 0.5),

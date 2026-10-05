@@ -487,6 +487,29 @@ impl Game {
                     line(scr, ax - ex as i32, ay - ey as i32, ax + ex as i32, ay + ey as i32, rgb(0xe8e0c8));
                     scr.pset(ax + ex as i32, ay + ey as i32, rgb(0xffffff));
                 }
+                ShotKind::Steam => {
+                    let k = (self.tick as f32 * 0.3 + s.x * 3.0).sin() * 0.5 + 0.5;
+                    blend_ellipse(scr, sx + scr.shake.0, sy - 16 + scr.shake.1, 5, 4, rgb(0xe8e8e0), 0.45 + 0.2 * k);
+                    scr.disc(sx + scr.shake.0, sy - 16 + scr.shake.1, 1, rgb(0xffffff));
+                }
+                ShotKind::Gear => {
+                    scr.glow(sx, sy - 18, 12.0, rgb(0xffc040), 0.7);
+                    let a = self.tick as f32 * 0.5;
+                    let (ax, ay) = (sx + scr.shake.0, sy - 18 + scr.shake.1);
+                    scr.disc(ax, ay, 3, rgb(0xa07820));
+                    for k in 0..4 {
+                        let b = a + k as f32 * std::f32::consts::FRAC_PI_2;
+                        scr.pset(ax + (b.cos() * 4.0) as i32, ay + (b.sin() * 4.0) as i32, rgb(0xffe080));
+                    }
+                    scr.pset(ax, ay, rgb(0x302010));
+                }
+                ShotKind::Spark => {
+                    scr.glow(sx, sy - 18, 13.0, rgb(0x40a0ff), 0.9);
+                    let j = (self.tick as i32 * 7 + s.x as i32) % 3 - 1;
+                    scr.disc(sx + scr.shake.0, sy - 18 + scr.shake.1, 2, rgb(0xd0f0ff));
+                    scr.pset(sx + scr.shake.0 + 3, sy - 18 + j + scr.shake.1, rgb(0x80c0ff));
+                    scr.pset(sx + scr.shake.0 - 3, sy - 18 - j + scr.shake.1, rgb(0x80c0ff));
+                }
                 ShotKind::Blood => {
                     scr.glow(sx, sy - 18, 14.0, rgb(0xc01020), 0.9);
                     scr.disc(sx + scr.shake.0, sy - 18 + scr.shake.1, 2, rgb(0xff8090));
@@ -618,6 +641,32 @@ impl Game {
         }
         scr.shake = (0, 0);
 
+        // Weather: Mechanus's drifting steam and rising brass sparks.
+        if self.theme.clockwork() {
+            let (cx, cy) = iso::to_screen(self.p.x, self.p.y);
+            let t = self.tick as f32 / 60.0;
+            let open = self.theme.open();
+            let hh = view_h - crate::game::HUD_H;
+            for i in 0..(if open { 14 } else { 8 }) {
+                // Steam puffs drifting up and fading.
+                let h1 = ((i as u32).wrapping_mul(2654435761) >> 8) as f32 / 16_777_216.0;
+                let life = (t * 0.25 + h1).fract();
+                let x = (h1 * scr.w as f32 * 3.0 - cx * 0.9 + life * 20.0).rem_euclid(scr.w as f32) as i32;
+                let y = ((h1 * 7.0).fract() * hh as f32 * 2.0 - cy * 0.9 - life * 40.0).rem_euclid(hh as f32) as i32;
+                let r = 6 + (life * 14.0) as i32;
+                blend_ellipse(scr, x, y, r, r * 2 / 3, rgb(0xc8c4b8), 0.12 * (1.0 - life));
+            }
+            for i in 0..(if open { 30 } else { 16 }) {
+                // Sparks rising from the works.
+                let h1 = ((i as u32).wrapping_mul(40503).wrapping_add(977) % 1000) as f32 / 1000.0;
+                let h2 = ((i as u32).wrapping_mul(2246822519) >> 8) as f32 / 16_777_216.0;
+                let x = (h1 * scr.w as f32 * 3.0 - cx + (t * 2.0 + h2 * 9.0).sin() * 4.0).rem_euclid(scr.w as f32) as i32;
+                let y = (h2 * hh as f32 * 3.0 - cy - t * (18.0 + h1 * 20.0)).rem_euclid(hh as f32) as i32;
+                let flick = 0.5 + 0.5 * (t * 9.0 + h1 * 30.0).sin();
+                scr.pset(x, y, if flick > 0.6 { rgb(0xffe080) } else { rgb(0xff8020) });
+                scr.glow(x, y, 2.5, rgb(0xff9030), 0.3 * flick);
+            }
+        }
         // Weather: the Mistwood's fog banks and drifting wisp motes.
         if self.theme.misty() {
             let (cx, cy) = iso::to_screen(self.p.x, self.p.y);
@@ -706,6 +755,7 @@ impl Game {
             if (n.role == Role::Elder && self.quest.elder_has_news())
                 || (n.role == Role::Captain && self.quest.captain_has_news())
                 || (n.role == Role::Hunter && self.quest.hunter_has_news())
+                || (n.role == Role::Tally && self.quest.tally_has_news())
             {
                 let bob = (((self.tick as f32) * 0.12).sin() * 2.0) as i32;
                 scr.text("!", sx - 2, sy - 66 + bob, rgb(0xffd040), Align::Center, 2);
@@ -953,7 +1003,12 @@ impl Game {
     fn draw_mob(&self, scr: &mut Screen, i: usize, (sx, sy): (i32, i32)) {
         let m = &self.mobs[i];
         // Count Vardak's last form is a giant bat.
-        let name = if m.kind == crate::mobs::Kind::Vardak && m.form == 1 { "boss_vardak_bat" } else { def(m.kind).art };
+        let name = match (m.kind, m.form) {
+            (crate::mobs::Kind::Vardak, 1) => "boss_vardak_bat",
+            // The Clockmaker's great engine.
+            (crate::mobs::Kind::Clockmaker, 1) => "boss_clockmaker_engine",
+            _ => def(m.kind).art,
+        };
         let (art, scale, ..) = self.art.char_art(name);
         let mut fx = Fx::default();
         if m.invuln > 0.0 {
@@ -1160,6 +1215,7 @@ impl Game {
         scr.text(&format!("GOLD {}", self.p.gold), w - 80, top + 8, rgb(0xe8c050), Align::Right, 1);
         scr.text(&format!("CHAR LEVEL {}", self.p.clvl), w - 80, top + 20, rgb(0xd8c090), Align::Right, 1);
         let (relic, col) = match self.level.act() {
+            3 => (format!("KEYS {}/3", self.quest.key_count()), rgb(0xe0b040)),
             2 => (format!("SIGILS {}/3", self.quest.sigil_count()), rgb(0x60f080)),
             1 => (format!("RUNES {}/3", self.quest.rune_count()), rgb(0x90d0ff)),
             _ => (format!("SEALS {}/3", self.quest.seal_count()), rgb(0xc8a0ff)),
@@ -1169,6 +1225,7 @@ impl Game {
         // Area name and quest log (top left).
         scr.text(&self.level_name, 6, 6, rgb(0xd8b878), Align::Left, 1);
         let log = match self.level.act() {
+            3 => self.quest.log4(),
             2 => self.quest.log3(),
             1 => self.quest.log2(),
             _ => self.quest.log(),
@@ -1273,7 +1330,9 @@ impl Game {
             }
             State::Victory(t) => {
                 scr.blend(0, 0, w, top, BLACK, (t * 0.3).min(0.7));
-                let epilogue = if self.quest.stage3 >= 3 {
+                let epilogue = if self.quest.stage4 >= 3 {
+                    story::EPILOGUE4
+                } else if self.quest.stage3 >= 3 {
                     story::EPILOGUE3
                 } else if self.quest.stage2 >= 3 {
                     story::EPILOGUE2
@@ -1329,6 +1388,7 @@ fn draw_hazard(scr: &mut Screen, kind: HazardKind, sx: i32, sy: i32, r: f32, t: 
             HazardKind::Poison => rgb(0x60c020),
             HazardKind::Frost | HazardKind::Icicle | HazardKind::Quake => rgb(0x60b0ff),
             HazardKind::Nova => rgb(0xff3010),
+            HazardKind::Slag => rgb(0xff8020),
         };
         blend_ellipse(scr, sx, sy, (rx as f32 * k) as i32, (ry as f32 * k) as i32, col, 0.35);
         ring(scr, sx, sy, rx, ry, if (tick / 4) % 2 == 0 { col } else { rgb(0xffffff) });
@@ -1345,6 +1405,14 @@ fn draw_hazard(scr: &mut Screen, kind: HazardKind, sx: i32, sy: i32, r: f32, t: 
         let k = ((t - warn) / 0.3).clamp(0.0, 1.0);
         blend_ellipse(scr, sx, sy, rx, ry, rgb(0xe8f4ff), 0.6 * (1.0 - k));
         ring(scr, sx, sy, (rx as f32 * (0.6 + k * 0.5)) as i32, (ry as f32 * (0.6 + k * 0.5)) as i32, rgb(0xffffff));
+    } else if kind == HazardKind::Slag {
+        let fade = (1.0 - (t - warn) / live.max(0.01)).clamp(0.0, 1.0);
+        blend_ellipse(scr, sx, sy, rx, ry, rgb(0xc04010), 0.5 * fade + 0.15);
+        blend_ellipse(scr, sx, sy, rx * 2 / 3, ry * 2 / 3, rgb(0xffa030), 0.35 * fade + 0.1);
+        for k in 0..4 {
+            let a = (tick as f32 * 0.04 + k as f32 * 1.7).sin();
+            scr.disc(sx + (a * rx as f32 * 0.5) as i32, sy + ((k as f32 * 2.3).cos() * ry as f32 * 0.4) as i32, 1, rgb(0xffe080));
+        }
     } else if kind == HazardKind::Poison {
         let fade = (1.0 - (t - warn) / live.max(0.01)).clamp(0.0, 1.0);
         blend_ellipse(scr, sx, sy, rx, ry, rgb(0x40a018), 0.45 * fade + 0.1);
@@ -1485,6 +1553,17 @@ fn draw_pickup(scr: &mut Screen, k: &Pickup, sx: i32, sy: i32, tick: u32, art: &
                     scr.disc(sx, y, 4, tint);
                 }
             }
+        }
+        &Drop::Key(i) => {
+            let tint = [rgb(0xff9040), rgb(0xe0c060), rgb(0x80b0ff)][i];
+            let y = sy - 10 - pop + bob;
+            scr.glow(sx, y, 22.0, rgb(0xffc040), 0.8);
+            // A big brass winding key.
+            scr.fill(sx - 1, y - 5, 3, 9, rgb(0xb08020));
+            scr.disc(sx, y - 6, 3, tint);
+            scr.disc(sx, y - 6, 1, rgb(0x302010));
+            scr.fill(sx + 1, y + 2, 3, 1, rgb(0xe0b040));
+            scr.fill(sx + 1, y, 2, 1, rgb(0xe0b040));
         }
         &Drop::Sigil(i) => {
             let tint = [rgb(0xd0d0b0), rgb(0x60f080), rgb(0x8090a0)][i];

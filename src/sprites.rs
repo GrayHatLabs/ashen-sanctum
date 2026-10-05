@@ -159,12 +159,14 @@ pub fn fallback_ground(v: i32, base: u32, hi: u32) -> Sprite {
 }
 
 /// Props that have code-drawn stand-ins.
-pub const PROP_NAMES: [&str; 41] = [
+pub const PROP_NAMES: [&str; 55] = [
     "tree_oak", "tree_pine", "tree_dead", "rock1", "bush1", "house1", "house2", "tent1", "campfire", "well", "ent_crypt",
     "ent_warrens", "ent_catacombs", "ent_sanctum", "stairs_down", "stairs_up", "tree_snowpine", "tree_snowdead", "rock_snow",
     "ice_crystal", "longhouse1", "longhouse2", "stall_furs", "ent_mines", "ent_caves", "ent_temple", "ent_glacier", "pass_gate",
     "tree_twisted", "tree_mistpine", "glow_shrooms", "gravestone", "cottage_mist", "cottage_mist2", "gallows", "merchant_cart",
     "ent_chapel", "ent_gallows", "ent_barrow", "ent_castle", "pass_mist",
+    "gear_tower", "steam_pipes", "steam_vent", "gas_lamp", "cog_pile", "workshop1", "workshop2", "clock_tower", "pendulum",
+    "ent_foundry", "ent_choir", "ent_archive", "ent_clock", "gear_gate",
 ];
 
 /// Simple stand-in shapes for props (anchored at the bottom centre).
@@ -190,6 +192,13 @@ pub fn fallback_prop(name: &str) -> Sprite {
         "gallows" | "merchant_cart" => return frost("tent1", 0x40302a, 0.6),
         "ent_chapel" | "ent_gallows" | "ent_barrow" | "pass_mist" => return frost("ent_crypt", 0x305040, 0.45),
         "ent_castle" => return frost("ent_crypt", 0x401018, 0.5),
+        "gear_tower" | "clock_tower" | "pendulum" => return frost("tree_pine", 0xb08830, 0.75),
+        "steam_pipes" | "gas_lamp" => return frost("well", 0x8a5a30, 0.6),
+        "steam_vent" | "cog_pile" => return frost("rock1", 0x8a6a30, 0.6),
+        "workshop1" | "workshop2" => return frost("house1", 0x3a2a20, 0.5),
+        "ent_foundry" => return frost("ent_crypt", 0xc05010, 0.5),
+        "ent_choir" | "ent_archive" | "gear_gate" => return frost("ent_crypt", 0xb08830, 0.5),
+        "ent_clock" => return frost("ent_crypt", 0xe0c060, 0.5),
         "tree_snowdead" => return frost("tree_dead", 0xe8f0f8, 0.4),
         "rock_snow" => return frost("rock1", 0xf0f4ff, 0.4),
         "longhouse1" | "longhouse2" => return frost("house1", 0xe8f0ff, 0.25),

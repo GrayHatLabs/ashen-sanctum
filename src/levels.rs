@@ -65,7 +65,7 @@ pub struct LevelFile {
 
 // ---------------------------------------------------------------- names
 
-pub const DUNGEON_SLUGS: [&str; 12] = [
+pub const DUNGEON_SLUGS: [&str; 16] = [
     "bone_crypt",
     "rotting_warrens",
     "hexed_catacombs",
@@ -78,6 +78,10 @@ pub const DUNGEON_SLUGS: [&str; 12] = [
     "gallows_catacombs",
     "barrow_of_knights",
     "castle_vardak",
+    "foundry_of_souls",
+    "choir_engine",
+    "archive_of_gears",
+    "heart_of_the_clock",
 ];
 
 /// File name (without .json) for a level.
@@ -86,6 +90,7 @@ pub fn file_name(id: LevelId) -> String {
         LevelId::Overworld => "overworld".into(),
         LevelId::Frostmarch => "frostmarch".into(),
         LevelId::Mistwood => "mistwood".into(),
+        LevelId::Mechanus => "mechanus".into(),
         LevelId::Dungeon(k, f) => format!("{}_floor{}", DUNGEON_SLUGS[k], f + 1),
     }
 }
@@ -95,6 +100,7 @@ pub fn id_string(id: LevelId) -> String {
         LevelId::Overworld => "overworld".into(),
         LevelId::Frostmarch => "frostmarch".into(),
         LevelId::Mistwood => "mistwood".into(),
+        LevelId::Mechanus => "mechanus".into(),
         LevelId::Dungeon(k, f) => format!("dungeon:{k}:{f}"),
     }
 }
@@ -109,6 +115,9 @@ pub fn parse_id(s: &str) -> Option<LevelId> {
     if s == "mistwood" {
         return Some(LevelId::Mistwood);
     }
+    if s == "mechanus" {
+        return Some(LevelId::Mechanus);
+    }
     let mut it = s.strip_prefix("dungeon:")?.split(':');
     let k: usize = it.next()?.parse().ok()?;
     let f: usize = it.next()?.parse().ok()?;
@@ -117,7 +126,7 @@ pub fn parse_id(s: &str) -> Option<LevelId> {
 
 /// Every level in the game, in order.
 pub fn all_ids() -> Vec<LevelId> {
-    let mut v = vec![LevelId::Overworld, LevelId::Frostmarch, LevelId::Mistwood];
+    let mut v = vec![LevelId::Overworld, LevelId::Frostmarch, LevelId::Mistwood, LevelId::Mechanus];
     for (k, d) in DUNGEONS.iter().enumerate() {
         for f in 0..d.floors {
             v.push(LevelId::Dungeon(k, f));
@@ -132,7 +141,7 @@ pub fn id_from_name(name: &str) -> Option<LevelId> {
     all_ids().into_iter().find(|id| file_name(*id) == stem)
 }
 
-const THEMES: [(&str, Theme); 15] = [
+const THEMES: [(&str, Theme); 20] = [
     ("overworld", Theme::Overworld),
     ("crypt", Theme::Crypt),
     ("warrens", Theme::Warrens),
@@ -148,9 +157,14 @@ const THEMES: [(&str, Theme); 15] = [
     ("gallows", Theme::Gallows),
     ("barrow", Theme::Barrow),
     ("castle", Theme::Castle),
+    ("mechanus", Theme::Mechanus),
+    ("foundry", Theme::Foundry),
+    ("choir", Theme::Choir),
+    ("archive", Theme::Archive),
+    ("clock", Theme::Clock),
 ];
 
-const PROPS: [PropKind; 41] = [
+const PROPS: [PropKind; 55] = [
     PropKind::TreeOak,
     PropKind::TreePine,
     PropKind::TreeDead,
@@ -192,9 +206,23 @@ const PROPS: [PropKind; 41] = [
     PropKind::Entrance(10),
     PropKind::Entrance(11),
     PropKind::PassMist,
+    PropKind::GearTower,
+    PropKind::SteamPipes,
+    PropKind::SteamVent,
+    PropKind::GasLamp,
+    PropKind::CogPile,
+    PropKind::Workshop1,
+    PropKind::Workshop2,
+    PropKind::ClockTower,
+    PropKind::Pendulum,
+    PropKind::Entrance(12),
+    PropKind::Entrance(13),
+    PropKind::Entrance(14),
+    PropKind::Entrance(15),
+    PropKind::GearGate,
 ];
 
-const KINDS: [Kind; 28] = [
+const KINDS: [Kind; 38] = [
     Kind::Zombie,
     Kind::Skeleton,
     Kind::Wolf,
@@ -223,6 +251,16 @@ const KINDS: [Kind; 28] = [
     Kind::Grimhilde,
     Kind::Malgrave,
     Kind::Vardak,
+    Kind::CogHound,
+    Kind::Inquisitor,
+    Kind::Gearwraith,
+    Kind::SpringJack,
+    Kind::BoilerBrute,
+    Kind::Ordinal,
+    Kind::Forgemother,
+    Kind::Cantor,
+    Kind::Archivist,
+    Kind::Clockmaker,
 ];
 
 fn portal_name(k: PortalKind) -> String {
@@ -243,12 +281,13 @@ fn portal_kind(s: &str) -> Option<PortalKind> {
         "pass0" => Some(PortalKind::Pass(0)),
         "pass1" => Some(PortalKind::Pass(1)),
         "pass2" => Some(PortalKind::Pass(2)),
+        "pass3" => Some(PortalKind::Pass(3)),
         _ => s.strip_prefix("entrance")?.parse().ok().filter(|i: &usize| *i < DUNGEONS.len()).map(PortalKind::Entrance),
     }
 }
 
 /// NPC kinds: file name, role, display name, art.
-const NPCS: [(&str, Role, &str, &str); 20] = [
+const NPCS: [(&str, Role, &str, &str); 26] = [
     ("elder", Role::Elder, "ELDER MAREN", "npc_elder"),
     ("merchant", Role::Merchant, "GERTA", "npc_merchant"),
     ("healer", Role::Healer, "BROTHER ALDRIC", "npc_healer"),
@@ -269,6 +308,12 @@ const NPCS: [(&str, Role, &str, &str); 20] = [
     ("peasant0", Role::Peasant(0), "PEASANT", "npc_peasant"),
     ("peasant1", Role::Peasant(1), "PEASANT", "npc_peasant"),
     ("peasant2", Role::Peasant(2), "PEASANT", "npc_peasant"),
+    ("tally", Role::Tally, "TALLY", "npc_tally"),
+    ("vesper", Role::Vesper, "MADAME VESPER", "npc_vesper"),
+    ("oiler", Role::Oiler, "BROTHER PISTON", "npc_oiler"),
+    ("servant0", Role::Servant(0), "SERVANT", "npc_servant"),
+    ("servant1", Role::Servant(1), "SERVANT", "npc_servant"),
+    ("servant2", Role::Servant(2), "SERVANT", "npc_servant"),
 ];
 
 fn item_name(d: &Drop) -> Option<String> {
@@ -279,7 +324,7 @@ fn item_name(d: &Drop) -> Option<String> {
         Drop::Health => "health_potion".into(),
         Drop::Mana => "mana_potion".into(),
         Drop::Gold(n) => format!("gold{n}"),
-        Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Item(_) => return None,
+        Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Item(_) => return None,
     })
 }
 
@@ -533,7 +578,7 @@ mod tests {
             assert_eq!(parse_id(&id_string(id)), Some(id));
             assert_eq!(id_from_name(&format!("levels/{}.json", file_name(id))), Some(id));
         }
-        assert_eq!(parse_id("dungeon:12:0"), None);
+        assert_eq!(parse_id("dungeon:16:0"), None);
     }
 
     #[test]
