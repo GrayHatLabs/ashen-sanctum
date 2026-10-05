@@ -25,10 +25,10 @@ pub static CHARS: &[CharDef] = &[
     CharDef { name: "npc_captain", cell: (31, 47), anchor: (15, 42), data: include_bytes!("../assets/art/npc_captain.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
     CharDef { name: "npc_trader", cell: (24, 50), anchor: (12, 45), data: include_bytes!("../assets/art/npc_trader.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
     CharDef { name: "npc_seer", cell: (24, 54), anchor: (12, 50), data: include_bytes!("../assets/art/npc_seer.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
-    CharDef { name: "npc_fisher", cell: (27, 53), anchor: (13, 47), data: include_bytes!("../assets/art/npc_fisher.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
+    CharDef { name: "npc_fisher", cell: (36, 64), anchor: (13, 48), data: include_bytes!("../assets/art/npc_fisher.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 8 }] },
     CharDef { name: "boss_giant", cell: (108, 129), anchor: (32, 105), data: include_bytes!("../assets/art/boss_giant.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 7 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 9 }] },
-    CharDef { name: "boss_yeti", cell: (45, 90), anchor: (23, 82), data: include_bytes!("../assets/art/boss_yeti.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
-    CharDef { name: "boss_witch", cell: (41, 88), anchor: (20, 83), data: include_bytes!("../assets/art/boss_witch.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
+    CharDef { name: "boss_yeti", cell: (94, 107), anchor: (37, 82), data: include_bytes!("../assets/art/boss_yeti.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 7 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 10 }] },
+    CharDef { name: "boss_witch", cell: (114, 104), anchor: (43, 83), data: include_bytes!("../assets/art/boss_witch.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 8 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 10 }] },
     CharDef { name: "boss_dragon", cell: (164, 152), anchor: (80, 134), data: include_bytes!("../assets/art/boss_dragon.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 7 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 9 }] },
 ];
 
