@@ -233,6 +233,10 @@ pub struct Mob {
     pub mods: u8,
     /// Elite leaders have their own names.
     pub name: Option<String>,
+    /// Mesmerized or raised by the vampire: fights for you while this lasts.
+    pub charm: f32,
+    /// A raised thrall crumbles when its charm runs out.
+    pub thrall: bool,
 }
 
 impl Mob {
@@ -276,6 +280,8 @@ impl Mob {
             rank: Rank::Normal,
             mods: 0,
             name: None,
+            charm: 0.0,
+            thrall: false,
         }
     }
 
@@ -392,6 +398,9 @@ impl Game {
         let mut hazards: Vec<Hazard> = vec![];
         let mut texts: Vec<(f32, f32, &'static str)> = vec![];
         let summons = self.mobs.iter().filter(|m| m.alive() && !m.boss && m.home.0 < -999.0).count();
+        // Charmed monsters hunt the hostile ones.
+        let foes: Vec<(usize, f32, f32, f32)> = self.mobs.iter().enumerate().filter(|(_, m)| m.alive() && m.charm <= 0.0).map(|(i, m)| (i, m.x, m.y, m.r)).collect();
+        let mut ally_hits: Vec<(usize, f32)> = vec![];
         for i in 0..n {
             let (tick, rv, rv2) = (self.tick, self.rng.f(), self.rng.f());
             let m = &mut self.mobs[i];
@@ -433,6 +442,45 @@ impl Game {
             if m.stun > 0.0 {
                 m.stun -= DT;
                 m.moving = false;
+                continue;
+            }
+            if m.charm > 0.0 && m.alive() {
+                m.charm -= DT;
+                if m.charm <= 0.0 {
+                    m.charm = 0.0;
+                    if m.thrall {
+                        // The thrall crumbles back into a corpse.
+                        m.hp = 0.0;
+                        m.state = MobState::Dead(0.0);
+                    } else {
+                        m.state = MobState::Chase;
+                    }
+                    continue;
+                }
+                // Hunt the nearest hostile monster, or stay near you.
+                let target = foes.iter().filter(|f| f.0 != i).min_by(|a, b| {
+                    let da = (a.1 - m.x).powi(2) + (a.2 - m.y).powi(2);
+                    let db = (b.1 - m.x).powi(2) + (b.2 - m.y).powi(2);
+                    da.partial_cmp(&db).unwrap()
+                });
+                let (tx, ty, reach) = match target {
+                    Some(&(_, fx, fy, fr)) if (fx - m.x).powi(2) + (fy - m.y).powi(2) < 100.0 => (fx, fy, m.reach + fr),
+                    _ => (px, py, 2.0),
+                };
+                let (dx, dy) = (tx - m.x, ty - m.y);
+                let dist = (dx * dx + dy * dy).sqrt().max(0.01);
+                m.dir = iso::dir8(dx, dy);
+                if dist > reach {
+                    let (mut x, mut y) = (m.x, m.y);
+                    move_circle(&self.d, &mut x, &mut y, dx / dist * m.speed * DT, dy / dist * m.speed * DT, m.r);
+                    m.x = x;
+                    m.y = y;
+                    m.moving = true;
+                    m.anim_t += DT;
+                } else if let (Some(&(j, ..)), true) = (target, m.cd <= 0.0) {
+                    m.cd = m.cooldown;
+                    ally_hits.push((j, m.dmg.0 + (m.dmg.1 - m.dmg.0) * rv));
+                }
                 continue;
             }
             let (dx, dy) = (px - m.x, py - m.y);
@@ -623,6 +671,18 @@ impl Game {
         for i in 0..self.mobs.len() {
             if self.mobs[i].hp <= 0.0 && self.mobs[i].alive() {
                 self.kill(i);
+            }
+        }
+        for (j, dmg) in ally_hits {
+            if self.mobs[j].alive() {
+                self.mobs[j].hp -= dmg;
+                self.mobs[j].flash = 0.1;
+                if self.mobs[j].state == MobState::Idle {
+                    self.mobs[j].state = MobState::Chase;
+                }
+                if self.mobs[j].hp <= 0.0 {
+                    self.kill(j);
+                }
             }
         }
         for (dmg, i) in hits {

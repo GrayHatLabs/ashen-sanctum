@@ -2,7 +2,18 @@
 
 "An occult, Halloween-themed dark forest with skeleton lords."
 
-Notes to build on when Act 3 starts:
+Later (same day): "Act three should be like a **Ravenloft** type setting: a dark forest with **neon green
+and blue earth colours**, a **castle with an evil vampire** you need to defeat."
+
+So: a Ravenloft / Barovia-style land of eternal mist and dread.
+- A haunted, sickly forest lit in neon green (will-o'-wisps, glowing fungus, cursed moss) over cold
+  blue-grey earth and stone.
+- A cowering village under the castle.
+- **The final boss is an evil vampire lord** in his castle on the cliff, Strahd-like. He's a natural dark
+  mirror of the player's Vampire class.
+- The skeleton lords become his court and heralds.
+
+Notes to build on when Act 3 starts (from the first message):
 
 - **Setting:**
   - A cursed, ever-autumn forest, maybe called "the Hollowwood".

@@ -336,6 +336,59 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         save(&mut g, scr, "skills_tree3");
         g.tree = None;
     }
+    // The class select screen, then the vampire at work in the crypt.
+    {
+        use crate::skills::{Class, Skill};
+        let mut g = Game::new(7, h);
+        g.choose = Some(1);
+        save(&mut g, scr, "choose_class");
+        g.choose = None;
+        g.set_class(Class::Vampire);
+        g.p.clvl = 18;
+        for s in crate::skills::VAMPIRE {
+            g.p.skills.rank[s as usize] = 3;
+        }
+        g.p.base_mana = 400.0;
+        g.p.base_hp = 9000.0;
+        g.p.recalc();
+        g.p.mana = 400.0;
+        g.p.hp = 9000.0;
+        g.p.skills.primary = Skill::BloodLance;
+        g.p.skills.secondary = Skill::BatSwarm;
+        g.debug_goto(LevelId::Dungeon(1, 0));
+        g.banner_t = 0.0;
+        idle(&mut g, 100);
+        let target = g.bot_target().map(|t| (t.0, t.1)).unwrap_or((g.p.x + 3.0, g.p.y));
+        g.debug_place_near(target.0, target.1, 3.0);
+        idle(&mut g, 10);
+        save(&mut g, scr, "vampire_idle");
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::BatSwarm, target.0, target.1);
+        for _ in 0..6 {
+            g.p.cast_cd = 0.0;
+            g.cast_skill(Skill::BloodLance, target.0, target.1);
+            idle(&mut g, 4);
+        }
+        save(&mut g, scr, "vampire_bats");
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::Mesmerize, target.0, target.1);
+        g.p.cast_cd = 0.0;
+        g.p.skills.cooldown = [0.0; crate::skills::ALL.len()];
+        g.cast_skill(Skill::BloodMoon, target.0, target.1);
+        idle(&mut g, 40);
+        save(&mut g, scr, "vampire_moon");
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::Embrace, g.p.x, g.p.y);
+        idle(&mut g, 20);
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::CrimsonNova, g.p.x, g.p.y);
+        idle(&mut g, 8);
+        save(&mut g, scr, "vampire_embrace");
+        g.p.skills.points = 2;
+        g.update(&Input { skills: true, ..Input::default() });
+        save(&mut g, scr, "vampire_tree");
+        g.tree = None;
+    }
     // Act 2: Kaldholm, the Frostmarch, each ice dungeon and its herald.
     {
         let mut g = Game::new(7, h);

@@ -9,6 +9,27 @@ ANBERNIC RG35XX H), with pixel art generated with PixelLab and embedded in the b
 Sound effects and music are synthesised in code: a plucked-guitar theme in town, wind and
 drones in the wilds, bells and a heartbeat in the dungeons, drums for boss fights.
 
+## Two heroes
+
+A new character starts on the **class select** screen:
+
+- **The Sorceress** burns: Fireball, Inferno, Fire Wall, Meteor, Hydra, Ash Phoenix.
+- **The Vampire** drains. Her blood magic steals life with almost every hit, but the bloodless
+  (skeletons, wraiths, the Wardens) can't be drained and resist it a little.
+  - **Blood Lance:** a crimson bolt that heals her.
+  - **Rake:** a clawed slash that steals three times the life.
+  - **Thirst** (passive): life steal.
+  - **Bat Swarm:** homing bats.
+  - **Mesmerize:** a foe fights for her.
+  - **Mist Step:** slip through enemies, untouchable for a moment.
+  - **Crimson Nova.**
+  - **Thrall:** raise a corpse to fight for her.
+  - **Night Mastery** (passive).
+  - **Blood Moon:** a field that bleeds foes and feeds her.
+  - **Embrace:** bat form. Faster, screeching, and skills cost no mana.
+
+`--vampire` or `--sorceress` skips the class screen for a new character.
+
 ## The story
 
 Ash falls on the village of Hollowmere. Beneath the Ashen Sanctum sleeps the Ash King, a

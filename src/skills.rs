@@ -1,4 +1,6 @@
-//! Fire skills: D2-style skill points, ranks, two skill slots, and the skill tree screen.
+//! Skills: D2-style skill points, ranks, two skill slots, and the skill tree screen.
+//! Two classes: the fire Sorceress (this file) and the blood Vampire (`vampire.rs`,
+//! docs/VAMPIRE_CLASS.md); each has its own 11-skill tree.
 //! The whole plan in docs/SKILLS_PLAN.md is built: Fireball, Inferno, Warmth, Fire Nova, Fire Wall,
 //! Blaze, Combust, Meteor, Fire Mastery, Hydra and Ash Phoenix.
 use crate::game::{move_circle, Game, Input, Light, PKind, Particle, Sfx, CAST_TIME, DT, HUD_H};
@@ -18,9 +20,55 @@ pub enum Skill {
     Mastery,
     Hydra,
     Phoenix,
+    // ---- the Vampire ----
+    BloodLance,
+    Rake,
+    Thirst,
+    BatSwarm,
+    Mesmerize,
+    MistStep,
+    CrimsonNova,
+    Thrall,
+    NightMastery,
+    BloodMoon,
+    Embrace,
 }
 
-pub const ALL: [Skill; 11] = [
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
+pub enum Class {
+    Sorceress,
+    Vampire,
+}
+
+impl Class {
+    pub fn name(self) -> &'static str {
+        match self {
+            Class::Sorceress => "SORCERESS",
+            Class::Vampire => "VAMPIRE",
+        }
+    }
+    pub fn key(self) -> &'static str {
+        match self {
+            Class::Sorceress => "sorceress",
+            Class::Vampire => "vampire",
+        }
+    }
+    /// The skill you start with (rank 1, never refunded).
+    pub fn first_skill(self) -> Skill {
+        match self {
+            Class::Sorceress => Skill::Fireball,
+            Class::Vampire => Skill::BloodLance,
+        }
+    }
+    pub fn tree(self) -> &'static [Skill] {
+        match self {
+            Class::Sorceress => &SORCERESS,
+            Class::Vampire => &VAMPIRE,
+        }
+    }
+}
+
+pub const SORCERESS: [Skill; 11] = [
     Skill::Fireball,
     Skill::Inferno,
     Skill::Warmth,
@@ -32,6 +80,46 @@ pub const ALL: [Skill; 11] = [
     Skill::Mastery,
     Skill::Hydra,
     Skill::Phoenix,
+];
+
+pub const VAMPIRE: [Skill; 11] = [
+    Skill::BloodLance,
+    Skill::Rake,
+    Skill::Thirst,
+    Skill::BatSwarm,
+    Skill::Mesmerize,
+    Skill::MistStep,
+    Skill::CrimsonNova,
+    Skill::Thrall,
+    Skill::NightMastery,
+    Skill::BloodMoon,
+    Skill::Embrace,
+];
+
+/// Every skill of every class (save files, rank arrays).
+pub const ALL: [Skill; 22] = [
+    Skill::Fireball,
+    Skill::Inferno,
+    Skill::Warmth,
+    Skill::FireNova,
+    Skill::FireWall,
+    Skill::Blaze,
+    Skill::Combust,
+    Skill::Meteor,
+    Skill::Mastery,
+    Skill::Hydra,
+    Skill::Phoenix,
+    Skill::BloodLance,
+    Skill::Rake,
+    Skill::Thirst,
+    Skill::BatSwarm,
+    Skill::Mesmerize,
+    Skill::MistStep,
+    Skill::CrimsonNova,
+    Skill::Thrall,
+    Skill::NightMastery,
+    Skill::BloodMoon,
+    Skill::Embrace,
 ];
 /// Character level needed for each tree row.
 pub const TIER_LEVELS: [u32; 4] = [1, 6, 12, 18];
@@ -61,6 +149,17 @@ pub fn def(s: Skill) -> Def {
         Skill::Mastery => Def { name: "FIRE MASTERY", key: "mastery", level: 12, prereq: Some(Skill::Blaze), passive: true, cell: (2, 2) },
         Skill::Hydra => Def { name: "HYDRA", key: "hydra", level: 18, prereq: Some(Skill::Combust), passive: false, cell: (3, 0) },
         Skill::Phoenix => Def { name: "ASH PHOENIX", key: "phoenix", level: 18, prereq: Some(Skill::Meteor), passive: false, cell: (3, 1) },
+        Skill::BloodLance => Def { name: "BLOOD LANCE", key: "bloodlance", level: 1, prereq: None, passive: false, cell: (0, 0) },
+        Skill::Rake => Def { name: "RAKE", key: "rake", level: 1, prereq: None, passive: false, cell: (0, 1) },
+        Skill::Thirst => Def { name: "THIRST", key: "thirst", level: 1, prereq: None, passive: true, cell: (0, 2) },
+        Skill::BatSwarm => Def { name: "BAT SWARM", key: "batswarm", level: 6, prereq: Some(Skill::BloodLance), passive: false, cell: (1, 0) },
+        Skill::Mesmerize => Def { name: "MESMERIZE", key: "mesmerize", level: 6, prereq: Some(Skill::Rake), passive: false, cell: (1, 1) },
+        Skill::MistStep => Def { name: "MIST STEP", key: "miststep", level: 6, prereq: Some(Skill::Thirst), passive: false, cell: (1, 2) },
+        Skill::CrimsonNova => Def { name: "CRIMSON NOVA", key: "crimsonnova", level: 12, prereq: Some(Skill::BatSwarm), passive: false, cell: (2, 0) },
+        Skill::Thrall => Def { name: "THRALL", key: "thrall", level: 12, prereq: Some(Skill::Mesmerize), passive: false, cell: (2, 1) },
+        Skill::NightMastery => Def { name: "NIGHT MASTERY", key: "nightmastery", level: 12, prereq: Some(Skill::MistStep), passive: true, cell: (2, 2) },
+        Skill::BloodMoon => Def { name: "BLOOD MOON", key: "bloodmoon", level: 18, prereq: Some(Skill::CrimsonNova), passive: false, cell: (3, 0) },
+        Skill::Embrace => Def { name: "EMBRACE", key: "embrace", level: 18, prereq: Some(Skill::Thrall), passive: false, cell: (3, 1) },
     }
 }
 
@@ -77,20 +176,31 @@ pub struct Skills {
     pub cooldown: [f32; ALL.len()],
     /// + to all fire skills from gear (only skills you have learned).
     pub bonus: u8,
-    /// Extra fire damage from gear (0.25 = +25%).
+    /// Extra spell damage from gear (0.25 = +25%).
     pub gear_fire: f32,
+    pub class: Class,
 }
 
 impl Default for Skills {
     fn default() -> Self {
-        // You start knowing Fireball, with one point to spend.
-        let mut rank = [0; ALL.len()];
-        rank[Skill::Fireball as usize] = 1;
-        Skills { rank, points: 1, primary: Skill::Fireball, secondary: Skill::Fireball, cooldown: [0.0; ALL.len()], bonus: 0, gear_fire: 0.0 }
+        Skills::new(Class::Sorceress)
     }
 }
 
 impl Skills {
+    /// A fresh character: the class's first skill at rank 1, and one point to spend.
+    pub fn new(class: Class) -> Self {
+        let first = class.first_skill();
+        let mut rank = [0; ALL.len()];
+        rank[first as usize] = 1;
+        Skills { rank, points: 1, primary: first, secondary: first, cooldown: [0.0; ALL.len()], bonus: 0, gear_fire: 0.0, class }
+    }
+
+    /// This class's tree.
+    pub fn tree(&self) -> &'static [Skill] {
+        self.class.tree()
+    }
+
     /// Effective rank: learned points plus gear's + to skills.
     pub fn rank(&self, s: Skill) -> u8 {
         match self.rank[s as usize] {
@@ -135,19 +245,19 @@ impl Skills {
 
     /// Active skills you know, in tree order (for 1-4 and cycling).
     pub fn actives(&self) -> Vec<Skill> {
-        ALL.iter().copied().filter(|s| !def(*s).passive && self.rank(*s) > 0).collect()
+        self.tree().iter().copied().filter(|s| !def(*s).passive && self.rank(*s) > 0).collect()
     }
 
-    /// Refund everything except Fireball's first rank.
+    /// Refund everything except the first skill's first rank.
     pub fn respec(&mut self) -> u32 {
         let spent: u32 = self.rank.iter().map(|r| *r as u32).sum::<u32>() - 1;
-        *self = Skills { points: self.points + spent, bonus: self.bonus, gear_fire: self.gear_fire, ..Skills::default() };
+        *self = Skills { points: self.points + spent, bonus: self.bonus, gear_fire: self.gear_fire, ..Skills::new(self.class) };
         spent
     }
 
-    /// Fire damage multiplier from Fire Mastery.
+    /// Damage multiplier for this class's skills: Fire Mastery or Night Mastery, plus gear.
     pub fn fire_mult(&self) -> f32 {
-        1.0 + 0.08 * self.rank(Skill::Mastery) as f32 + self.gear_fire
+        1.0 + 0.08 * (self.rank(Skill::Mastery) + self.rank(Skill::NightMastery)) as f32 + self.gear_fire
     }
 
     /// Burn duration multiplier from Fire Mastery.
@@ -165,20 +275,30 @@ impl Skills {
 
     pub fn save_text(&self) -> String {
         let ranks: Vec<String> = ALL.iter().map(|s| format!("{}:{}", def(*s).key, self.learned(*s))).collect();
-        format!("skills={}\npoints={}\nprimary={}\nsecondary={}\n", ranks.join(","), self.points, def(self.primary).key, def(self.secondary).key)
+        format!(
+            "class={}\nskills={}\npoints={}\nprimary={}\nsecondary={}\n",
+            self.class.key(),
+            ranks.join(","),
+            self.points,
+            def(self.primary).key,
+            def(self.secondary).key
+        )
     }
 
     pub fn load_text(text: &str) -> Option<Skills> {
         let get = |k: &str| text.lines().find_map(|l| l.strip_prefix(k).and_then(|r| r.strip_prefix('='))).map(str::trim);
         let by_key = |k: &str| ALL.iter().copied().find(|s| def(*s).key == k);
+        let class = if get("class") == Some("vampire") { Class::Vampire } else { Class::Sorceress };
+        let first = class.first_skill();
         let mut sk = Skills {
             rank: [0; ALL.len()],
             points: get("points")?.parse().ok()?,
-            primary: Skill::Fireball,
-            secondary: Skill::Fireball,
+            primary: first,
+            secondary: first,
             cooldown: [0.0; ALL.len()],
             bonus: 0,
             gear_fire: 0.0,
+            class,
         };
         for part in get("skills")?.split(',') {
             let (k, v) = part.split_once(':')?;
@@ -186,9 +306,15 @@ impl Skills {
                 sk.rank[s as usize] = r.min(MAX_RANK);
             }
         }
-        sk.rank[Skill::Fireball as usize] = sk.learned(Skill::Fireball).max(1);
+        // Only this class's skills count.
+        for s in ALL {
+            if !class.tree().contains(&s) {
+                sk.rank[s as usize] = 0;
+            }
+        }
+        sk.rank[first as usize] = sk.learned(first).max(1);
         let ranks = sk.rank;
-        let slot = |k: &str| get(k).and_then(by_key).filter(|s| !def(*s).passive && ranks[*s as usize] > 0).unwrap_or(Skill::Fireball);
+        let slot = |k: &str| get(k).and_then(by_key).filter(|s| !def(*s).passive && ranks[*s as usize] > 0).unwrap_or(first);
         let (p, q) = (slot("primary"), slot("secondary"));
         sk.primary = p;
         sk.secondary = q;
@@ -310,6 +436,7 @@ pub fn mana_cost(s: Skill, r: u8) -> f32 {
         Skill::Hydra => hydra_mana(r),
         Skill::Phoenix => phoenix_mana(r),
         Skill::Warmth | Skill::Mastery => 0.0,
+        _ => crate::vampire::mana_cost(s, r),
     }
 }
 
@@ -318,12 +445,16 @@ pub fn cooldown_of(s: Skill) -> f32 {
     match s {
         Skill::Hydra => HYDRA_CD,
         Skill::Phoenix => PHOENIX_CD,
+        s if crate::vampire::is_vampire(s) => crate::vampire::cooldown_of(s),
         _ => 0.0,
     }
 }
 
 /// Description lines for the tree: what it does, and this rank vs the next.
 pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
+    if crate::vampire::is_vampire(s) {
+        return crate::vampire::describe(s, r, power, sk);
+    }
     let wall_rank = sk.rank(Skill::FireWall);
     let power = power * if s == Skill::Mastery { 1.0 } else { sk.fire_mult() };
     let at = |r: u8| -> String {
@@ -374,6 +505,7 @@ pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
                 (combust_dmg(r, wall_rank) * power) as i32,
                 combust_mana(r)
             ),
+            _ => String::new(),
         }
     };
     let what = match s {
@@ -388,6 +520,7 @@ pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
         Skill::Mastery => "PASSIVE. ALL YOUR FIRE HITS HARDER AND BURNS LONGER. EACH RANK ALSO LENGTHENS BLAZE.",
         Skill::Hydra => "SUMMONS A FIRE HYDRA THAT SPITS FIREBALLS AT NEARBY FOES.",
         Skill::Phoenix => "FIERY WINGS: YOU MOVE FASTER AND YOUR SKILLS COST NO MANA. WHEN IT ENDS, YOU EXPLODE IN FLAME.",
+        _ => "",
     };
     let mut v = vec![what.to_string()];
     if r > 0 {
@@ -405,6 +538,8 @@ pub struct Nova {
     pub y: f32,
     pub r: f32,
     pub t: f32,
+    /// The vampire's crimson nova / screech (drawn in blood red).
+    pub blood: bool,
 }
 
 pub const NOVA_TIME: f32 = 0.4;
@@ -477,8 +612,8 @@ impl Game {
             }
             return true;
         }
-        // Ash Phoenix: everything is free while it lasts (mana is restored after the cast).
-        let phoenix = self.p.phoenix_t > 0.0;
+        // Ash Phoenix / Countess's Embrace: everything is free while it lasts (mana is restored after the cast).
+        let phoenix = self.p.phoenix_t > 0.0 || self.p.embrace_t > 0.0;
         let mana_before = self.p.mana;
         if phoenix {
             self.p.mana = self.p.max_mana.max(mana_cost(s, r));
@@ -487,6 +622,13 @@ impl Game {
         if self.p.mana < mana_cost(s, r) {
             if self.p.cast_cd <= 0.0 {
                 self.cast_fireball(tx, ty, true);
+            }
+            return true;
+        }
+        if crate::vampire::is_vampire(s) {
+            self.cast_vampire(s, tx, ty, r);
+            if phoenix {
+                self.p.mana = mana_before;
             }
             return true;
         }
@@ -637,7 +779,7 @@ impl Game {
                 self.p.phoenix_t = 0.0;
                 let dmg = phoenix_burst(self.p.phoenix_rank) * self.fire_power();
                 let (x, y) = (self.p.x, self.p.y);
-                self.novas.push(Nova { x, y, r: PHOENIX_RADIUS, t: 0.0 });
+                self.novas.push(Nova { x, y, r: PHOENIX_RADIUS, t: 0.0, blood: false });
                 self.blast(x, y, PHOENIX_RADIUS, dmg, 2.5);
                 self.shake = self.shake.max(0.9);
             }
@@ -666,7 +808,7 @@ impl Game {
         }
     }
 
-    fn cast_pose(&mut self, t: f32) {
+    pub(crate) fn cast_pose(&mut self, t: f32) {
         self.p.cast_cd = t;
         self.p.cast_t = t;
         self.p.cast_len = t;
@@ -884,7 +1026,7 @@ impl Game {
         self.p.cast_t = 0.5;
         self.p.cast_len = 0.5;
         let radius = nova_radius(r);
-        self.novas.push(Nova { x: px, y: py, r: radius, t: 0.0 });
+        self.novas.push(Nova { x: px, y: py, r: radius, t: 0.0, blood: false });
         self.lights.push(Light { x: px, y: py, r: 260.0, s: 1.3, life: 0.45, max: 0.45 });
         self.shake = self.shake.max(0.4);
         self.sfx.push(Sfx::Boom);
@@ -908,10 +1050,17 @@ impl Game {
 
     /// Damages one monster: burning (seconds), stagger, optional knockback (from x, y, distance).
     pub(crate) fn hit_mob(&mut self, i: usize, dmg: f32, burn: f32, stun: f32, knock: Option<(f32, f32, f32)>, show: bool) {
+        // Mesmerized foes and thralls are on your side.
+        if self.mobs[i].charm > 0.0 {
+            return;
+        }
         let burn = burn * self.p.skills.burn_mult();
+        let kind = self.mobs[i].kind;
+        let dmg = dmg * self.taken(kind);
+        self.drain(kind, dmg, 1.0);
         let m = &mut self.mobs[i];
         let (mx, my, boss, r) = (m.x, m.y, m.boss, m.r);
-        m.hp -= dmg * crate::mobs::fire_taken(m.kind);
+        m.hp -= dmg;
         m.flash = m.flash.max(if show { 0.12 } else { 0.04 });
         m.burn = m.burn.max(burn);
         m.stun = m.stun.max(if boss { stun * 0.2 } else { stun });
@@ -972,7 +1121,7 @@ impl Game {
     // ------------------------------------------------------------------ the tree screen
 
     pub(crate) fn open_tree(&mut self) {
-        let sel = ALL.iter().position(|s| *s == self.p.skills.secondary).unwrap_or(0);
+        let sel = self.p.skills.tree().iter().position(|s| *s == self.p.skills.secondary).unwrap_or(0);
         self.tree = Some(TreeUi { sel, rects: vec![] });
         self.dialog = None;
     }
@@ -984,7 +1133,8 @@ impl Game {
         let Some(ui) = self.tree.as_mut() else { return };
         let mut act: Option<TreeAct> = None;
         // Arrow / stick navigation across the grid.
-        let (r0, c0) = def(ALL[ui.sel]).cell;
+        let tree = self.p.skills.tree();
+        let (r0, c0) = def(tree[ui.sel]).cell;
         let mut target = None;
         if edge(inp.move_x, prev.move_x, false) {
             target = Some((r0, c0 + 1));
@@ -997,7 +1147,7 @@ impl Game {
         }
         if let Some((tr, tc)) = target {
             // Nearest skill in that direction.
-            let best = ALL
+            let best = tree
                 .iter()
                 .enumerate()
                 .filter(|(_, s)| {
@@ -1031,7 +1181,7 @@ impl Game {
         if inp.skills || inp.run_toggle || inp.cancel {
             act = Some(TreeAct::Close);
         }
-        let s = ALL[self.tree.as_ref().unwrap().sel];
+        let s = tree[self.tree.as_ref().unwrap().sel];
         match act {
             Some(TreeAct::Select(i)) => self.tree.as_mut().unwrap().sel = i,
             Some(TreeAct::Learn) => {
@@ -1076,7 +1226,8 @@ impl Game {
             scr.fill(x, y, w, h, rgb(0x8a7050));
         }
         let sk = &self.p.skills;
-        scr.text("FIRE SKILLS", x0 + 10, y0 + 8, rgb(0xffd080), Align::Left, 1);
+        let title = if sk.class == Class::Vampire { "BLOOD SKILLS" } else { "FIRE SKILLS" };
+        scr.text(title, x0 + 10, y0 + 8, rgb(0xffd080), Align::Left, 1);
         let pts_col = if sk.points > 0 && (self.tick / 20) % 2 == 0 { rgb(0xffe080) } else { rgb(0xd8b878) };
         scr.text(&format!("SKILL POINTS: {}", sk.points), x0 + pw - 10, y0 + 8, pts_col, Align::Right, 1);
         let mut rects = vec![];
@@ -1088,7 +1239,8 @@ impl Game {
             let col = if self.p.clvl >= lvl { rgb(0x9a8a78) } else { rgb(0x5a4a40) };
             scr.text(&format!("LV{lvl}"), x0 + 8, ty + 14, col, Align::Left, 1);
         }
-        for (i, s) in ALL.iter().enumerate() {
+        let tree = self.p.skills.tree();
+        for (i, s) in tree.iter().enumerate() {
             let d = def(*s);
             let (row, colm) = d.cell;
             let (cx, cy) = (x0 + 40 + colm * (cw + 6), y0 + 24 + row * (ch + 8));
@@ -1130,7 +1282,7 @@ impl Game {
             rects.push((cx, cy, cw, ch, TreeAct::Select(i)));
         }
         // Prerequisite lines (each skill sits right below the one it needs).
-        for s in ALL {
+        for &s in tree {
             if let Some(p) = def(s).prereq {
                 let (a, b) = (def(p).cell, def(s).cell);
                 let lx = x0 + 40 + a.1 * (cw + 6) + cw / 2;
@@ -1139,7 +1291,7 @@ impl Game {
             }
         }
         // Details of the selected skill.
-        let s = ALL[sel];
+        let s = tree[sel];
         let dy = y0 + 24 + TIER_LEVELS.len() as i32 * (ch + 8) + 4;
         scr.fill(x0 + 8, dy - 4, pw - 16, 1, rgb(0x4a3e30));
         let mut ly = dy;

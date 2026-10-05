@@ -303,17 +303,64 @@ impl Game {
         scr.apply_light(view_h);
 
         // 4. Unlit, additive fire and magic on top.
+        let vampire = self.p.skills.class == crate::skills::Class::Vampire;
         for b in &self.balls {
             let (sx, sy) = to_scr(b.x, b.y);
             let fl = ((self.tick as f32) * 0.9).sin() * 1.5;
+            // The vampire's bolts are blood, not fire.
+            let (outer, inner, core) = if vampire { (rgb(0xb00828), rgb(0xff4060), rgb(0xffd0d8)) } else { (rgb(0xff5010), rgb(0xffd060), rgb(0xfff4c0)) };
             if b.ember {
-                scr.glow(sx, sy - 22, 12.0 + fl * 0.5, rgb(0xff4008), 0.9);
-                scr.disc(sx + scr.shake.0, sy - 22 + scr.shake.1, 1, rgb(0xffd080));
+                scr.glow(sx, sy - 22, 12.0 + fl * 0.5, outer, 0.9);
+                scr.disc(sx + scr.shake.0, sy - 22 + scr.shake.1, 1, core);
                 continue;
             }
-            scr.glow(sx, sy - 22, 26.0 + fl, rgb(0xff5010), 0.9);
-            scr.glow(sx, sy - 22, 12.0, rgb(0xffd060), 1.0);
-            scr.disc(sx + scr.shake.0, sy - 22 + scr.shake.1, 3, rgb(0xfff4c0));
+            scr.glow(sx, sy - 22, 24.0 + fl, outer, 0.9);
+            scr.glow(sx, sy - 22, 11.0, inner, 1.0);
+            scr.disc(sx + scr.shake.0, sy - 22 + scr.shake.1, 3, core);
+        }
+        // Blood Moon fields: a red moon over a bleeding circle.
+        for f in &self.fields {
+            let (sx, sy) = to_scr(f.x, f.y);
+            let k = (f.t / 0.5).min(1.0) * ((crate::vampire::MOON_TIME - f.t) / 0.6).clamp(0.0, 1.0);
+            let rx = (crate::vampire::MOON_RADIUS * iso::TW * 0.5) as i32;
+            blend_ellipse(scr, sx, sy, rx, rx / 2, rgb(0x600010), 0.35 * k);
+            ring(scr, sx, sy, rx, rx / 2, rgb(0xc01030));
+            scr.glow(sx, sy - 90, 30.0, rgb(0xc01020), 0.9 * k);
+            scr.disc(sx + scr.shake.0, sy - 90 + scr.shake.1, 9, mix(rgb(0x300008), rgb(0xd02030), k));
+            for d in 0..5 {
+                let ph = ((self.tick as f32) * 0.04 + d as f32 * 0.37).fract();
+                let dx = ((d as f32 * 2.3).sin() * rx as f32 * 0.6) as i32;
+                scr.fill(sx + dx, sy - 70 + (ph * 66.0) as i32, 1, 3, rgb(0xd02030));
+            }
+        }
+        // Bats.
+        for b in &self.bats {
+            let (sx, sy) = to_scr(b.x, b.y);
+            let flap = if (self.tick / 4 + (b.x * 7.0) as u32) % 2 == 0 { 2 } else { -1 };
+            let (x, y) = (sx + scr.shake.0, sy - 26 + scr.shake.1);
+            scr.fill(x - 1, y - 1, 3, 3, rgb(0x100810));
+            for k in 1..=4 {
+                scr.pset(x - 1 - k, y - flap * k / 4, rgb(0x201028));
+                scr.pset(x + 1 + k, y - flap * k / 4, rgb(0x201028));
+            }
+            scr.pset(x - 1, y - 1, rgb(0xff2030));
+            scr.pset(x + 1, y - 1, rgb(0xff2030));
+        }
+        if self.p.embrace_t > 0.0 {
+            // Countess's Embrace: great bat wings and a violet aura.
+            let (psx, psy) = to_scr(self.p.x, self.p.y);
+            let flap = ((self.tick as f32) * 0.35).sin() * 6.0;
+            scr.glow(psx, psy - 30, 34.0, rgb(0x6020a0), 0.6);
+            for side in [-1i32, 1] {
+                for k in 0..30 {
+                    let t = k as f32 / 29.0;
+                    let x = psx + side * (6 + (t * 30.0) as i32);
+                    let top = psy - 40 - (t * 3.14).sin() as i32 * 10 - (flap * t) as i32;
+                    let h = (16.0 * (1.0 - t * 0.7)) as i32;
+                    scr.fill(x, top, 1, h, rgb(0x180c20));
+                    scr.pset(x, top, rgb(0x6a3090));
+                }
+            }
         }
         for s in &self.shots {
             let (sx, sy) = to_scr(s.x, s.y);
@@ -392,6 +439,7 @@ impl Game {
             scr.glow(sx, sy - 2, 12.0, rgb(0xff5010), 0.6 * k);
         }
         for n in &self.novas {
+            let col = if n.blood { rgb(0xc01030) } else { rgb(0xff6010) };
             let k = (n.t / crate::skills::NOVA_TIME).min(1.0);
             let fade = 1.0 - ((n.t - crate::skills::NOVA_TIME * 0.7) / 0.3).clamp(0.0, 1.0);
             let r = n.r * (0.25 + 0.75 * k);
@@ -399,7 +447,7 @@ impl Game {
             for i in 0..steps {
                 let a = i as f32 / steps as f32 * std::f32::consts::TAU;
                 let (sx, sy) = to_scr(n.x + a.cos() * r, n.y + a.sin() * r);
-                scr.glow(sx, sy - 6, 10.0, rgb(0xff6010), 0.9 * fade);
+                scr.glow(sx, sy - 6, 10.0, col, 0.9 * fade);
             }
         }
         for l in &self.lights {
@@ -550,6 +598,7 @@ impl Game {
         }
         self.draw_tree(scr);
         self.draw_inventory(scr);
+        self.draw_choose(scr);
         self.draw_overlays(scr);
     }
 
@@ -620,6 +669,51 @@ impl Game {
         scr.text("MAP", scr.w - 30, 8, rgb(0xc8b088), Align::Center, 1);
     }
 
+    /// The class select screen: two portraits side by side.
+    fn draw_choose(&mut self, scr: &mut Screen) {
+        let Some(sel) = self.choose else { return };
+        let (w, h) = (scr.w, self.view_h);
+        scr.fill(0, 0, w, h, rgb(0x08060a));
+        scr.text("CHOOSE YOUR HERO", w / 2, 10, rgb(0xffd080), Align::Center, 2);
+        let classes = [
+            ("SORCERESS", "portrait_sorceress", "mage", "FIRE. FIREBALLS, WALLS OF FLAME,", "METEORS AND AN ASH PHOENIX.", rgb(0xff9040)),
+            ("VAMPIRE", "portrait_vampire", "vampire", "BLOOD. DRAINS LIFE WITH EVERY HIT,", "BATS, MIST STEP AND THRALLS.", rgb(0xd04060)),
+        ];
+        let pw = (w - 60) / 2;
+        let ph = h - 70;
+        let mut rects = vec![];
+        for (k, (name, portrait, sheet, l1, l2, col)) in classes.iter().enumerate() {
+            let x0 = 20 + k as i32 * (pw + 20);
+            let y0 = 34;
+            let on = k == sel;
+            scr.fill(x0, y0, pw, ph, if on { rgb(0x1c1418) } else { rgb(0x100c0e) });
+            let edge = if on { *col } else { rgb(0x3a3026) };
+            for (ex, ey, ew, eh) in [(x0, y0, pw, 2), (x0, y0 + ph - 2, pw, 2), (x0, y0, 2, ph), (x0 + pw - 2, y0, 2, ph)] {
+                scr.fill(ex, ey, ew, eh, edge);
+            }
+            let cx = x0 + pw / 2;
+            match self.art.item(portrait) {
+                Some(s) => {
+                    let scale = ((ph - 60) as f32 / s.h as f32).min((pw - 20) as f32 / s.w as f32).min(1.5);
+                    let fx = Fx { tint: BLACK, tint_a: if on { 0.0 } else { 0.45 }, ..Fx::default() };
+                    scr.blit_scaled(s, cx, y0 + 8 + (s.h as f32 * scale) as i32, scale, fx);
+                }
+                None => {
+                    // No portrait yet: the in-game sprite, big.
+                    let (art, ..) = self.art.char_art(sheet);
+                    let spr = art.frame("idle", 0, 0.0);
+                    scr.blit_scaled(spr, cx, y0 + ph - 60, 2.5, Fx::default());
+                }
+            }
+            scr.text(name, cx, y0 + ph - 46, if on { *col } else { rgb(0x8a7a68) }, Align::Center, 2);
+            scr.text(l1, cx, y0 + ph - 24, rgb(0xb0a090), Align::Center, 1);
+            scr.text(l2, cx, y0 + ph - 13, rgb(0xb0a090), Align::Center, 1);
+            rects.push((x0, y0, pw, ph));
+        }
+        scr.text("LEFT / RIGHT TO CHOOSE, ENTER / A TO BEGIN (OR CLICK TWICE)", w / 2, h - 18, rgb(0x8a7a68), Align::Center, 1);
+        self.choose_rects = rects;
+    }
+
     /// Draws a character sprite, using another sheet scaled and tinted while its own art is missing.
     fn blit_char(&self, scr: &mut Screen, art_name: &str, anim: CharFrame, (sx, sy): (i32, i32), mut fx: Fx, bob: bool) {
         let (art, scale, tint, tint_a) = self.art.char_art(art_name);
@@ -639,8 +733,14 @@ impl Game {
 
     fn draw_player(&self, scr: &mut Screen, (sx, sy): (i32, i32)) {
         blend_ellipse(scr, sx, sy, 11, 4, BLACK, 0.5);
-        let art = self.art.char("mage");
-        let anim = if self.p.cast_t > 0.0 && art.has("cast") {
+        let vampire = self.p.skills.class == crate::skills::Class::Vampire;
+        let sheet = if vampire { "vampire" } else { "mage" };
+        let art = self.art.char_art(sheet).0;
+        // Rake is a claw slash (cast pose of exactly 0.3 s).
+        let claw = vampire && (self.p.cast_len - 0.3).abs() < 0.001 && art.has("attack");
+        let anim = if self.p.cast_t > 0.0 && claw {
+            CharFrame::At("attack", self.p.dir, 1.0 - self.p.cast_t / self.p.cast_len)
+        } else if self.p.cast_t > 0.0 && art.has("cast") {
             CharFrame::At("cast", self.p.dir, 1.0 - self.p.cast_t / self.p.cast_len)
         } else if self.p.moving {
             CharFrame::Loop("walk", self.p.dir, self.p.anim_t)
@@ -665,7 +765,13 @@ impl Game {
             fx.tint = rgb(0x80c8ff);
             fx.tint_a = 0.35;
         }
-        self.blit_char(scr, "mage", anim, (sx, sy), fx, self.p.moving);
+        if self.p.mist > 0.0 {
+            // Mist Step: half there.
+            fx.dither = true;
+            fx.tint = rgb(0xc8c0d8);
+            fx.tint_a = 0.5;
+        }
+        self.blit_char(scr, sheet, anim, (sx, sy), fx, self.p.moving);
     }
 
     fn draw_npc(&self, scr: &mut Screen, i: usize, (sx, sy): (i32, i32)) {
@@ -727,6 +833,11 @@ impl Game {
         if m.enraged && fx.tint_a == 0.0 {
             fx.tint = rgb(0xff2010);
             fx.tint_a = 0.18;
+        }
+        // Mesmerized foes and thralls glow violet.
+        if m.charm > 0.0 {
+            fx.tint = rgb(0xa040e0);
+            fx.tint_a = 0.35;
         }
         // Champions are tinted blue; elites stand in a golden glow (D2).
         match m.rank {

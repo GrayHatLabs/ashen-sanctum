@@ -17,6 +17,7 @@ mod render;
 mod rng;
 mod save;
 mod skills;
+mod vampire;
 mod snapshot;
 mod sprites;
 mod story;
@@ -142,6 +143,21 @@ fn main() -> Result<(), String> {
         if save::apply(&mut game, text) {
             game.welcome_back();
             loaded = true;
+        }
+    }
+    // A new character: pick a class (or --vampire / --sorceress on the command line).
+    let class_flag = if args.iter().any(|a| a == "--vampire") {
+        Some(skills::Class::Vampire)
+    } else if args.iter().any(|a| a == "--sorceress") {
+        Some(skills::Class::Sorceress)
+    } else {
+        None
+    };
+    if !loaded {
+        match class_flag {
+            Some(c) => game.set_class(c),
+            None if !act2 => game.choose = Some(0),
+            None => {}
         }
     }
     if act2 && !loaded {

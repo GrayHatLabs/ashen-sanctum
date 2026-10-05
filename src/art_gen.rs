@@ -29,6 +29,7 @@ pub static CHARS: &[CharDef] = &[
     CharDef { name: "boss_giant", cell: (108, 129), anchor: (32, 105), data: include_bytes!("../assets/art/boss_giant.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 7 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 9 }] },
     CharDef { name: "boss_yeti", cell: (94, 107), anchor: (37, 82), data: include_bytes!("../assets/art/boss_yeti.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 7 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 10 }] },
     CharDef { name: "boss_witch", cell: (114, 104), anchor: (43, 83), data: include_bytes!("../assets/art/boss_witch.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 8 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 10 }] },
+    CharDef { name: "vampire", cell: (30, 49), anchor: (15, 43), data: include_bytes!("../assets/art/vampire.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
     CharDef { name: "boss_dragon", cell: (164, 152), anchor: (80, 134), data: include_bytes!("../assets/art/boss_dragon.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 7 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 9 }] },
 ];
 
@@ -56,6 +57,8 @@ pub static ITEMS: &[ItemDef] = &[
     ItemDef { name: "food_bread", data: include_bytes!("../assets/art/item_food_bread.bin") },
     ItemDef { name: "food_roast", data: include_bytes!("../assets/art/item_food_roast.bin") },
     ItemDef { name: "seal", data: include_bytes!("../assets/art/item_seal.bin") },
+    ItemDef { name: "portrait_vampire", data: include_bytes!("../assets/art/item_portrait_vampire.bin") },
+    ItemDef { name: "portrait_sorceress", data: include_bytes!("../assets/art/item_portrait_sorceress.bin") },
     ItemDef { name: "icon_staff_gnarled", data: include_bytes!("../assets/art/item_icon_staff_gnarled.bin") },
     ItemDef { name: "icon_staff_ash", data: include_bytes!("../assets/art/item_icon_staff_ash.bin") },
     ItemDef { name: "icon_staff_runed", data: include_bytes!("../assets/art/item_icon_staff_runed.bin") },

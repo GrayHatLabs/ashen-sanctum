@@ -95,6 +95,15 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Art: 8 tiles, 12 props, 13 characters, all 19 animations (a few glitchy directions trimmed in pack.py) | S | Snow road tile lightened, snow tiles softened in pack.py |
 | Level editor catalog (themes, props, portals, monsters, NPCs, checks) | built | |
 
+## The Vampire class (2026-10-05)
+
+| Feature | Status | Notes |
+|---|---|---|
+| Class select screen with portraits; `Class` in `Skills`, saved; `--vampire` / `--sorceress` | H S | Unit test: choose, save/load |
+| 11 vampire skills (`vampire.rs`): Blood Lance, Rake, Thirst, Bat Swarm, Mesmerize, Mist Step, Crimson Nova, Thrall, Night Mastery, Blood Moon, Embrace | H S | Unit tests: drain, bloodless, rake, mist, bats, mesmerize, thrall, moon, embrace |
+| Blood damage + life steal; bloodless monsters resist; charmed allies hunt hostile monsters | H | |
+| Art: portrait + 8-direction sprite; walk / cast / claw animations generating | S | Code-drawn skill icons |
+
 ## Difficulties (2026-10-01)
 
 | Feature | Status | Notes |

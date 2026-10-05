@@ -236,6 +236,10 @@ pub struct Player {
     pub bonus: crate::items::Bonus,
     /// Chilled by frost: slower moving and casting while this lasts.
     pub chill: f32,
+    /// The vampire: Mist Step (untouchable while it lasts) and Countess's Embrace (bat form).
+    pub mist: f32,
+    pub embrace_t: f32,
+    pub embrace_rank: u8,
 }
 
 impl Player {
@@ -281,11 +285,28 @@ impl Player {
             gear: crate::items::Gear::default(),
             bonus: crate::items::Bonus::default(),
             chill: 0.0,
+            mist: 0.0,
+            embrace_t: 0.0,
+            embrace_rank: 1,
         }
     }
 
-    /// The gear you start with: a plain gnarled staff in hand.
+    /// The gear you start with: the sorceress a gnarled staff, the vampire a plain amulet.
     pub fn starting_gear(&mut self) {
+        if self.skills.class == crate::skills::Class::Vampire {
+            self.gear = crate::items::Gear::default();
+            let amulet = crate::items::Item {
+                base: crate::items::base_by_key("amulet").unwrap(),
+                rarity: crate::items::Rarity::Normal,
+                ilvl: 1,
+                name: "AMULET".into(),
+                stats: vec![],
+                req: 1,
+            };
+            self.gear.worn[8] = Some(amulet);
+            self.recalc();
+            return;
+        }
         let staff = crate::items::Item {
             base: crate::items::base_by_key("gnarled").unwrap(),
             rarity: crate::items::Rarity::Normal,
@@ -374,10 +395,15 @@ pub struct Game {
     pub(crate) patches: Vec<crate::skills::FirePatch>,
     pub(crate) meteors: Vec<crate::skills::MeteorFx>,
     pub(crate) hydras: Vec<crate::skills::HydraFx>,
+    pub(crate) bats: Vec<crate::vampire::BatFx>,
+    pub(crate) fields: Vec<crate::vampire::BloodField>,
     /// The skill tree screen, while open.
     pub tree: Option<crate::skills::TreeUi>,
     /// The inventory screen, while open.
     pub inv: Option<crate::inventory::InvUi>,
+    /// The class select screen for a new character (0 = Sorceress, 1 = Vampire).
+    pub choose: Option<usize>,
+    pub(crate) choose_rects: Vec<(i32, i32, i32, i32)>,
     /// Waypoints you have touched (D2 fast travel), and this level's waypoint.
     pub waypoints: Vec<LevelId>,
     pub(crate) waypoint: (f32, f32),
@@ -455,8 +481,12 @@ impl Game {
             patches: vec![],
             meteors: vec![],
             hydras: vec![],
+            bats: vec![],
+            fields: vec![],
             tree: None,
             inv: None,
+            choose: None,
+            choose_rects: vec![],
             waypoints: vec![LevelId::Overworld],
             waypoint: (0.0, 0.0),
             wp_armed: true,
@@ -548,6 +578,8 @@ impl Game {
         self.patches.clear();
         self.meteors.clear();
         self.hydras.clear();
+        self.bats.clear();
+        self.fields.clear();
         self.tree = None;
         self.shots.clear();
         self.hazards.clear();
@@ -675,6 +707,41 @@ impl Game {
         self.dialog = Some(d);
     }
 
+    /// Makes this a fresh character of a class (new game).
+    pub fn set_class(&mut self, class: crate::skills::Class) {
+        self.p.skills = crate::skills::Skills::new(class);
+        self.p.starting_gear();
+        self.p.hp = self.p.max_hp;
+        self.p.mana = self.p.max_mana;
+    }
+
+    /// Class select controls: left / right (or click) to pick, confirm to start.
+    fn update_choose(&mut self, inp: &Input, sel: usize, confirm: bool, click: bool) {
+        let mut sel = sel;
+        let edge = |now: f32, before: f32, neg: bool| if neg { now < -0.5 && before >= -0.5 } else { now > 0.5 && before <= 0.5 };
+        if edge(inp.move_x, self.prev.move_x, true) || edge(inp.move_y, self.prev.move_y, true) {
+            sel = 0;
+        }
+        if edge(inp.move_x, self.prev.move_x, false) || edge(inp.move_y, self.prev.move_y, false) {
+            sel = 1;
+        }
+        let mut go = confirm;
+        if let (Some((mx, my)), true) = (inp.mouse, click) {
+            if let Some(k) = self.choose_rects.iter().position(|&(x, y, w, h)| mx >= x && mx < x + w && my >= y && my < y + h) {
+                go = k == sel;
+                sel = k;
+            }
+        }
+        self.choose = Some(sel);
+        if go {
+            let class = if sel == 1 { crate::skills::Class::Vampire } else { crate::skills::Class::Sorceress };
+            self.set_class(class);
+            self.choose = None;
+            self.sfx.push(Sfx::Descend);
+            self.save_due = true;
+        }
+    }
+
     /// `--act2`: a character as if Act 1 were done: level 18, the three seals' power, unspent
     /// skill points, gold, potions and a full set of level-appropriate gear, standing in Kaldholm.
     pub fn act2_start(&mut self) {
@@ -686,7 +753,7 @@ impl Game {
         p.base_hp = 70.0 + 8.0 * (clvl - 1) as f32 + 45.0;
         p.base_mana = 50.0 + 4.0 * (clvl - 1) as f32 + 30.0;
         p.power = 1.07f32.powi(clvl as i32 - 1) * 1.15f32.powi(3);
-        p.skills = crate::skills::Skills::default();
+        p.skills = crate::skills::Skills::new(p.skills.class);
         p.skills.points = clvl + 3;
         p.gold = 3000;
         p.hp_pots = 8;
@@ -1018,6 +1085,11 @@ impl Game {
             self.prev = inp.clone();
             return;
         }
+        if let Some(sel) = self.choose {
+            self.update_choose(inp, sel, p_cast || p_confirm, p_lmb);
+            self.prev = inp.clone();
+            return;
+        }
         if self.inv.is_some() {
             self.update_inventory(inp, p_confirm, p_lmb);
             self.prev = inp.clone();
@@ -1066,6 +1138,7 @@ impl Game {
         self.update_novas();
         self.update_fire_ground();
         self.update_big_fire();
+        self.update_vampire();
         self.update_world();
         self.prev = inp.clone();
     }
@@ -1115,7 +1188,7 @@ impl Game {
     /// Greets a returning player (after loading a save).
     pub fn welcome_back(&mut self) {
         self.stats.levels_entered = 1; // skip the first-visit title card
-        let msg = format!("WELCOME BACK. CHAR LEVEL {}, {}/3 SEALS", self.p.clvl, self.quest.seal_count());
+        let msg = format!("WELCOME BACK, {}. CHAR LEVEL {}, {}/3 SEALS", self.p.skills.class.name(), self.p.clvl, self.quest.seal_count());
         self.say(msg);
     }
 
@@ -1594,7 +1667,7 @@ impl Game {
             self.p.food = (self.p.food - drain * DT).max(0.0);
         }
         let base = if run { RUN_SPEED } else { WALK_SPEED };
-        let base = if self.p.phoenix_t > 0.0 { base * 1.4 } else { base };
+        let base = if self.p.phoenix_t > 0.0 || self.p.embrace_t > 0.0 { base * 1.4 } else { base };
         let base = base * (1.0 + gear.frac(crate::items::Stat::Move, 50));
         let base = if self.p.chill > 0.0 { base * 0.6 } else { base };
         let speed = if casting { base * 0.25 } else { base };
@@ -1742,10 +1815,11 @@ impl Game {
 
     pub(crate) fn cast_fireball(&mut self, tx: f32, ty: f32, ember: bool) {
         let p = &mut self.p;
-        let fb_rank = p.skills.rank(crate::skills::Skill::Fireball);
+        let vampire = p.skills.class == crate::skills::Class::Vampire;
+        let fb_rank = p.skills.rank(if vampire { crate::skills::Skill::BloodLance } else { crate::skills::Skill::Fireball });
         let (len, speed, life) = if ember { (EMBER_CAST_TIME, EMBER_SPEED, 0.7) } else { (CAST_TIME, FIREBALL_SPEED, 1.1) };
         if !ember {
-            p.mana -= crate::skills::fireball_mana(fb_rank);
+            p.mana -= if vampire { crate::vampire::lance_mana(fb_rank) } else { crate::skills::fireball_mana(fb_rank) };
         }
         p.cast_cd = len;
         p.cast_t = len;
@@ -1755,7 +1829,7 @@ impl Game {
         let (ux, uy) = (dx / l, dy / l);
         let (x, y) = (p.x + ux * 0.45, p.y + uy * 0.45);
         let power = p.power * p.skills.fire_mult() * crate::skills::fireball_synergy(p.skills.rank(crate::skills::Skill::Meteor));
-        let (lo, hi) = crate::skills::fireball_dmg(fb_rank);
+        let (lo, hi) = if vampire { crate::vampire::lance_dmg(fb_rank) } else { crate::skills::fireball_dmg(fb_rank) };
         let dmg = if ember { self.rng.rf(3.0, 5.0) } else { self.rng.rf(lo, hi) } * power;
         self.balls.push(Fireball { x, y, vx: ux * speed, vy: uy * speed, life, dmg, ember });
         if ember {
@@ -1770,7 +1844,7 @@ impl Game {
         self.mobs
             .iter()
             .enumerate()
-            .filter(|(_, m)| m.alive())
+            .filter(|(_, m)| m.alive() && m.charm <= 0.0)
             .map(|(i, m)| (i, (m.x - self.p.x).powi(2) + (m.y - self.p.y).powi(2)))
             .filter(|&(i, d2)| d2 < range * range && self.d.los(self.p.x, self.p.y, self.mobs[i].x, self.mobs[i].y))
             .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
@@ -1800,6 +1874,15 @@ impl Game {
         best.map(|b| b.0)
     }
 
+    /// Damage multiplier against a monster: cold creatures burn better, the bloodless resist blood.
+    pub(crate) fn taken(&self, kind: Kind) -> f32 {
+        if self.p.skills.class == crate::skills::Class::Vampire {
+            crate::vampire::blood_taken(kind)
+        } else {
+            crate::mobs::fire_taken(kind)
+        }
+    }
+
     /// Frost slows you for a moment.
     pub(crate) fn chill(&mut self, t: f32) {
         if self.p.chill <= 0.0 {
@@ -1813,7 +1896,8 @@ impl Game {
         if matches!(self.state, State::Dead(_)) {
             return;
         }
-        let dmg = self.p.armored(dmg);
+        // Mist can't be touched.
+        let dmg = if self.p.mist > 0.0 { 0.0 } else { self.p.armored(dmg) };
         if dmg > 0.0 {
             self.p.hp -= dmg;
             self.stats.damage_taken += dmg;
@@ -1850,7 +1934,7 @@ impl Game {
                     b.x -= b.vx * DT / steps as f32;
                     b.y -= b.vy * DT / steps as f32;
                 }
-                if self.mobs.iter().any(|m| m.alive() && (m.x - b.x).powi(2) + (m.y - b.y).powi(2) < (m.r + 0.13).powi(2)) {
+                if self.mobs.iter().any(|m| m.alive() && m.charm <= 0.0 && (m.x - b.x).powi(2) + (m.y - b.y).powi(2) < (m.r + 0.13).powi(2)) {
                     hit = true;
                 }
             }
@@ -1874,7 +1958,7 @@ impl Game {
                     vz: 8.0 + r3 * 10.0,
                     life: 0.35,
                     max: 0.35,
-                    kind: PKind::Fire,
+                    kind: if self.p.skills.class == crate::skills::Class::Vampire { PKind::Blood } else { PKind::Fire },
                 });
             }
         }
@@ -1901,7 +1985,7 @@ impl Game {
             .mobs
             .iter()
             .enumerate()
-            .filter(|(_, m)| m.alive())
+            .filter(|(_, m)| m.alive() && m.charm <= 0.0)
             .map(|(i, m)| (i, (m.x - x).powi(2) + (m.y - y).powi(2), m.r))
             .filter(|&(_, d2, r)| d2 < (r + 0.3).powi(2))
             .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
@@ -1909,8 +1993,11 @@ impl Game {
         let Some(i) = target else { return };
         self.stats.hits += 1;
         self.sfx.push(Sfx::Hit);
+        let kind = self.mobs[i].kind;
+        let dmg = dmg * self.taken(kind);
+        self.drain(kind, dmg, 1.0);
         let m = &mut self.mobs[i];
-        m.hp -= dmg * crate::mobs::fire_taken(m.kind);
+        m.hp -= dmg;
         m.flash = 0.1;
         if m.state == MobState::Idle {
             m.state = MobState::Chase;
@@ -1944,9 +2031,10 @@ impl Game {
             self.parts.push(Particle { x, y, z: 16.0, vx: a.cos() * 0.6, vy: a.sin() * 0.6, vz: 18.0, life, max: life, kind: PKind::Smoke });
         }
         let mut hit_any = false;
+        let blood = self.p.skills.class == crate::skills::Class::Vampire;
         for i in 0..self.mobs.len() {
             let m = &self.mobs[i];
-            if !m.alive() {
+            if !m.alive() || m.charm > 0.0 {
                 continue;
             }
             let d2 = (m.x - x).powi(2) + (m.y - y).powi(2);
@@ -1956,11 +2044,16 @@ impl Game {
             }
             let dmg = if d2 < (0.3 + m.r).powi(2) { dmg } else { dmg * 0.5 };
             hit_any = true;
-            let (mx, my, boss, r) = (m.x, m.y, m.boss, m.r);
+            let (mx, my, boss, r, kind) = (m.x, m.y, m.boss, m.r, m.kind);
+            let dmg = dmg * self.taken(kind);
+            self.drain(kind, dmg, 1.0);
+            let burn = 2.0 * self.p.skills.burn_mult();
             let m = &mut self.mobs[i];
-            m.hp -= dmg * crate::mobs::fire_taken(m.kind);
+            m.hp -= dmg;
             m.flash = 0.12;
-            m.burn = 2.0 * self.p.skills.burn_mult();
+            if !blood {
+                m.burn = burn;
+            }
             // Bosses shrug off most of the stagger.
             m.stun = m.stun.max(if boss { 0.03 } else { 0.15 });
             if m.state == MobState::Idle {
@@ -2540,6 +2633,169 @@ mod tests {
         crate::save::apply(&mut h, &text);
         assert_eq!(h.level, LevelId::Frostmarch);
         assert_eq!(h.p.clvl, 18);
+    }
+
+    fn vampire_game() -> Game {
+        let mut g = quiet_game();
+        g.set_class(crate::skills::Class::Vampire);
+        g.p.mana = 500.0;
+        g.p.max_mana = 500.0;
+        g
+    }
+
+    #[test]
+    fn the_class_screen_makes_a_vampire() {
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        g.choose = Some(0);
+        g.update(&Input { move_x: 1.0, ..Input::default() });
+        assert_eq!(g.choose, Some(1));
+        g.update(&Input::default());
+        g.update(&Input { confirm: true, ..Input::default() });
+        assert!(g.choose.is_none());
+        assert_eq!(g.p.skills.class, crate::skills::Class::Vampire);
+        assert_eq!(g.p.skills.rank(crate::skills::Skill::BloodLance), 1);
+        assert!(g.p.gear.worn[0].is_none(), "no staff for her");
+        // Saved and loaded as a vampire.
+        let text = crate::save::to_text(&g);
+        let mut h = Game::new(5, crate::gfx::SH_WIDE);
+        crate::save::apply(&mut h, &text);
+        assert_eq!(h.p.skills.class, crate::skills::Class::Vampire);
+    }
+
+    #[test]
+    fn the_vampire_drains_life_but_not_from_the_bloodless() {
+        use crate::skills::Skill;
+        let mut g = vampire_game();
+        for kind in [Kind::Zombie, Kind::Skeleton] {
+            let mut m = Mob::new(kind, g.p.x + 2.0, g.p.y, 1.0, &mut g.rng);
+            m.max_hp = 5000.0;
+            m.hp = 5000.0;
+            g.mobs.push(m);
+        }
+        g.p.hp = 10.0;
+        g.hit_mob(0, 200.0, 0.0, 0.0, None, false);
+        assert!(g.p.hp > 10.0, "drank from the zombie");
+        let hp = g.p.hp;
+        g.hit_mob(1, 200.0, 0.0, 0.0, None, false);
+        assert_eq!(g.p.hp, hp, "skeletons have no blood");
+        assert!(g.mobs[1].hp > g.mobs[0].hp, "and resist blood damage");
+        // Blood Lance flies and drains on impact; no burning.
+        g.p.hp = 10.0;
+        let (zx, zy) = (g.mobs[0].x, g.mobs[0].y);
+        assert!(g.cast_skill(Skill::BloodLance, zx, zy));
+        for _ in 0..60 {
+            g.update(&Input::default());
+        }
+        assert!(g.p.hp > 10.0);
+        assert!(g.mobs[0].burn <= 0.0, "blood doesn't burn");
+    }
+
+    #[test]
+    fn rake_mist_step_and_bats_work() {
+        use crate::skills::Skill;
+        let mut g = vampire_game();
+        g.p.clvl = 18;
+        for s in [Skill::Rake, Skill::MistStep, Skill::BatSwarm] {
+            g.p.skills.rank[s as usize] = 3;
+        }
+        let mut m = Mob::new(Kind::Zombie, g.p.x + 1.0, g.p.y, 1.0, &mut g.rng);
+        m.max_hp = 1000.0;
+        m.hp = 1000.0;
+        g.mobs.push(m);
+        let (zx, zy) = (g.mobs[0].x, g.mobs[0].y);
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::Rake, zx, zy);
+        assert!(g.mobs[0].hp < 1000.0, "rake hits what's in front");
+        // Mist Step slips through the zombie and can't be hurt for a moment.
+        let (x0, y0) = (g.p.x, g.p.y);
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::MistStep, x0 + 6.0, y0);
+        assert!((g.p.x - x0).abs() + (g.p.y - y0).abs() > 2.0, "moved");
+        let hp = g.p.hp;
+        g.hurt_player(50.0);
+        assert_eq!(g.p.hp, hp, "mist can't be touched");
+        assert!(g.p.skills.cooldown[Skill::MistStep as usize] > 0.0);
+        // Bats find the zombie.
+        let hp = g.mobs[0].hp;
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::BatSwarm, zx, zy);
+        assert!(!g.bats.is_empty());
+        for _ in 0..120 {
+            g.update(&Input::default());
+        }
+        assert!(g.mobs[0].hp < hp, "bats bit");
+    }
+
+    #[test]
+    fn mesmerized_and_raised_foes_fight_for_her() {
+        use crate::skills::Skill;
+        let mut g = vampire_game();
+        g.p.clvl = 18;
+        for s in [Skill::Mesmerize, Skill::Thrall] {
+            g.p.skills.rank[s as usize] = 3;
+        }
+        let a = Mob::new(Kind::Zombie, g.p.x + 2.0, g.p.y, 1.0, &mut g.rng);
+        let mut b = Mob::new(Kind::Zombie, g.p.x + 3.5, g.p.y, 1.0, &mut g.rng);
+        b.max_hp = 300.0;
+        b.hp = 300.0;
+        g.mobs.push(a);
+        g.mobs.push(b);
+        let (ax, ay) = (g.mobs[0].x, g.mobs[0].y);
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::Mesmerize, ax, ay);
+        assert!(g.mobs[0].charm > 0.0);
+        let hp = g.p.hp;
+        for _ in 0..240 {
+            g.update(&Input::default());
+        }
+        assert!(g.mobs[1].hp < 300.0, "the mesmerized zombie attacks the other");
+        // My spells don't hurt my ally.
+        let ally = g.mobs[0].hp;
+        g.hit_mob(0, 50.0, 0.0, 0.0, None, false);
+        assert_eq!(g.mobs[0].hp, ally);
+        let _ = hp;
+        // A corpse rises as a thrall, and crumbles when its time is up.
+        g.mobs[1].hp = 0.0;
+        g.kill(1);
+        g.p.cast_cd = 0.0;
+        g.p.mana = 500.0;
+        g.cast_skill(Skill::Thrall, g.p.x, g.p.y);
+        assert!(g.mobs[1].alive() && g.mobs[1].thrall);
+        g.mobs[1].charm = 0.05;
+        for _ in 0..10 {
+            g.update(&Input::default());
+        }
+        assert!(!g.mobs[1].alive(), "crumbled");
+    }
+
+    #[test]
+    fn blood_moon_and_the_embrace() {
+        use crate::skills::Skill;
+        let mut g = vampire_game();
+        g.p.clvl = 18;
+        for s in [Skill::BloodMoon, Skill::Embrace] {
+            g.p.skills.rank[s as usize] = 2;
+        }
+        let mut m = Mob::new(Kind::Zombie, g.p.x + 2.0, g.p.y, 1.0, &mut g.rng);
+        m.max_hp = 1000.0;
+        m.hp = 1000.0;
+        m.dmg = (0.0, 0.0); // only the moon's healing counts here
+        g.mobs.push(m);
+        g.p.hp = 20.0;
+        let (zx, zy) = (g.mobs[0].x, g.mobs[0].y);
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::BloodMoon, zx, zy);
+        for _ in 0..120 {
+            g.update(&Input::default());
+        }
+        assert!(g.mobs[0].hp < 1000.0 && g.p.hp > 20.0, "bleeds them, feeds you");
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::Embrace, g.p.x, g.p.y);
+        assert!(g.p.embrace_t > 0.0);
+        let mana = g.p.mana;
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::BloodLance, zx, zy);
+        assert_eq!(g.p.mana, mana, "skills are free as a bat");
     }
 
     #[test]

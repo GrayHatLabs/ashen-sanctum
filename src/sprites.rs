@@ -273,6 +273,107 @@ pub fn fallback_prop(name: &str) -> Sprite {
     s
 }
 
+/// The vampire's icons: crimson and violet on near-black.
+fn vampire_icon(s: crate::skills::Skill, im: &mut Sprite) {
+    use crate::skills::Skill;
+    im.fill(0, 0, 24, 24, rgb(0x140a10));
+    let blood = |d: f32| mix(rgb(0xff6070), rgb(0x600010), d.clamp(0.0, 1.0));
+    let violet = |d: f32| mix(rgb(0xe0b0ff), rgb(0x502070), d.clamp(0.0, 1.0));
+    let bat = |im: &mut Sprite, cx: i32, cy: i32, w: i32, c: u32| {
+        im.fill(cx - 1, cy - 1, 3, 3, c);
+        for k in 1..=w {
+            let lift = (k as f32 * 0.6) as i32 - if k == w { 1 } else { 0 };
+            im.set(cx - 1 - k, cy - lift + k / 2, c);
+            im.set(cx + 1 + k, cy - lift + k / 2, c);
+            im.set(cx - 1 - k, cy - lift + k / 2 - 1, c);
+            im.set(cx + 1 + k, cy - lift + k / 2 - 1, c);
+        }
+        im.set(cx - 1, cy - 2, c);
+        im.set(cx + 1, cy - 2, c);
+    };
+    match s {
+        Skill::BloodLance => {
+            for k in 0..18 {
+                let t = k as f32 / 18.0;
+                im.fill(3 + k, 20 - k, 2, 2, blood(1.0 - t));
+            }
+            im.ellipse(20.0, 4.0, 2.5, 2.5, rgb(0xffd0d8));
+        }
+        Skill::Rake => {
+            for c in 0..3 {
+                for k in 0..16 {
+                    im.set(5 + c * 5 + k / 4, 4 + k, blood(k as f32 / 16.0));
+                    im.set(6 + c * 5 + k / 4, 4 + k, blood(k as f32 / 16.0 + 0.2));
+                }
+            }
+        }
+        Skill::Thirst => {
+            for y in 3..21 {
+                let half = if y < 11 { (y - 3) as f32 * 0.7 } else { 6.0 - ((y - 11) as f32 * 0.6).powi(2) * 0.3 };
+                for x in 0..24 {
+                    if (x as f32 - 11.5).abs() < half.max(0.5) {
+                        im.set(x, y, blood((y - 3) as f32 / 18.0));
+                    }
+                }
+            }
+            im.set(9, 13, rgb(0xffd0d8));
+        }
+        Skill::BatSwarm => {
+            bat(im, 7, 8, 5, violet(0.4));
+            bat(im, 16, 12, 5, violet(0.2));
+            bat(im, 9, 18, 4, violet(0.6));
+        }
+        Skill::Mesmerize => {
+            im.ellipse(12.0, 12.0, 10.0, 6.0, violet(0.8));
+            im.ellipse(12.0, 12.0, 4.5, 4.5, rgb(0xd02030));
+            im.ellipse(12.0, 12.0, 1.5, 3.0, rgb(0x100008));
+        }
+        Skill::MistStep => {
+            for k in 0..4 {
+                im.ellipse(6.0 + k as f32 * 4.0, 14.0 - k as f32 * 2.0, 4.0, 2.5, mix(rgb(0x8a7a9a), rgb(0xd8d0e8), k as f32 / 3.0));
+            }
+        }
+        Skill::CrimsonNova => {
+            for y in 0..24 {
+                for x in 0..24 {
+                    let d = ((x as f32 - 11.5).powi(2) + (y as f32 - 11.5).powi(2)).sqrt();
+                    if (d - 8.5).abs() < 2.2 {
+                        im.set(x, y, blood((d - 6.3) / 4.4));
+                    }
+                }
+            }
+            im.ellipse(12.0, 12.0, 2.0, 2.0, rgb(0xffd0d8));
+        }
+        Skill::Thrall => {
+            im.ellipse(12.0, 10.0, 7.0, 7.0, rgb(0xd8d0c0));
+            im.fill(8, 15, 9, 5, rgb(0xd8d0c0));
+            im.ellipse(9.0, 10.0, 1.8, 2.0, violet(0.0));
+            im.ellipse(15.0, 10.0, 1.8, 2.0, violet(0.0));
+            for x in [9, 11, 13, 15] {
+                im.fill(x, 17, 1, 3, rgb(0x140a10));
+            }
+        }
+        Skill::NightMastery => {
+            im.ellipse(12.0, 12.0, 9.0, 9.0, rgb(0xe8e0f0));
+            im.ellipse(15.0, 10.0, 8.0, 8.0, rgb(0x140a10));
+            im.set(5, 4, rgb(0xffffff));
+            im.set(19, 19, rgb(0xd0c0ff));
+        }
+        Skill::BloodMoon => {
+            im.ellipse(12.0, 10.0, 8.0, 8.0, blood(0.3));
+            im.ellipse(9.0, 8.0, 2.0, 1.5, blood(0.0));
+            im.fill(2, 20, 20, 2, blood(0.8));
+        }
+        Skill::Embrace => {
+            bat(im, 12, 11, 10, violet(0.3));
+            im.fill(11, 9, 3, 6, violet(0.5));
+            im.set(11, 10, rgb(0xff2030));
+            im.set(13, 10, rgb(0xff2030));
+        }
+        _ => {}
+    }
+}
+
 /// 24x24 skill icons (drawn at their top-left corner).
 pub fn skill_icon(s: crate::skills::Skill) -> Sprite {
     use crate::skills::Skill;
@@ -419,6 +520,7 @@ pub fn skill_icon(s: crate::skills::Skill) -> Sprite {
             }
         }
         Skill::Fireball => {}
+        _ => vampire_icon(s, &mut im),
     }
     im.ax = 0;
     im.ay = 0;
