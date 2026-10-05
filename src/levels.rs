@@ -222,7 +222,7 @@ const PROPS: [PropKind; 55] = [
     PropKind::GearGate,
 ];
 
-const KINDS: [Kind; 38] = [
+const KINDS: [Kind; 40] = [
     Kind::Zombie,
     Kind::Skeleton,
     Kind::Wolf,
@@ -251,12 +251,14 @@ const KINDS: [Kind; 38] = [
     Kind::Grimhilde,
     Kind::Malgrave,
     Kind::Vardak,
-    Kind::CogHound,
+    Kind::Scarab,
     Kind::Inquisitor,
     Kind::Gearwraith,
     Kind::SpringJack,
     Kind::BoilerBrute,
     Kind::Ordinal,
+    Kind::Prism,
+    Kind::Marshal,
     Kind::Forgemother,
     Kind::Cantor,
     Kind::Archivist,

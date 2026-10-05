@@ -142,12 +142,14 @@ pub fn bloodless(k: Kind) -> bool {
             | Kind::Ossric
             | Kind::Grimhilde
             | Kind::Malgrave
-            | Kind::CogHound
+            | Kind::Scarab
             | Kind::Inquisitor
             | Kind::Gearwraith
             | Kind::SpringJack
             | Kind::BoilerBrute
             | Kind::Ordinal
+            | Kind::Prism
+            | Kind::Marshal
             | Kind::Forgemother
             | Kind::Cantor
             | Kind::Archivist

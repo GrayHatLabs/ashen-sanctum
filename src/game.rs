@@ -2388,6 +2388,20 @@ impl Game {
             let dmg = (self.mobs[i].dmg.1 * 1.4).max(8.0);
             self.hazards.push(crate::mobs::Hazard { x, y, r: 1.7, warn: 0.6, live: 0.0, dps: 0.0, burst: dmg, t: 0.0, fired: false, kind: crate::mobs::HazardKind::Nova });
         }
+        // Break the marshal and its squad forgets its shape.
+        if kind == Kind::Marshal {
+            let mut any = false;
+            for m in self.mobs.iter_mut() {
+                if matches!(m.kind, Kind::Ordinal | Kind::Prism) && m.alive() && (m.x - x).powi(2) + (m.y - y).powi(2) < 100.0 {
+                    m.stun = m.stun.max(2.5);
+                    m.drilled = false;
+                    any = true;
+                }
+            }
+            if any {
+                self.floater(x, y, "DISORDER!".into(), rgb(0x80b0ff));
+            }
+        }
         // Goblins panic when one of their own falls (like D2's Fallen).
         if kind == Kind::Goblin {
             for m in self.mobs.iter_mut() {
@@ -3049,6 +3063,27 @@ mod tests {
         g.update(&Input::default());
         assert_eq!(g.mobs[i].form, 1, "the great engine");
         assert!(g.mobs[i].invuln > 0.0);
+    }
+
+    #[test]
+    fn ordinal_squads_march_in_step_until_the_marshal_falls() {
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        g.debug_goto(LevelId::Mechanus);
+        let squad_of = |g: &Game, m: usize| -> Vec<usize> {
+            let (mx, my) = (g.mobs[m].x, g.mobs[m].y);
+            (0..g.mobs.len())
+                .filter(|&i| matches!(g.mobs[i].kind, crate::mobs::Kind::Ordinal | crate::mobs::Kind::Prism) && (g.mobs[i].x - mx).powi(2) + (g.mobs[i].y - my).powi(2) < 16.0)
+                .collect()
+        };
+        let m = (0..g.mobs.len()).filter(|&i| g.mobs[i].kind == crate::mobs::Kind::Marshal).max_by_key(|&i| squad_of(&g, i).len()).expect("a marshal");
+        let squad = squad_of(&g, m);
+        assert!(squad.len() >= 3, "a marshal leads a squad");
+        assert!(squad.iter().any(|&i| g.mobs[i].kind == crate::mobs::Kind::Prism));
+        g.update(&Input::default());
+        assert!(squad.iter().all(|&i| g.mobs[i].drilled), "in step");
+        g.mobs[m].hp = 0.0;
+        g.kill(m);
+        assert!(squad.iter().all(|&i| g.mobs[i].stun > 2.0), "disorder");
     }
 
     #[test]

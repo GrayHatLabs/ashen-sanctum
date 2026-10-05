@@ -287,7 +287,7 @@ pub const DUNGEONS: [DungeonDef; 16] = [
         floors: 2,
         theme: Theme::Foundry,
         boss: Kind::Forgemother,
-        monsters: &[Kind::BoilerBrute, Kind::CogHound, Kind::Ordinal],
+        monsters: &[Kind::BoilerBrute, Kind::Scarab, Kind::Ordinal],
         tier: 7.8,
         entrance: (20, 84),
         act: 3,
@@ -297,7 +297,7 @@ pub const DUNGEONS: [DungeonDef; 16] = [
         floors: 2,
         theme: Theme::Choir,
         boss: Kind::Cantor,
-        monsters: &[Kind::Inquisitor, Kind::Gearwraith, Kind::Ordinal],
+        monsters: &[Kind::Inquisitor, Kind::Gearwraith, Kind::Ordinal, Kind::Prism],
         tier: 8.2,
         entrance: (92, 86),
         act: 3,
@@ -317,7 +317,7 @@ pub const DUNGEONS: [DungeonDef; 16] = [
         floors: 3,
         theme: Theme::Clock,
         boss: Kind::Clockmaker,
-        monsters: &[Kind::SpringJack, Kind::BoilerBrute, Kind::CogHound, Kind::Ordinal],
+        monsters: &[Kind::SpringJack, Kind::BoilerBrute, Kind::Scarab, Kind::Prism, Kind::Ordinal],
         tier: 9.2,
         entrance: (54, 14),
         act: 3,
@@ -1472,9 +1472,24 @@ pub fn mechanus(seed: u64) -> Level {
             continue;
         }
         let tier = if far < 34.0 { 7.2 } else { 7.7 };
-        let kinds: &[Kind] = if far < 34.0 { &[Kind::CogHound, Kind::Ordinal, Kind::Inquisitor] } else { &[Kind::CogHound, Kind::SpringJack, Kind::Inquisitor, Kind::BoilerBrute, Kind::Ordinal] };
+        let kinds: &[Kind] = if far < 34.0 { &[Kind::Scarab, Kind::Ordinal, Kind::Inquisitor] } else { &[Kind::Scarab, Kind::SpringJack, Kind::Inquisitor, Kind::BoilerBrute, Kind::Ordinal] };
         let kind = kinds[rng.range(0, kinds.len() as i32) as usize];
-        let n = if kind == Kind::BoilerBrute { rng.range(1, 3) } else if kind == Kind::Ordinal { rng.range(4, 7) } else { rng.range(3, 6) };
+        if kind == Kind::Ordinal {
+            // An ordinal squad: the marshal in front, prisms on its flanks, cubits in ranks behind.
+            let mut squad = vec![(Kind::Marshal, 0.0, 0.0), (Kind::Prism, -1.2, 0.8), (Kind::Prism, 1.2, 0.8)];
+            for k in 0..rng.range(3, 5) {
+                squad.push((Kind::Ordinal, -1.2 + (k % 3) as f32 * 1.2, 1.8 + (k / 3) as f32 * 1.0));
+            }
+            for (kind, dx, dy) in squad {
+                let (sx, sy) = (x + dx, y + dy);
+                if !d.blocked(sx, sy, 0.35) {
+                    lv.mobs.push(Mob::new(kind, sx, sy, tier, &mut rng));
+                }
+            }
+            packs += 1;
+            continue;
+        }
+        let n = if kind == Kind::BoilerBrute { rng.range(1, 3) } else if kind == Kind::Scarab { rng.range(4, 7) } else { rng.range(3, 6) };
         for _ in 0..n {
             for _try in 0..10 {
                 let (mx, my) = (x + rng.rf(-2.0, 2.0), y + rng.rf(-2.0, 2.0));

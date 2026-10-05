@@ -38,12 +38,16 @@ pub enum Kind {
     Malgrave,
     Vardak,
     // ---- Act 4: Mechanus ----
-    CogHound,
+    Scarab,
     Inquisitor,
     Gearwraith,
     SpringJack,
     BoilerBrute,
+    /// The Ordinals: law-bound clockwork shapes that march in squads. Cubits are the rank and file,
+    /// prisms the gunners, and a marshal keeps them in step (kill it and they fall into disorder).
     Ordinal,
+    Prism,
+    Marshal,
     Forgemother,
     Cantor,
     Archivist,
@@ -191,12 +195,14 @@ pub fn def(k: Kind) -> Def {
             boss: true,
             ..d("boss_vardak", "COUNT VARDAK", 1400.0, 2.0, (24.0, 34.0), 0.6, 1.5, 4000.0)
         },
-        Kind::CogHound => Def { r: 0.34, ..d("cog_hound", "COG-HOUND", 50.0, 4.2, (9.0, 13.0), 0.3, 0.9, 26.0) },
+        Kind::Scarab => Def { r: 0.3, ..d("brass_scarab", "BRASS SCARAB", 42.0, 3.8, (8.0, 12.0), 0.3, 0.8, 24.0) },
         Kind::Inquisitor => Def { ranged: true, ..d("inquisitor", "INQUISITOR AUTOMATON", 60.0, 2.1, (10.0, 14.0), 0.6, 1.9, 32.0) },
         Kind::Gearwraith => d("gearwraith", "GEARWRAITH", 40.0, 3.0, (9.0, 13.0), 0.4, 1.2, 28.0),
         Kind::SpringJack => d("spring_jack", "SPRING-HEELED JACK", 45.0, 3.4, (11.0, 16.0), 0.3, 1.0, 30.0),
         Kind::BoilerBrute => Def { r: 0.5, reach: 1.1, ..d("boiler_brute", "BOILER BRUTE", 120.0, 1.7, (16.0, 24.0), 0.7, 1.6, 48.0) },
-        Kind::Ordinal => Def { r: 0.25, ranged: true, ..d("ordinal", "ORDINAL", 24.0, 3.0, (5.0, 8.0), 0.4, 1.4, 16.0) },
+        Kind::Ordinal => Def { r: 0.25, ranged: true, ..d("ordinal", "ORDINAL CUBIT", 24.0, 3.0, (5.0, 8.0), 0.4, 1.4, 16.0) },
+        Kind::Prism => Def { r: 0.28, ranged: true, ..d("ordinal_prism", "ORDINAL PRISM", 34.0, 2.6, (6.0, 9.0), 0.5, 1.8, 22.0) },
+        Kind::Marshal => Def { r: 0.4, ranged: true, ..d("ordinal_marshal", "ORDINAL MARSHAL", 90.0, 2.4, (9.0, 13.0), 0.6, 2.2, 45.0) },
         Kind::Forgemother => Def {
             r: 0.6,
             reach: 1.5,
@@ -333,6 +339,8 @@ pub struct Mob {
     /// A one-off order to the game (the Clockmaker: 1 = rewind the player; the Archivist:
     /// 2 = file the player away elsewhere). The game clears it.
     pub cue: u8,
+    /// An ordinal marching in step with a living marshal (faster).
+    pub drilled: bool,
 }
 
 impl Mob {
@@ -382,6 +390,7 @@ impl Mob {
             form: 0,
             rush: 0.0,
             cue: 0,
+            drilled: false,
         }
     }
 
@@ -512,6 +521,11 @@ impl Game {
         let mut hazards: Vec<Hazard> = vec![];
         let mut texts: Vec<(f32, f32, &'static str)> = vec![];
         let summons = self.mobs.iter().filter(|m| m.alive() && !m.boss && m.home.0 < -999.0).count();
+        // Ordinals near a living marshal march in step.
+        let marshals: Vec<(f32, f32)> = self.mobs.iter().filter(|m| m.kind == Kind::Marshal && m.alive()).map(|m| (m.x, m.y)).collect();
+        for m in self.mobs.iter_mut().filter(|m| matches!(m.kind, Kind::Ordinal | Kind::Prism)) {
+            m.drilled = marshals.iter().any(|&(x, y)| (m.x - x).powi(2) + (m.y - y).powi(2) < 64.0);
+        }
         // Charmed monsters hunt the hostile ones.
         let foes: Vec<(usize, f32, f32, f32)> = self.mobs.iter().enumerate().filter(|(_, m)| m.alive() && m.charm <= 0.0).map(|(i, m)| (i, m.x, m.y, m.r)).collect();
         let mut ally_hits: Vec<(usize, f32)> = vec![];
@@ -714,7 +728,7 @@ impl Game {
                     let (ddx, ddy) = (tx - m.x, ty - m.y);
                     let l = (ddx * ddx + ddy * ddy).sqrt().max(0.001);
                     let (ux, uy) = (ddx / l, ddy / l);
-                    let speed = m.speed * if m.enraged { 1.25 } else { 1.0 } * if m.flee > 0.0 { 1.1 } else { 1.0 } * if m.rush > 0.0 { 3.2 } else { 1.0 };
+                    let speed = m.speed * if m.enraged { 1.25 } else { 1.0 } * if m.flee > 0.0 { 1.1 } else { 1.0 } * if m.rush > 0.0 { 3.2 } else { 1.0 } * if m.drilled { 1.3 } else { 1.0 };
                     let (mut x, mut y) = (m.x, m.y);
                     move_circle(&self.d, &mut x, &mut y, ux * speed * DT, uy * speed * DT, r);
                     m.x = x;
@@ -765,6 +779,13 @@ impl Game {
                                 }
                             }
                             Kind::Ordinal | Kind::Archivist => shots.push((m.x, m.y, ux * 9.5, uy * 9.5, dmg, ShotKind::Spark)),
+                            Kind::Prism => {
+                                for k in 0..3 {
+                                    let a = uy.atan2(ux) + (k as f32 - 1.0) * 0.22;
+                                    shots.push((m.x, m.y, a.cos() * 9.0, a.sin() * 9.0, dmg * 0.7, ShotKind::Spark));
+                                }
+                            }
+                            Kind::Marshal => shots.push((m.x, m.y, ux * 6.5, uy * 6.5, dmg, ShotKind::Gear)),
                             Kind::Cantor => {
                                 // A ring of sound with a gap that turns: dodge into the gap.
                                 let gap = (tick as f32 * 0.02).rem_euclid(std::f32::consts::TAU);
@@ -1243,7 +1264,7 @@ fn boss_specials(
             if m.special2 <= 0.0 {
                 m.special2 = if m.enraged { 8.0 } else { 11.0 };
                 if summons < 6 {
-                    around(rng, 2, Kind::CogHound, m.tier, spawns);
+                    around(rng, 2, Kind::Scarab, m.tier, spawns);
                     around(rng, 2, Kind::Ordinal, m.tier, spawns);
                     texts.push((m.x, m.y, "REBUILD!"));
                 }

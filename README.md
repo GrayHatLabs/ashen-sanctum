@@ -177,8 +177,9 @@ servants who grew souls hide from their maker.
   - **The Heart of the Clock** (needs all three keys): **the Clockmaker**. He throws spirals of clock-hand
     blades and **rewinds** you to where you stood three seconds ago. Below half life he climbs into his great
     engine and swings pendulum slams across the arena.
-- **Monsters**: cog-hounds, inquisitor automatons (steam censers), gearwraiths (they phase out), spring-heeled
-  jacks (leap in), boiler brutes (they explode when they fall) and ordinal drones.
+- **Monsters**: brass scarabs (clockwork beetles that swarm), inquisitor automatons (steam censers), gearwraiths (they phase out), spring-heeled
+  jacks (leap in), boiler brutes (they explode when they fall) and the **Ordinals**: squads of floating clockwork
+  shapes (cubits, prisms and a marshal) that march in step. Kill the marshal and the squad falls into disorder.
 - Drifting steam and brass sparks; a ticking harpsichord outside, an engine's clangour in the works.
 
 ## After the Clockmaker

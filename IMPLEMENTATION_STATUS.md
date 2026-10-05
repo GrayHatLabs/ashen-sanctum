@@ -113,7 +113,7 @@ without errors) but not played by a human yet. Nothing is HW yet.
 |---|---|---|
 | `LevelId::Mechanus`, gear gate behind Castle Vardak (`Pass(3)`, still until Vardak dies), back gate `Pass(2)` | H S | Unit test: full Act 4 quest line, saved and loaded on Mechanus |
 | Grinding Fields: the Last Escapement, an island of brass over the void (ragged rim, chasms), works props, conveyor roads to 4 dungeons | H S | World test: everything reachable |
-| 6 monsters (cog-hound, inquisitor, gearwraith, spring-heeled jack, boiler brute, ordinal), 3 heralds + the Clockmaker (blade spirals, rewind, great engine with pendulum slams) | H S | Unit tests: rewind + engine phase, boiler burst |
+| 6 monsters (brass scarab, inquisitor, gearwraith, spring-heeled jack, boiler brute, ordinal), 3 heralds + the Clockmaker (blade spirals, rewind, great engine with pendulum slams) | H S | Unit tests: rewind + engine phase, boiler burst |
 | Story: Tally, 3 Winding Keys, the Heart's door, fourth epilogue; Nightmare moved after the Clockmaker | H | |
 | Steam + sparks weather; Gears (harpsichord) and Engine music; slag hazard; steam / gear / spark shots | S | |
 | `--act3` / `--act4` test characters (own save files) | H | |
