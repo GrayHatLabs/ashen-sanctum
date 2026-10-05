@@ -95,6 +95,13 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Art: 8 tiles, 12 props, 13 characters, all 19 animations (a few glitchy directions trimmed in pack.py) | S | Snow road tile lightened, snow tiles softened in pack.py |
 | Level editor catalog (themes, props, portals, monsters, NPCs, checks) | built | |
 
+## Front end (2026-10-05)
+
+| Feature | Status | Notes |
+|---|---|---|
+| Title screen (painted background, logo, embers), character select (8 hero slots, portraits, delete with confirm), class select (3 cards, Inventor "coming soon"), naming (typed or random), options (music, controls) | H S | `menu.rs`; unit tests for the flow and hero files; test flags (--new, --act2, --vampire, --level) skip it |
+| One save per hero (`heroes/<slot>.txt`, `name=` line); old save.txt migrates; Esc saves and returns to the heroes | H | |
+
 ## The Vampire class (2026-10-05)
 
 | Feature | Status | Notes |

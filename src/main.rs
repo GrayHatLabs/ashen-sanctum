@@ -11,6 +11,7 @@ mod inventory;
 mod iso;
 mod items;
 mod levels;
+mod menu;
 mod mobs;
 mod music;
 mod render;
@@ -134,8 +135,12 @@ fn main() -> Result<(), String> {
     if act2 {
         save::use_file("save_act2.txt");
     }
+    // The title screen and character select (heroes in heroes/), unless a test flag skips them:
+    // --new / --act2 / --vampire / --sorceress / --level use the old single save.txt flow.
+    let skip_menu = ["--new", "--act2", "--vampire", "--sorceress", "--level"].iter().any(|f| args.iter().any(|a| a == f));
+    let mut menu: Option<menu::Menu> = if skip_menu { None } else { Some(menu::Menu::new(save::list_heroes())) };
     // Continue the saved character (fresh world from the same seed), unless --new.
-    let saved = if args.iter().any(|a| a == "--new") { None } else { save::read() };
+    let saved = if menu.is_some() || args.iter().any(|a| a == "--new") { None } else { save::read() };
     let seed = seed_arg.or_else(|| saved.as_deref().and_then(save::seed_of)).unwrap_or(seed);
     let mut game = Game::new(seed, view_h);
     let mut loaded = false;
@@ -153,13 +158,16 @@ fn main() -> Result<(), String> {
     } else {
         None
     };
-    if !loaded {
+    if !loaded && menu.is_none() {
         match class_flag {
             Some(c) => game.set_class(c),
             None if !act2 => game.choose = Some(0),
             None => {}
         }
     }
+    video.text_input().start();
+    let (mut typed, mut backspace) = (String::new(), false);
+    let mut menu_out: Option<menu::MenuOut> = None;
     if act2 && !loaded {
         game.act2_start();
         save::write(&game);
@@ -230,9 +238,11 @@ fn main() -> Result<(), String> {
                         E if !repeat => pot_mp = true,
                         Tab | M if !repeat => map = true,
                         Escape if !repeat => cancel = true,
+                        Backspace => backspace = true,
                         _ => {}
                     }
                 }
+                Event::TextInput { text, .. } => typed.push_str(&text),
                 Event::KeyUp { scancode: Some(sc), .. } => {
                     use Scancode::*;
                     match sc {
@@ -364,11 +374,21 @@ fn main() -> Result<(), String> {
             inp.cancel = cancel;
             inp.skills = skills_key;
             inp.inv = inv_key;
+            inp.typed = std::mem::take(&mut typed);
+            inp.backspace = backspace;
             inp.cheat_level = cheat_level;
             inp.cheat_loot = cheat_loot;
             inp.cycle = cycle;
             inp.slot = slot;
-            game.update(&inp);
+            match menu.as_mut() {
+                Some(m) => {
+                    if let Some(out) = m.update(&inp) {
+                        menu_out = Some(out);
+                    }
+                }
+                None => game.update(&inp),
+            }
+            backspace = false;
             confirm = false;
             pot_hp = false;
             pot_mp = false;
@@ -389,17 +409,56 @@ fn main() -> Result<(), String> {
             acc -= step;
         }
 
-        if let Some(a) = audio.as_mut() {
-            a.set_music(game.music_track());
+        // What the front end asked for: continue a hero, start a new one, music, quit.
+        match menu_out.take() {
+            Some(menu::MenuOut::Load(slot)) => {
+                save::use_hero(&slot);
+                let text = save::read().unwrap_or_default();
+                let seed = save::seed_of(&text).unwrap_or(seed);
+                game = Game::new(seed, view_h);
+                if save::apply(&mut game, &text) {
+                    game.welcome_back();
+                }
+                menu = None;
+            }
+            Some(menu::MenuOut::New(class, name)) => {
+                let slot = save::new_slot(&name);
+                save::use_hero(&slot);
+                let seed = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_nanos() as u64).unwrap_or(1);
+                game = Game::new(seed, view_h);
+                game.set_class(class);
+                game.hero_name = name;
+                save::write(&game);
+                menu = None;
+            }
+            Some(menu::MenuOut::ToggleMusic) => {
+                if let Some(a) = audio.as_mut() {
+                    a.toggle_music();
+                }
+            }
+            Some(menu::MenuOut::Quit) => break 'main,
+            None => {}
         }
-        if game.save_due {
+        if let Some(a) = audio.as_mut() {
+            a.set_music(if menu.is_some() { music::Track::Town } else { game.music_track() });
+        }
+        if game.save_due && menu.is_none() {
             game.save_due = false;
             save::write(&game);
         }
         if game.quit {
-            break 'main;
+            if skip_menu {
+                break 'main;
+            }
+            // Esc in game: save, and back to the character select screen.
+            save::write(&game);
+            game.quit = false;
+            menu = Some(menu::Menu::at_heroes(save::list_heroes()));
         }
-        game.draw(&mut scr);
+        match menu.as_mut() {
+            Some(m) => m.draw(&mut scr, &game.art),
+            None => game.draw(&mut scr),
+        }
         if let (Some(m), false) = (inp.mouse, handheld) {
             draw_cursor(&mut scr, m.0, m.1);
         }
@@ -424,7 +483,9 @@ fn main() -> Result<(), String> {
             std::thread::sleep(Duration::from_millis(1));
         }
     }
-    save::write(&game);
+    if menu.is_none() {
+        save::write(&game);
+    }
     Ok(())
 }
 

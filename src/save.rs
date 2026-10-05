@@ -5,33 +5,124 @@ use std::path::PathBuf;
 
 /// `$XDG_DATA_HOME/ashensanctum/save.txt` (or `~/.local/share/...`); next to the
 /// executable when neither is set (handheld ports).
-static FILE_NAME: std::sync::OnceLock<&'static str> = std::sync::OnceLock::new();
+static FILE_NAME: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
 
-/// Use another save file in the same folder (`--act2` keeps its test character apart).
-pub fn use_file(name: &'static str) {
-    let _ = FILE_NAME.set(name);
+/// Use another save file in the save folder: a hero's slot (`heroes/<slot>.txt`), or
+/// `save_act2.txt` for the `--act2` test character.
+pub fn use_file(name: &str) {
+    *FILE_NAME.lock().unwrap() = Some(name.to_string());
 }
 
-pub fn path() -> PathBuf {
+/// The save folder.
+pub fn dir() -> PathBuf {
     if let Ok(p) = std::env::var("ASHEN_SAVE") {
-        let p = PathBuf::from(p);
-        return match FILE_NAME.get() {
-            Some(n) => p.with_file_name(n),
-            None => p,
-        };
+        return PathBuf::from(p).parent().map(PathBuf::from).unwrap_or_else(|| PathBuf::from("."));
     }
     let base = std::env::var("XDG_DATA_HOME")
         .map(PathBuf::from)
         .or_else(|_| std::env::var("HOME").map(|h| PathBuf::from(h).join(".local/share")))
         .unwrap_or_else(|_| PathBuf::from("."));
-    base.join("ashensanctum").join(FILE_NAME.get().copied().unwrap_or("save.txt"))
+    base.join("ashensanctum")
+}
+
+pub fn path() -> PathBuf {
+    let name = FILE_NAME.lock().unwrap().clone();
+    if let (Ok(p), None) = (std::env::var("ASHEN_SAVE"), &name) {
+        return PathBuf::from(p);
+    }
+    dir().join(name.unwrap_or_else(|| "save.txt".into()))
+}
+
+// ------------------------------------------------------------------ heroes (one save per character)
+
+/// A saved hero, as the character select screen shows it.
+#[derive(Clone, Debug, PartialEq)]
+pub struct HeroInfo {
+    /// File stem in heroes/.
+    pub slot: String,
+    pub name: String,
+    pub class: crate::skills::Class,
+    pub clvl: u32,
+    /// 0 = Act 1, 1 = Act 2.
+    pub act: usize,
+    pub difficulty: u8,
+}
+
+pub fn heroes_dir() -> PathBuf {
+    dir().join("heroes")
+}
+
+/// Reads the hero summary out of a save file's text.
+pub fn hero_info(slot: &str, text: &str) -> Option<HeroInfo> {
+    let get = |k: &str| text.lines().find_map(|l| l.strip_prefix(k).and_then(|r| r.strip_prefix('='))).map(str::trim);
+    let class = if get("class") == Some("vampire") { crate::skills::Class::Vampire } else { crate::skills::Class::Sorceress };
+    Some(HeroInfo {
+        slot: slot.to_string(),
+        name: get("name").filter(|n| !n.is_empty()).unwrap_or("HERO").to_string(),
+        class,
+        clvl: get("clvl")?.parse::<f64>().ok()? as u32,
+        act: get("act").and_then(|a| a.parse().ok()).unwrap_or(0),
+        difficulty: get("difficulty").and_then(|a| a.parse().ok()).unwrap_or(0),
+    })
+}
+
+/// Every saved hero, sorted by name. Copies an old single save.txt in as the first hero.
+pub fn list_heroes() -> Vec<HeroInfo> {
+    let hd = heroes_dir();
+    let old = dir().join("save.txt");
+    let empty = std::fs::read_dir(&hd).map(|mut r| r.next().is_none()).unwrap_or(true);
+    if empty && old.exists() {
+        let _ = std::fs::create_dir_all(&hd);
+        let _ = std::fs::copy(&old, hd.join("hero1.txt"));
+    }
+    let mut v: Vec<HeroInfo> = std::fs::read_dir(&hd)
+        .map(|r| {
+            r.flatten()
+                .filter_map(|e| {
+                    let p = e.path();
+                    if p.extension()? != "txt" {
+                        return None;
+                    }
+                    let slot = p.file_stem()?.to_str()?.to_string();
+                    hero_info(&slot, &std::fs::read_to_string(&p).ok()?)
+                })
+                .collect()
+        })
+        .unwrap_or_default();
+    v.sort_by(|a, b| a.name.cmp(&b.name).then(a.slot.cmp(&b.slot)));
+    v
+}
+
+/// Points saving at a hero's slot.
+pub fn use_hero(slot: &str) {
+    let _ = std::fs::create_dir_all(heroes_dir());
+    use_file(&format!("heroes/{slot}.txt"));
+}
+
+/// A free slot name for a new hero.
+pub fn new_slot(name: &str) -> String {
+    let base: String = name.chars().filter(|c| c.is_ascii_alphanumeric()).collect::<String>().to_lowercase();
+    let base = if base.is_empty() { "hero".to_string() } else { base };
+    let mut slot = base.clone();
+    let mut k = 2;
+    while heroes_dir().join(format!("{slot}.txt")).exists() {
+        slot = format!("{base}{k}");
+        k += 1;
+    }
+    slot
+}
+
+pub fn delete_hero(slot: &str) {
+    let _ = std::fs::remove_file(heroes_dir().join(format!("{slot}.txt")));
 }
 
 pub fn to_text(g: &Game) -> String {
     let p = &g.p;
     let q = &g.quest;
     let seals: String = q.seals.iter().map(|s| if *s { '1' } else { '0' }).collect();
-    format!(
+    format!("name={}
+", g.hero_name)
+        + &format!(
         "version=1\nseed={}\nclvl={}\nxp={}\nmax_hp={}\nmax_mana={}\npower={}\ngold={}\nhp_pots={}\nmp_pots={}\nfood={}\nrunning={}\nstage={}\nseals={}\nkills={}\n",
         g.world_seed(),
         p.clvl,
@@ -84,6 +175,9 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
     g.p.food = (num("food").unwrap_or(100.0) as f32).max(40.0);
     g.p.running = num("running").unwrap_or(1.0) != 0.0;
     g.quest.stage = num("stage").unwrap_or(0.0) as u8;
+    if let Some(n) = get("name") {
+        g.hero_name = n.to_string();
+    }
     g.quest.difficulty = (num("difficulty").unwrap_or(0.0) as u8).min(2);
     g.quest.stage2 = (num("stage2").unwrap_or(0.0) as u8).min(3);
     if let Some(s) = get("runes") {

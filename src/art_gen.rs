@@ -60,6 +60,7 @@ pub static ITEMS: &[ItemDef] = &[
     ItemDef { name: "portrait_vampire", data: include_bytes!("../assets/art/item_portrait_vampire.bin") },
     ItemDef { name: "portrait_sorceress", data: include_bytes!("../assets/art/item_portrait_sorceress.bin") },
     ItemDef { name: "portrait_inventor", data: include_bytes!("../assets/art/item_portrait_inventor.bin") },
+    ItemDef { name: "title_bg", data: include_bytes!("../assets/art/item_title_bg.bin") },
     ItemDef { name: "icon_staff_gnarled", data: include_bytes!("../assets/art/item_icon_staff_gnarled.bin") },
     ItemDef { name: "icon_staff_ash", data: include_bytes!("../assets/art/item_icon_staff_ash.bin") },
     ItemDef { name: "icon_staff_runed", data: include_bytes!("../assets/art/item_icon_staff_runed.bin") },

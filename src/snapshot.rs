@@ -336,6 +336,45 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         save(&mut g, scr, "skills_tree3");
         g.tree = None;
     }
+    // The front end: title, character select (with a delete prompt), class select, naming, options.
+    {
+        use crate::menu::{Menu, Stage};
+        use crate::save::HeroInfo;
+        use crate::skills::Class;
+        let g = Game::new(7, h);
+        let heroes = vec![
+            HeroInfo { slot: "morwen".into(), name: "MORWEN".into(), class: Class::Sorceress, clvl: 21, act: 1, difficulty: 0 },
+            HeroInfo { slot: "carmilla".into(), name: "CARMILLA".into(), class: Class::Vampire, clvl: 9, act: 0, difficulty: 0 },
+            HeroInfo { slot: "isolde".into(), name: "ISOLDE".into(), class: Class::Sorceress, clvl: 34, act: 1, difficulty: 1 },
+        ];
+        let mut m = Menu::new(heroes);
+        let shot = |m: &mut Menu, scr: &mut Screen, name: &str| {
+            for _ in 0..90 {
+                m.update(&Input::default());
+            }
+            m.draw(scr, &g.art);
+            write_bmp(&format!("{d}/{name}.bmp"), scr).expect("write snapshot");
+            println!("staged {name}");
+        };
+        shot(&mut m, scr, "menu_title");
+        m.stage = Stage::Heroes;
+        m.sel = 1;
+        shot(&mut m, scr, "menu_heroes");
+        m.stage = Stage::Delete(0);
+        m.sel = 1;
+        shot(&mut m, scr, "menu_delete");
+        m.stage = Stage::Create;
+        m.sel = 1;
+        shot(&mut m, scr, "menu_create");
+        m.stage = Stage::Name;
+        m.class_sel = 1;
+        m.name = "CARMILLA".into();
+        m.sel = 0;
+        shot(&mut m, scr, "menu_name");
+        m.stage = Stage::Options;
+        m.sel = 0;
+        shot(&mut m, scr, "menu_options");
+    }
     // The class select screen, then the vampire at work in the crypt.
     {
         use crate::skills::{Class, Skill};

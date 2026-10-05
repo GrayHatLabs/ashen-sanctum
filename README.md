@@ -9,6 +9,16 @@ ANBERNIC RG35XX H), with pixel art generated with PixelLab and embedded in the b
 Sound effects and music are synthesised in code: a plucked-guitar theme in town, wind and
 drones in the wilds, bells and a heartbeat in the dungeons, drums for boss fights.
 
+## Title screen and heroes
+
+The game opens on the **title screen**: Play, Options (music, controls), Quit.
+- **Play** opens the **character select**: up to 8 saved heroes, each with their portrait, level, class, act and difficulty.
+  - Pick one to continue.
+  - X / Space deletes one (it asks first).
+  - **New Hero** picks a class (the Inventor is coming soon) and a name. Type one, or take a random gothic name.
+- **In game, Esc** saves and returns to the character select.
+- Each hero has their own save file in `~/.local/share/ashensanctum/heroes/`. An old single save is copied in as the first hero.
+
 ## Two heroes
 
 A new character starts on the **class select** screen:

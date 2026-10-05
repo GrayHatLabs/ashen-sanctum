@@ -79,6 +79,9 @@ pub struct Input {
     pub skills: bool,
     /// I / START: open or close the inventory (one-shot).
     pub inv: bool,
+    /// Text typed this tick (hero names) and Backspace.
+    pub typed: String,
+    pub backspace: bool,
     /// `--cheats` only: F9 gains a level, F10 drops loot (one-shot).
     pub cheat_level: bool,
     pub cheat_loot: bool,
@@ -401,6 +404,8 @@ pub struct Game {
     pub tree: Option<crate::skills::TreeUi>,
     /// The inventory screen, while open.
     pub inv: Option<crate::inventory::InvUi>,
+    /// The hero's name (character select screen, save file).
+    pub hero_name: String,
     /// The class select screen for a new character (0 = Sorceress, 1 = Vampire).
     pub choose: Option<usize>,
     pub(crate) choose_rects: Vec<(i32, i32, i32, i32)>,
@@ -485,6 +490,7 @@ impl Game {
             fields: vec![],
             tree: None,
             inv: None,
+            hero_name: "HERO".into(),
             choose: None,
             choose_rects: vec![],
             waypoints: vec![LevelId::Overworld],
