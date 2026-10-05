@@ -6,6 +6,11 @@ use crate::gfx::rgb;
 use crate::mobs::{Kind, MobState};
 use crate::skills::{Nova, Skill, Skills, MAX_RANK};
 
+/// Blood hunger: how much blood (food bar) each point of blood damage on a living foe gives,
+/// and what one bite gives on top.
+pub const BLOOD_PER_DAMAGE: f32 = 0.2;
+pub const BITE_BLOOD: f32 = 12.0;
+
 pub fn is_vampire(s: Skill) -> bool {
     crate::skills::VAMPIRE.contains(&s)
 }
@@ -216,7 +221,8 @@ pub struct BloodField {
 }
 
 impl Game {
-    /// Life steal from blood damage dealt to a monster of this kind.
+    /// Life steal from blood damage dealt to a monster of this kind. It also feeds her blood
+    /// hunger (the vampire's food bar): only creatures with blood feed her.
     pub(crate) fn drain(&mut self, kind: Kind, dealt: f32, mult: f32) {
         if self.p.skills.class != crate::skills::Class::Vampire || bloodless(kind) || dealt <= 0.0 {
             return;
@@ -224,6 +230,50 @@ impl Game {
         let sk = &self.p.skills;
         let steal = thirst_steal(sk.rank(Skill::Thirst)) + 0.01 * sk.rank(Skill::NightMastery) as f32;
         self.p.hp = (self.p.hp + dealt * steal * mult).min(self.p.max_hp);
+        self.feed(dealt * BLOOD_PER_DAMAGE * mult);
+    }
+
+    /// Fills the vampire's blood hunger.
+    pub(crate) fn feed(&mut self, blood: f32) {
+        self.p.food = (self.p.food + blood).min(crate::game::MAX_FOOD);
+        if blood > 0.0 {
+            self.p.hunger_msg = self.p.hunger_msg.min(4.0);
+        }
+    }
+
+    /// The vampire's free bite (her out-of-mana attack): drinks deeply from one foe in front of her.
+    pub(crate) fn bite(&mut self, tx: f32, ty: f32) {
+        self.cast_pose(0.3);
+        self.sfx.push(Sfx::Swing);
+        let (px, py) = (self.p.x, self.p.y);
+        let a0 = (ty - py).atan2(tx - px);
+        let target = (0..self.mobs.len())
+            .filter(|&i| {
+                let m = &self.mobs[i];
+                let (dx, dy) = (m.x - px, m.y - py);
+                let da = (dy.atan2(dx) - a0 + std::f32::consts::PI).rem_euclid(std::f32::consts::TAU) - std::f32::consts::PI;
+                m.alive() && m.charm <= 0.0 && dx * dx + dy * dy < (1.3 + m.r).powi(2) && da.abs() < 1.1
+            })
+            .min_by(|&a, &b| {
+                let da = (self.mobs[a].x - px).powi(2) + (self.mobs[a].y - py).powi(2);
+                let db = (self.mobs[b].x - px).powi(2) + (self.mobs[b].y - py).powi(2);
+                da.partial_cmp(&db).unwrap()
+            });
+        let Some(i) = target else { return };
+        let kind = self.mobs[i].kind;
+        let (mx, my) = (self.mobs[i].x, self.mobs[i].y);
+        let dmg = self.rng.rf(6.0, 10.0) * self.p.power.sqrt();
+        self.hit_mob(i, dmg, 0.0, 0.3, None, true);
+        if bloodless(kind) {
+            self.floater(mx, my, "NO BLOOD".into(), rgb(0xa0a0a0));
+        } else {
+            // A bite drinks far more than magic.
+            self.drain(kind, dmg, 3.0);
+            self.feed(BITE_BLOOD);
+            for _ in 0..12 {
+                self.spray_at(mx, my, PKind::Blood, 18.0);
+            }
+        }
     }
 
     pub(crate) fn cast_vampire(&mut self, s: Skill, tx: f32, ty: f32, r: u8) {

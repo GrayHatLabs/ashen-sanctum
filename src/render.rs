@@ -896,7 +896,8 @@ impl Game {
         }
         let out = self.p.mana < crate::skills::mana_cost(self.p.skills.primary, self.p.skills.rank(self.p.skills.primary));
         if out {
-            scr.text("EMBER", ix + 4, iy + 28, rgb(0xff9050), Align::Center, 1);
+            let vampire = self.p.skills.class == crate::skills::Class::Vampire;
+            scr.text(if vampire { "BITE" } else { "EMBER" }, ix + 4, iy + 28, if vampire { rgb(0xd04060) } else { rgb(0xff9050) }, Align::Center, 1);
         }
         // Unspent skill points: a pulsing button (opens the tree, like D2's level-up button).
         if self.p.skills.points > 0 {
@@ -937,8 +938,26 @@ impl Game {
         bar(scr, bar_x, top + 17, bar_w, st, st_col);
         let fd = self.p.food / MAX_FOOD;
         let starving = self.p.food <= 0.0;
-        let fd_col = if fd < 0.25 { rgb(0xc04020) } else { rgb(0xb07030) };
-        let flabel = if starving { "FOOD - STARVING!" } else if fd < 0.25 { "FOOD - HUNGRY" } else { "FOOD" };
+        let vampire = self.p.skills.class == crate::skills::Class::Vampire;
+        let fd_col = if vampire {
+            if fd < 0.25 {
+                rgb(0x701020)
+            } else {
+                rgb(0xb01830)
+            }
+        } else if fd < 0.25 {
+            rgb(0xc04020)
+        } else {
+            rgb(0xb07030)
+        };
+        let flabel = match (vampire, starving, fd < 0.25) {
+            (true, true, _) => "BLOOD - BLOODTHIRSTY!",
+            (true, false, true) => "BLOOD - THIRSTY",
+            (true, ..) => "BLOOD",
+            (false, true, _) => "FOOD - STARVING!",
+            (false, false, true) => "FOOD - HUNGRY",
+            _ => "FOOD",
+        };
         let fcol = if starving && (self.tick / 20) % 2 == 0 { rgb(0xff5030) } else { rgb(0xb0a090) };
         scr.text(flabel, bar_x, top + 27, fcol, Align::Left, 1);
         bar(scr, bar_x, top + 37, bar_w, fd, fd_col);

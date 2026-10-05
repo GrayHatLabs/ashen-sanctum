@@ -1423,6 +1423,10 @@ impl Game {
             self.say("NOT ENOUGH GOLD".into());
             return;
         }
+        if self.p.skills.class == crate::skills::Class::Vampire && matches!(w, Ware::Bread | Ware::Roast) {
+            self.say("YOU THIRST FOR BLOOD, NOT BREAD".into());
+            return;
+        }
         self.p.gold -= price;
         self.sfx.push(Sfx::Pickup);
         match w {
@@ -1491,7 +1495,8 @@ impl Game {
             self.p.hp -= STARVE_DPS * DT;
             if self.p.hunger_msg <= 0.0 {
                 self.p.hunger_msg = 4.0;
-                self.floater(self.p.x, self.p.y, "STARVING".into(), rgb(0xff6030));
+                let word = if self.p.skills.class == crate::skills::Class::Vampire { "BLOODTHIRSTY" } else { "STARVING" };
+                self.floater(self.p.x, self.p.y, word.into(), rgb(0xff6030));
             }
             if self.p.hp <= 0.0 {
                 self.p.hp = 0.0;
@@ -1501,7 +1506,8 @@ impl Game {
             }
         } else if self.p.food < 25.0 && self.p.hunger_msg <= 0.0 {
             self.p.hunger_msg = 12.0;
-            self.floater(self.p.x, self.p.y, "HUNGRY".into(), rgb(0xe0a040));
+            let word = if self.p.skills.class == crate::skills::Class::Vampire { "THIRSTY" } else { "HUNGRY" };
+            self.floater(self.p.x, self.p.y, word.into(), rgb(0xe0a040));
         }
 
         if inp.potion_hp && self.p.hp_pots > 0 && self.p.hp < self.p.max_hp {
@@ -1694,7 +1700,8 @@ impl Game {
 
     fn collect_pickups(&mut self) {
         let (px, py) = (self.p.x, self.p.y);
-        let full = self.p.food > MAX_FOOD - 8.0;
+        // The vampire can't eat: she only feeds on blood.
+        let full = self.p.food > MAX_FOOD - 8.0 || self.p.skills.class == crate::skills::Class::Vampire;
         let mut bag_free = self.p.gear.free();
         let mut bag_full = false;
         let mut got = vec![];
@@ -2774,6 +2781,43 @@ mod tests {
             g.update(&Input::default());
         }
         assert!(!g.mobs[1].alive(), "crumbled");
+    }
+
+    #[test]
+    fn the_vampire_hungers_for_blood_not_bread() {
+        let mut g = vampire_game();
+        g.p.food = 20.0;
+        // Bread on the floor stays there.
+        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Food(1), t: 1.0 });
+        g.collect_pickups();
+        assert_eq!(g.p.food, 20.0);
+        assert_eq!(g.pickups.len(), 1);
+        g.pickups.clear();
+        // Out of mana she bites: a zombie feeds her, a skeleton doesn't.
+        g.p.mana = 0.0;
+        for (k, kind) in [Kind::Zombie, Kind::Skeleton].iter().enumerate() {
+            let mut m = Mob::new(*kind, g.p.x + 1.0, g.p.y + k as f32 * 6.0, 1.0, &mut g.rng);
+            m.max_hp = 500.0;
+            m.hp = 500.0;
+            g.mobs.push(m);
+        }
+        let (zx, zy) = (g.mobs[0].x, g.mobs[0].y);
+        g.p.cast_cd = 0.0;
+        g.cast_skill(crate::skills::Skill::BloodLance, zx, zy);
+        assert!(g.mobs[0].hp < 500.0, "bitten");
+        assert!(g.p.food > 20.0 + crate::vampire::BITE_BLOOD * 0.9, "fed: {}", g.p.food);
+        let fed = g.p.food;
+        g.p.x = g.mobs[1].x - 1.0;
+        g.p.y = g.mobs[1].y;
+        let (sx, sy) = (g.mobs[1].x, g.mobs[1].y);
+        g.p.cast_cd = 0.0;
+        g.cast_skill(crate::skills::Skill::BloodLance, sx, sy);
+        assert!(g.mobs[1].hp < 500.0, "the skeleton is bitten too");
+        assert_eq!(g.p.food, fed, "but has no blood to give");
+        // Merchants' bread is refused.
+        let gold = g.p.gold;
+        g.buy(Ware::Bread);
+        assert_eq!(g.p.gold, gold);
     }
 
     #[test]

@@ -109,6 +109,7 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Class select screen with portraits; `Class` in `Skills`, saved; `--vampire` / `--sorceress` | H S | Unit test: choose, save/load |
 | 11 vampire skills (`vampire.rs`): Blood Lance, Rake, Thirst, Bat Swarm, Mesmerize, Mist Step, Crimson Nova, Thrall, Night Mastery, Blood Moon, Embrace | H S | Unit tests: drain, bloodless, rake, mist, bats, mesmerize, thrall, moon, embrace |
 | Blood damage + life steal; bloodless monsters resist; charmed allies hunt hostile monsters | H | |
+| Blood hunger: the food bar is BLOOD for her, fed only by blood damage on living foes and the free Bite (her out-of-mana attack); food and bought bread refused; bloodthirsty = starving | H | Unit test |
 | Art: portrait + 8-direction sprite with walk, blood-cast and claw animations (glitchy frames fixed in pack.py) | S | Code-drawn skill icons; crimson impacts |
 
 ## Difficulties (2026-10-01)

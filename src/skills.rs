@@ -621,7 +621,12 @@ impl Game {
         // Out of mana: the free Ember Bolt keeps you fighting.
         if self.p.mana < mana_cost(s, r) {
             if self.p.cast_cd <= 0.0 {
-                self.cast_fireball(tx, ty, true);
+                // The vampire bites instead of the ember spark.
+                if self.p.skills.class == Class::Vampire {
+                    self.bite(tx, ty);
+                } else {
+                    self.cast_fireball(tx, ty, true);
+                }
             }
             return true;
         }

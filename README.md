@@ -38,6 +38,10 @@ A new character starts on the **class select** screen:
   - **Blood Moon:** a field that bleeds foes and feeds her.
   - **Embrace:** bat form. Faster, screeching, and skills cost no mana.
 
+  - **Blood hunger:** instead of food she has a red **BLOOD** bar that slowly drains. She can't eat;
+    she feeds only by drawing blood. Her blood magic on living foes refills it, and out of mana she
+    **bites** (a free attack that drinks deeply). Skeletons and the undead have no blood to give.
+    Run it dry and she is **BLOODTHIRSTY**: she loses life and doesn't regenerate.
 `--vampire` or `--sorceress` skips the class screen for a new character.
 
 ## The story
