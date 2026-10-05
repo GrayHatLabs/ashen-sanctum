@@ -29,7 +29,7 @@ pub static CHARS: &[CharDef] = &[
     CharDef { name: "boss_giant", cell: (108, 129), anchor: (32, 105), data: include_bytes!("../assets/art/boss_giant.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 7 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 9 }] },
     CharDef { name: "boss_yeti", cell: (94, 107), anchor: (37, 82), data: include_bytes!("../assets/art/boss_yeti.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 7 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 10 }] },
     CharDef { name: "boss_witch", cell: (114, 104), anchor: (43, 83), data: include_bytes!("../assets/art/boss_witch.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 8 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 10 }] },
-    CharDef { name: "vampire", cell: (30, 49), anchor: (15, 43), data: include_bytes!("../assets/art/vampire.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
+    CharDef { name: "vampire", cell: (63, 61), anchor: (26, 46), data: include_bytes!("../assets/art/vampire.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 10 }, AnimDef { name: "cast", row: 16, frames: 6, fps: 16 }, AnimDef { name: "attack", row: 24, frames: 6, fps: 18 }] },
     CharDef { name: "boss_dragon", cell: (164, 152), anchor: (80, 134), data: include_bytes!("../assets/art/boss_dragon.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 7 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 9 }] },
 ];
 

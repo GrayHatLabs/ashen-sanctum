@@ -1979,7 +1979,8 @@ impl Game {
             let a = self.rng.f() * std::f32::consts::TAU;
             let s = self.rng.rf(0.8, 2.5);
             let (vz, life) = (self.rng.rf(10.0, 40.0), self.rng.rf(0.2, 0.4));
-            self.parts.push(Particle { x, y, z: 20.0, vx: a.cos() * s, vy: a.sin() * s, vz, life, max: life, kind: PKind::Fire });
+            let kind = if self.p.skills.class == crate::skills::Class::Vampire { PKind::Blood } else { PKind::Fire };
+            self.parts.push(Particle { x, y, z: 20.0, vx: a.cos() * s, vy: a.sin() * s, vz, life, max: life, kind });
         }
         let target = self
             .mobs
@@ -2023,7 +2024,8 @@ impl Game {
             let a = self.rng.f() * std::f32::consts::TAU;
             let s = self.rng.rf(1.0, 4.5);
             let (vz, life) = (self.rng.rf(10.0, 70.0), self.rng.rf(0.3, 0.7));
-            self.parts.push(Particle { x, y, z: 18.0, vx: a.cos() * s, vy: a.sin() * s, vz, life, max: life, kind: PKind::Fire });
+            let kind = if self.p.skills.class == crate::skills::Class::Vampire { PKind::Blood } else { PKind::Fire };
+            self.parts.push(Particle { x, y, z: 18.0, vx: a.cos() * s, vy: a.sin() * s, vz, life, max: life, kind });
         }
         for _ in 0..6 {
             let a = self.rng.f() * std::f32::consts::TAU;

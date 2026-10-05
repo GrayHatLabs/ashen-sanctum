@@ -453,8 +453,9 @@ impl Game {
         for l in &self.lights {
             let (sx, sy) = to_scr(l.x, l.y);
             let k = l.life / l.max;
-            scr.glow(sx, sy - 16, 50.0 * (1.2 - k * 0.5), rgb(0xff6010), 1.2 * k);
-            scr.glow(sx, sy - 16, 22.0 * (1.3 - k * 0.5), rgb(0xffe080), 1.2 * k);
+            let (outer, inner) = if vampire { (rgb(0xa00820), rgb(0xff6070)) } else { (rgb(0xff6010), rgb(0xffe080)) };
+            scr.glow(sx, sy - 16, 50.0 * (1.2 - k * 0.5), outer, 1.2 * k);
+            scr.glow(sx, sy - 16, 22.0 * (1.3 - k * 0.5), inner, 1.2 * k);
         }
         for p in &self.portals {
             if p.kind == PortalKind::TownPortal {
