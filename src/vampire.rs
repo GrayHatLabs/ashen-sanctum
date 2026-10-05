@@ -153,6 +153,7 @@ pub fn bloodless(k: Kind) -> bool {
             | Kind::Forgemother
             | Kind::Cantor
             | Kind::Archivist
+            | Kind::Einherjar
     )
 }
 
@@ -428,7 +429,7 @@ impl Game {
         self.p.mana -= nova_mana(r);
         self.cast_pose(0.45);
         let radius = nova_radius(r);
-        self.novas.push(Nova { x: px, y: py, r: radius, t: 0.0, blood: true });
+        self.novas.push(Nova { x: px, y: py, r: radius, t: 0.0, blood: true, frost: false });
         self.lights.push(Light { x: px, y: py, r: 220.0, s: 1.0, life: 0.4, max: 0.4 });
         self.shake = self.shake.max(0.4);
         self.sfx.push(Sfx::Boom);
@@ -578,7 +579,7 @@ impl Game {
                         m.alive() && m.charm <= 0.0 && (m.x - px).powi(2) + (m.y - py).powi(2) < (SCREECH_RADIUS + m.r).powi(2)
                     })
                     .collect();
-                self.novas.push(Nova { x: px, y: py, r: SCREECH_RADIUS, t: 0.0, blood: true });
+                self.novas.push(Nova { x: px, y: py, r: SCREECH_RADIUS, t: 0.0, blood: true, frost: false });
                 for i in near {
                     self.hit_mob(i, dmg, 0.0, 0.2, None, false);
                 }

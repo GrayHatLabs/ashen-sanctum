@@ -58,6 +58,7 @@ pub fn hero_info(slot: &str, text: &str) -> Option<HeroInfo> {
     let class = match get("class") {
         Some("vampire") => crate::skills::Class::Vampire,
         Some("inventor") => crate::skills::Class::Inventor,
+        Some("valkyrie") => crate::skills::Class::Valkyrie,
         _ => crate::skills::Class::Sorceress,
     };
     Some(HeroInfo {

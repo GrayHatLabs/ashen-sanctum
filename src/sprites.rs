@@ -646,9 +646,137 @@ pub fn skill_icon(s: crate::skills::Skill) -> Sprite {
         }
         Skill::Fireball => {}
         s if crate::inventor::is_inventor(s) => inventor_icon(s, &mut im),
+        s if crate::valkyrie::is_valkyrie(s) => valkyrie_icon(s, &mut im),
         _ => vampire_icon(s, &mut im),
     }
     im.ax = 0;
     im.ay = 0;
     im
+}
+
+/// The valkyrie's icons: steel and glacier blue on midnight, no red.
+fn valkyrie_icon(s: crate::skills::Skill, im: &mut Sprite) {
+    use crate::skills::Skill;
+    im.fill(0, 0, 24, 24, rgb(0x0c1018));
+    let ice = |d: f32| mix(rgb(0xe8faff), rgb(0x2a5a90), d.clamp(0.0, 1.0));
+    let steel = rgb(0x8a96a8);
+    // A spear from (x0, y0) to (x1, y1) with an ice blade at the far end.
+    let spear = |im: &mut Sprite, x0: i32, y0: i32, x1: i32, y1: i32| {
+        let n = (x1 - x0).abs().max((y1 - y0).abs()).max(1);
+        for t in 0..=n {
+            let x = x0 + (x1 - x0) * t / n;
+            let y = y0 + (y1 - y0) * t / n;
+            let blade = t * 4 > n * 3;
+            im.set(x, y, if blade { ice(0.1) } else { steel });
+            if blade {
+                im.set(x + 1, y, ice(0.4));
+            }
+        }
+    };
+    let ring = |im: &mut Sprite, cx: f32, cy: f32, r0: f32, r1: f32| {
+        for y in 0..24 {
+            for x in 0..24 {
+                let d = ((x as f32 - cx).powi(2) + (y as f32 - cy).powi(2)).sqrt();
+                if d > r0 && d < r1 && hash(x, y, 9) % 4 != 0 {
+                    im.set(x, y, ice((d - r0) / (r1 - r0)));
+                }
+            }
+        }
+    };
+    match s {
+        Skill::RuneSpear => spear(im, 3, 20, 20, 3),
+        Skill::RimeSweep => {
+            ring(im, 4.0, 20.0, 12.0, 17.0);
+            spear(im, 4, 20, 14, 10);
+        }
+        Skill::Northborn => {
+            // A shield-like crest with a rune.
+            for y in 4..21 {
+                let half = if y < 14 { 8 } else { 8 - (y - 14) };
+                for x in 12 - half..12 + half {
+                    im.set(x, y, if (x + y) % 5 == 0 { rgb(0x3a4a60) } else { rgb(0x2a3448) });
+                }
+            }
+            for y in 7..18 {
+                im.set(12, y, ice(0.1));
+            }
+            for k in 0..3 {
+                im.set(11 - k, 9 + k, ice(0.2));
+                im.set(13 + k, 9 + k, ice(0.2));
+            }
+        }
+        Skill::RavenStrike => {
+            // A diving raven with a blue eye.
+            for k in 0..9 {
+                im.set(12 - k, 10 - k / 2, rgb(0x202030));
+                im.set(12 + k, 10 - k / 2, rgb(0x202030));
+                im.set(12 - k, 11 - k / 2, rgb(0x14141c));
+                im.set(12 + k, 11 - k / 2, rgb(0x14141c));
+            }
+            im.fill(10, 10, 5, 7, rgb(0x0c0c14));
+            im.fill(11, 17, 3, 3, rgb(0x0c0c14));
+            im.set(11, 11, ice(0.0));
+        }
+        Skill::GlacierLeap => {
+            // An arc of travel and an icy landing burst.
+            for t in 0..18 {
+                let x = 3 + t;
+                let y = 18 - ((t as f32 / 17.0 * std::f32::consts::PI).sin() * 13.0) as i32;
+                im.set(x, y, ice(0.3));
+            }
+            ring(im, 20.0, 19.0, 1.0, 4.0);
+        }
+        Skill::FrostBrand => {
+            // A snowflake.
+            for k in 0..6 {
+                let a = k as f32 * std::f32::consts::PI / 3.0;
+                for t in 0..9 {
+                    im.set(12 + (a.cos() * t as f32) as i32, 12 + (a.sin() * t as f32) as i32, ice(t as f32 / 10.0));
+                }
+            }
+        }
+        Skill::RuneJavelin => {
+            spear(im, 2, 14, 21, 9);
+            for x in 2..10 {
+                im.set(x, 17, ice(0.6));
+            }
+        }
+        Skill::WintersWrath => {
+            ring(im, 12.0, 12.0, 6.0, 10.0);
+            spear(im, 6, 12, 18, 12);
+        }
+        Skill::Einherjar => {
+            // Two ghostly warriors with round shields.
+            for (cx, sh) in [(8, 0.3f32), (16, 0.5)] {
+                im.fill(cx - 2, 6, 4, 4, ice(sh));
+                im.fill(cx - 3, 10, 6, 9, ice(sh + 0.1));
+                im.fill(cx - 5, 11, 3, 5, rgb(0x5a7a9a));
+            }
+        }
+        Skill::ValkyrieRide => {
+            // A charging horse's head and a spear point ahead.
+            im.fill(5, 9, 9, 6, rgb(0x14161c));
+            im.fill(11, 6, 5, 6, rgb(0x14161c));
+            im.fill(14, 8, 3, 3, rgb(0x20242c));
+            im.set(13, 7, ice(0.0));
+            im.fill(8, 7, 4, 2, ice(0.2));
+            spear(im, 2, 18, 22, 14);
+        }
+        Skill::Fimbulwinter => {
+            for y in 0..24 {
+                for x in 0..24 {
+                    if hash(x, y, 31) % 9 == 0 {
+                        im.set(x, y, ice((hash(x, y, 5) % 10) as f32 / 10.0));
+                    }
+                }
+            }
+            for k in 0..9 {
+                im.set(12 - k, 9 + k / 3, rgb(0x101018));
+                im.set(12 + k, 9 + k / 3, rgb(0x101018));
+                im.set(12 - k, 10 + k / 3, ice(k as f32 / 9.0));
+                im.set(12 + k, 10 + k / 3, ice(k as f32 / 9.0));
+            }
+        }
+        _ => {}
+    }
 }

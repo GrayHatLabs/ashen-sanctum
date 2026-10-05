@@ -31,11 +31,12 @@ pub enum MenuOut {
     Quit,
 }
 
-/// The classes on the create screen; the Inventor is designed but not playable yet.
-const CLASSES: [(&str, &str, &str, &str, u32, bool); 3] = [
-    ("SORCERESS", "portrait_sorceress", "FIRE: FIREBALLS, FLAME WALLS,", "METEORS, AN ASH PHOENIX.", 0xff9040, true),
-    ("VAMPIRE", "portrait_vampire", "BLOOD: EVERY HIT DRAINS LIFE,", "BATS, MIST STEP, THRALLS.", 0xd04060, true),
-    ("INVENTOR", "portrait_inventor", "AETHER GUNS, BOMBS, TURRETS,", "HEAT INSTEAD OF MANA.", 0x40c0b0, true),
+/// The classes on the create screen: (name, portrait, two lines, colour, playable, in-game sheet).
+const CLASSES: [(&str, &str, &str, &str, u32, bool, &str); 4] = [
+    ("SORCERESS", "portrait_sorceress", "FIREBALLS, FIRE WALLS,", "METEORS, ASH PHOENIX.", 0xff9040, true, "mage"),
+    ("VAMPIRE", "portrait_vampire", "BLOOD MAGIC, CLAWS,", "BATS, MIST, THRALLS.", 0xd04060, true, "vampire"),
+    ("INVENTOR", "portrait_inventor", "AETHER GUNS, BOMBS,", "TURRETS, STEAM SUIT.", 0x40c0b0, true, "inventor"),
+    ("VALKYRIE", "portrait_valkyrie", "FROST SPEAR MELEE,", "FREEZE AND SHATTER.", 0x80d0ff, true, "valkyrie"),
 ];
 
 const NAMES: [&str; 16] = [
@@ -261,6 +262,7 @@ impl Menu {
                         let class = match self.class_sel {
                             1 => Class::Vampire,
                             2 => Class::Inventor,
+                            3 => Class::Valkyrie,
                             _ => Class::Sorceress,
                         };
                         return Some(MenuOut::New(class, name));
@@ -424,7 +426,7 @@ impl Menu {
         let gap = 12;
         let pw = (w - 24 - gap * (n - 1)) / n;
         let ph = h - 66;
-        for (k, (name, portrait, l1, l2, col, playable)) in CLASSES.iter().enumerate() {
+        for (k, (name, portrait, l1, l2, col, playable, sheet)) in CLASSES.iter().enumerate() {
             let x0 = 12 + k as i32 * (pw + gap);
             let y0 = 34;
             let on = self.sel == k;
@@ -444,6 +446,18 @@ impl Menu {
                     0.4
                 };
                 scr.blit_scaled(s, cx, y0 + 6 + (s.h as f32 * scale) as i32, scale, Fx { tint: BLACK, tint_a: dim, ..Fx::default() });
+            } else {
+                // No portrait yet: the in-game sprite, big.
+                // (A stand-in sheet comes with its own tint; selected cards show it, others are dimmed.)
+                let (ca, _, tint, tint_a) = art.char_art(sheet);
+                let spr = ca.frame("idle", 0, 0.0);
+                let fx = match (on, tint_a > 0.0) {
+                    (true, _) => Fx { tint, tint_a, ..Fx::default() },
+                    // Dimmed, but still in the stand-in's colours.
+                    (false, true) => Fx { tint: crate::gfx::mix(tint, BLACK, 0.5), tint_a: (tint_a + 0.1).min(0.95), ..Fx::default() },
+                    (false, false) => Fx { tint: BLACK, tint_a: 0.5, ..Fx::default() },
+                };
+                scr.blit_scaled(spr, cx, y0 + ph - 62, 2.5, fx);
             }
             let ncol = if !playable {
                 rgb(0x6a5a4a)
@@ -465,7 +479,7 @@ impl Menu {
     }
 
     fn draw_name(&mut self, scr: &mut Screen, art: &Art, w: i32, h: i32) {
-        let (name, portrait, _, _, col, _) = CLASSES[self.class_sel];
+        let (name, portrait, _, _, col, _, _) = CLASSES[self.class_sel];
         scr.text(&format!("NAME YOUR {name}"), w / 2, 10, rgb(0xffd080), Align::Center, 2);
         if let Some(p) = art.item(portrait) {
             let s = ((h - 150) as f32 / p.h as f32).min(1.2);
@@ -511,6 +525,7 @@ fn class_look(c: Class) -> (&'static str, u32) {
         Class::Sorceress => ("portrait_sorceress", rgb(0xff9040)),
         Class::Vampire => ("portrait_vampire", rgb(0xd04060)),
         Class::Inventor => ("portrait_inventor", rgb(0x40c0b0)),
+        Class::Valkyrie => ("portrait_valkyrie", rgb(0x80d0ff)),
     }
 }
 

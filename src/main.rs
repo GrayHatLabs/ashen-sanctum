@@ -19,6 +19,7 @@ mod render;
 mod rng;
 mod save;
 mod skills;
+mod valkyrie;
 mod vampire;
 mod snapshot;
 mod sprites;
@@ -140,7 +141,7 @@ fn main() -> Result<(), String> {
     }
     // The title screen and character select (heroes in heroes/), unless a test flag skips them:
     // --new / --act2 / --vampire / --sorceress / --level use the old single save.txt flow.
-    let skip_menu = ["--new", "--act2", "--act3", "--act4", "--vampire", "--sorceress", "--inventor", "--level"].iter().any(|f| args.iter().any(|a| a == f));
+    let skip_menu = ["--new", "--act2", "--act3", "--act4", "--vampire", "--sorceress", "--inventor", "--valkyrie", "--level"].iter().any(|f| args.iter().any(|a| a == f));
     let mut menu: Option<menu::Menu> = if skip_menu { None } else { Some(menu::Menu::new(save::list_heroes())) };
     // Continue the saved character (fresh world from the same seed), unless --new.
     let saved = if menu.is_some() || args.iter().any(|a| a == "--new") { None } else { save::read() };
@@ -158,6 +159,8 @@ fn main() -> Result<(), String> {
         Some(skills::Class::Vampire)
     } else if args.iter().any(|a| a == "--inventor") {
         Some(skills::Class::Inventor)
+    } else if args.iter().any(|a| a == "--valkyrie") {
+        Some(skills::Class::Valkyrie)
     } else if args.iter().any(|a| a == "--sorceress") {
         Some(skills::Class::Sorceress)
     } else {

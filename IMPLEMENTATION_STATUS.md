@@ -127,6 +127,17 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Title screen (painted background, logo, embers), character select (8 hero slots, portraits, delete with confirm), class select (3 cards, Inventor "coming soon"), naming (typed or random), options (music, controls) | H S | `menu.rs`; unit tests for the flow and hero files; test flags (--new, --act2, --vampire, --level) skip it |
 | One save per hero (`heroes/<slot>.txt`, `name=` line); old save.txt migrates; Esc saves and returns to the heroes | H | |
 
+## The Valkyrie class (2026-10-05)
+
+| Feature | Status | Notes |
+|---|---|---|
+| Valor resource (`p.mana`: starts empty, built by spear hits and blows taken, decays out of combat, +15% at full); mead | H S | Unit test |
+| Melee: attack-move into reach (mouse and pad auto-target), line / cone / circle hit tests | H | Unit test |
+| Frost on monsters (slow), Frost Brand freeze, shatter on kill; raven mark | H S | Unit test |
+| 11 skills (`valkyrie.rs`): Rune Spear, Rime Sweep, Northborn, Raven Strike, Glacier Leap, Frost Brand, Rune Javelin, Winter's Wrath, Einherjar, Ride of the Valkyrie, Fimbulwinter | H S | Unit test covers every active |
+| Fourth class card on the create screen and the in-game chooser | S | |
+| Art: none yet (PixelLab out of generations); steel-blue stand-in, code-drawn wings, raven, javelin, icons | | `tools/valkyrie_art.py` ready |
+
 ## The Inventor class (2026-10-05)
 
 | Feature | Status | Notes |

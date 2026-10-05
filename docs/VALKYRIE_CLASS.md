@@ -1,5 +1,7 @@
 # The Valkyrie: fourth playable class, the first melee hero (design, 2026-10-05)
 
+**Built 2026-10-05** (code complete with a stand-in sprite; her PixelLab art waits on generations).
+
 **Decided with the user:**
 - **Name:** Valkyrie.
 - **Resource:** Valor (builds by fighting, spent by skills, fades out of combat).

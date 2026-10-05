@@ -437,6 +437,38 @@ impl Game {
             }
         }
         // Bats.
+        for r in &self.ravens {
+            let (sx, sy) = to_scr(r.x, r.y);
+            let flap = if (self.tick / 3) % 2 == 0 { 3 } else { -2 };
+            let (x, y) = (sx + scr.shake.0, sy - 30 + scr.shake.1);
+            scr.fill(x - 2, y - 1, 5, 3, rgb(0x0c0c14));
+            for k in 1..=6 {
+                scr.pset(x - 2 - k, y - flap * k / 6, rgb(0x181828));
+                scr.pset(x + 2 + k, y - flap * k / 6, rgb(0x181828));
+            }
+            scr.pset(x - 1, y - 1, rgb(0x80e0ff));
+            scr.glow(x, y, 6.0, rgb(0x60c0ff), 0.4);
+        }
+        for j in &self.javelins {
+            let (sx, sy) = to_scr(j.x, j.y);
+            let (ex, ey) = iso::to_screen(j.ux * 0.7, j.uy * 0.7);
+            let (ax, ay) = (sx + scr.shake.0, sy - 22 + scr.shake.1);
+            scr.glow(ax, ay, 12.0, rgb(0x60c0ff), 0.8);
+            line(scr, ax - ex as i32, ay - ey as i32, ax + ex as i32, ay + ey as i32, rgb(0xc0f0ff));
+            scr.pset(ax + ex as i32, ay + ey as i32, rgb(0xffffff));
+        }
+        for m in &self.mobs {
+            if m.marked > 0.0 && m.alive() {
+                let (sx, sy) = to_scr(m.x, m.y);
+                let pulse = 0.5 + 0.5 * (self.tick as f32 * 0.2).sin();
+                let (x, y) = (sx + scr.shake.0, sy - 50 + scr.shake.1);
+                scr.glow(x, y, 7.0, rgb(0x60c0ff), 0.5 + 0.3 * pulse);
+                // A small rune: a vertical stroke with two twigs.
+                scr.fill(x, y - 3, 1, 7, rgb(0xd0f4ff));
+                scr.pset(x - 1, y - 2, rgb(0xd0f4ff));
+                scr.pset(x + 1, y - 2, rgb(0xd0f4ff));
+            }
+        }
         for b in &self.bats {
             let (sx, sy) = to_scr(b.x, b.y);
             let flap = if (self.tick / 4 + (b.x * 7.0) as u32) % 2 == 0 { 2 } else { -1 };
@@ -580,7 +612,13 @@ impl Game {
             scr.glow(sx, sy - 2, 12.0, rgb(0xff5010), 0.6 * k);
         }
         for n in &self.novas {
-            let col = if n.blood { rgb(0xc01030) } else { rgb(0xff6010) };
+            let col = if n.frost {
+                rgb(0x60c8ff)
+            } else if n.blood {
+                rgb(0xc01030)
+            } else {
+                rgb(0xff6010)
+            };
             let k = (n.t / crate::skills::NOVA_TIME).min(1.0);
             let fade = 1.0 - ((n.t - crate::skills::NOVA_TIME * 0.7) / 0.3).clamp(0.0, 1.0);
             let r = n.r * (0.25 + 0.75 * k);
@@ -885,12 +923,14 @@ impl Game {
         let classes = [
             ("SORCERESS", "portrait_sorceress", "mage", "FIRE. FIREBALLS, WALLS OF FLAME,", "METEORS AND AN ASH PHOENIX.", rgb(0xff9040)),
             ("VAMPIRE", "portrait_vampire", "vampire", "BLOOD. DRAINS LIFE WITH EVERY HIT,", "BATS, MIST STEP AND THRALLS.", rgb(0xd04060)),
+            ("INVENTOR", "portrait_inventor", "inventor", "AETHER GUNS, BOMBS,", "TURRETS, STEAM SUIT.", rgb(0x40c0b0)),
+            ("VALKYRIE", "portrait_valkyrie", "valkyrie", "FROST SPEAR MELEE,", "FREEZE AND SHATTER.", rgb(0x80d0ff)),
         ];
-        let pw = (w - 60) / 2;
+        let pw = (w - 20 - 10 * (classes.len() as i32 - 1)) / classes.len() as i32;
         let ph = h - 70;
         let mut rects = vec![];
         for (k, (name, portrait, sheet, l1, l2, col)) in classes.iter().enumerate() {
-            let x0 = 20 + k as i32 * (pw + 20);
+            let x0 = 10 + k as i32 * (pw + 10);
             let y0 = 34;
             let on = k == sel;
             scr.fill(x0, y0, pw, ph, if on { rgb(0x1c1418) } else { rgb(0x100c0e) });
@@ -907,9 +947,9 @@ impl Game {
                 }
                 None => {
                     // No portrait yet: the in-game sprite, big.
-                    let (art, ..) = self.art.char_art(sheet);
+                    let (art, _, tint, tint_a) = self.art.char_art(sheet);
                     let spr = art.frame("idle", 0, 0.0);
-                    scr.blit_scaled(spr, cx, y0 + ph - 60, 2.5, Fx::default());
+                    scr.blit_scaled(spr, cx, y0 + ph - 60, 2.5, Fx { tint, tint_a, ..Fx::default() });
                 }
             }
             scr.text(name, cx, y0 + ph - 46, if on { *col } else { rgb(0x8a7a68) }, Align::Center, 2);
@@ -945,13 +985,20 @@ impl Game {
             crate::skills::Class::Vampire => "vampire",
             crate::skills::Class::Inventor if self.p.suit_t > 0.0 => "steam_suit",
             crate::skills::Class::Inventor => "inventor",
+            crate::skills::Class::Valkyrie if self.p.charge.is_some() => "valkyrie_horse",
+            crate::skills::Class::Valkyrie => "valkyrie",
             crate::skills::Class::Sorceress => "mage",
         };
         let art = self.art.char_art(sheet).0;
+        let valkyrie = self.p.skills.class == crate::skills::Class::Valkyrie;
         // Rake is a claw slash (cast pose of exactly 0.3 s).
         let claw = vampire && (self.p.cast_len - 0.3).abs() < 0.001 && art.has("attack");
         let anim = if self.p.cast_t > 0.0 && claw {
             CharFrame::At("attack", self.p.dir, 1.0 - self.p.cast_t / self.p.cast_len)
+        } else if self.p.cast_t > 0.0 && valkyrie && art.has(self.p.pose) {
+            CharFrame::At(self.p.pose, self.p.dir, 1.0 - self.p.cast_t / self.p.cast_len)
+        } else if self.p.charge.is_some() && art.has("walk") {
+            CharFrame::Loop("walk", self.p.dir, self.p.anim_t * 2.0 + self.tick as f32 / 30.0)
         } else if self.p.cast_t > 0.0 && self.p.throwing && art.has("throw") {
             CharFrame::At("throw", self.p.dir, 1.0 - self.p.cast_t / self.p.cast_len)
         } else if self.p.cast_t > 0.0 && art.has("cast") {
@@ -985,6 +1032,10 @@ impl Game {
             fx.tint = rgb(0xc8c0d8);
             fx.tint_a = 0.5;
         }
+        // The valkyrie's wings: raven feathers turning to ice, spread behind her.
+        if valkyrie && self.p.wings_t > 0.0 {
+            draw_wings(scr, sx, sy - 30, self.tick, (self.p.wings_t * 3.0).min(1.0));
+        }
         self.blit_char(scr, sheet, anim, (sx, sy), fx, self.p.moving);
     }
 
@@ -1011,6 +1062,14 @@ impl Game {
         };
         let (art, scale, ..) = self.art.char_art(name);
         let mut fx = Fx::default();
+        if m.frozen > 0.0 {
+            // Frozen solid.
+            fx.tint = rgb(0xb8ecff);
+            fx.tint_a = 0.65;
+        } else if m.frost > 0.05 {
+            fx.tint = rgb(0x80c8ff);
+            fx.tint_a = 0.4 * m.frost;
+        }
         if m.invuln > 0.0 {
             // Mist form: barely there.
             fx.dither = true;
@@ -1060,8 +1119,12 @@ impl Game {
             fx.tint = rgb(0xff2010);
             fx.tint_a = 0.18;
         }
-        // Mesmerized foes and thralls glow violet.
-        if m.charm > 0.0 {
+        // Mesmerized foes and thralls glow violet; the valkyrie's Einherjar are pale blue ghosts.
+        if m.kind == crate::mobs::Kind::Einherjar {
+            fx.tint = rgb(0x9ad8ff);
+            fx.tint_a = 0.6;
+            fx.dither = (self.tick / 2) % 3 == 0;
+        } else if m.charm > 0.0 {
             fx.tint = rgb(0xa040e0);
             fx.tint_a = 0.35;
         }
@@ -1101,6 +1164,10 @@ impl Game {
             let heat = self.heat();
             let (dark, hi) = if self.p.overheat > 0.0 && (self.tick / 6) % 2 == 0 { (rgb(0xe0e0e0), rgb(0xffffff)) } else { (rgb(0xb05010), rgb(0xffa040)) };
             globe(scr, w - 34, gy, 26, heat, dark, hi);
+        } else if self.is_valkyrie() {
+            // Valor: icy blue, blazing white when full.
+            let (dark, hi) = if self.blazing() && (self.tick / 8) % 2 == 0 { (rgb(0x90c0e0), rgb(0xffffff)) } else { (rgb(0x2a5a90), rgb(0x90d8ff)) };
+            globe(scr, w - 34, gy, 26, self.p.mana / self.p.max_mana, dark, hi);
         } else {
             globe(scr, w - 34, gy, 26, self.p.mana / self.p.max_mana, rgb(0x1830b0), rgb(0x6090ff));
         }
@@ -1110,6 +1177,9 @@ impl Game {
             scr.text(&label, w - 34, gy - 4, WHITE, Align::Center, 1);
             let vent = if self.p.vent_cd > 0.0 { format!("VENT {:.0}S", self.p.vent_cd.ceil()) } else { "VENT: E/Y".into() };
             scr.text(&vent, w - 34, gy - 36, rgb(0xd8b080), Align::Center, 1);
+        } else if self.is_valkyrie() {
+            scr.text(&format!("{}", self.p.mana.floor() as i32), w - 34, gy - 4, WHITE, Align::Center, 1);
+            scr.text(if self.blazing() { "VALOR!" } else { "VALOR" }, w - 34, gy - 36, rgb(0xa0d8ff), Align::Center, 1);
         } else {
             scr.text(&format!("{}/{}", self.p.mana.floor() as i32, self.p.max_mana as i32), w - 34, gy - 4, WHITE, Align::Center, 1);
         }
@@ -1138,6 +1208,7 @@ impl Game {
             let (label, col) = match self.p.skills.class {
                 crate::skills::Class::Vampire => ("BITE", rgb(0xd04060)),
                 crate::skills::Class::Inventor => ("WEAK", rgb(0x60d0c0)),
+                crate::skills::Class::Valkyrie => ("SPEAR", rgb(0x90d8ff)),
                 crate::skills::Class::Sorceress => ("EMBER", rgb(0xff9050)),
             };
             scr.text(label, ix + 4, iy + 28, col, Align::Center, 1);
@@ -1599,4 +1670,27 @@ fn hash3(a: i32, b: i32, c: i32) -> u32 {
     let mut h = (a as u32).wrapping_mul(374_761_393) ^ (b as u32).wrapping_mul(668_265_263) ^ (c as u32).wrapping_mul(2_246_822_519);
     h = (h ^ (h >> 13)).wrapping_mul(1_274_126_177);
     h ^ (h >> 16)
+}
+
+/// The valkyrie's wings: two fans of black raven feathers whose tips turn to ice, `k` = how spread.
+fn draw_wings(scr: &mut Screen, cx: i32, cy: i32, tick: u32, k: f32) {
+    let beat = ((tick as f32) * 0.15).sin() * 0.08;
+    for side in [-1.0f32, 1.0] {
+        for f in 0..9 {
+            let a = (0.15 + f as f32 * 0.14 + beat) * k;
+            let len = (16.0 + f as f32 * 2.2) * k;
+            let (ux, uy) = (side * a.cos(), -a.sin() * 0.9 + 0.35);
+            let n = len as i32;
+            for t in 0..n {
+                let x = cx + (ux * t as f32) as i32 + side as i32 * 3;
+                let y = cy + (uy * t as f32) as i32;
+                // Black near the body, icy blue at the tips.
+                let ice = t as f32 / len.max(1.0);
+                let c = if ice > 0.7 { rgb(0xb0e8ff) } else if ice > 0.5 { rgb(0x4a7aa0) } else { rgb(0x101018) };
+                scr.pset(x, y, c);
+                scr.pset(x, y + 1, if ice > 0.7 { rgb(0x80c8f0) } else { rgb(0x181824) });
+            }
+        }
+    }
+    scr.glow(cx, cy, 26.0 * k, rgb(0x60b0ff), 0.25);
 }

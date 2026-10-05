@@ -379,6 +379,10 @@ impl Art {
             "boss_malgrave" => ("boss_bone", 1.05, 0x101820, 0.55),
             "boss_vardak" => ("boss_ashking", 0.9, 0x500818, 0.55),
             "boss_vardak_bat" => ("boss_dragon", 0.8, 0x100808, 0.7),
+            // ---- the Valkyrie (until her PixelLab art exists) ----
+            "valkyrie" => ("mage", 1.05, 0x3a5070, 0.8),
+            "valkyrie_horse" => ("frost_wolf", 1.7, 0x101418, 0.75),
+            "einherjar" => ("skeleton", 1.05, 0x90d0ff, 0.65),
             // ---- Act 4 stand-ins ----
             "brass_scarab" => ("boss_plague", 0.45, 0xc89040, 0.65),
             "inquisitor" => ("archer", 1.0, 0x302820, 0.6),

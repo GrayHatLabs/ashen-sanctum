@@ -202,6 +202,16 @@ pub struct Player {
     pub moving: bool,
     /// The inventor's last cast was a thrown gadget (throw pose, not the pistol).
     pub throwing: bool,
+    /// The valkyrie's current attack pose (attack / sweep / whirl / throw / cast).
+    pub pose: &'static str,
+    /// The valkyrie: seconds left "in combat" (Valor doesn't drain).
+    pub fight_t: f32,
+    /// Her ice wings are spread (Glacier Leap, Fimbulwinter).
+    pub wings_t: f32,
+    /// Ride of the Valkyrie in progress.
+    pub charge: Option<crate::valkyrie::Charge>,
+    pub fimbul_t: f32,
+    pub fimbul_dps: f32,
     pub cast_t: f32,
     pub cast_cd: f32,
     /// Length of the current cast animation (fireball or ember).
@@ -270,6 +280,12 @@ impl Player {
             anim_t: 0.0,
             moving: false,
             throwing: false,
+            pose: "cast",
+            fight_t: 0.0,
+            wings_t: 0.0,
+            charge: None,
+            fimbul_t: 0.0,
+            fimbul_dps: 0.0,
             cast_t: 0.0,
             cast_cd: 0.0,
             cast_len: CAST_TIME,
@@ -314,6 +330,24 @@ impl Player {
 
     /// The gear you start with: the sorceress a gnarled staff, the vampire a plain amulet.
     pub fn starting_gear(&mut self) {
+        if self.skills.class == crate::skills::Class::Valkyrie {
+            // Valor fills to 100 by fighting; she's the toughest hero, in leather from the start.
+            self.base_mana = 100.0;
+            self.base_hp += 30.0;
+            self.gear = crate::items::Gear::default();
+            let armor = crate::items::Item {
+                base: crate::items::base_by_key("leather").unwrap(),
+                rarity: crate::items::Rarity::Normal,
+                ilvl: 1,
+                name: "NORTHERN LEATHERS".into(),
+                stats: vec![(crate::items::Stat::Armor, 12)],
+                req: 1,
+            };
+            let slot = crate::items::WORN.iter().position(|s| *s == crate::items::Slot::Armor).unwrap();
+            self.gear.worn[slot] = Some(armor);
+            self.recalc();
+            return;
+        }
         if self.skills.class == crate::skills::Class::Inventor {
             // Her heat gauge is roomier than a caster's mana pool.
             self.base_mana = 100.0;
@@ -433,6 +467,8 @@ pub struct Game {
     pub(crate) meteors: Vec<crate::skills::MeteorFx>,
     pub(crate) hydras: Vec<crate::skills::HydraFx>,
     pub(crate) bats: Vec<crate::vampire::BatFx>,
+    pub(crate) ravens: Vec<crate::valkyrie::RavenFx>,
+    pub(crate) javelins: Vec<crate::valkyrie::JavelinFx>,
     pub(crate) fields: Vec<crate::vampire::BloodField>,
     pub(crate) bombs: Vec<crate::inventor::BombFx>,
     pub(crate) arcs: Vec<crate::inventor::ArcFx>,
@@ -528,6 +564,8 @@ impl Game {
             meteors: vec![],
             hydras: vec![],
             bats: vec![],
+            ravens: vec![],
+            javelins: vec![],
             fields: vec![],
             bombs: vec![],
             arcs: vec![],
@@ -775,7 +813,8 @@ impl Game {
         self.p.skills = crate::skills::Skills::new(class);
         self.p.starting_gear();
         self.p.hp = self.p.max_hp;
-        self.p.mana = self.p.max_mana;
+        // Valor starts empty: she earns it in the fight.
+        self.p.mana = if class == crate::skills::Class::Valkyrie { 0.0 } else { self.p.max_mana };
     }
 
     /// Class select controls: left / right (or click) to pick, confirm to start.
@@ -783,10 +822,10 @@ impl Game {
         let mut sel = sel;
         let edge = |now: f32, before: f32, neg: bool| if neg { now < -0.5 && before >= -0.5 } else { now > 0.5 && before <= 0.5 };
         if edge(inp.move_x, self.prev.move_x, true) || edge(inp.move_y, self.prev.move_y, true) {
-            sel = 0;
+            sel = sel.saturating_sub(1);
         }
         if edge(inp.move_x, self.prev.move_x, false) || edge(inp.move_y, self.prev.move_y, false) {
-            sel = 1;
+            sel = (sel + 1).min(3);
         }
         let mut go = confirm;
         if let (Some((mx, my)), true) = (inp.mouse, click) {
@@ -800,6 +839,7 @@ impl Game {
             let class = match sel {
                 1 => crate::skills::Class::Vampire,
                 2 => crate::skills::Class::Inventor,
+                3 => crate::skills::Class::Valkyrie,
                 _ => crate::skills::Class::Sorceress,
             };
             self.set_class(class);
@@ -939,6 +979,10 @@ impl Game {
 
     pub fn go_to(&mut self, id: LevelId, from: Option<LevelId>) {
         self.trail.clear();
+        // Her raven, javelins and charge don't follow her between levels.
+        self.ravens.clear();
+        self.javelins.clear();
+        self.p.charge = None;
         let cur = self.swap_out();
         self.parked.insert(cur.id, cur);
         let lv = match self.parked.remove(&id) {
@@ -1274,6 +1318,7 @@ impl Game {
         self.update_big_fire();
         self.update_vampire();
         self.update_inventor();
+        self.update_valkyrie();
         self.update_world();
         self.prev = inp.clone();
     }
@@ -1667,6 +1712,9 @@ impl Game {
         let base_regen = if p.skills.class == crate::skills::Class::Inventor {
             // Cooling (gear "mana regeneration" cools faster too).
             crate::inventor::COOLING * crate::inventor::tinker_cool(p.skills.rank(crate::skills::Skill::Tinkerer))
+        } else if p.skills.class == crate::skills::Class::Valkyrie {
+            // Valor doesn't regenerate: she fights for it.
+            0.0
         } else {
             2.2 * p.skills.regen_mult()
         };
@@ -1713,7 +1761,8 @@ impl Game {
             self.p.mp_pots -= 1;
             self.p.mana = (self.p.mana + 35.0 + self.p.max_mana * 0.15).min(self.p.max_mana);
             self.sfx.push(Sfx::Drink);
-            self.floater(self.p.x, self.p.y, "MANA".into(), rgb(0x5080ff));
+            let word = if self.is_valkyrie() { "MEAD" } else { "MANA" };
+            self.floater(self.p.x, self.p.y, word.into(), rgb(0x5080ff));
         }
 
         // Hovered monster / person (mouse picking against sprite boxes).
@@ -1756,6 +1805,9 @@ impl Game {
         // Primary skill: left click on a monster / Shift+click / pad A. Secondary: right click / X / Space.
         let mut cast_at: Option<(f32, f32)> = None;
         let mut use_secondary = false;
+        // A monster aimed at (clicked, or picked by the pad's auto-target): melee walks to it.
+        let mut aimed_mob = self.hover;
+        let mut melee_goal: Option<(f32, f32)> = None;
         if !in_town && !on_hud {
             if let Some(m) = inp.mouse {
                 let target = self.hover.map(|i| (self.mobs[i].x, self.mobs[i].y)).unwrap_or_else(|| self.mouse_world(m));
@@ -1774,6 +1826,7 @@ impl Game {
                     cast_at = Some((self.p.x + dx * 6.0, self.p.y + dy * 6.0));
                 } else if let Some(i) = self.nearest_visible_mob(10.0) {
                     cast_at = Some((self.mobs[i].x, self.mobs[i].y));
+                    aimed_mob = Some(i);
                 } else if let Some(m) = inp.mouse.filter(|_| inp.move_x == 0.0 && inp.move_y == 0.0) {
                     cast_at = Some(self.mouse_world(m));
                 } else {
@@ -1783,15 +1836,29 @@ impl Game {
             }
         }
         if let Some((tx, ty)) = cast_at {
-            self.p.path.clear();
-            self.p.goal = None;
             self.p.talk_to = None;
             let (dx, dy) = (tx - self.p.x, ty - self.p.y);
             if dx * dx + dy * dy > 0.01 {
                 self.p.dir = iso::dir8(dx, dy);
             }
             let skill = if use_secondary { self.p.skills.secondary } else { self.p.skills.primary };
-            self.cast_skill(skill, tx, ty);
+            // The valkyrie's melee: out of reach of the monster she's aiming at, walk in first.
+            let reach = if self.is_valkyrie() { crate::valkyrie::reach_of(skill) } else { None };
+            let far = match (reach, aimed_mob) {
+                (Some(reach), Some(i)) => {
+                    let m = &self.mobs[i];
+                    (m.x - self.p.x).powi(2) + (m.y - self.p.y).powi(2) > (reach + m.r * 0.5).powi(2)
+                }
+                _ => false,
+            };
+            if far {
+                // Keep the path between ticks while walking in (it's re-planned when the foe moves).
+                melee_goal = Some((tx, ty));
+            } else {
+                self.p.path.clear();
+                self.p.goal = None;
+                self.cast_skill(skill, tx, ty);
+            }
         }
         if self.p.inferno <= 0.0 {
             self.p.inferno_t = 0.0;
@@ -1807,9 +1874,11 @@ impl Game {
             self.p.path.clear();
             self.p.goal = None;
             self.p.talk_to = None;
-        } else if cast_at.is_none() {
+        } else if cast_at.is_none() || melee_goal.is_some() {
             let talk_goal = self.p.talk_to.map(|i| (self.npcs[i].x, self.npcs[i].y));
-            let want = if let Some(g) = talk_goal {
+            let want = if let Some(g) = melee_goal {
+                Some(g)
+            } else if let Some(g) = talk_goal {
                 Some(g)
             } else if let (Some(m), true) = (inp.mouse, inp.lmb && !inp.stand && self.hover.is_none() && !on_hud) {
                 Some(self.mouse_world(m))
@@ -1838,7 +1907,7 @@ impl Game {
                 } else {
                     mv = (dx / l, dy / l);
                 }
-            } else if let Some(goal) = self.p.goal.filter(|_| inp.lmb || talk_goal.is_some()) {
+            } else if let Some(goal) = self.p.goal.filter(|_| inp.lmb || talk_goal.is_some() || melee_goal.is_some()) {
                 // Clicked somewhere unreachable: walk straight at it and slide along walls.
                 let (dx, dy) = (goal.0 - self.p.x, goal.1 - self.p.y);
                 let l = (dx * dx + dy * dy).sqrt();
@@ -1846,6 +1915,10 @@ impl Game {
                     mv = (dx / l, dy / l);
                 }
             }
+        }
+        // On the charging warhorse, the horse goes where it goes.
+        if self.p.charge.is_some() {
+            mv = (0.0, 0.0);
         }
         let casting = self.p.cast_t > 0.0 && self.p.cast_len >= CAST_TIME;
         self.p.moving = mv.0 != 0.0 || mv.1 != 0.0;
@@ -2145,12 +2218,15 @@ impl Game {
         match self.p.skills.class {
             crate::skills::Class::Vampire => crate::vampire::blood_taken(kind),
             crate::skills::Class::Inventor => 1.0,
+            crate::skills::Class::Valkyrie => crate::valkyrie::frost_taken(kind),
             crate::skills::Class::Sorceress => crate::mobs::fire_taken(kind),
         }
     }
 
     /// Frost slows you for a moment.
     pub(crate) fn chill(&mut self, t: f32) {
+        // Northborn: frost barely slows her.
+        let t = if self.is_valkyrie() && self.p.skills.rank(crate::skills::Skill::Northborn) > 0 { t * 0.5 } else { t };
         if self.p.chill <= 0.0 {
             let (x, y) = (self.p.x, self.p.y);
             self.floater(x, y, "CHILLED".into(), rgb(0x90d0ff));
@@ -2166,6 +2242,18 @@ impl Game {
         let dmg = if self.p.mist > 0.0 { 0.0 } else { self.p.armored(dmg) };
         // The steam suit takes half.
         let dmg = if self.p.suit_t > 0.0 { dmg * 0.5 } else { dmg };
+        // The valkyrie: Northborn shrugs off part of it, the warhorse takes half while it charges,
+        // and every blow she takes stokes her Valor.
+        let dmg = if self.is_valkyrie() {
+            let dr = crate::valkyrie::northborn_dr(self.p.skills.rank(crate::skills::Skill::Northborn));
+            let dmg = dmg * (1.0 - dr) * if self.p.charge.is_some() { 0.5 } else { 1.0 };
+            if dmg > 0.0 {
+                self.gain_valor(dmg * crate::valkyrie::VALOR_PER_HURT);
+            }
+            dmg
+        } else {
+            dmg
+        };
         if dmg > 0.0 {
             self.p.hp -= dmg;
             self.stats.damage_taken += dmg;
@@ -2357,6 +2445,9 @@ impl Game {
 
     pub(crate) fn kill(&mut self, i: usize) {
         let (x, y, kind, boss, xp) = (self.mobs[i].x, self.mobs[i].y, self.mobs[i].kind, self.mobs[i].boss, self.mobs[i].xp);
+        // The valkyrie kills a frozen foe: it shatters (after it's counted dead, so shards can't re-kill it).
+        let shatter = self.is_valkyrie() && self.mobs[i].frozen > 0.0 && self.p.skills.rank(crate::skills::Skill::FrostBrand) > 0;
+        self.mobs[i].frozen = 0.0;
         self.mobs[i].state = MobState::Dead(0.0);
         self.mobs[i].hp = 0.0;
         self.kills += 1;
@@ -2377,6 +2468,9 @@ impl Game {
         }
         let (rank, mods) = (self.mobs[i].rank, self.mobs[i].mods);
         self.drop_gear(x, y, boss, kind, rank);
+        if shatter {
+            self.shatter(x, y);
+        }
         // Boiler brutes blow their boilers when they fall.
         if kind == Kind::BoilerBrute {
             let dmg = (self.mobs[i].dmg.1 * 1.6).max(10.0);
@@ -3408,6 +3502,157 @@ mod tests {
             g.update(&Input::default());
         }
         assert!(g.p.mana > 15.0);
+    }
+
+    fn valkyrie_game() -> Game {
+        let mut g = quiet_game();
+        g.set_class(crate::skills::Class::Valkyrie);
+        g.p.clvl = 18;
+        for s in crate::skills::VALKYRIE {
+            g.p.skills.rank[s as usize] = 3;
+        }
+        g
+    }
+
+    /// A tough, harmless, rooted zombie at (dx, dy) from the player.
+    fn dummy(g: &mut Game, dx: f32, dy: f32) -> usize {
+        let mut m = Mob::new(Kind::Zombie, g.p.x + dx, g.p.y + dy, 1.0, &mut g.rng);
+        m.max_hp = 9000.0;
+        m.hp = 9000.0;
+        m.dmg = (0.0, 0.0);
+        m.speed = 0.0;
+        g.mobs.push(m);
+        g.mobs.len() - 1
+    }
+
+    #[test]
+    fn the_valkyrie_fights_for_valor_and_walks_into_reach() {
+        use crate::skills::Skill;
+        let mut g = valkyrie_game();
+        assert_eq!(g.p.mana, 0.0, "valor starts empty");
+        let z = dummy(&mut g, 4.5, 0.0);
+        let x0 = g.p.x;
+        // The pad's attack button: she walks in, then thrusts.
+        // (Out of the way of this floor's waypoint, which would open its travel menu.)
+        g.waypoint = (-99.0, -99.0);
+        for _ in 0..150 {
+            g.update(&Input { cast: true, ..Input::default() });
+        }
+        assert!(g.p.x > x0 + 1.5, "walked into reach");
+        assert!(g.mobs[z].hp < 9000.0, "the spear hit");
+        assert!(g.p.mana > 0.0, "and built valor");
+        // Out of combat, valor drains away.
+        let v = g.p.mana;
+        g.p.fight_t = 0.0;
+        for _ in 0..60 {
+            g.update(&Input::default());
+        }
+        assert!(g.p.mana < v, "valor fades out of combat");
+        // Without the valor for a skill, she thrusts her spear instead (spending nothing).
+        g.p.mana = 0.0;
+        g.p.cast_cd = 0.0;
+        let hp = g.mobs[z].hp;
+        let (zx, zy) = (g.mobs[z].x, g.mobs[z].y);
+        g.cast_skill(Skill::RimeSweep, zx, zy);
+        assert!(g.mobs[z].hp < hp && g.p.mana >= 0.0);
+        // Full valor: her runes blaze.
+        g.p.mana = 0.0;
+        let low = g.fire_power();
+        g.p.mana = g.p.max_mana;
+        assert!(g.blazing() && g.fire_power() > low * 1.1);
+        // Blows she takes stoke her valor, and Northborn shrugs some off.
+        g.p.mana = 0.0;
+        let hp0 = g.p.hp;
+        g.hurt_player(20.0);
+        assert!(g.p.mana > 0.0, "pain is valor");
+        assert!(hp0 - g.p.hp < 20.0, "northborn");
+    }
+
+    #[test]
+    fn frost_freezes_and_frozen_foes_shatter() {
+        use crate::skills::Skill;
+        let mut g = valkyrie_game();
+        let a = dummy(&mut g, 1.4, 0.0);
+        let b = dummy(&mut g, 2.6, 0.0);
+        g.mobs[a].frost = 0.95;
+        let (ax, ay) = (g.mobs[a].x, g.mobs[a].y);
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::RuneSpear, ax, ay);
+        assert!(g.mobs[a].frozen > 0.0, "frozen solid");
+        let hp_b = g.mobs[b].hp;
+        g.mobs[a].hp = 1.0;
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::RuneSpear, ax, ay);
+        assert!(!g.mobs[a].alive());
+        assert!(g.mobs[b].hp < hp_b, "the shards hit its friend");
+    }
+
+    #[test]
+    fn the_valkyries_skills_work() {
+        use crate::skills::Skill;
+        let mut g = valkyrie_game();
+        let cast = |g: &mut Game, s: Skill, x: f32, y: f32| {
+            g.p.mana = g.p.max_mana;
+            g.p.cast_cd = 0.0;
+            g.p.skills.cooldown = [0.0; crate::skills::ALL.len()];
+            g.cast_skill(s, x, y);
+        };
+        let z = dummy(&mut g, 5.0, 0.0);
+        let (zx, zy) = (g.mobs[z].x, g.mobs[z].y);
+        // Raven Strike marks.
+        cast(&mut g, Skill::RavenStrike, zx, zy);
+        for _ in 0..90 {
+            g.update(&Input::default());
+        }
+        assert!(g.mobs[z].marked > 0.0, "marked by the raven");
+        // Glacier Leap lands near and hurts.
+        let hp = g.mobs[z].hp;
+        let x0 = g.p.x;
+        cast(&mut g, Skill::GlacierLeap, zx - 1.0, zy);
+        assert!(g.p.x > x0 + 2.0, "leapt");
+        assert!(g.mobs[z].hp < hp, "landing shockwave");
+        // Winter's Wrath hits all around.
+        let w = dummy(&mut g, -1.0, 0.0);
+        let hp_w = g.mobs[w].hp;
+        let (px, py) = (g.p.x, g.p.y);
+        cast(&mut g, Skill::WintersWrath, px, py);
+        assert!(g.mobs[w].hp < hp_w);
+        // Rune Javelin goes out and comes back.
+        let hp = g.mobs[z].hp;
+        cast(&mut g, Skill::RuneJavelin, zx, zy);
+        assert_eq!(g.javelins.len(), 1);
+        for _ in 0..200 {
+            g.update(&Input::default());
+        }
+        assert!(g.javelins.is_empty(), "back in her hand");
+        assert!(g.mobs[z].hp < hp);
+        // Einherjar fight for her.
+        let (px, py) = (g.p.x, g.p.y);
+        cast(&mut g, Skill::Einherjar, px, py);
+        let n = g.mobs.iter().filter(|m| m.kind == Kind::Einherjar && m.alive() && m.charm > 0.0).count();
+        assert_eq!(n, crate::valkyrie::einherjar_count(3));
+        // Ride of the Valkyrie: carried forward, trampling.
+        let far = dummy(&mut g, -4.0, 0.0);
+        let (fx, fy) = (g.mobs[far].x, g.mobs[far].y);
+        let (x0, hp) = (g.p.x, g.mobs[far].hp);
+        cast(&mut g, Skill::ValkyrieRide, fx - 3.0, fy);
+        assert!(g.p.charge.is_some());
+        for _ in 0..60 {
+            g.update(&Input::default());
+        }
+        assert!(g.p.charge.is_none(), "the charge ends");
+        assert!(g.p.x < x0 - 2.0, "carried along");
+        assert!(g.mobs[far].hp < hp, "trampled");
+        // Fimbulwinter: a blizzard that hurts and freezes.
+        let f = dummy(&mut g, 1.5, 0.0);
+        let hp = g.mobs[f].hp;
+        let (px, py) = (g.p.x, g.p.y);
+        cast(&mut g, Skill::Fimbulwinter, px, py);
+        for _ in 0..120 {
+            g.update(&Input::default());
+        }
+        assert!(g.mobs[f].hp < hp, "the blizzard bites");
+        assert!(g.p.fimbul_t > 0.0);
     }
 
     #[test]

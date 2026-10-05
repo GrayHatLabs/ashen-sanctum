@@ -19,7 +19,7 @@ The game opens on the **title screen**: Play, Options (music, controls), Quit.
 - **In game, Esc** saves and returns to the character select.
 - Each hero has their own save file in `~/.local/share/ashensanctum/heroes/`. An old single save is copied in as the first hero.
 
-## Two heroes
+## Four heroes
 
 A new character starts on the **class select** screen:
 
@@ -55,6 +55,21 @@ A new character starts on the **class select** screen:
   - **Tesla Field:** a shocking aura. **Clockwork Spider:** a companion. **Overclock** (passive).
   - **Airship Strike:** carpet bombing. **Steam Suit:** half damage taken, faster, skills run cold.
   - `--inventor` skips the class screen.
+
+- **The Valkyrie** fights up close: a frost spear-warrior and the first melee hero.
+  - **Valor** instead of mana: it starts empty, fills as her spear lands and as she takes blows,
+    and drains away out of combat. Her skills spend it. At **full Valor** her runes blaze (+15% damage).
+    Mana potions are **mead**.
+  - **Melee:** click a foe (or press the pad's attack) and she walks into reach, then strikes.
+  - **Frost:** her hits pile frost on foes (they slow down). With **Frost Brand**, a full load
+    **freezes** a foe solid, and frozen foes she kills **shatter** into shards that hit their friends.
+  - **Rune Spear:** a reaching thrust, free, builds Valor. **Rime Sweep:** a frost arc. **Northborn** (passive): toughness.
+  - **Raven Strike:** her raven marks a foe to take more damage. **Glacier Leap:** her ice wings spread for a
+    leap and a freezing landing. **Frost Brand** (passive): freeze and shatter.
+  - **Rune Javelin:** pierces a line and flies back. **Winter's Wrath:** a full spinning sweep.
+    **Einherjar:** spectral warriors fight beside her.
+  - **Ride of the Valkyrie:** her warhorse charges through a line of foes. **Fimbulwinter:** a killing blizzard.
+  - `--valkyrie` skips the class screen. Her own art isn't made yet (a steel-blue stand-in for now).
 
 ## The story
 

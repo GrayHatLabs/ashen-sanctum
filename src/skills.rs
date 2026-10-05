@@ -44,6 +44,18 @@ pub enum Skill {
     Overclock,
     AirshipStrike,
     SteamSuit,
+    // ---- the Valkyrie ----
+    RuneSpear,
+    RimeSweep,
+    Northborn,
+    RavenStrike,
+    GlacierLeap,
+    FrostBrand,
+    RuneJavelin,
+    WintersWrath,
+    Einherjar,
+    ValkyrieRide,
+    Fimbulwinter,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
@@ -51,6 +63,7 @@ pub enum Class {
     Sorceress,
     Vampire,
     Inventor,
+    Valkyrie,
 }
 
 impl Class {
@@ -59,6 +72,7 @@ impl Class {
             Class::Sorceress => "SORCERESS",
             Class::Vampire => "VAMPIRE",
             Class::Inventor => "INVENTOR",
+            Class::Valkyrie => "VALKYRIE",
         }
     }
     pub fn key(self) -> &'static str {
@@ -66,6 +80,7 @@ impl Class {
             Class::Sorceress => "sorceress",
             Class::Vampire => "vampire",
             Class::Inventor => "inventor",
+            Class::Valkyrie => "valkyrie",
         }
     }
     /// The skill you start with (rank 1, never refunded).
@@ -74,6 +89,7 @@ impl Class {
             Class::Sorceress => Skill::Fireball,
             Class::Vampire => Skill::BloodLance,
             Class::Inventor => Skill::RayPistol,
+            Class::Valkyrie => Skill::RuneSpear,
         }
     }
     pub fn tree(self) -> &'static [Skill] {
@@ -81,6 +97,7 @@ impl Class {
             Class::Sorceress => &SORCERESS,
             Class::Vampire => &VAMPIRE,
             Class::Inventor => &INVENTOR,
+            Class::Valkyrie => &VALKYRIE,
         }
     }
 }
@@ -127,8 +144,22 @@ pub const INVENTOR: [Skill; 11] = [
     Skill::SteamSuit,
 ];
 
+pub const VALKYRIE: [Skill; 11] = [
+    Skill::RuneSpear,
+    Skill::RimeSweep,
+    Skill::Northborn,
+    Skill::RavenStrike,
+    Skill::GlacierLeap,
+    Skill::FrostBrand,
+    Skill::RuneJavelin,
+    Skill::WintersWrath,
+    Skill::Einherjar,
+    Skill::ValkyrieRide,
+    Skill::Fimbulwinter,
+];
+
 /// Every skill of every class (save files, rank arrays).
-pub const ALL: [Skill; 33] = [
+pub const ALL: [Skill; 44] = [
     Skill::Fireball,
     Skill::Inferno,
     Skill::Warmth,
@@ -162,6 +193,17 @@ pub const ALL: [Skill; 33] = [
     Skill::Overclock,
     Skill::AirshipStrike,
     Skill::SteamSuit,
+    Skill::RuneSpear,
+    Skill::RimeSweep,
+    Skill::Northborn,
+    Skill::RavenStrike,
+    Skill::GlacierLeap,
+    Skill::FrostBrand,
+    Skill::RuneJavelin,
+    Skill::WintersWrath,
+    Skill::Einherjar,
+    Skill::ValkyrieRide,
+    Skill::Fimbulwinter,
 ];
 /// Character level needed for each tree row.
 pub const TIER_LEVELS: [u32; 4] = [1, 6, 12, 18];
@@ -213,6 +255,17 @@ pub fn def(s: Skill) -> Def {
         Skill::Overclock => Def { name: "OVERCLOCK", key: "overclock", level: 12, prereq: Some(Skill::Grapple), passive: true, cell: (2, 2) },
         Skill::AirshipStrike => Def { name: "AIRSHIP STRIKE", key: "airship", level: 18, prereq: Some(Skill::TeslaField), passive: false, cell: (3, 0) },
         Skill::SteamSuit => Def { name: "STEAM SUIT", key: "steamsuit", level: 18, prereq: Some(Skill::Spider), passive: false, cell: (3, 1) },
+        Skill::RuneSpear => Def { name: "RUNE SPEAR", key: "runespear", level: 1, prereq: None, passive: false, cell: (0, 0) },
+        Skill::RimeSweep => Def { name: "RIME SWEEP", key: "rimesweep", level: 1, prereq: None, passive: false, cell: (0, 1) },
+        Skill::Northborn => Def { name: "NORTHBORN", key: "northborn", level: 1, prereq: None, passive: true, cell: (0, 2) },
+        Skill::RavenStrike => Def { name: "RAVEN STRIKE", key: "ravenstrike", level: 6, prereq: Some(Skill::RuneSpear), passive: false, cell: (1, 0) },
+        Skill::GlacierLeap => Def { name: "GLACIER LEAP", key: "glacierleap", level: 6, prereq: Some(Skill::RimeSweep), passive: false, cell: (1, 1) },
+        Skill::FrostBrand => Def { name: "FROST BRAND", key: "frostbrand", level: 6, prereq: Some(Skill::Northborn), passive: true, cell: (1, 2) },
+        Skill::RuneJavelin => Def { name: "RUNE JAVELIN", key: "runejavelin", level: 12, prereq: Some(Skill::RavenStrike), passive: false, cell: (2, 0) },
+        Skill::WintersWrath => Def { name: "WINTER'S WRATH", key: "winterswrath", level: 12, prereq: Some(Skill::GlacierLeap), passive: false, cell: (2, 1) },
+        Skill::Einherjar => Def { name: "EINHERJAR", key: "einherjar", level: 12, prereq: Some(Skill::FrostBrand), passive: false, cell: (2, 2) },
+        Skill::ValkyrieRide => Def { name: "RIDE OF THE VALKYRIE", key: "valkyrieride", level: 18, prereq: Some(Skill::RuneJavelin), passive: false, cell: (3, 0) },
+        Skill::Fimbulwinter => Def { name: "FIMBULWINTER", key: "fimbulwinter", level: 18, prereq: Some(Skill::WintersWrath), passive: false, cell: (3, 1) },
     }
 }
 
@@ -344,6 +397,7 @@ impl Skills {
         let class = match get("class") {
             Some("vampire") => Class::Vampire,
             Some("inventor") => Class::Inventor,
+            Some("valkyrie") => Class::Valkyrie,
             _ => Class::Sorceress,
         };
         let first = class.first_skill();
@@ -494,6 +548,7 @@ pub fn mana_cost(s: Skill, r: u8) -> f32 {
         Skill::Phoenix => phoenix_mana(r),
         Skill::Warmth | Skill::Mastery => 0.0,
         s if crate::inventor::is_inventor(s) => crate::inventor::mana_cost(s, r),
+        s if crate::valkyrie::is_valkyrie(s) => crate::valkyrie::mana_cost(s, r),
         _ => crate::vampire::mana_cost(s, r),
     }
 }
@@ -505,6 +560,7 @@ pub fn cooldown_of(s: Skill) -> f32 {
         Skill::Phoenix => PHOENIX_CD,
         s if crate::vampire::is_vampire(s) => crate::vampire::cooldown_of(s),
         s if crate::inventor::is_inventor(s) => crate::inventor::cooldown_of(s),
+        s if crate::valkyrie::is_valkyrie(s) => crate::valkyrie::cooldown_of(s),
         _ => 0.0,
     }
 }
@@ -516,6 +572,9 @@ pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
     }
     if crate::inventor::is_inventor(s) {
         return crate::inventor::describe(s, r, power, sk);
+    }
+    if crate::valkyrie::is_valkyrie(s) {
+        return crate::valkyrie::describe(s, r, power, sk);
     }
     let wall_rank = sk.rank(Skill::FireWall);
     let power = power * if s == Skill::Mastery { 1.0 } else { sk.fire_mult() };
@@ -602,6 +661,8 @@ pub struct Nova {
     pub t: f32,
     /// The vampire's crimson nova / screech (drawn in blood red).
     pub blood: bool,
+    /// The valkyrie's frost shockwaves (drawn ice blue).
+    pub frost: bool,
 }
 
 pub const NOVA_TIME: f32 = 0.4;
@@ -691,8 +752,10 @@ impl Game {
         }
         if self.p.mana < mana_cost(s, r) || locked {
             if self.p.cast_cd <= 0.0 {
-                // The vampire bites instead of the ember spark.
-                if self.p.skills.class == Class::Vampire {
+                // The vampire bites instead of the ember spark; the valkyrie thrusts her spear.
+                if self.p.skills.class == Class::Valkyrie {
+                    self.rune_spear(tx, ty);
+                } else if self.p.skills.class == Class::Vampire {
                     self.bite(tx, ty);
                 } else {
                     self.cast_fireball(tx, ty, true);
@@ -703,6 +766,13 @@ impl Game {
         if crate::inventor::is_inventor(s) {
             self.p.throwing = matches!(s, Skill::ClockBomb | Skill::Turret | Skill::Spider | Skill::TeslaField);
             self.cast_inventor(s, tx, ty, r);
+            if phoenix {
+                self.p.mana = mana_before;
+            }
+            return true;
+        }
+        if crate::valkyrie::is_valkyrie(s) {
+            self.cast_valkyrie(s, tx, ty, r);
             if phoenix {
                 self.p.mana = mana_before;
             }
@@ -741,6 +811,8 @@ impl Game {
     pub(crate) fn fire_power(&self) -> f32 {
         // The inventor running hot (above 70% heat) hits harder.
         let hot = if self.p.skills.class == Class::Inventor && self.heat() > 0.7 { 1.2 } else { 1.0 };
+        // The valkyrie at full Valor: her runes blaze.
+        let hot = if self.blazing() { hot * crate::valkyrie::BLAZING } else { hot };
         self.p.power * self.p.skills.fire_mult() * hot
     }
 
@@ -864,7 +936,7 @@ impl Game {
                 self.p.phoenix_t = 0.0;
                 let dmg = phoenix_burst(self.p.phoenix_rank) * self.fire_power();
                 let (x, y) = (self.p.x, self.p.y);
-                self.novas.push(Nova { x, y, r: PHOENIX_RADIUS, t: 0.0, blood: false });
+                self.novas.push(Nova { x, y, r: PHOENIX_RADIUS, t: 0.0, blood: false, frost: false });
                 self.blast(x, y, PHOENIX_RADIUS, dmg, 2.5);
                 self.shake = self.shake.max(0.9);
             }
@@ -1111,7 +1183,7 @@ impl Game {
         self.p.cast_t = 0.5;
         self.p.cast_len = 0.5;
         let radius = nova_radius(r);
-        self.novas.push(Nova { x: px, y: py, r: radius, t: 0.0, blood: false });
+        self.novas.push(Nova { x: px, y: py, r: radius, t: 0.0, blood: false, frost: false });
         self.lights.push(Light { x: px, y: py, r: 260.0, s: 1.3, life: 0.45, max: 0.45 });
         self.shake = self.shake.max(0.4);
         self.sfx.push(Sfx::Boom);
@@ -1314,6 +1386,7 @@ impl Game {
         let title = match sk.class {
             Class::Vampire => "BLOOD SKILLS",
             Class::Inventor => "INVENTIONS",
+            Class::Valkyrie => "WAR RUNES",
             Class::Sorceress => "FIRE SKILLS",
         };
         scr.text(title, x0 + 10, y0 + 8, rgb(0xffd080), Align::Left, 1);
