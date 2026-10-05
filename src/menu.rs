@@ -32,11 +32,12 @@ pub enum MenuOut {
 }
 
 /// The classes on the create screen: (name, portrait, two lines, colour, playable, in-game sheet).
-const CLASSES: [(&str, &str, &str, &str, u32, bool, &str); 4] = [
-    ("SORCERESS", "portrait_sorceress", "FIREBALLS, FIRE WALLS,", "METEORS, ASH PHOENIX.", 0xff9040, true, "mage"),
-    ("VAMPIRE", "portrait_vampire", "BLOOD MAGIC, CLAWS,", "BATS, MIST, THRALLS.", 0xd04060, true, "vampire"),
-    ("INVENTOR", "portrait_inventor", "AETHER GUNS, BOMBS,", "TURRETS, STEAM SUIT.", 0x40c0b0, true, "inventor"),
-    ("VALKYRIE", "portrait_valkyrie", "FROST SPEAR MELEE,", "FREEZE AND SHATTER.", 0x80d0ff, true, "valkyrie"),
+const CLASSES: [(&str, &str, &str, &str, u32, bool, &str); 5] = [
+    ("SORCERESS", "portrait_sorceress", "FIREBALLS, WALLS,", "METEORS, PHOENIX.", 0xff9040, true, "mage"),
+    ("VAMPIRE", "portrait_vampire", "BLOOD MAGIC,", "BATS, THRALLS.", 0xd04060, true, "vampire"),
+    ("INVENTOR", "portrait_inventor", "AETHER GUNS,", "BOMBS, TURRETS.", 0x40c0b0, true, "inventor"),
+    ("VALKYRIE", "portrait_valkyrie", "FROST SPEAR,", "FREEZE, SHATTER.", 0x80d0ff, true, "valkyrie"),
+    ("BERSERKER", "portrait_berserker", "GIANT AXE, RAGE,", "AND A DIRE WOLF.", 0xd07040, true, "berserker"),
 ];
 
 const NAMES: [&str; 16] = [
@@ -263,6 +264,7 @@ impl Menu {
                             1 => Class::Vampire,
                             2 => Class::Inventor,
                             3 => Class::Valkyrie,
+                            4 => Class::Berserker,
                             _ => Class::Sorceress,
                         };
                         return Some(MenuOut::New(class, name));
@@ -526,6 +528,7 @@ fn class_look(c: Class) -> (&'static str, u32) {
         Class::Vampire => ("portrait_vampire", rgb(0xd04060)),
         Class::Inventor => ("portrait_inventor", rgb(0x40c0b0)),
         Class::Valkyrie => ("portrait_valkyrie", rgb(0x80d0ff)),
+        Class::Berserker => ("portrait_berserker", rgb(0xd07040)),
     }
 }
 

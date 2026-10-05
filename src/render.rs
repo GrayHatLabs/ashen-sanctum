@@ -449,6 +449,15 @@ impl Game {
             scr.pset(x - 1, y - 1, rgb(0x80e0ff));
             scr.glow(x, y, 6.0, rgb(0x60c0ff), 0.4);
         }
+        for a in &self.axes {
+            // A spinning axe: a dark iron head on a short haft, turning.
+            let (sx, sy) = to_scr(a.x, a.y);
+            let (ax, ay) = (sx + scr.shake.0, sy - 22 + scr.shake.1);
+            let (c, s) = (a.spin.cos(), a.spin.sin());
+            line(scr, ax - (c * 6.0) as i32, ay - (s * 3.0) as i32, ax + (c * 6.0) as i32, ay + (s * 3.0) as i32, rgb(0x6a4a2a));
+            scr.disc(ax + (c * 6.0) as i32, ay + (s * 3.0) as i32, 3, rgb(0x404448));
+            scr.pset(ax + (c * 7.0) as i32, ay + (s * 3.5) as i32, rgb(0xc8ccd0));
+        }
         for j in &self.javelins {
             let (sx, sy) = to_scr(j.x, j.y);
             let (ex, ey) = iso::to_screen(j.ux * 0.7, j.uy * 0.7);
@@ -921,10 +930,11 @@ impl Game {
         scr.fill(0, 0, w, h, rgb(0x08060a));
         scr.text("CHOOSE YOUR HERO", w / 2, 10, rgb(0xffd080), Align::Center, 2);
         let classes = [
-            ("SORCERESS", "portrait_sorceress", "mage", "FIRE. FIREBALLS, WALLS OF FLAME,", "METEORS AND AN ASH PHOENIX.", rgb(0xff9040)),
-            ("VAMPIRE", "portrait_vampire", "vampire", "BLOOD. DRAINS LIFE WITH EVERY HIT,", "BATS, MIST STEP AND THRALLS.", rgb(0xd04060)),
-            ("INVENTOR", "portrait_inventor", "inventor", "AETHER GUNS, BOMBS,", "TURRETS, STEAM SUIT.", rgb(0x40c0b0)),
-            ("VALKYRIE", "portrait_valkyrie", "valkyrie", "FROST SPEAR MELEE,", "FREEZE AND SHATTER.", rgb(0x80d0ff)),
+            ("SORCERESS", "portrait_sorceress", "mage", "FIREBALLS,", "METEORS.", rgb(0xff9040)),
+            ("VAMPIRE", "portrait_vampire", "vampire", "BLOOD MAGIC,", "BATS, THRALLS.", rgb(0xd04060)),
+            ("INVENTOR", "portrait_inventor", "inventor", "AETHER GUNS,", "TURRETS, SUIT.", rgb(0x40c0b0)),
+            ("VALKYRIE", "portrait_valkyrie", "valkyrie", "FROST SPEAR,", "FREEZE, SHATTER.", rgb(0x80d0ff)),
+            ("BERSERKER", "portrait_berserker", "berserker", "GIANT AXE, RAGE,", "A DIRE WOLF.", rgb(0xd07040)),
         ];
         let pw = (w - 20 - 10 * (classes.len() as i32 - 1)) / classes.len() as i32;
         let ph = h - 70;
@@ -987,10 +997,12 @@ impl Game {
             crate::skills::Class::Inventor => "inventor",
             crate::skills::Class::Valkyrie if self.p.charge.is_some() => "valkyrie_horse",
             crate::skills::Class::Valkyrie => "valkyrie",
+            crate::skills::Class::Berserker => "berserker",
             crate::skills::Class::Sorceress => "mage",
         };
         let art = self.art.char_art(sheet).0;
-        let valkyrie = self.p.skills.class == crate::skills::Class::Valkyrie;
+        // The melee heroes pick their own attack poses (thrust, sweep, whirl, throw, cast).
+        let valkyrie = matches!(self.p.skills.class, crate::skills::Class::Valkyrie | crate::skills::Class::Berserker);
         // Rake is a claw slash (cast pose of exactly 0.3 s).
         let claw = vampire && (self.p.cast_len - 0.3).abs() < 0.001 && art.has("attack");
         let anim = if self.p.cast_t > 0.0 && claw {
@@ -1032,8 +1044,13 @@ impl Game {
             fx.tint = rgb(0xc8c0d8);
             fx.tint_a = 0.5;
         }
+        // The berserker in the red mist.
+        if self.p.berserk_t > 0.0 && fx.tint_a == 0.0 {
+            fx.tint = rgb(0xc02010);
+            fx.tint_a = 0.3 + 0.1 * ((self.tick as f32) * 0.3).sin();
+        }
         // The valkyrie's wings: raven feathers turning to ice, spread behind her.
-        if valkyrie && self.p.wings_t > 0.0 {
+        if self.p.skills.class == crate::skills::Class::Valkyrie && self.p.wings_t > 0.0 {
             draw_wings(scr, sx, sy - 30, self.tick, (self.p.wings_t * 3.0).min(1.0));
         }
         self.blit_char(scr, sheet, anim, (sx, sy), fx, self.p.moving);
@@ -1124,7 +1141,7 @@ impl Game {
             fx.tint = rgb(0x9ad8ff);
             fx.tint_a = 0.6;
             fx.dither = (self.tick / 2) % 3 == 0;
-        } else if m.charm > 0.0 {
+        } else if m.charm > 0.0 && m.kind != crate::mobs::Kind::DireWolf {
             fx.tint = rgb(0xa040e0);
             fx.tint_a = 0.35;
         }
@@ -1164,6 +1181,10 @@ impl Game {
             let heat = self.heat();
             let (dark, hi) = if self.p.overheat > 0.0 && (self.tick / 6) % 2 == 0 { (rgb(0xe0e0e0), rgb(0xffffff)) } else { (rgb(0xb05010), rgb(0xffa040)) };
             globe(scr, w - 34, gy, 26, heat, dark, hi);
+        } else if self.is_berserker() {
+            // Rage: dark crimson, pulsing in the red mist.
+            let (dark, hi) = if self.p.berserk_t > 0.0 && (self.tick / 6) % 2 == 0 { (rgb(0xe02010), rgb(0xffa080)) } else { (rgb(0x701010), rgb(0xd04030)) };
+            globe(scr, w - 34, gy, 26, self.p.mana / self.p.max_mana, dark, hi);
         } else if self.is_valkyrie() {
             // Valor: icy blue, blazing white when full.
             let (dark, hi) = if self.blazing() && (self.tick / 8) % 2 == 0 { (rgb(0x90c0e0), rgb(0xffffff)) } else { (rgb(0x2a5a90), rgb(0x90d8ff)) };
@@ -1177,6 +1198,16 @@ impl Game {
             scr.text(&label, w - 34, gy - 4, WHITE, Align::Center, 1);
             let vent = if self.p.vent_cd > 0.0 { format!("VENT {:.0}S", self.p.vent_cd.ceil()) } else { "VENT: E/Y".into() };
             scr.text(&vent, w - 34, gy - 36, rgb(0xd8b080), Align::Center, 1);
+        } else if self.is_berserker() {
+            scr.text(&format!("{}", self.p.mana.floor() as i32), w - 34, gy - 4, WHITE, Align::Center, 1);
+            let label = if self.p.berserk_t > 0.0 {
+                "BERSERK!"
+            } else if self.p.exhaust_t > 0.0 {
+                "SPENT"
+            } else {
+                "RAGE"
+            };
+            scr.text(label, w - 34, gy - 36, rgb(0xe08060), Align::Center, 1);
         } else if self.is_valkyrie() {
             scr.text(&format!("{}", self.p.mana.floor() as i32), w - 34, gy - 4, WHITE, Align::Center, 1);
             scr.text(if self.blazing() { "VALOR!" } else { "VALOR" }, w - 34, gy - 36, rgb(0xa0d8ff), Align::Center, 1);
@@ -1209,6 +1240,7 @@ impl Game {
                 crate::skills::Class::Vampire => ("BITE", rgb(0xd04060)),
                 crate::skills::Class::Inventor => ("WEAK", rgb(0x60d0c0)),
                 crate::skills::Class::Valkyrie => ("SPEAR", rgb(0x90d8ff)),
+                crate::skills::Class::Berserker => ("CLEAVE", rgb(0xe08060)),
                 crate::skills::Class::Sorceress => ("EMBER", rgb(0xff9050)),
             };
             scr.text(label, ix + 4, iy + 28, col, Align::Center, 1);

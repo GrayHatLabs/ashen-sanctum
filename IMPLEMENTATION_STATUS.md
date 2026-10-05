@@ -127,6 +127,17 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Title screen (painted background, logo, embers), character select (8 hero slots, portraits, delete with confirm), class select (3 cards, Inventor "coming soon"), naming (typed or random), options (music, controls) | H S | `menu.rs`; unit tests for the flow and hero files; test flags (--new, --act2, --vampire, --level) skip it |
 | One save per hero (`heroes/<slot>.txt`, `name=` line); old save.txt migrates; Esc saves and returns to the heroes | H | |
 
+## The Berserker class (2026-10-05)
+
+| Feature | Status | Notes |
+|---|---|---|
+| Rage (`p.mana`: starts empty, built by pain and kills, decays; Cleave free); pain bonus up to +40% | H S | Unit test |
+| Permanent dire wolf companion (a charmed ally that follows her, re-made on each level, scales with Dire Wolf rank) | H S | Unit test: one wolf, follows across levels |
+| Bleed + sunder on monsters, Executioner bonus and beheading (gore, fear), Bloodlust haste | H S | Unit tests |
+| 11 skills (`berserker.rs`): Cleave, Rend, Iron Hide, Leap Slam, Dire Wolf, Bloodlust, War Cry, Whirlwind, Executioner, Hurl Axe, Berserk | H S | Unit test covers every active |
+| Fifth class card | S | |
+| Art: none yet (PixelLab out of generations); raider stand-in, code-drawn axe and icons | | |
+
 ## The Valkyrie class (2026-10-05)
 
 | Feature | Status | Notes |

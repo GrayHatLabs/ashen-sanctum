@@ -54,6 +54,8 @@ pub enum Kind {
     Clockmaker,
     /// The valkyrie's spectral warriors (always on her side).
     Einherjar,
+    /// The berserker's dire wolf (always on her side).
+    DireWolf,
 }
 
 pub struct Def {
@@ -224,6 +226,7 @@ pub fn def(k: Kind) -> Def {
             ranged: true,
             ..d("boss_archivist", "THE ARCHIVIST", 680.0, 1.8, (14.0, 20.0), 0.6, 1.8, 1600.0)
         },
+        Kind::DireWolf => Def { r: 0.36, ..d("dire_wolf", "DIRE WOLF", 80.0, 4.6, (4.0, 7.0), 0.3, 0.8, 0.0) },
         Kind::Einherjar => Def { r: 0.32, ..d("einherjar", "EINHERJAR", 60.0, 3.0, (8.0, 12.0), 0.35, 1.0, 0.0) },
         Kind::Clockmaker => Def {
             r: 0.55,
@@ -339,6 +342,10 @@ pub struct Mob {
     pub frozen: f32,
     /// Her raven's mark: she hits it harder while this lasts.
     pub marked: f32,
+    /// The berserker's Rend: bleeding (damage per second, seconds left) and sundered armor.
+    pub bleed: f32,
+    pub bleed_t: f32,
+    pub sunder: f32,
     /// Untouchable while this lasts (Count Vardak's mist form).
     pub invuln: f32,
     /// Boss form (Count Vardak: 1 = giant bat).
@@ -398,6 +405,9 @@ impl Mob {
             frost: 0.0,
             frozen: 0.0,
             marked: 0.0,
+            bleed: 0.0,
+            bleed_t: 0.0,
+            sunder: 0.0,
             invuln: 0.0,
             form: 0,
             rush: 0.0,

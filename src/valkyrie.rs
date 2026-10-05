@@ -309,12 +309,12 @@ impl Game {
     }
 
     /// Hostile, living monsters (indices) that a test says yes to.
-    fn foes_where(&self, f: impl Fn(&crate::mobs::Mob) -> bool) -> Vec<usize> {
+    pub(crate) fn foes_where(&self, f: impl Fn(&crate::mobs::Mob) -> bool) -> Vec<usize> {
         (0..self.mobs.len()).filter(|&i| self.mobs[i].alive() && self.mobs[i].charm <= 0.0 && f(&self.mobs[i])).collect()
     }
 
     /// Foes in a line from her toward (tx, ty).
-    fn in_line(&self, tx: f32, ty: f32, reach: f32, width: f32) -> Vec<usize> {
+    pub(crate) fn in_line(&self, tx: f32, ty: f32, reach: f32, width: f32) -> Vec<usize> {
         let (px, py) = (self.p.x, self.p.y);
         let (dx, dy) = (tx - px, ty - py);
         let l = (dx * dx + dy * dy).sqrt().max(0.01);
@@ -328,7 +328,7 @@ impl Game {
     }
 
     /// Foes in a cone in front of her.
-    fn in_cone(&self, tx: f32, ty: f32, reach: f32, half: f32) -> Vec<usize> {
+    pub(crate) fn in_cone(&self, tx: f32, ty: f32, reach: f32, half: f32) -> Vec<usize> {
         let (px, py) = (self.p.x, self.p.y);
         let a0 = (ty - py).atan2(tx - px);
         self.foes_where(|m| {
@@ -337,7 +337,7 @@ impl Game {
         })
     }
 
-    fn in_circle(&self, x: f32, y: f32, r: f32) -> Vec<usize> {
+    pub(crate) fn in_circle(&self, x: f32, y: f32, r: f32) -> Vec<usize> {
         self.foes_where(|m| (m.x - x).powi(2) + (m.y - y).powi(2) < (r + m.r).powi(2))
     }
 

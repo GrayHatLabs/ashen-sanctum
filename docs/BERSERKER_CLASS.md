@@ -1,6 +1,8 @@
 # The Berserker: fifth playable class, the second melee hero (design, 2026-10-05)
 
-**Decided with the user** (built after the Valkyrie):
+**Built 2026-10-05** (code complete with a raider stand-in sprite; her PixelLab art waits on generations).
+
+**Decided with the user:**
 - **Name:** Berserker.
 - **Resource:** Rage (builds from pain and kills; lower life = more damage).
 - **Wolf:** always with her.

@@ -56,6 +56,18 @@ pub enum Skill {
     Einherjar,
     ValkyrieRide,
     Fimbulwinter,
+    // ---- the Berserker ----
+    Cleave,
+    Rend,
+    IronHide,
+    LeapSlam,
+    DireWolf,
+    Bloodlust,
+    WarCry,
+    Whirlwind,
+    Executioner,
+    HurlAxe,
+    Berserk,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
@@ -64,6 +76,7 @@ pub enum Class {
     Vampire,
     Inventor,
     Valkyrie,
+    Berserker,
 }
 
 impl Class {
@@ -73,6 +86,7 @@ impl Class {
             Class::Vampire => "VAMPIRE",
             Class::Inventor => "INVENTOR",
             Class::Valkyrie => "VALKYRIE",
+            Class::Berserker => "BERSERKER",
         }
     }
     pub fn key(self) -> &'static str {
@@ -81,6 +95,7 @@ impl Class {
             Class::Vampire => "vampire",
             Class::Inventor => "inventor",
             Class::Valkyrie => "valkyrie",
+            Class::Berserker => "berserker",
         }
     }
     /// The skill you start with (rank 1, never refunded).
@@ -90,6 +105,7 @@ impl Class {
             Class::Vampire => Skill::BloodLance,
             Class::Inventor => Skill::RayPistol,
             Class::Valkyrie => Skill::RuneSpear,
+            Class::Berserker => Skill::Cleave,
         }
     }
     pub fn tree(self) -> &'static [Skill] {
@@ -98,6 +114,7 @@ impl Class {
             Class::Vampire => &VAMPIRE,
             Class::Inventor => &INVENTOR,
             Class::Valkyrie => &VALKYRIE,
+            Class::Berserker => &BERSERKER,
         }
     }
 }
@@ -158,8 +175,22 @@ pub const VALKYRIE: [Skill; 11] = [
     Skill::Fimbulwinter,
 ];
 
+pub const BERSERKER: [Skill; 11] = [
+    Skill::Cleave,
+    Skill::Rend,
+    Skill::IronHide,
+    Skill::LeapSlam,
+    Skill::DireWolf,
+    Skill::Bloodlust,
+    Skill::WarCry,
+    Skill::Whirlwind,
+    Skill::Executioner,
+    Skill::HurlAxe,
+    Skill::Berserk,
+];
+
 /// Every skill of every class (save files, rank arrays).
-pub const ALL: [Skill; 44] = [
+pub const ALL: [Skill; 55] = [
     Skill::Fireball,
     Skill::Inferno,
     Skill::Warmth,
@@ -204,6 +235,17 @@ pub const ALL: [Skill; 44] = [
     Skill::Einherjar,
     Skill::ValkyrieRide,
     Skill::Fimbulwinter,
+    Skill::Cleave,
+    Skill::Rend,
+    Skill::IronHide,
+    Skill::LeapSlam,
+    Skill::DireWolf,
+    Skill::Bloodlust,
+    Skill::WarCry,
+    Skill::Whirlwind,
+    Skill::Executioner,
+    Skill::HurlAxe,
+    Skill::Berserk,
 ];
 /// Character level needed for each tree row.
 pub const TIER_LEVELS: [u32; 4] = [1, 6, 12, 18];
@@ -266,6 +308,17 @@ pub fn def(s: Skill) -> Def {
         Skill::Einherjar => Def { name: "EINHERJAR", key: "einherjar", level: 12, prereq: Some(Skill::FrostBrand), passive: false, cell: (2, 2) },
         Skill::ValkyrieRide => Def { name: "RIDE OF THE VALKYRIE", key: "valkyrieride", level: 18, prereq: Some(Skill::RuneJavelin), passive: false, cell: (3, 0) },
         Skill::Fimbulwinter => Def { name: "FIMBULWINTER", key: "fimbulwinter", level: 18, prereq: Some(Skill::WintersWrath), passive: false, cell: (3, 1) },
+        Skill::Cleave => Def { name: "CLEAVE", key: "cleave", level: 1, prereq: None, passive: false, cell: (0, 0) },
+        Skill::Rend => Def { name: "REND", key: "rend", level: 1, prereq: None, passive: false, cell: (0, 1) },
+        Skill::IronHide => Def { name: "IRON HIDE", key: "ironhide", level: 1, prereq: None, passive: true, cell: (0, 2) },
+        Skill::LeapSlam => Def { name: "LEAP SLAM", key: "leapslam", level: 6, prereq: Some(Skill::Cleave), passive: false, cell: (1, 0) },
+        Skill::DireWolf => Def { name: "DIRE WOLF", key: "direwolf", level: 6, prereq: Some(Skill::Rend), passive: false, cell: (1, 1) },
+        Skill::Bloodlust => Def { name: "BLOODLUST", key: "bloodlust", level: 6, prereq: Some(Skill::IronHide), passive: true, cell: (1, 2) },
+        Skill::WarCry => Def { name: "WAR CRY", key: "warcry", level: 12, prereq: Some(Skill::LeapSlam), passive: false, cell: (2, 0) },
+        Skill::Whirlwind => Def { name: "WHIRLWIND", key: "whirlwind", level: 12, prereq: Some(Skill::DireWolf), passive: false, cell: (2, 1) },
+        Skill::Executioner => Def { name: "EXECUTIONER", key: "executioner", level: 12, prereq: Some(Skill::Bloodlust), passive: true, cell: (2, 2) },
+        Skill::HurlAxe => Def { name: "HURL AXE", key: "hurlaxe", level: 18, prereq: Some(Skill::WarCry), passive: false, cell: (3, 0) },
+        Skill::Berserk => Def { name: "BERSERK", key: "berserk", level: 18, prereq: Some(Skill::Whirlwind), passive: false, cell: (3, 1) },
     }
 }
 
@@ -398,6 +451,7 @@ impl Skills {
             Some("vampire") => Class::Vampire,
             Some("inventor") => Class::Inventor,
             Some("valkyrie") => Class::Valkyrie,
+            Some("berserker") => Class::Berserker,
             _ => Class::Sorceress,
         };
         let first = class.first_skill();
@@ -549,6 +603,7 @@ pub fn mana_cost(s: Skill, r: u8) -> f32 {
         Skill::Warmth | Skill::Mastery => 0.0,
         s if crate::inventor::is_inventor(s) => crate::inventor::mana_cost(s, r),
         s if crate::valkyrie::is_valkyrie(s) => crate::valkyrie::mana_cost(s, r),
+        s if crate::berserker::is_berserker(s) => crate::berserker::mana_cost(s, r),
         _ => crate::vampire::mana_cost(s, r),
     }
 }
@@ -561,6 +616,7 @@ pub fn cooldown_of(s: Skill) -> f32 {
         s if crate::vampire::is_vampire(s) => crate::vampire::cooldown_of(s),
         s if crate::inventor::is_inventor(s) => crate::inventor::cooldown_of(s),
         s if crate::valkyrie::is_valkyrie(s) => crate::valkyrie::cooldown_of(s),
+        s if crate::berserker::is_berserker(s) => crate::berserker::cooldown_of(s),
         _ => 0.0,
     }
 }
@@ -575,6 +631,9 @@ pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
     }
     if crate::valkyrie::is_valkyrie(s) {
         return crate::valkyrie::describe(s, r, power, sk);
+    }
+    if crate::berserker::is_berserker(s) {
+        return crate::berserker::describe(s, r, power, sk);
     }
     let wall_rank = sk.rank(Skill::FireWall);
     let power = power * if s == Skill::Mastery { 1.0 } else { sk.fire_mult() };
@@ -728,6 +787,10 @@ impl Game {
         if r == 0 || def(s).passive {
             return false;
         }
+        // Mid-whirlwind she can't do anything else.
+        if self.p.whirl_t > 0.0 {
+            return true;
+        }
         if self.p.skills.cooldown[s as usize] > 0.0 {
             if self.p.cast_cd <= 0.0 {
                 self.say(format!("{} IS NOT READY ({:.0}S)", def(s).name, self.p.skills.cooldown[s as usize].ceil()));
@@ -755,6 +818,8 @@ impl Game {
                 // The vampire bites instead of the ember spark; the valkyrie thrusts her spear.
                 if self.p.skills.class == Class::Valkyrie {
                     self.rune_spear(tx, ty);
+                } else if self.p.skills.class == Class::Berserker {
+                    self.cleave(tx, ty);
                 } else if self.p.skills.class == Class::Vampire {
                     self.bite(tx, ty);
                 } else {
@@ -766,6 +831,13 @@ impl Game {
         if crate::inventor::is_inventor(s) {
             self.p.throwing = matches!(s, Skill::ClockBomb | Skill::Turret | Skill::Spider | Skill::TeslaField);
             self.cast_inventor(s, tx, ty, r);
+            if phoenix {
+                self.p.mana = mana_before;
+            }
+            return true;
+        }
+        if crate::berserker::is_berserker(s) {
+            self.cast_berserker(s, tx, ty, r);
             if phoenix {
                 self.p.mana = mana_before;
             }
@@ -813,6 +885,8 @@ impl Game {
         let hot = if self.p.skills.class == Class::Inventor && self.heat() > 0.7 { 1.2 } else { 1.0 };
         // The valkyrie at full Valor: her runes blaze.
         let hot = if self.blazing() { hot * crate::valkyrie::BLAZING } else { hot };
+        // The berserker: pain, the war cry and exhaustion.
+        let hot = hot * self.fury();
         self.p.power * self.p.skills.fire_mult() * hot
     }
 
@@ -1387,6 +1461,7 @@ impl Game {
             Class::Vampire => "BLOOD SKILLS",
             Class::Inventor => "INVENTIONS",
             Class::Valkyrie => "WAR RUNES",
+            Class::Berserker => "FURY",
             Class::Sorceress => "FIRE SKILLS",
         };
         scr.text(title, x0 + 10, y0 + 8, rgb(0xffd080), Align::Left, 1);

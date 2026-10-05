@@ -647,6 +647,7 @@ pub fn skill_icon(s: crate::skills::Skill) -> Sprite {
         Skill::Fireball => {}
         s if crate::inventor::is_inventor(s) => inventor_icon(s, &mut im),
         s if crate::valkyrie::is_valkyrie(s) => valkyrie_icon(s, &mut im),
+        s if crate::berserker::is_berserker(s) => berserker_icon(s, &mut im),
         _ => vampire_icon(s, &mut im),
     }
     im.ax = 0;
@@ -776,6 +777,140 @@ fn valkyrie_icon(s: crate::skills::Skill, im: &mut Sprite) {
                 im.set(12 - k, 10 + k / 3, ice(k as f32 / 9.0));
                 im.set(12 + k, 10 + k / 3, ice(k as f32 / 9.0));
             }
+        }
+        _ => {}
+    }
+}
+
+/// The berserker's icons: iron, leather and dried crimson on dark earth. No magic glow.
+fn berserker_icon(s: crate::skills::Skill, im: &mut Sprite) {
+    use crate::skills::Skill;
+    im.fill(0, 0, 24, 24, rgb(0x14100c));
+    let iron = rgb(0x8a8e94);
+    let dark = rgb(0x4a4c50);
+    let wood = rgb(0x6a4a2a);
+    let blood = rgb(0x8a1810);
+    // A big axe: haft from (x0, y0) toward (x1, y1), head at the far end.
+    let axe = |im: &mut Sprite, x0: i32, y0: i32, x1: i32, y1: i32| {
+        let n = (x1 - x0).abs().max((y1 - y0).abs()).max(1);
+        for t in 0..=n {
+            im.set(x0 + (x1 - x0) * t / n, y0 + (y1 - y0) * t / n, wood);
+        }
+        for dy in -4..=4i32 {
+            let w = 4 - dy.abs() / 2;
+            for dx in 0..w {
+                im.set(x1 + dx - 1, y1 + dy, if dx == w - 1 { iron } else { dark });
+            }
+        }
+    };
+    match s {
+        Skill::Cleave => {
+            axe(im, 4, 20, 15, 7);
+            for k in 0..9 {
+                let a = 3.4 + k as f32 * 0.17;
+                im.set(12 + (a.cos() * 9.0) as i32, 12 + (a.sin() * 9.0) as i32, rgb(0xb0a890));
+            }
+        }
+        Skill::Rend => {
+            axe(im, 4, 21, 13, 9);
+            for k in 0..3 {
+                for y in 6..19 {
+                    im.set(16 + k * 2 + (y % 3 == 0) as i32, y, blood);
+                }
+            }
+        }
+        Skill::IronHide => {
+            for y in 4..21 {
+                let half = if y < 14 { 8 } else { 8 - (y - 14) };
+                for x in 12 - half..12 + half {
+                    im.set(x, y, if (x * 7 + y * 3) % 6 == 0 { dark } else { rgb(0x5a5c62) });
+                }
+            }
+            for k in 0..5 {
+                im.set(8 + k * 2, 9 + (k % 2), iron);
+            }
+        }
+        Skill::LeapSlam => {
+            for t in 0..14 {
+                im.set(3 + t, 16 - ((t as f32 / 13.0 * std::f32::consts::PI).sin() * 10.0) as i32, rgb(0x9a9080));
+            }
+            axe(im, 14, 8, 18, 16);
+            for x in 12..23 {
+                im.set(x, 21, rgb(0x6a5030));
+            }
+        }
+        Skill::DireWolf => {
+            // A howling wolf's head.
+            im.fill(7, 11, 9, 8, rgb(0x2a2626));
+            im.fill(12, 6, 5, 6, rgb(0x2a2626));
+            im.fill(15, 4, 4, 3, rgb(0x2a2626));
+            im.set(9, 9, rgb(0x2a2626));
+            im.set(8, 8, rgb(0x2a2626));
+            im.set(14, 8, rgb(0xd0b060));
+            for k in 0..3 {
+                im.set(19 + k, 3 - k / 2, rgb(0x9a9080));
+            }
+        }
+        Skill::Bloodlust => {
+            for y in 4..21 {
+                for x in 4..21 {
+                    let (dx, dy) = (x as f32 - 12.0, y as f32 - 13.0);
+                    let heart = (dx.abs() * 0.8 + dy) < 6.0 && ((dx - 3.0).powi(2) + (dy + 3.0).powi(2) < 14.0 || (dx + 3.0).powi(2) + (dy + 3.0).powi(2) < 14.0 || dy > -3.0);
+                    if heart {
+                        im.set(x, y, if (x + y) % 4 == 0 { rgb(0xb02818) } else { blood });
+                    }
+                }
+            }
+        }
+        Skill::WarCry => {
+            // An open-mouthed shout and sound arcs.
+            im.fill(6, 8, 6, 8, rgb(0x8a6a50));
+            im.fill(9, 12, 3, 3, rgb(0x200808));
+            for r in [6.0f32, 9.0] {
+                for k in 0..7 {
+                    let a = -0.8 + k as f32 * 0.27;
+                    im.set(11 + (a.cos() * r) as i32, 12 + (a.sin() * r) as i32, rgb(0xe0a060));
+                }
+            }
+        }
+        Skill::Whirlwind => {
+            for k in 0..40 {
+                let a = k as f32 * 0.4;
+                let r = 2.0 + k as f32 * 0.22;
+                im.set(12 + (a.cos() * r) as i32, 12 + (a.sin() * r) as i32, if k % 3 == 0 { iron } else { rgb(0x9a9080) });
+            }
+        }
+        Skill::Executioner => {
+            axe(im, 3, 21, 14, 8);
+            // A skull.
+            im.fill(15, 14, 6, 5, rgb(0xd8d0b8));
+            im.fill(16, 19, 4, 2, rgb(0xd8d0b8));
+            im.set(16, 16, BLACK);
+            im.set(19, 16, BLACK);
+        }
+        Skill::HurlAxe => {
+            for k in 0..4 {
+                let a = k as f32 * std::f32::consts::FRAC_PI_2 + 0.4;
+                for t in 0..7 {
+                    im.set(12 + (a.cos() * t as f32) as i32, 12 + (a.sin() * t as f32) as i32, if t > 4 { iron } else { wood });
+                }
+            }
+            for x in 2..8 {
+                im.set(x, 20, rgb(0x9a9080));
+            }
+        }
+        Skill::Berserk => {
+            for y in 0..24 {
+                for x in 0..24 {
+                    let d = ((x as f32 - 12.0).powi(2) + (y as f32 - 12.0).powi(2)).sqrt();
+                    if d < 10.0 && hash(x, y, 13) % 3 == 0 {
+                        im.set(x, y, if d < 5.0 { rgb(0xe03018) } else { blood });
+                    }
+                }
+            }
+            im.fill(9, 9, 6, 6, rgb(0x200808));
+            im.set(10, 11, rgb(0xff6040));
+            im.set(13, 11, rgb(0xff6040));
         }
         _ => {}
     }

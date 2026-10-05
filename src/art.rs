@@ -383,6 +383,9 @@ impl Art {
             "valkyrie" => ("mage", 1.05, 0x3a5070, 0.8),
             "valkyrie_horse" => ("frost_wolf", 1.7, 0x101418, 0.75),
             "einherjar" => ("skeleton", 1.05, 0x90d0ff, 0.65),
+            // ---- the Berserker (until her PixelLab art exists): the raider has an axe ----
+            "berserker" => ("raider", 1.08, 0x3a2418, 0.35),
+            "dire_wolf" => ("wolf", 1.4, 0x161414, 0.65),
             // ---- Act 4 stand-ins ----
             "brass_scarab" => ("boss_plague", 0.45, 0xc89040, 0.65),
             "inquisitor" => ("archer", 1.0, 0x302820, 0.6),

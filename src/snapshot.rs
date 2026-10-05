@@ -534,6 +534,52 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         save(&mut g, scr, "valkyrie_tree");
         g.tree = None;
     }
+    // The Berserker: cleave and blood, her wolf, whirlwind, the red mist.
+    {
+        use crate::skills::{Class, Skill};
+        let mut g = Game::new(7, h);
+        g.set_class(Class::Berserker);
+        g.p.clvl = 18;
+        for s in crate::skills::BERSERKER {
+            g.p.skills.rank[s as usize] = 3;
+        }
+        g.p.base_hp = 9000.0;
+        g.p.recalc();
+        g.p.hp = 9000.0;
+        g.p.skills.primary = Skill::Cleave;
+        g.p.skills.secondary = Skill::Whirlwind;
+        g.debug_goto(LevelId::Dungeon(0, 0));
+        g.banner_t = 0.0;
+        idle(&mut g, 100);
+        let target = g.bot_target().map(|t| (t.0, t.1)).unwrap_or((g.p.x + 3.0, g.p.y));
+        g.debug_place_near(target.0, target.1, 1.6);
+        idle(&mut g, 10);
+        let cast = |g: &mut Game, s: Skill, x: f32, y: f32| {
+            g.p.mana = g.p.max_mana * 0.6;
+            g.p.cast_cd = 0.0;
+            g.p.skills.cooldown = [0.0; crate::skills::ALL.len()];
+            g.cast_skill(s, x, y);
+        };
+        cast(&mut g, Skill::Rend, target.0, target.1);
+        idle(&mut g, 6);
+        save(&mut g, scr, "berserker_rend");
+        cast(&mut g, Skill::Whirlwind, target.0, target.1);
+        idle(&mut g, 30);
+        save(&mut g, scr, "berserker_whirlwind");
+        idle(&mut g, 120);
+        let (px, py) = (g.p.x, g.p.y);
+        cast(&mut g, Skill::WarCry, px, py);
+        cast(&mut g, Skill::Berserk, px, py);
+        idle(&mut g, 8);
+        save(&mut g, scr, "berserker_berserk");
+        cast(&mut g, Skill::HurlAxe, target.0, target.1);
+        idle(&mut g, 10);
+        save(&mut g, scr, "berserker_axe");
+        g.p.skills.points = 2;
+        g.update(&Input { skills: true, ..Input::default() });
+        save(&mut g, scr, "berserker_tree");
+        g.tree = None;
+    }
     // Act 2: Kaldholm, the Frostmarch, each ice dungeon and its herald.
     {
         let mut g = Game::new(7, h);

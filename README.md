@@ -19,7 +19,7 @@ The game opens on the **title screen**: Play, Options (music, controls), Quit.
 - **In game, Esc** saves and returns to the character select.
 - Each hero has their own save file in `~/.local/share/ashensanctum/heroes/`. An old single save is copied in as the first hero.
 
-## Four heroes
+## Five heroes
 
 A new character starts on the **class select** screen:
 
@@ -70,6 +70,20 @@ A new character starts on the **class select** screen:
     **Einherjar:** spectral warriors fight beside her.
   - **Ride of the Valkyrie:** her warhorse charges through a line of foes. **Fimbulwinter:** a killing blizzard.
   - `--valkyrie` skips the class screen. Her own art isn't made yet (a steel-blue stand-in for now).
+
+- **The Berserker** is a barbarian warlord with a giant two-handed axe and a **dire wolf** that never
+  leaves her side. No magic.
+  - **Rage** instead of mana: it starts empty and fills from **pain** (blows she takes) and **kills**, not
+    from her own hits. Skills spend it; **Cleave** is free. It fades out of combat.
+  - **The lower her life, the harder she hits** (up to +40%).
+  - **Gore:** her axe makes foes bleed, and the **Executioner** can take a wounded foe's head, scaring its friends.
+  - **Cleave:** a wide arc. **Rend:** bleeding and sundered armor. **Iron Hide** (passive): tougher below half life.
+  - **Leap Slam:** a leap that knocks foes down. **Dire Wolf:** a stronger wolf, which howls foes away.
+    **Bloodlust** (passive): kills heal her and quicken her axe.
+  - **War Cry:** foes flee and she hits harder. **Whirlwind:** spin through them. **Executioner** (passive).
+  - **Hurl Axe:** it spins through a line and comes back. **Berserk:** for a while she can't die, swings
+    faster and heals with every hit, then she's spent.
+  - `--berserker` skips the class screen. Her own art isn't made yet (a raider stand-in for now).
 
 ## The story
 

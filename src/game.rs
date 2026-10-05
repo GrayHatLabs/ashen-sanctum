@@ -212,6 +212,20 @@ pub struct Player {
     pub charge: Option<crate::valkyrie::Charge>,
     pub fimbul_t: f32,
     pub fimbul_dps: f32,
+    // ---- the berserker ----
+    /// Attack speed (Bloodlust stacks, Berserk).
+    pub haste: f32,
+    pub lust: u8,
+    pub lust_t: f32,
+    pub whirl_t: f32,
+    pub whirl_to: (f32, f32),
+    pub whirl_tick: f32,
+    pub whirl_dmg: f32,
+    pub warcry_t: f32,
+    pub berserk_t: f32,
+    pub exhaust_t: f32,
+    pub wolf_cd: f32,
+    pub howl_t: f32,
     pub cast_t: f32,
     pub cast_cd: f32,
     /// Length of the current cast animation (fireball or ember).
@@ -286,6 +300,18 @@ impl Player {
             charge: None,
             fimbul_t: 0.0,
             fimbul_dps: 0.0,
+            haste: 1.0,
+            lust: 0,
+            lust_t: 0.0,
+            whirl_t: 0.0,
+            whirl_to: (0.0, 0.0),
+            whirl_tick: 0.0,
+            whirl_dmg: 0.0,
+            warcry_t: 0.0,
+            berserk_t: 0.0,
+            exhaust_t: 0.0,
+            wolf_cd: 0.0,
+            howl_t: 0.0,
             cast_t: 0.0,
             cast_cd: 0.0,
             cast_len: CAST_TIME,
@@ -330,6 +356,24 @@ impl Player {
 
     /// The gear you start with: the sorceress a gnarled staff, the vampire a plain amulet.
     pub fn starting_gear(&mut self) {
+        if self.skills.class == crate::skills::Class::Berserker {
+            // Rage fills to 100 from pain and kills; she's big, and wears what she took from the dead.
+            self.base_mana = 100.0;
+            self.base_hp += 40.0;
+            self.gear = crate::items::Gear::default();
+            let armor = crate::items::Item {
+                base: crate::items::base_by_key("leather").unwrap(),
+                rarity: crate::items::Rarity::Normal,
+                ilvl: 1,
+                name: "WOLF-FUR HIDES".into(),
+                stats: vec![(crate::items::Stat::Armor, 8), (crate::items::Stat::Life, 10)],
+                req: 1,
+            };
+            let slot = crate::items::WORN.iter().position(|s| *s == crate::items::Slot::Armor).unwrap();
+            self.gear.worn[slot] = Some(armor);
+            self.recalc();
+            return;
+        }
         if self.skills.class == crate::skills::Class::Valkyrie {
             // Valor fills to 100 by fighting; she's the toughest hero, in leather from the start.
             self.base_mana = 100.0;
@@ -469,6 +513,7 @@ pub struct Game {
     pub(crate) bats: Vec<crate::vampire::BatFx>,
     pub(crate) ravens: Vec<crate::valkyrie::RavenFx>,
     pub(crate) javelins: Vec<crate::valkyrie::JavelinFx>,
+    pub(crate) axes: Vec<crate::berserker::AxeFx>,
     pub(crate) fields: Vec<crate::vampire::BloodField>,
     pub(crate) bombs: Vec<crate::inventor::BombFx>,
     pub(crate) arcs: Vec<crate::inventor::ArcFx>,
@@ -566,6 +611,7 @@ impl Game {
             bats: vec![],
             ravens: vec![],
             javelins: vec![],
+            axes: vec![],
             fields: vec![],
             bombs: vec![],
             arcs: vec![],
@@ -814,7 +860,7 @@ impl Game {
         self.p.starting_gear();
         self.p.hp = self.p.max_hp;
         // Valor starts empty: she earns it in the fight.
-        self.p.mana = if class == crate::skills::Class::Valkyrie { 0.0 } else { self.p.max_mana };
+        self.p.mana = if matches!(class, crate::skills::Class::Valkyrie | crate::skills::Class::Berserker) { 0.0 } else { self.p.max_mana };
     }
 
     /// Class select controls: left / right (or click) to pick, confirm to start.
@@ -825,7 +871,7 @@ impl Game {
             sel = sel.saturating_sub(1);
         }
         if edge(inp.move_x, self.prev.move_x, false) || edge(inp.move_y, self.prev.move_y, false) {
-            sel = (sel + 1).min(3);
+            sel = (sel + 1).min(4);
         }
         let mut go = confirm;
         if let (Some((mx, my)), true) = (inp.mouse, click) {
@@ -840,6 +886,7 @@ impl Game {
                 1 => crate::skills::Class::Vampire,
                 2 => crate::skills::Class::Inventor,
                 3 => crate::skills::Class::Valkyrie,
+                4 => crate::skills::Class::Berserker,
                 _ => crate::skills::Class::Sorceress,
             };
             self.set_class(class);
@@ -982,7 +1029,11 @@ impl Game {
         // Her raven, javelins and charge don't follow her between levels.
         self.ravens.clear();
         self.javelins.clear();
+        self.axes.clear();
         self.p.charge = None;
+        self.p.whirl_t = 0.0;
+        // Her wolf comes with her (it's made anew beside her on the other side).
+        self.mobs.retain(|m| m.kind != Kind::DireWolf);
         let cur = self.swap_out();
         self.parked.insert(cur.id, cur);
         let lv = match self.parked.remove(&id) {
@@ -1319,6 +1370,7 @@ impl Game {
         self.update_vampire();
         self.update_inventor();
         self.update_valkyrie();
+        self.update_berserker();
         self.update_world();
         self.prev = inp.clone();
     }
@@ -1705,15 +1757,15 @@ impl Game {
         use crate::items::Stat;
         // Faster cast rate: cast animations and recoveries run quicker (slower while chilled).
         p.chill = (p.chill - DT).max(0.0);
-        let fcr = (1.0 + p.bonus.frac(Stat::Cast, 60)) * if p.chill > 0.0 { 0.75 } else { 1.0 };
+        let fcr = (1.0 + p.bonus.frac(Stat::Cast, 60)) * if p.chill > 0.0 { 0.75 } else { 1.0 } * p.haste;
         p.cast_cd = (p.cast_cd - DT * fcr).max(0.0);
         p.cast_t = (p.cast_t - DT * fcr).max(0.0);
         let mregen = 1.0 + p.bonus.frac(Stat::ManaRegen, 200);
         let base_regen = if p.skills.class == crate::skills::Class::Inventor {
             // Cooling (gear "mana regeneration" cools faster too).
             crate::inventor::COOLING * crate::inventor::tinker_cool(p.skills.rank(crate::skills::Skill::Tinkerer))
-        } else if p.skills.class == crate::skills::Class::Valkyrie {
-            // Valor doesn't regenerate: she fights for it.
+        } else if matches!(p.skills.class, crate::skills::Class::Valkyrie | crate::skills::Class::Berserker) {
+            // Valor and rage don't regenerate: they fight for it.
             0.0
         } else {
             2.2 * p.skills.regen_mult()
@@ -1761,7 +1813,7 @@ impl Game {
             self.p.mp_pots -= 1;
             self.p.mana = (self.p.mana + 35.0 + self.p.max_mana * 0.15).min(self.p.max_mana);
             self.sfx.push(Sfx::Drink);
-            let word = if self.is_valkyrie() { "MEAD" } else { "MANA" };
+            let word = if self.is_valkyrie() || self.is_berserker() { "MEAD" } else { "MANA" };
             self.floater(self.p.x, self.p.y, word.into(), rgb(0x5080ff));
         }
 
@@ -1843,7 +1895,13 @@ impl Game {
             }
             let skill = if use_secondary { self.p.skills.secondary } else { self.p.skills.primary };
             // The valkyrie's melee: out of reach of the monster she's aiming at, walk in first.
-            let reach = if self.is_valkyrie() { crate::valkyrie::reach_of(skill) } else { None };
+            let reach = if self.is_valkyrie() {
+                crate::valkyrie::reach_of(skill)
+            } else if self.is_berserker() {
+                crate::berserker::reach_of(skill)
+            } else {
+                None
+            };
             let far = match (reach, aimed_mob) {
                 (Some(reach), Some(i)) => {
                     let m = &self.mobs[i];
@@ -1917,7 +1975,7 @@ impl Game {
             }
         }
         // On the charging warhorse, the horse goes where it goes.
-        if self.p.charge.is_some() {
+        if self.p.charge.is_some() || self.p.whirl_t > 0.0 {
             mv = (0.0, 0.0);
         }
         let casting = self.p.cast_t > 0.0 && self.p.cast_len >= CAST_TIME;
@@ -2219,6 +2277,7 @@ impl Game {
             crate::skills::Class::Vampire => crate::vampire::blood_taken(kind),
             crate::skills::Class::Inventor => 1.0,
             crate::skills::Class::Valkyrie => crate::valkyrie::frost_taken(kind),
+            crate::skills::Class::Berserker => 1.0,
             crate::skills::Class::Sorceress => crate::mobs::fire_taken(kind),
         }
     }
@@ -2244,6 +2303,18 @@ impl Game {
         let dmg = if self.p.suit_t > 0.0 { dmg * 0.5 } else { dmg };
         // The valkyrie: Northborn shrugs off part of it, the warhorse takes half while it charges,
         // and every blow she takes stokes her Valor.
+        // The berserker: Iron Hide below half life, and every blow stokes her rage.
+        let dmg = if self.is_berserker() {
+            let low = self.p.hp < self.p.max_hp * 0.5;
+            let dr = if low { crate::berserker::iron_dr(self.p.skills.rank(crate::skills::Skill::IronHide)) } else { 0.0 };
+            let dmg = dmg * (1.0 - dr);
+            if dmg > 0.0 {
+                self.gain_rage(dmg * crate::berserker::RAGE_PER_HURT);
+            }
+            dmg
+        } else {
+            dmg
+        };
         let dmg = if self.is_valkyrie() {
             let dr = crate::valkyrie::northborn_dr(self.p.skills.rank(crate::skills::Skill::Northborn));
             let dmg = dmg * (1.0 - dr) * if self.p.charge.is_some() { 0.5 } else { 1.0 };
@@ -2256,6 +2327,10 @@ impl Game {
         };
         if dmg > 0.0 {
             self.p.hp -= dmg;
+            // Berserk: she can't die while the red mist lasts.
+            if self.p.berserk_t > 0.0 {
+                self.p.hp = self.p.hp.max(1.0);
+            }
             self.stats.damage_taken += dmg;
             self.p.flash = 0.2;
             self.shake = self.shake.max(0.5);
@@ -2470,6 +2545,9 @@ impl Game {
         self.drop_gear(x, y, boss, kind, rank);
         if shatter {
             self.shatter(x, y);
+        }
+        if self.is_berserker() && kind != Kind::DireWolf {
+            self.berserker_kill();
         }
         // Boiler brutes blow their boilers when they fall.
         if kind == Kind::BoilerBrute {
@@ -3653,6 +3731,139 @@ mod tests {
         }
         assert!(g.mobs[f].hp < hp, "the blizzard bites");
         assert!(g.p.fimbul_t > 0.0);
+    }
+
+    fn berserker_game() -> Game {
+        let mut g = quiet_game();
+        g.set_class(crate::skills::Class::Berserker);
+        g.p.clvl = 18;
+        for s in crate::skills::BERSERKER {
+            g.p.skills.rank[s as usize] = 3;
+        }
+        g
+    }
+
+    #[test]
+    fn the_berserker_rages_from_pain_and_kills_and_keeps_her_wolf() {
+        use crate::skills::Skill;
+        let mut g = berserker_game();
+        assert_eq!(g.p.mana, 0.0, "rage starts empty");
+        // The wolf joins her at once and stays on her side.
+        g.update(&Input::default());
+        let wolves = || g.mobs.iter().filter(|m| m.kind == Kind::DireWolf && m.alive() && m.charm > 0.0).count();
+        assert_eq!(wolves(), 1);
+        // Cleave is free, hits a wide arc, and her own hits build no rage.
+        let a = dummy(&mut g, 1.2, 0.5);
+        let b = dummy(&mut g, 1.2, -0.5);
+        let (ax, ay) = (g.mobs[a].x, g.mobs[a].y);
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::Cleave, ax, ay - 0.5);
+        assert!(g.mobs[a].hp < 9000.0 && g.mobs[b].hp < 9000.0, "the arc hit both");
+        assert_eq!(g.p.mana, 0.0, "hits alone don't make rage");
+        // Pain does, and the lower her life the harder she hits.
+        let full = g.fire_power();
+        g.hurt_player(30.0);
+        assert!(g.p.mana >= 25.0, "pain is rage");
+        g.p.hp = g.p.max_hp * 0.2;
+        assert!(g.fire_power() > full * 1.25, "fury at low life");
+        g.p.hp = g.p.max_hp;
+        // A kill makes rage and (Bloodlust) heals and quickens her.
+        g.p.hp = g.p.max_hp * 0.5;
+        let (hp, rage) = (g.p.hp, g.p.mana);
+        g.mobs[a].hp = 1.0;
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::Cleave, ax, ay);
+        assert!(!g.mobs[a].alive());
+        assert!(g.p.mana > rage && g.p.hp > hp && g.p.lust == 1);
+        g.update(&Input::default());
+        assert!(g.p.haste > 1.0);
+        // Changing level: the wolf comes along (a new one beside her), never two.
+        g.debug_goto(LevelId::Dungeon(0, 1));
+        for _ in 0..3 {
+            g.update(&Input::default());
+        }
+        assert_eq!(g.mobs.iter().filter(|m| m.kind == Kind::DireWolf && m.alive()).count(), 1);
+    }
+
+    #[test]
+    fn the_berserkers_skills_work() {
+        use crate::skills::Skill;
+        let mut g = berserker_game();
+        g.waypoint = (-99.0, -99.0);
+        let cast = |g: &mut Game, s: Skill, x: f32, y: f32| {
+            g.p.mana = g.p.max_mana;
+            g.p.cast_cd = 0.0;
+            g.p.skills.cooldown = [0.0; crate::skills::ALL.len()];
+            g.cast_skill(s, x, y);
+        };
+        // Rend: bleeding and sundered.
+        let z = dummy(&mut g, 1.3, 0.0);
+        let (zx, zy) = (g.mobs[z].x, g.mobs[z].y);
+        cast(&mut g, Skill::Rend, zx, zy);
+        assert!(g.mobs[z].bleed_t > 0.0 && g.mobs[z].sunder > 0.0);
+        let hp = g.mobs[z].hp;
+        for _ in 0..60 {
+            g.update(&Input::default());
+        }
+        assert!(g.mobs[z].hp < hp, "it bleeds");
+        // Executioner: the wounded take far more.
+        let fresh = dummy(&mut g, 1.3, 0.6);
+        let low = dummy(&mut g, 1.3, -0.6);
+        g.mobs[fresh].sunder = 0.0;
+        g.mobs[low].hp = g.mobs[low].max_hp * 0.2;
+        let (h1, h2) = (g.mobs[fresh].hp, g.mobs[low].hp);
+        g.axe_hit(fresh, 100.0, 0.0, None);
+        g.axe_hit(low, 100.0, 0.0, None);
+        assert!(h2 - g.mobs[low].hp > (h1 - g.mobs[fresh].hp) * 1.4, "executioner");
+        // War Cry: foes flee, she hits harder.
+        let p0 = g.fire_power();
+        let (px, py) = (g.p.x, g.p.y);
+        cast(&mut g, Skill::WarCry, px, py);
+        assert!(g.p.warcry_t > 0.0 && g.fire_power() > p0);
+        assert!(g.mobs[z].flee > 0.0, "it flees the war cry");
+        // Leap Slam: there and knocked down.
+        let far = dummy(&mut g, 5.0, 0.0);
+        let (fx, fy) = (g.mobs[far].x, g.mobs[far].y);
+        let x0 = g.p.x;
+        cast(&mut g, Skill::LeapSlam, fx - 1.0, fy);
+        assert!(g.p.x > x0 + 2.0);
+        assert!(g.mobs[far].stun > 0.8, "knocked down");
+        // Whirlwind: several hits on everything around, moving as she spins.
+        let hp = g.mobs[far].hp;
+        let (px, py) = (g.p.x, g.p.y);
+        cast(&mut g, Skill::Whirlwind, px + 2.0, py);
+        assert!(g.p.whirl_t > 0.0);
+        for _ in 0..150 {
+            g.update(&Input::default());
+        }
+        assert!(g.p.whirl_t <= 0.0);
+        assert!(hp - g.mobs[far].hp > 0.0, "shredded");
+        // Hurl Axe: out and back.
+        let (fx, fy) = (g.mobs[far].x, g.mobs[far].y);
+        let hp = g.mobs[far].hp;
+        cast(&mut g, Skill::HurlAxe, fx, fy);
+        assert_eq!(g.axes.len(), 1);
+        for _ in 0..200 {
+            g.update(&Input::default());
+        }
+        assert!(g.axes.is_empty() && g.mobs[far].hp < hp);
+        // Berserk: can't die, then spent.
+        let (px, py) = (g.p.x, g.p.y);
+        cast(&mut g, Skill::Berserk, px, py);
+        g.hurt_player(g.p.max_hp * 5.0);
+        assert!(g.p.hp >= 1.0 && !matches!(g.state, State::Dead(_)), "the red mist holds");
+        g.p.berserk_t = 0.01;
+        g.update(&Input::default());
+        assert!(g.p.exhaust_t > 0.0, "spent afterward");
+        // Dire Wolf: the howl scatters foes near the wolf.
+        let w = g.mobs.iter().position(|m| m.kind == Kind::DireWolf && m.alive()).unwrap();
+        let near = dummy(&mut g, 0.0, 0.0);
+        g.mobs[near].x = g.mobs[w].x + 1.0;
+        g.mobs[near].y = g.mobs[w].y;
+        g.mobs[near].flee = 0.0;
+        let (px, py) = (g.p.x, g.p.y);
+        cast(&mut g, Skill::DireWolf, px, py);
+        assert!(g.mobs[near].flee > 0.0, "howl");
     }
 
     #[test]
