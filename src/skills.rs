@@ -701,6 +701,7 @@ impl Game {
             return true;
         }
         if crate::inventor::is_inventor(s) {
+            self.p.throwing = matches!(s, Skill::ClockBomb | Skill::Turret | Skill::Spider | Skill::TeslaField);
             self.cast_inventor(s, tx, ty, r);
             if phoenix {
                 self.p.mana = mana_before;
@@ -1134,8 +1135,8 @@ impl Game {
 
     /// Damages one monster: burning (seconds), stagger, optional knockback (from x, y, distance).
     pub(crate) fn hit_mob(&mut self, i: usize, dmg: f32, burn: f32, stun: f32, knock: Option<(f32, f32, f32)>, show: bool) {
-        // Mesmerized foes and thralls are on your side.
-        if self.mobs[i].charm > 0.0 {
+        // Mesmerized foes and thralls are on your side; mist can't be hurt.
+        if self.mobs[i].charm > 0.0 || self.mobs[i].invuln > 0.0 {
             return;
         }
         let burn = burn * self.p.skills.burn_mult();

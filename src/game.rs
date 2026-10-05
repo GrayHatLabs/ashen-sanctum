@@ -8,7 +8,7 @@ use crate::iso;
 use crate::mobs::{Hazard, Kind, Mob, MobState, Shot};
 use crate::rng::Rng;
 use crate::story::{self, Act, Dialog, Npc, Quest, Role, Ware};
-use crate::world::{self, Level, LevelId, Portal, PortalKind, Prop, Theme, GLACIER, SANCTUM};
+use crate::world::{self, Level, LevelId, Portal, PortalKind, Prop, Theme, CASTLE, GLACIER, SANCTUM};
 #[cfg(test)]
 use crate::world::DUNGEONS;
 use crate::world::DUNGEONS as DUNGEONS_LIST;
@@ -158,6 +158,8 @@ pub enum Drop {
     Seal(usize),
     /// A Frost Herald's rune (0 giant, 1 yeti matriarch, 2 rime witch).
     Rune(usize),
+    /// A skeleton lord's grave sigil (0 Ossric, 1 Grimhilde, 2 Malgrave).
+    Sigil(usize),
     /// Equipment.
     Item(Box<crate::items::Item>),
 }
@@ -196,6 +198,8 @@ pub struct Player {
     pub dir: usize,
     pub anim_t: f32,
     pub moving: bool,
+    /// The inventor's last cast was a thrown gadget (throw pose, not the pistol).
+    pub throwing: bool,
     pub cast_t: f32,
     pub cast_cd: f32,
     /// Length of the current cast animation (fireball or ember).
@@ -263,6 +267,7 @@ impl Player {
             dir: 0,
             anim_t: 0.0,
             moving: false,
+            throwing: false,
             cast_t: 0.0,
             cast_cd: 0.0,
             cast_len: CAST_TIME,
@@ -684,7 +689,7 @@ impl Game {
     /// Where this level's waypoint stands: beside the town square, or near a floor's way in.
     fn find_waypoint(&self) -> (f32, f32) {
         let base = match self.level {
-            LevelId::Overworld | LevelId::Frostmarch => (self.town_start.0 + 3.0, self.town_start.1 + 2.0),
+            LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood => (self.town_start.0 + 3.0, self.town_start.1 + 2.0),
             LevelId::Dungeon(..) => self.portals.iter().find(|p| p.kind == PortalKind::Up).map(|p| (p.x + 2.0, p.y + 1.0)).unwrap_or(self.start),
         };
         let clear = |x: f32, y: f32| {
@@ -713,6 +718,7 @@ impl Game {
         match id {
             LevelId::Overworld => "HOLLOWMERE".into(),
             LevelId::Frostmarch => "KALDHOLM".into(),
+            LevelId::Mistwood => "MOURNHOLD".into(),
             LevelId::Dungeon(k, f) => format!("{} - LEVEL {}", DUNGEONS_LIST[k].name, f + 1),
         }
     }
@@ -830,7 +836,7 @@ impl Game {
         p.recalc();
         p.hp = p.max_hp;
         p.mana = p.max_mana;
-        self.quest = Quest { stage: 3, seals: [true; 3], difficulty: 0, stage2: 0, runes: [false; 3] };
+        self.quest = Quest { stage: 3, seals: [true; 3], difficulty: 0, stage2: 0, runes: [false; 3], stage3: 0, sigils: [false; 3] };
         self.waypoints = vec![LevelId::Overworld, LevelId::Frostmarch];
         self.go_to(LevelId::Frostmarch, None);
         (self.p.x, self.p.y) = self.town_start;
@@ -849,7 +855,7 @@ impl Game {
     /// Nightmare / Hell: the world is rebuilt harder, the quests start over, your hero carries on.
     pub(crate) fn next_difficulty(&mut self) {
         let d = (self.quest.difficulty + 1).min(2);
-        self.quest = Quest { stage: 1, seals: [false; 3], difficulty: d, stage2: 0, runes: [false; 3] };
+        self.quest = Quest { stage: 1, seals: [false; 3], difficulty: d, stage2: 0, runes: [false; 3], stage3: 0, sigils: [false; 3] };
         self.parked.clear();
         self.waypoints = vec![LevelId::Overworld];
         self.shop_stale = true;
@@ -1074,6 +1080,13 @@ impl Game {
         use crate::music::Track;
         if self.mobs.iter().any(|m| m.boss && m.alive() && m.state != MobState::Idle) {
             Track::Boss
+        } else if self.level.act() == 2 {
+            // The Mistwood: a haunted waltz outside, the organ in the dungeons and the castle.
+            if self.level.overland() {
+                Track::Mist
+            } else {
+                Track::Crypt
+            }
         } else if self.level.act() == 1 {
             // The north has its own music: Kaldholm and the snowfields share the windy theme.
             if self.level.overland() {
@@ -1273,17 +1286,31 @@ impl Game {
                     self.say(format!("A WALL OF BLACK ICE SEALS THE GLACIER. ({n}/3 RUNES)"));
                     return;
                 }
+                if k == CASTLE && self.quest.stage3 < 2 {
+                    self.portal_cd = 2.0;
+                    let n = self.quest.sigil_count();
+                    self.say(format!("THE CASTLE GATE WILL NOT MOVE. ({n}/3 SIGILS)"));
+                    return;
+                }
                 self.go_to(LevelId::Dungeon(k, 0), Some(here));
             }
             PortalKind::Pass(act) => {
-                if act == 1 && !self.quest.north_open() {
+                if act == 1 && here == LevelId::Overworld && !self.quest.north_open() {
                     self.portal_cd = 2.0;
                     self.say("THE PASS IS CHOKED WITH ASH AND SNOW. NOT WHILE THE ASH KING LIVES.".into());
                     return;
                 }
+                if act == 2 && !self.quest.mists_open() {
+                    self.portal_cd = 2.0;
+                    self.say("A WALL OF MIST. YOU WALK IN... AND OUT AGAIN WHERE YOU STARTED.".into());
+                    return;
+                }
                 self.go_to(LevelId::land(act), Some(here));
-                if act == 1 && !self.waypoints.contains(&LevelId::Frostmarch) {
+                if act == 1 && here == LevelId::Overworld && !self.waypoints.contains(&LevelId::Frostmarch) {
                     self.say("THE FROSTMARCH. FIND KALDHOLM, BY THE FROZEN LAKE".into());
+                }
+                if act == 2 && !self.waypoints.contains(&LevelId::Mistwood) {
+                    self.say("THE MISTWOOD. FIND THE VILLAGE OF MOURNHOLD".into());
                 }
             }
             PortalKind::Up => match here {
@@ -1321,7 +1348,7 @@ impl Game {
                 }
                 continue;
             }
-            if !matches!(n.role, Role::Villager(_) | Role::Fisher(_)) {
+            if !matches!(n.role, Role::Villager(_) | Role::Fisher(_) | Role::Peasant(_)) {
                 continue;
             }
             n.wander.2 -= DT;
@@ -1442,6 +1469,20 @@ impl Game {
     }
 
     fn advance_quest(&mut self, stage: u8) {
+        // 21 and 22 are Act 3's stages 1 and 2 (Abelard).
+        if stage > 20 {
+            let s3 = stage - 20;
+            if s3 > self.quest.stage3 {
+                self.quest.stage3 = s3;
+                self.sfx.push(Sfx::Pickup);
+                match s3 {
+                    1 => self.say("NEW QUEST: SLAY THE THREE SKELETON LORDS".into()),
+                    2 => self.say("THE GATE OF CASTLE VARDAK IS OPEN".into()),
+                    _ => {}
+                }
+            }
+            return;
+        }
         // 11 and 12 are Act 2's stages 1 and 2 (Captain Brenna).
         if stage > 10 {
             let s2 = stage - 10;
@@ -1813,6 +1854,25 @@ impl Game {
                     self.floater(px, py, it.name.clone(), it.col());
                     let _ = self.p.gear.add(*it);
                 }
+                Drop::Sigil(i) => {
+                    self.quest.sigils[i] = true;
+                    self.p.skills.points += 1;
+                    self.p.base_hp += 20.0;
+                    self.p.base_mana += 14.0;
+                    self.p.recalc();
+                    self.p.power *= 1.1;
+                    self.p.hp = self.p.max_hp;
+                    self.p.mana = self.p.max_mana;
+                    self.sfx.push(Sfx::Descend);
+                    let name = ["OSSRIC", "GRIMHILDE", "MALGRAVE"][i];
+                    self.floater(px, py, format!("GRAVE SIGIL OF {name}"), rgb(0x60f080));
+                    let n = self.quest.sigil_count();
+                    if n == 3 {
+                        self.say("ALL THREE SIGILS. RETURN TO ABELARD".into());
+                    } else {
+                        self.say(format!("THE SIGIL'S GRAVE-COLD POWER FLOWS INTO YOU ({n}/3)"));
+                    }
+                }
                 Drop::Rune(i) => {
                     self.quest.runes[i] = true;
                     self.p.skills.points += 1;
@@ -2081,7 +2141,7 @@ impl Game {
             .mobs
             .iter()
             .enumerate()
-            .filter(|(_, m)| m.alive() && m.charm <= 0.0)
+            .filter(|(_, m)| m.alive() && m.charm <= 0.0 && m.invuln <= 0.0)
             .map(|(i, m)| (i, (m.x - x).powi(2) + (m.y - y).powi(2), m.r))
             .filter(|&(_, d2, r)| d2 < (r + 0.3).powi(2))
             .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
@@ -2131,7 +2191,7 @@ impl Game {
         let blood = self.p.skills.class == crate::skills::Class::Vampire;
         for i in 0..self.mobs.len() {
             let m = &self.mobs[i];
-            if !m.alive() || m.charm > 0.0 {
+            if !m.alive() || m.charm > 0.0 || m.invuln > 0.0 {
                 continue;
             }
             let d2 = (m.x - x).powi(2) + (m.y - y).powi(2);
@@ -2239,6 +2299,14 @@ impl Game {
                     self.state = State::Victory(0.0);
                     self.dialog = None;
                 }
+                Kind::Ossric => self.pickups.push(Pickup { x, y, kind: Drop::Sigil(0), t: 0.0 }),
+                Kind::Grimhilde => self.pickups.push(Pickup { x, y, kind: Drop::Sigil(1), t: 0.0 }),
+                Kind::Malgrave => self.pickups.push(Pickup { x, y, kind: Drop::Sigil(2), t: 0.0 }),
+                Kind::Vardak => {
+                    self.quest.stage3 = 3;
+                    self.state = State::Victory(0.0);
+                    self.dialog = None;
+                }
                 _ => {}
             }
             for k in 0..3 {
@@ -2310,6 +2378,10 @@ impl Game {
                 Kind::YetiMatriarch => "yeti",
                 Kind::RimeWitch => "witch",
                 Kind::WhiteDragon => "dragon",
+                Kind::Ossric => "ossric",
+                Kind::Grimhilde => "grimhilde",
+                Kind::Malgrave => "malgrave",
+                Kind::Vardak => "vardak",
                 _ => "ashking",
             };
             drops.extend(items::boss_unique(key));
@@ -2710,7 +2782,95 @@ mod tests {
         assert!(g.debug_kill_boss());
         assert!(matches!(g.state, State::Victory(_)));
         assert_eq!(g.quest.stage2, 3);
-        assert!(g.quest.captain_has_news(), "she offers nightmare");
+        assert!(g.quest.mists_open(), "the road east opens");
+    }
+
+    #[test]
+    fn act_three_opens_after_the_rime_wyrm_and_can_be_finished() {
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        g.quest.stage = 3;
+        g.quest.seals = [true; 3];
+        g.quest.stage2 = 2;
+        g.quest.runes = [true; 3];
+        g.debug_goto(LevelId::Frostmarch);
+        // The mists stay closed until the Rime Wyrm falls.
+        walk_onto(&mut g, PortalKind::Pass(2));
+        assert_eq!(g.level, LevelId::Frostmarch, "the mist pass is closed");
+        g.quest.stage2 = 3;
+        walk_onto(&mut g, PortalKind::Pass(2));
+        assert_eq!(g.level, LevelId::Mistwood);
+        assert_eq!(g.level.act(), 2);
+        assert!(g.in_safe(g.p.x, g.p.y) || g.npcs.iter().any(|n| n.role == Role::Hunter));
+        // The hunter sends you after the three heralds.
+        assert!(g.quest.hunter_has_news());
+        assert!(g.debug_talk(Role::Hunter));
+        read_through(&mut g);
+        assert_eq!(g.quest.stage3, 1);
+        // The castle stays shut without the sigils.
+        walk_onto(&mut g, PortalKind::Entrance(CASTLE));
+        assert_eq!(g.level, LevelId::Mistwood, "the castle gate is sealed");
+        for (k, kind) in [(8, crate::mobs::Kind::Ossric), (9, crate::mobs::Kind::Grimhilde), (10, crate::mobs::Kind::Malgrave)] {
+            g.debug_goto(LevelId::Dungeon(k, DUNGEONS[k].floors - 1));
+            assert!(g.mobs.iter().any(|m| m.kind == kind), "{kind:?} waits below");
+            assert!(g.debug_kill_boss());
+            g.debug_collect_all();
+        }
+        assert_eq!(g.quest.sigil_count(), 3, "three sigils");
+        g.debug_goto(LevelId::Mistwood);
+        assert!(g.quest.hunter_has_news());
+        assert!(g.debug_talk(Role::Hunter));
+        read_through(&mut g);
+        assert_eq!(g.quest.stage3, 2);
+        walk_onto(&mut g, PortalKind::Entrance(CASTLE));
+        assert_eq!(g.level, LevelId::Dungeon(CASTLE, 0));
+        g.debug_goto(LevelId::Dungeon(CASTLE, DUNGEONS[CASTLE].floors - 1));
+        assert!(g.mobs.iter().any(|m| m.kind == crate::mobs::Kind::Vardak));
+        assert!(g.debug_kill_boss());
+        assert!(matches!(g.state, State::Victory(_)));
+        assert_eq!(g.quest.stage3, 3);
+        assert!(g.quest.hunter_has_news(), "she offers nightmare");
+        // Saved mid-Act 3, loaded in the Mistwood.
+        g.debug_goto(LevelId::Mistwood);
+        let text = crate::save::to_text(&g);
+        let mut h = Game::new(5, crate::gfx::SH_WIDE);
+        crate::save::apply(&mut h, &text);
+        assert_eq!(h.level, LevelId::Mistwood);
+        assert_eq!((h.quest.stage3, h.quest.sigil_count()), (3, 3));
+    }
+
+    #[test]
+    fn vardak_changes_form() {
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        g.debug_goto(LevelId::Dungeon(CASTLE, DUNGEONS[CASTLE].floors - 1));
+        let i = g.mobs.iter().position(|m| m.kind == crate::mobs::Kind::Vardak).expect("the count");
+        g.p.x = g.mobs[i].x + 3.0;
+        g.p.y = g.mobs[i].y;
+        g.mobs[i].state = MobState::Chase;
+        let max = g.mobs[i].max_hp;
+        g.mobs[i].hp = max * 0.6;
+        g.mobs[i].special2 = 0.0;
+        let mut misted = false;
+        for _ in 0..600 {
+            g.p.hp = g.p.max_hp;
+            g.update(&Input::default());
+            if g.mobs.get(i).map_or(false, |m| m.invuln > 0.0) {
+                misted = true;
+                break;
+            }
+        }
+        assert!(misted, "mist form below two thirds");
+        g.mobs[i].invuln = 0.0;
+        g.mobs[i].hp = max * 0.2;
+        let mut bat = false;
+        for _ in 0..600 {
+            g.p.hp = g.p.max_hp;
+            g.update(&Input::default());
+            if g.mobs.get(i).map_or(false, |m| m.form == 1) {
+                bat = true;
+                break;
+            }
+        }
+        assert!(bat, "the giant bat at the end");
     }
 
     #[test]
@@ -3512,11 +3672,17 @@ mod tests {
         g.quest.seals = [true; 3];
         g.p.gear.bag[0] = Some(crate::items::unique(0));
         let clvl = g.p.clvl;
-        // The Ash King only opens the north; the next difficulty follows the Rime Wyrm.
+        // The Ash King and the Rime Wyrm only open the next land; nightmare follows Count Vardak.
         g.quest.stage2 = 3;
         g.quest.runes = [true; 3];
         g.debug_goto(LevelId::Frostmarch);
         assert!(g.debug_talk(Role::Captain));
+        assert!(!g.dialog.as_ref().unwrap().options.iter().any(|o| o.1 == Act::NextDifficulty), "not after act 2");
+        g.dialog = None;
+        g.quest.stage3 = 3;
+        g.quest.sigils = [true; 3];
+        g.debug_goto(LevelId::Mistwood);
+        assert!(g.debug_talk(Role::Hunter));
         for _ in 0..3 {
             let d = g.dialog.as_ref().unwrap();
             if d.options.iter().any(|o| o.1 == Act::NextDifficulty) {
@@ -3530,6 +3696,7 @@ mod tests {
         g.update(&Input { confirm: true, ..Input::default() });
         assert_eq!(g.quest.difficulty, 1);
         assert_eq!((g.quest.stage, g.quest.seal_count(), g.quest.stage2, g.quest.rune_count()), (1, 0, 0, 0), "quests start over");
+        assert_eq!((g.quest.stage3, g.quest.sigil_count()), (0, 0));
         assert!(g.p.gear.bag[0].is_some() && g.p.clvl == clvl, "you keep your hero");
         assert!(g.level_name.contains("NIGHTMARE"));
         let nm_hp: f32 = g.mobs.iter().map(|m| m.max_hp).sum();

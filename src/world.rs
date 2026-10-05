@@ -13,6 +13,8 @@ pub enum LevelId {
     Overworld,
     /// Act 2's overland: the Frostmarch and Kaldholm.
     Frostmarch,
+    /// Act 3's overland: the Mistwood and Mournhold.
+    Mistwood,
     /// (dungeon index into DUNGEONS, floor from 0)
     Dungeon(usize, usize),
 }
@@ -20,7 +22,7 @@ pub enum LevelId {
 impl LevelId {
     /// An open-air map with a town (one per act).
     pub fn overland(self) -> bool {
-        matches!(self, LevelId::Overworld | LevelId::Frostmarch)
+        matches!(self, LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood)
     }
 
     /// 0 for Act 1, 1 for Act 2.
@@ -28,16 +30,17 @@ impl LevelId {
         match self {
             LevelId::Overworld => 0,
             LevelId::Frostmarch => 1,
+            LevelId::Mistwood => 2,
             LevelId::Dungeon(k, _) => DUNGEONS[k].act,
         }
     }
 
     /// The overland (and town) of an act.
     pub fn land(act: usize) -> LevelId {
-        if act == 0 {
-            LevelId::Overworld
-        } else {
-            LevelId::Frostmarch
+        match act {
+            0 => LevelId::Overworld,
+            1 => LevelId::Frostmarch,
+            _ => LevelId::Mistwood,
         }
     }
 }
@@ -55,10 +58,16 @@ pub enum Theme {
     IceCaves,
     Rime,
     Glacier,
+    /// Act 3 overland: misty forest.
+    Mistwood,
+    Chapel,
+    Gallows,
+    Barrow,
+    Castle,
 }
 
 impl Theme {
-    pub const ALL: [Theme; 10] = [
+    pub const ALL: [Theme; 15] = [
         Theme::Overworld,
         Theme::Crypt,
         Theme::Warrens,
@@ -69,11 +78,21 @@ impl Theme {
         Theme::IceCaves,
         Theme::Rime,
         Theme::Glacier,
+        Theme::Mistwood,
+        Theme::Chapel,
+        Theme::Gallows,
+        Theme::Barrow,
+        Theme::Castle,
     ];
 
     /// Open-air (grass or snow ground, palisade walls).
     pub fn open(self) -> bool {
-        matches!(self, Theme::Overworld | Theme::Tundra)
+        matches!(self, Theme::Overworld | Theme::Tundra | Theme::Mistwood)
+    }
+
+    /// Act 3 themes (fog and drifting wisp motes).
+    pub fn misty(self) -> bool {
+        matches!(self, Theme::Mistwood | Theme::Chapel | Theme::Gallows | Theme::Barrow | Theme::Castle)
     }
 
     /// Act 2 themes (snowfall outside, frost motes inside).
@@ -95,6 +114,10 @@ impl Theme {
             Theme::IceCaves | Theme::Rime => (270.0, 0.16),
             Theme::Glacier => (250.0, 0.12),
             Theme::Mines => (240.0, 0.1),
+            // The Mistwood is gloomy even by day.
+            Theme::Mistwood => (300.0, 0.3),
+            Theme::Castle => (240.0, 0.1),
+            Theme::Chapel | Theme::Gallows | Theme::Barrow => (230.0, 0.08),
             _ => (250.0, 0.10),
         }
     }
@@ -113,7 +136,7 @@ pub struct DungeonDef {
     pub act: usize,
 }
 
-pub const DUNGEONS: [DungeonDef; 8] = [
+pub const DUNGEONS: [DungeonDef; 12] = [
     DungeonDef {
         name: "THE BONE CRYPT",
         floors: 2,
@@ -194,12 +217,54 @@ pub const DUNGEONS: [DungeonDef; 8] = [
         entrance: (58, 12),
         act: 1,
     },
+    DungeonDef {
+        name: "THE SUNKEN CHAPEL",
+        floors: 2,
+        theme: Theme::Chapel,
+        boss: Kind::Ossric,
+        monsters: &[Kind::Ghoul, Kind::Skeleton, Kind::Cultist],
+        tier: 5.8,
+        entrance: (20, 82),
+        act: 2,
+    },
+    DungeonDef {
+        name: "THE GALLOWS CATACOMBS",
+        floors: 2,
+        theme: Theme::Gallows,
+        boss: Kind::Grimhilde,
+        monsters: &[Kind::Banshee, Kind::Cultist, Kind::Skeleton],
+        tier: 6.2,
+        entrance: (94, 88),
+        act: 2,
+    },
+    DungeonDef {
+        name: "THE BARROW OF KNIGHTS",
+        floors: 3,
+        theme: Theme::Barrow,
+        boss: Kind::Malgrave,
+        monsters: &[Kind::Ghoul, Kind::Archer, Kind::Werewolf, Kind::Skeleton],
+        tier: 6.6,
+        entrance: (90, 24),
+        act: 2,
+    },
+    DungeonDef {
+        name: "CASTLE VARDAK",
+        floors: 3,
+        theme: Theme::Castle,
+        boss: Kind::Vardak,
+        monsters: &[Kind::Werewolf, Kind::Cultist, Kind::Banshee, Kind::Wisp],
+        tier: 7.2,
+        entrance: (40, 14),
+        act: 2,
+    },
 ];
 
 /// The Ashen Sanctum (needs all three seals).
 pub const SANCTUM: usize = 3;
 /// The Glacier's Heart (needs all three frost runes).
 pub const GLACIER: usize = 7;
+/// Castle Vardak (needs the three grave sigils).
+pub const CASTLE: usize = 11;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum PortalKind {
@@ -245,6 +310,17 @@ pub enum PropKind {
     FurStall,
     /// The mountain pass between the acts.
     Pass,
+    // ---- Act 3 ----
+    TwistedTree,
+    MistPine,
+    GlowShrooms,
+    Gravestone,
+    Cottage1,
+    Cottage2,
+    Gallows,
+    Cart,
+    /// The misty road between the Frostmarch and the Mistwood.
+    PassMist,
 }
 
 impl PropKind {
@@ -267,7 +343,11 @@ impl PropKind {
             PropKind::Entrance(4) => "ent_mines",
             PropKind::Entrance(5) => "ent_caves",
             PropKind::Entrance(6) => "ent_temple",
-            PropKind::Entrance(_) => "ent_glacier",
+            PropKind::Entrance(7) => "ent_glacier",
+            PropKind::Entrance(8) => "ent_chapel",
+            PropKind::Entrance(9) => "ent_gallows",
+            PropKind::Entrance(10) => "ent_barrow",
+            PropKind::Entrance(_) => "ent_castle",
             PropKind::StairsDown => "stairs_down",
             PropKind::StairsUp => "stairs_up",
             PropKind::SnowPine => "tree_snowpine",
@@ -278,6 +358,15 @@ impl PropKind {
             PropKind::Longhouse2 => "longhouse2",
             PropKind::FurStall => "stall_furs",
             PropKind::Pass => "pass_gate",
+            PropKind::TwistedTree => "tree_twisted",
+            PropKind::MistPine => "tree_mistpine",
+            PropKind::GlowShrooms => "glow_shrooms",
+            PropKind::Gravestone => "gravestone",
+            PropKind::Cottage1 => "cottage_mist",
+            PropKind::Cottage2 => "cottage_mist2",
+            PropKind::Gallows => "gallows",
+            PropKind::Cart => "merchant_cart",
+            PropKind::PassMist => "pass_mist",
         }
     }
 
@@ -373,6 +462,7 @@ pub fn generate(id: LevelId, seed: u64) -> Level {
     match id {
         LevelId::Overworld => overworld(seed),
         LevelId::Frostmarch => frostmarch(seed),
+        LevelId::Mistwood => mistwood(seed),
         LevelId::Dungeon(k, f) => dungeon_floor(k, f, seed),
     }
 }
@@ -413,11 +503,12 @@ pub fn add_elites(lv: &mut Level, seed: u64) {
     let salt = match lv.id {
         LevelId::Overworld => 0x0e11,
         LevelId::Frostmarch => 0x0f11,
+        LevelId::Mistwood => 0x1011,
         LevelId::Dungeon(k, f) => 0x0e12 + k as u64 * 16 + f as u64,
     };
     let mut rng = Rng::new(seed ^ salt.wrapping_mul(0x9e37_79b9));
     let (champs, elites) = match lv.id {
-        LevelId::Overworld | LevelId::Frostmarch => (5, 3),
+        LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood => (5, 3),
         LevelId::Dungeon(_, f) => (1 + (f > 0) as usize, 1),
     };
     let mut order: Vec<usize> = (0..lv.mobs.len()).filter(|&i| !lv.mobs[i].boss).collect();
@@ -459,6 +550,11 @@ pub fn add_elites(lv: &mut Level, seed: u64) {
 /// Where the pass between the acts starts on each overland (the door tile).
 pub const PASS_ASH: (i32, i32) = (57, 7);
 pub const PASS_FROST: (i32, i32) = (56, 104);
+/// The misty road east out of the Frostmarch, and where it comes out in the Mistwood.
+pub const PASS_FROST_EAST: (i32, i32) = (106, 52);
+pub const PASS_MIST: (i32, i32) = (6, 56);
+/// Mournhold: palisade rectangle on the Mistwood.
+pub const MOURNHOLD: (i32, i32, i32, i32) = (40, 48, 62, 66);
 /// Kaldholm: palisade rectangle (inclusive tile bounds) on the Frostmarch.
 pub const KALDHOLM: (i32, i32, i32, i32) = (44, 66, 68, 86);
 /// The frozen lake beside Kaldholm: centre and radii.
@@ -814,6 +910,12 @@ pub fn frostmarch(seed: u64) -> Level {
     clear(&mut keep, px, py, 4);
     prop(&mut lv, &mut d, PropKind::Pass, px - 1, py + 1, 3, 2);
     lv.portals.push(Portal { x: px as f32 + 0.5, y: py as f32 + 0.5, kind: PortalKind::Pass(0) });
+    // The road east into the mists (Act 3, open after the Rime Wyrm).
+    let (ex, ey) = PASS_FROST_EAST;
+    road(&mut d, &mut keep, (tx1 + 1, my), (ex, ey), 4.0);
+    clear(&mut keep, ex, ey, 4);
+    prop(&mut lv, &mut d, PropKind::PassMist, ex + 1, ey - 1, 2, 3);
+    lv.portals.push(Portal { x: ex as f32 + 0.5, y: ey as f32 + 0.5, kind: PortalKind::Pass(2) });
 
     // ---- snowy forests, rocks and ice crystals ----
     let forest = Noise::new(&mut rng, 16, 8.0);
@@ -851,6 +953,7 @@ pub fn frostmarch(seed: u64) -> Level {
             || d.blocked(x, y, 0.4)
             || DUNGEONS.iter().filter(|d| d.act == 1).any(|def| (def.entrance.0 as f32 - x).abs() + (def.entrance.1 as f32 - y).abs() < 6.0)
             || ((x - px as f32).abs() < 6.0 && y > 96.0)
+            || ((x - PASS_FROST_EAST.0 as f32).abs() < 7.0 && (y - PASS_FROST_EAST.1 as f32).abs() < 7.0)
         {
             continue;
         }
@@ -884,6 +987,199 @@ pub fn frostmarch(seed: u64) -> Level {
     lv.explored = vec![false; (w * h) as usize];
     lv.d = d;
     lv.start = kaldholm_center();
+    lv
+}
+
+/// Mournhold's square.
+pub fn mournhold_center() -> (f32, f32) {
+    (51.5, 57.5)
+}
+
+/// Builds Act 3's overland: the frightened village of Mournhold in a misty, glowing forest,
+/// roads to the skeleton lords' lairs and Castle Vardak, the road back west to Kaldholm.
+pub fn mistwood(seed: u64) -> Level {
+    let mut rng = Rng::new(seed ^ 0x3A57_1D55);
+    let (w, h) = (WORLD_W, WORLD_H);
+    let mut d = Dungeon::blank(w, h, Tile::Floor);
+    for v in d.var.iter_mut() {
+        *v = rng.range(0, 100) as u8;
+    }
+    let mut lv = Level::new(LevelId::Mistwood, "THE MISTWOOD".into(), Theme::Mistwood, 5.2, Dungeon::blank(1, 1, Tile::Void));
+    let mut keep = vec![false; (w * h) as usize];
+    let clear = |keep: &mut Vec<bool>, x: i32, y: i32, r: i32| {
+        for yy in y - r..=y + r {
+            for xx in x - r..=x + r {
+                if xx >= 0 && yy >= 0 && xx < w && yy < h {
+                    keep[(yy * w + xx) as usize] = true;
+                }
+            }
+        }
+    };
+    let prop = |lv: &mut Level, d: &mut Dungeon, kind: PropKind, x0: i32, y0: i32, fw: i32, fh: i32| {
+        for y in y0..y0 + fh {
+            for x in x0..x0 + fw {
+                d.set(x, y, Tile::Prop);
+            }
+        }
+        lv.props.push(Prop::on(kind, x0, y0, fw, fh));
+    };
+
+    // ---- glowing moss (ground 1) in patches ----
+    let moss = Noise::new(&mut rng, 14, 7.0);
+    for y in 0..h {
+        for x in 0..w {
+            if moss.at(x as f32, y as f32) > 0.68 {
+                d.set_ground(x, y, 1);
+            }
+        }
+    }
+
+    // ---- Mournhold ----
+    let (tx0, ty0, tx1, ty1) = MOURNHOLD;
+    let (mx, my) = ((tx0 + tx1) / 2, (ty0 + ty1) / 2);
+    for y in ty0..=ty1 {
+        for x in tx0..=tx1 {
+            d.set_ground(x, y, 0);
+            let edge = x == tx0 || x == tx1 || y == ty0 || y == ty1;
+            let gate = (y == ty0 || y == ty1) && (mx - 1..=mx + 2).contains(&x) || (x == tx0 || x == tx1) && (my - 1..=my + 2).contains(&y);
+            if edge && !gate {
+                d.set(x, y, Tile::Wall);
+            }
+        }
+    }
+    clear(&mut keep, mx, my, 14);
+    for x in tx0..=tx1 {
+        for y in my..=my + 1 {
+            d.set_ground(x, y, 2);
+        }
+    }
+    for y in ty0..=ty1 {
+        for x in mx..=mx + 1 {
+            d.set_ground(x, y, 2);
+        }
+    }
+    prop(&mut lv, &mut d, PropKind::Cottage1, 42, 50, 4, 4);
+    prop(&mut lv, &mut d, PropKind::Cottage2, 56, 50, 4, 4);
+    prop(&mut lv, &mut d, PropKind::Cottage1, 42, 61, 4, 3);
+    prop(&mut lv, &mut d, PropKind::Cottage2, 57, 61, 3, 4);
+    prop(&mut lv, &mut d, PropKind::Cart, 54, 55, 3, 2);
+    prop(&mut lv, &mut d, PropKind::Gallows, 47, 55, 1, 1);
+    prop(&mut lv, &mut d, PropKind::Campfire, 51, 60, 1, 1);
+    lv.safe = Some((tx0 as f32 - 1.0, ty0 as f32 - 1.0, tx1 as f32 + 2.0, ty1 as f32 + 2.0));
+    lv.npcs = vec![
+        Npc::new("ABELARD", Role::Hunter, "npc_hunter", 52.5, 58.8, 6),
+        Npc::new("WIDOW KASIA", Role::Widow, "npc_widow", 55.0, 57.8, 0),
+        Npc::new("FATHER LUCIAN", Role::Priest, "npc_priest", 46.5, 57.5, 2),
+        Npc::new("PEASANT", Role::Peasant(0), "npc_peasant", 49.0, 62.0, 1),
+        Npc::new("PEASANT", Role::Peasant(1), "npc_peasant", 58.5, 59.0, 5),
+        Npc::new("PEASANT", Role::Peasant(2), "npc_peasant", 45.5, 54.0, 3),
+    ];
+
+    // ---- roads ----
+    let gates = [(mx, ty1 + 1), (tx1 + 1, my), (mx, ty0 - 1), (tx0 - 1, my)];
+    let road = |d: &mut Dungeon, keep: &mut Vec<bool>, (gx, gy): (i32, i32), (ex, ey): (i32, i32), salt: f32| {
+        let (mut x, mut y) = (gx as f32, gy as f32);
+        let mut guard = 0;
+        while ((x - ex as f32).abs() > 0.8 || (y - ey as f32).abs() > 0.8) && guard < 400 {
+            guard += 1;
+            let (dx, dy) = (ex as f32 - x, ey as f32 - y);
+            let l = (dx * dx + dy * dy).sqrt();
+            let wob = (guard as f32 * 0.23 + salt).sin() * 0.7;
+            x += dx / l + (-dy / l) * wob * 0.5;
+            y += dy / l + (dx / l) * wob * 0.5;
+            for (ox, oy) in [(0, 0), (1, 0), (0, 1), (1, 1)] {
+                let (rx, ry) = (x as i32 + ox, y as i32 + oy);
+                if d.get(rx, ry) == Tile::Floor {
+                    d.set_ground(rx, ry, 2);
+                }
+            }
+            clear(keep, x as i32, y as i32, 2);
+        }
+    };
+    for (k, def) in DUNGEONS.iter().enumerate().filter(|(_, d)| d.act == 2) {
+        let (ex, ey) = def.entrance;
+        let &g = gates.iter().min_by_key(|(gx, gy)| (gx - ex).pow(2) + (gy - ey).pow(2)).unwrap();
+        road(&mut d, &mut keep, g, (ex, ey), k as f32);
+        clear(&mut keep, ex, ey, 5);
+        let (fw, fh) = if k == CASTLE { (4, 3) } else { (3, 3) };
+        prop(&mut lv, &mut d, PropKind::Entrance(k), ex - fw / 2, ey - 3, fw, fh);
+        lv.portals.push(Portal { x: ex as f32 + 0.5, y: ey as f32 + 0.5, kind: PortalKind::Entrance(k) });
+    }
+    let (px, py) = PASS_MIST;
+    road(&mut d, &mut keep, (tx0 - 1, my), (px, py), 7.0);
+    clear(&mut keep, px, py, 4);
+    prop(&mut lv, &mut d, PropKind::PassMist, px - 3, py - 1, 2, 3);
+    lv.portals.push(Portal { x: px as f32 + 0.5, y: py as f32 + 0.5, kind: PortalKind::Pass(1) });
+
+    // ---- the haunted forest: twisted trees, gravestones, glowing mushrooms ----
+    let forest = Noise::new(&mut rng, 16, 8.0);
+    for y in 0..h {
+        for x in 0..w {
+            if d.get(x, y) != Tile::Floor || keep[(y * w + x) as usize] {
+                continue;
+            }
+            let border = x < 4 || y < 4 || x >= w - 4 || y >= h - 4;
+            let f = forest.at(x as f32, y as f32);
+            let r = rng.f();
+            let tree = if border { r < 0.85 } else { f > 0.55 && r < 0.55 || r < 0.012 };
+            if tree {
+                let kind = if rng.chance(0.55) { PropKind::TwistedTree } else { PropKind::MistPine };
+                prop(&mut lv, &mut d, kind, x, y, 1, 1);
+            } else if r < 0.02 {
+                prop(&mut lv, &mut d, PropKind::Gravestone, x, y, 1, 1);
+            } else if r < 0.035 && d.ground_at(x, y) == 1 {
+                prop(&mut lv, &mut d, PropKind::GlowShrooms, x, y, 1, 1);
+            }
+        }
+    }
+
+    // ---- roaming packs and a little food ----
+    let (cx, cy) = mournhold_center();
+    let mut packs = 0;
+    for _ in 0..600 {
+        if packs >= 30 {
+            break;
+        }
+        let x = rng.range(6, w - 6) as f32 + 0.5;
+        let y = rng.range(6, h - 6) as f32 + 0.5;
+        let far = ((x - cx).powi(2) + (y - cy).powi(2)).sqrt();
+        if far < 20.0
+            || d.blocked(x, y, 0.4)
+            || DUNGEONS.iter().filter(|d| d.act == 2).any(|def| (def.entrance.0 as f32 - x).abs() + (def.entrance.1 as f32 - y).abs() < 6.0)
+            || ((x - px as f32).abs() < 7.0 && (y - py as f32).abs() < 7.0)
+        {
+            continue;
+        }
+        let tier = if far < 34.0 { 5.2 } else { 5.7 };
+        let kinds: &[Kind] = if far < 34.0 { &[Kind::Ghoul, Kind::Wisp, Kind::Wolf] } else { &[Kind::Ghoul, Kind::Werewolf, Kind::Cultist, Kind::Banshee, Kind::Wisp] };
+        let kind = kinds[rng.range(0, kinds.len() as i32) as usize];
+        let n = if kind == Kind::Werewolf { rng.range(1, 3) } else { rng.range(3, 6) };
+        for _ in 0..n {
+            for _try in 0..10 {
+                let (mx, my) = (x + rng.rf(-2.0, 2.0), y + rng.rf(-2.0, 2.0));
+                if !d.blocked(mx, my, 0.35) {
+                    lv.mobs.push(Mob::new(kind, mx, my, tier, &mut rng));
+                    break;
+                }
+            }
+        }
+        packs += 1;
+    }
+    let mut food = 0;
+    for _ in 0..400 {
+        if food >= 10 {
+            break;
+        }
+        let x = rng.range(6, w - 6) as f32 + 0.5;
+        let y = rng.range(6, h - 6) as f32 + 0.5;
+        if ((x - cx).powi(2) + (y - cy).powi(2)).sqrt() > 16.0 && !d.blocked(x, y, 0.3) {
+            lv.pickups.push(Pickup { x, y, kind: Drop::Food(if rng.chance(0.5) { 1 } else { 2 }), t: 1.0 });
+            food += 1;
+        }
+    }
+    lv.explored = vec![false; (w * h) as usize];
+    lv.d = d;
+    lv.start = mournhold_center();
     lv
 }
 

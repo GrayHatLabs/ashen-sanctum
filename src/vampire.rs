@@ -128,7 +128,21 @@ pub fn cooldown_of(s: Skill) -> f32 {
 
 /// Undead and spirits have no blood: no life to steal, and the drain bites less.
 pub fn bloodless(k: Kind) -> bool {
-    matches!(k, Kind::Skeleton | Kind::Archer | Kind::BoneWarden | Kind::HexWarden | Kind::AshKing | Kind::IceWraith | Kind::RimeWitch)
+    matches!(
+        k,
+        Kind::Skeleton
+            | Kind::Archer
+            | Kind::BoneWarden
+            | Kind::HexWarden
+            | Kind::AshKing
+            | Kind::IceWraith
+            | Kind::RimeWitch
+            | Kind::Banshee
+            | Kind::Wisp
+            | Kind::Ossric
+            | Kind::Grimhilde
+            | Kind::Malgrave
+    )
 }
 
 /// Blood damage multiplier against a monster.

@@ -95,6 +95,18 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Art: 8 tiles, 12 props, 13 characters, all 19 animations (a few glitchy directions trimmed in pack.py) | S | Snow road tile lightened, snow tiles softened in pack.py |
 | Level editor catalog (themes, props, portals, monsters, NPCs, checks) | built | |
 
+## Act 3: the Mistwood (2026-10-05, art in progress)
+
+| Feature | Status | Notes |
+|---|---|---|
+| `LevelId::Mistwood`, east pass from the Frostmarch (`Pass(2)`, closed until the Rime Wyrm), back pass `Pass(1)` | H S | Unit test: full Act 3 quest line, saved and loaded in the Mistwood |
+| Mistwood overland: Mournhold, haunted forest, graveyards, roads to 4 dungeons | H S | Themes mistwood / chapel / gallows / barrow / castle |
+| 6 monsters (ghoul, werewolf, banshee, wisp, cultist, bat), 3 heralds + Count Vardak (duel, mist form, giant bat) | H S | Unit test: Vardak's mist and bat forms |
+| Story: Abelard, 3 Blood Sigils, castle gate, third epilogue; Nightmare moved after Vardak | H | |
+| Fog banks + green motes; Mist (waltz) and Crypt (organ) music | S | |
+| Art: tiles, props, characters generating (`act3_art.py`); code fallbacks meanwhile | | |
+| Level editor catalog (themes, props, portals, monsters, NPCs, per-land checks) | built | |
+
 ## Front end (2026-10-05)
 
 | Feature | Status | Notes |
@@ -108,7 +120,7 @@ without errors) but not played by a human yet. Nothing is HW yet.
 |---|---|---|
 | Heat instead of mana (`p.mana` = heat capacity left), cooling, overheat lock, vent (E/Y) + coolant, +20% damage above 70% heat; orange HUD gauge | H S | Unit test: heat, overheat, vent, cooling |
 | 11 skills (`inventor.rs`): Ray Pistol, Clockwork Bomb, Tinkerer, Arc Coil, Sentry Turret, Grapple Hook, Tesla Field, Clock Spider, Overclock, Airship Strike, Steam Suit | H S | Unit test: arc chain, turret + spider damage, airship, grapple yank, suit |
-| Art: portrait, sprite, walk; turret / spider / airship / bomb props; steam suit (shoot / throw / suit animations generating) | S | Code-drawn icons |
+| Art: portrait, sprite, walk, pistol-shot and bomb-throw animations; turret / spider / airship / bomb props; steam suit with stomp and cannon animations | S | Code-drawn icons |
 
 ## The Vampire class (2026-10-05)
 

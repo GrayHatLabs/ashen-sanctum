@@ -476,6 +476,21 @@ impl Game {
                     scr.glow(sx, sy - 20, 18.0, rgb(0xff3010), 1.0);
                     scr.disc(sx + scr.shake.0, sy - 20 + scr.shake.1, 2, rgb(0x301008));
                 }
+                ShotKind::Necro => {
+                    scr.glow(sx, sy - 18, 14.0, rgb(0x30e060), 0.9);
+                    scr.disc(sx + scr.shake.0, sy - 18 + scr.shake.1, 2, rgb(0xd0ffd8));
+                }
+                ShotKind::Bone => {
+                    let l = (s.vx * s.vx + s.vy * s.vy).sqrt().max(0.01);
+                    let (ex, ey) = iso::to_screen(s.vx / l * 0.6, s.vy / l * 0.6);
+                    let (ax, ay) = (sx + scr.shake.0, sy - 20 + scr.shake.1);
+                    line(scr, ax - ex as i32, ay - ey as i32, ax + ex as i32, ay + ey as i32, rgb(0xe8e0c8));
+                    scr.pset(ax + ex as i32, ay + ey as i32, rgb(0xffffff));
+                }
+                ShotKind::Blood => {
+                    scr.glow(sx, sy - 18, 14.0, rgb(0xc01020), 0.9);
+                    scr.disc(sx + scr.shake.0, sy - 18 + scr.shake.1, 2, rgb(0xff8090));
+                }
                 ShotKind::Ice => {
                     scr.glow(sx, sy - 18, 14.0, rgb(0x60b0ff), 0.9);
                     scr.disc(sx + scr.shake.0, sy - 18 + scr.shake.1, 2, rgb(0xf0faff));
@@ -603,6 +618,41 @@ impl Game {
         }
         scr.shake = (0, 0);
 
+        // Weather: the Mistwood's fog banks and drifting wisp motes.
+        if self.theme.misty() {
+            let (cx, cy) = iso::to_screen(self.p.x, self.p.y);
+            let t = self.tick as f32 / 60.0;
+            let open = self.theme.open();
+            let hh = view_h - crate::game::HUD_H;
+            // Slow bands of fog.
+            // Wide soft banks (smoothstep falloff), drifting sideways in patches rather than full-width stripes.
+            for k in 0..(if open { 5 } else { 3 }) {
+                let span = hh as f32 + 160.0;
+                let fy = ((k as f32 * 97.0 - cy * 0.5 + t * 2.0).rem_euclid(span) - 80.0) as i32;
+                let a = (if open { 0.07 } else { 0.05 }) + 0.03 * ((t * 0.25 + k as f32 * 1.7).sin() * 0.5 + 0.5);
+                let x0 = ((k as f32 * 211.0 - cx * 0.6 + t * 5.0).rem_euclid(scr.w as f32 + 300.0) - 150.0) as i32;
+                let bw = scr.w as i32 * 2 / 3;
+                for row in 0..64 {
+                    let u = 1.0 - ((row as f32 - 32.0).abs() / 32.0);
+                    let fade = u * u * (3.0 - 2.0 * u);
+                    for seg in 0..4 {
+                        // Taper the bank's ends horizontally in four steps.
+                        let f = [0.35, 1.0, 1.0, 0.35][seg];
+                        let sx0 = x0 + seg as i32 * bw / 4;
+                        scr.blend(sx0, fy + row, bw / 4, 1, rgb(0x9aa8b8), a * fade * f);
+                    }
+                }
+            }
+            // Neon green motes.
+            for i in 0..(if open { 40 } else { 18 }) {
+                let h1 = ((i as u32).wrapping_mul(2654435761) >> 8) as f32 / 16_777_216.0;
+                let h2 = ((i as u32).wrapping_mul(40503).wrapping_add(977) % 1000) as f32 / 1000.0;
+                let x = (h1 * scr.w as f32 * 3.0 - cx + (t * 0.5 + h2 * 9.0).sin() * 14.0).rem_euclid(scr.w as f32) as i32;
+                let y = (h2 * hh as f32 * 3.0 - cy - t * (4.0 + h1 * 6.0)).rem_euclid(hh as f32) as i32;
+                let pulse = 0.5 + 0.5 * (t * 2.0 + h1 * 20.0).sin();
+                scr.glow(x, y, 3.0 + pulse * 2.0, rgb(0x40ff70), 0.5 * pulse + 0.2);
+            }
+        }
         // Weather: snowfall over the Frostmarch (gusting), frost motes in the ice dungeons.
         if self.theme.cold() {
             let open = self.theme.open();
@@ -653,7 +703,10 @@ impl Game {
             if self.hover_npc == Some(i) || near {
                 scr.text(n.name, sx, sy - 62, rgb(0xe0d0a0), Align::Center, 1);
             }
-            if (n.role == Role::Elder && self.quest.elder_has_news()) || (n.role == Role::Captain && self.quest.captain_has_news()) {
+            if (n.role == Role::Elder && self.quest.elder_has_news())
+                || (n.role == Role::Captain && self.quest.captain_has_news())
+                || (n.role == Role::Hunter && self.quest.hunter_has_news())
+            {
                 let bob = (((self.tick as f32) * 0.12).sin() * 2.0) as i32;
                 scr.text("!", sx - 2, sy - 66 + bob, rgb(0xffd040), Align::Center, 2);
             }
@@ -849,6 +902,8 @@ impl Game {
         let claw = vampire && (self.p.cast_len - 0.3).abs() < 0.001 && art.has("attack");
         let anim = if self.p.cast_t > 0.0 && claw {
             CharFrame::At("attack", self.p.dir, 1.0 - self.p.cast_t / self.p.cast_len)
+        } else if self.p.cast_t > 0.0 && self.p.throwing && art.has("throw") {
+            CharFrame::At("throw", self.p.dir, 1.0 - self.p.cast_t / self.p.cast_len)
         } else if self.p.cast_t > 0.0 && art.has("cast") {
             CharFrame::At("cast", self.p.dir, 1.0 - self.p.cast_t / self.p.cast_len)
         } else if self.p.moving {
@@ -897,9 +952,16 @@ impl Game {
 
     fn draw_mob(&self, scr: &mut Screen, i: usize, (sx, sy): (i32, i32)) {
         let m = &self.mobs[i];
-        let name = def(m.kind).art;
+        // Count Vardak's last form is a giant bat.
+        let name = if m.kind == crate::mobs::Kind::Vardak && m.form == 1 { "boss_vardak_bat" } else { def(m.kind).art };
         let (art, scale, ..) = self.art.char_art(name);
         let mut fx = Fx::default();
+        if m.invuln > 0.0 {
+            // Mist form: barely there.
+            fx.dither = true;
+            fx.tint = rgb(0xc0c8d0);
+            fx.tint_a = 0.55;
+        }
         let anim = match m.state {
             MobState::Dead(t) => {
                 // Collapse: flash, then sink into the floor and fade.
@@ -1097,11 +1159,20 @@ impl Game {
         scr.text("E", bx + 46, top + 32, rgb(0x908070), Align::Left, 1);
         scr.text(&format!("GOLD {}", self.p.gold), w - 80, top + 8, rgb(0xe8c050), Align::Right, 1);
         scr.text(&format!("CHAR LEVEL {}", self.p.clvl), w - 80, top + 20, rgb(0xd8c090), Align::Right, 1);
-        scr.text(&format!("SEALS {}/3", self.quest.seal_count()), w - 80, top + 32, rgb(0xc8a0ff), Align::Right, 1);
+        let (relic, col) = match self.level.act() {
+            2 => (format!("SIGILS {}/3", self.quest.sigil_count()), rgb(0x60f080)),
+            1 => (format!("RUNES {}/3", self.quest.rune_count()), rgb(0x90d0ff)),
+            _ => (format!("SEALS {}/3", self.quest.seal_count()), rgb(0xc8a0ff)),
+        };
+        scr.text(&relic, w - 80, top + 32, col, Align::Right, 1);
 
         // Area name and quest log (top left).
         scr.text(&self.level_name, 6, 6, rgb(0xd8b878), Align::Left, 1);
-        let log = if self.level.act() == 1 { self.quest.log2() } else { self.quest.log() };
+        let log = match self.level.act() {
+            2 => self.quest.log3(),
+            1 => self.quest.log2(),
+            _ => self.quest.log(),
+        };
         scr.text(&log, 6, 17, rgb(0x9a8a78), Align::Left, 1);
 
         // Boss bar (big, top centre) while a boss is fighting you; else the hovered monster.
@@ -1202,7 +1273,13 @@ impl Game {
             }
             State::Victory(t) => {
                 scr.blend(0, 0, w, top, BLACK, (t * 0.3).min(0.7));
-                let epilogue = if self.quest.stage2 >= 3 { story::EPILOGUE2 } else { story::EPILOGUE };
+                let epilogue = if self.quest.stage3 >= 3 {
+                    story::EPILOGUE3
+                } else if self.quest.stage2 >= 3 {
+                    story::EPILOGUE2
+                } else {
+                    story::EPILOGUE
+                };
                 for (i, line) in epilogue.iter().enumerate() {
                     let a = ((t - i as f32 * 1.2) * 0.8).clamp(0.0, 1.0);
                     if a <= 0.0 {
@@ -1403,6 +1480,18 @@ fn draw_pickup(scr: &mut Screen, k: &Pickup, sx: i32, sy: i32, tick: u32, art: &
             scr.glow(sx, y, 22.0, rgb(0x80c0ff), 0.8);
             match art.item("seal") {
                 Some(s) => scr.blit(s, sx, y + 7, Fx { tint, tint_a: 0.55, ..Fx::default() }),
+                None => {
+                    scr.disc(sx, y, 5, BLACK);
+                    scr.disc(sx, y, 4, tint);
+                }
+            }
+        }
+        &Drop::Sigil(i) => {
+            let tint = [rgb(0xd0d0b0), rgb(0x60f080), rgb(0x8090a0)][i];
+            let y = sy - 10 - pop + bob;
+            scr.glow(sx, y, 22.0, rgb(0x40e070), 0.8);
+            match art.item("seal") {
+                Some(s) => scr.blit(s, sx, y + 7, Fx { tint, tint_a: 0.6, ..Fx::default() }),
                 None => {
                     scr.disc(sx, y, 5, BLACK);
                     scr.disc(sx, y, 4, tint);

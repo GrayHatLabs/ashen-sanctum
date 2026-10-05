@@ -109,6 +109,10 @@ pub struct Art {
     snow: Vec<Sprite>,
     lake: Sprite,
     snow_road: Sprite,
+    /// Act 3 overland ground: blue-grey earth variants, glowing moss, muddy road.
+    mist_earth: Vec<Sprite>,
+    moss: Sprite,
+    mist_road: Sprite,
     /// Item and prop sprites (anchored at the bottom centre, where they sit on the floor).
     items: Vec<(&'static str, Sprite)>,
     /// Code-drawn props for any prop sprite that hasn't been generated.
@@ -126,6 +130,10 @@ fn theme_grade(t: Theme) -> (u32, f32, f32) {
         Theme::Mines => (0x587890, 0.3, 0.88),
         Theme::Rime => (0x80b0e0, 0.25, 0.95),
         Theme::Glacier => (0x1a3a78, 0.3, 0.85),
+        Theme::Mistwood | Theme::Castle => (0, 0.0, 1.0),
+        Theme::Chapel => (0x305848, 0.4, 0.8),
+        Theme::Gallows => (0x283a30, 0.45, 0.75),
+        Theme::Barrow => (0x4a4838, 0.35, 0.8),
     }
 }
 
@@ -194,18 +202,24 @@ impl Art {
         let ice_wall = exact("ice_wall").unwrap_or_else(|| grade(&wall, (0x9ad0ff, 0.5, 1.0)));
         let ice1: Vec<Sprite> = exact("ice_floor1").map(|s| vec![s]).unwrap_or_else(|| stone.iter().map(|s| grade(s, (0xa8d8ff, 0.45, 1.0))).collect());
         let ice2: Vec<Sprite> = exact("ice_floor2").map(|s| vec![s]).unwrap_or_else(|| stone.iter().map(|s| grade(s, (0xc0d8f0, 0.35, 1.0))).collect());
+        let castle_floor: Vec<Sprite> = exact("castle_floor").map(|s| vec![s]).unwrap_or_else(|| stone.iter().map(|s| grade(s, (0x501020, 0.3, 0.7))).collect());
+        let castle_wall = exact("castle_wall").unwrap_or_else(|| grade(&wall, (0x301020, 0.35, 0.7)));
+        let fence = exact("palisade_mist").unwrap_or_else(|| grade(&palisade, (0x304030, 0.4, 0.8)));
         let mut floors = vec![];
         let mut walls = vec![];
         for t in Theme::ALL {
             let set: Vec<Sprite> = match t {
                 Theme::IceCaves | Theme::Glacier => ice1.iter().chain(ice2.iter().take(1)).map(|s| grade(s, theme_grade(t))).collect(),
                 Theme::Rime | Theme::Mines => ice2.iter().chain(stone.iter().take(1)).map(|s| grade(s, theme_grade(t))).collect(),
+                Theme::Castle => castle_floor.iter().chain(stone.iter().take(1)).map(|s| grade(s, (0x300818, 0.25, 0.8))).collect(),
                 _ => stone.iter().map(|s| grade(s, theme_grade(t))).collect(),
             };
             floors.push(set);
             walls.push(match t {
                 Theme::Overworld => palisade.clone(),
                 Theme::Tundra => palisade_snow.clone(),
+                Theme::Mistwood => fence.clone(),
+                Theme::Castle => castle_wall.clone(),
                 Theme::IceCaves | Theme::Rime | Theme::Glacier => grade(&ice_wall, theme_grade(t)),
                 _ => grade(&wall, theme_grade(t)),
             });
@@ -221,6 +235,10 @@ impl Art {
         let snow = if snow.is_empty() { (0..2).map(|v| sprites::fallback_ground(v, 0xc8d4e0, 0xf4f8ff)).collect() } else { snow };
         let lake = exact("lake_ice").unwrap_or_else(|| sprites::fallback_ground(2, 0x7aa8c8, 0xb8d8f0));
         let snow_road = exact("snow_road").unwrap_or_else(|| sprites::fallback_ground(3, 0x8a8478, 0xb8b4a8));
+        let mist_earth: Vec<Sprite> = ["mist_earth1", "mist_earth1", "mist_earth2"].iter().filter_map(|n| exact(n)).collect();
+        let mist_earth = if mist_earth.is_empty() { (0..2).map(|v| sprites::fallback_ground(v, 0x2a3440, 0x3a4652)).collect() } else { mist_earth };
+        let moss = exact("mist_moss").unwrap_or_else(|| sprites::fallback_ground(4, 0x2a6a30, 0x50e060));
+        let mist_road = exact("mist_road").unwrap_or_else(|| sprites::fallback_ground(5, 0x3a3630, 0x524a40));
         let items: Vec<(&'static str, Sprite)> = ITEMS
             .iter()
             .map(|d| {
@@ -232,7 +250,7 @@ impl Art {
             .collect();
         let fallback_props = sprites::PROP_NAMES.iter().filter(|n| !items.iter().any(|i| i.0 == **n)).map(|n| (*n, sprites::fallback_prop(n))).collect();
         let missing = sprites::fallback_prop("rock1");
-        Art { chars, floors, walls, grass, dirt, road, snow, lake, snow_road, items, fallback_props, missing }
+        Art { chars, floors, walls, grass, dirt, road, snow, lake, snow_road, mist_earth, moss, mist_road, items, fallback_props, missing }
     }
 
     pub fn floor(&self, theme: Theme, ground: u8, var: usize) -> &Sprite {
@@ -248,6 +266,13 @@ impl Art {
                 1 => &self.lake,
                 2 => &self.snow_road,
                 _ => &self.snow[var % self.snow.len()],
+            };
+        }
+        if theme == Theme::Mistwood {
+            return match ground {
+                1 => &self.moss,
+                2 => &self.mist_road,
+                _ => &self.mist_earth[var % self.mist_earth.len()],
             };
         }
         let set = &self.floors[theme.index()];
@@ -308,6 +333,22 @@ impl Art {
             "boss_yeti" => ("boss_plague", 1.0, 0xf0f4ff, 0.6),
             "boss_witch" => ("boss_hex", 1.0, 0x80d0ff, 0.5),
             "boss_dragon" => ("boss_ashking", 1.25, 0xe0f0ff, 0.6),
+            // ---- Act 3 stand-ins ----
+            "ghoul" => ("zombie", 0.95, 0x506850, 0.5),
+            "werewolf" => ("wolf", 1.35, 0x303030, 0.5),
+            "banshee" => ("boss_hex", 0.6, 0xc0ffd0, 0.6),
+            "wisp" => ("boss_hex", 0.35, 0x40ff80, 0.8),
+            "cultist" => ("archer", 1.0, 0x501018, 0.6),
+            "vbat" => ("wisp", 0.9, 0x180810, 0.75),
+            "npc_hunter" => ("npc_guard", 1.0, 0x4a3828, 0.5),
+            "npc_widow" => ("npc_elder", 1.0, 0x101010, 0.6),
+            "npc_priest" => ("npc_healer", 1.0, 0x101018, 0.6),
+            "npc_peasant" => ("npc_villager", 1.0, 0x405060, 0.4),
+            "boss_ossric" => ("boss_bone", 1.0, 0x80a070, 0.35),
+            "boss_grimhilde" => ("boss_hex", 1.0, 0x40e080, 0.45),
+            "boss_malgrave" => ("boss_bone", 1.05, 0x101820, 0.55),
+            "boss_vardak" => ("boss_ashking", 0.9, 0x500818, 0.55),
+            "boss_vardak_bat" => ("boss_dragon", 0.8, 0x100808, 0.7),
             "vampire" => ("mage", 1.0, 0x501060, 0.5),
             "inventor" => ("mage", 1.0, 0x704820, 0.5),
             "steam_suit" => ("boss_giant", 0.7, 0xb08840, 0.5),

@@ -15,6 +15,14 @@ pub enum Role {
     /// Mother Ylva: heals and resets skills like Brother Aldric.
     Seer,
     Fisher(u8),
+    // ---- Mournhold (Act 3) ----
+    /// Abelard the vampire hunter: the Act 3 story.
+    Hunter,
+    /// Widow Kasia: sells like Gerta.
+    Widow,
+    /// Father Lucian: heals and resets skills.
+    Priest,
+    Peasant(u8),
 }
 
 
@@ -52,6 +60,11 @@ pub struct Quest {
     pub stage2: u8,
     /// Frost runes from the Frost Giant, the Yeti Matriarch and the Rime Witch.
     pub runes: [bool; 3],
+    /// Act 3: 0 = haven't met Abelard, 1 = hunting the skeleton lords, 2 = the castle gate is open,
+    /// 3 = Count Vardak is destroyed.
+    pub stage3: u8,
+    /// Grave sigils from Ossric, Grimhilde and Malgrave.
+    pub sigils: [bool; 3],
 }
 
 pub const DIFFICULTIES: [&str; 3] = ["NORMAL", "NIGHTMARE", "HELL"];
@@ -63,6 +76,31 @@ impl Quest {
 
     pub fn rune_count(&self) -> usize {
         self.runes.iter().filter(|s| **s).count()
+    }
+
+    pub fn sigil_count(&self) -> usize {
+        self.sigils.iter().filter(|s| **s).count()
+    }
+
+    /// Act 3 is open (the Rime Wyrm is dead).
+    pub fn mists_open(&self) -> bool {
+        self.stage2 >= 3
+    }
+
+    pub fn log3(&self) -> String {
+        match self.stage3 {
+            0 => "FIND ABELARD IN MOURNHOLD".into(),
+            1 if self.sigil_count() < 3 => format!("SLAY THE THREE SKELETON LORDS  ({}/3 SIGILS)", self.sigil_count()),
+            1 => "BRING THE SIGILS TO ABELARD".into(),
+            2 => "STORM CASTLE VARDAK. DESTROY THE COUNT".into(),
+            _ if self.difficulty < 2 => "THE COUNT IS DUST. ABELARD WANTS A WORD".into(),
+            _ => "THE COUNT IS DUST. THE MISTS ARE LIFTING".into(),
+        }
+    }
+
+    /// Does Abelard have news (a marker over his head)?
+    pub fn hunter_has_news(&self) -> bool {
+        self.stage3 == 0 || (self.stage3 == 1 && self.sigil_count() == 3) || (self.stage3 == 3 && self.difficulty < 2)
     }
 
     /// Act 2 is open (the Ash King is dead).
@@ -77,14 +115,13 @@ impl Quest {
             1 if self.rune_count() < 3 => format!("SLAY THE THREE FROST HERALDS  ({}/3 RUNES)", self.rune_count()),
             1 => "BRING THE RUNES TO CAPTAIN BRENNA".into(),
             2 => "ENTER THE GLACIER'S HEART. SLAY THE RIME WYRM".into(),
-            _ if self.difficulty < 2 => "THE WYRM IS DEAD. CAPTAIN BRENNA WANTS A WORD".into(),
-            _ => "THE WYRM IS DEAD. THE NORTH IS FREE".into(),
+            _ => "THE WYRM IS DEAD. TAKE THE ROAD EAST INTO THE MISTS".into(),
         }
     }
 
     /// Does Captain Brenna have news (a marker over her head)?
     pub fn captain_has_news(&self) -> bool {
-        self.stage2 == 0 || (self.stage2 == 1 && self.rune_count() == 3) || (self.stage2 == 3 && self.difficulty < 2)
+        self.stage2 == 0 || (self.stage2 == 1 && self.rune_count() == 3)
     }
 
     /// One-line quest log for the HUD.
@@ -272,21 +309,88 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
                 Dialog::new("CAPTAIN BRENNA", &[&line])
             }
             2 => Dialog::new("CAPTAIN BRENNA", &["THE GLACIER'S HEART LIES FAR TO THE NORTH. DRESS WARM, AND BURN HER, SORCERESS."]),
+            _ => Dialog::new(
+                "CAPTAIN BRENNA",
+                &[
+                    "THE WYRM IS DEAD. THE ICE ON THE LAKE IS SINGING AS IT THAWS. THE SKALDS WILL SING OF YOU FOR A HUNDRED WINTERS.",
+                    "BUT LOOK EAST. A MIST HAS COME DOWN FROM THE MOUNTAINS THAT NO SUN BURNS AWAY. TRAVELLERS WHO WALK INTO IT DO NOT COME BACK.",
+                    "THE ROAD EAST OF KALDHOLM LEADS INTO IT. THERE IS A VILLAGE IN THERE, MOURNHOLD. IF ANYONE CAN SEE WHAT HIDES IN THE MIST, IT IS YOU.",
+                ],
+            ),
+        },
+        Role::Hunter => match q.stage3 {
+            0 => {
+                let mut d = Dialog::new(
+                    "ABELARD THE HUNTER",
+                    &[
+                        "YOU CAME THROUGH THE MIST AND STILL HAVE YOUR THROAT. THAT MAKES YOU EITHER VERY STRONG OR VERY LUCKY.",
+                        "THIS LAND BELONGS TO COUNT VARDAK. THREE HUNDRED YEARS HE HAS RULED FROM THE CASTLE ON THE CLIFF, AND THE MIST IS HIS BREATH.",
+                        "HIS GATE IS BARRED BY THREE GRAVE SIGILS, HELD BY HIS SKELETON LORDS: OSSRIC IN THE SUNKEN CHAPEL TO THE WEST, GRIMHILDE IN THE GALLOWS CATACOMBS TO THE SOUTHEAST, MALGRAVE IN THE BARROW OF KNIGHTS TO THE NORTHEAST.",
+                        "BRING ME THE SIGILS. THEN WE STORM THE CASTLE, AND I FINALLY GET TO SEE HIM BURN.",
+                    ],
+                );
+                d.advance_to = Some(21);
+                d
+            }
+            1 if q.sigil_count() == 3 => {
+                let mut d = Dialog::new(
+                    "ABELARD THE HUNTER",
+                    &[
+                        "ALL THREE SIGILS. THEY ARE COLD AS A GRAVE, AND THEY WHISPER.",
+                        "I HAVE SET THEM IN THE OLD STONES. THE CASTLE GATE STANDS OPEN. GO NORTH, UP THE CLIFF ROAD. FINISH HIM.",
+                    ],
+                );
+                d.advance_to = Some(22);
+                d
+            }
+            1 => {
+                let line = format!(
+                    "THE SKELETON LORDS STILL STAND. YOU HOLD {} OF 3 SIGILS. WIDOW KASIA TRADES, FATHER LUCIAN WILL MEND YOU.",
+                    q.sigil_count()
+                );
+                Dialog::new("ABELARD THE HUNTER", &[&line])
+            }
+            2 => Dialog::new("ABELARD THE HUNTER", &["THE CASTLE AWAITS, ON THE CLIFF TO THE NORTH. GO, BEFORE HE SMELLS YOU COMING."]),
             _ if q.difficulty < 2 => {
                 let next = DIFFICULTIES[q.difficulty as usize + 1];
                 let mut d = Dialog::new(
-                    "CAPTAIN BRENNA",
+                    "ABELARD THE HUNTER",
                     &[
-                        "THE WYRM IS DEAD. THE ICE ON THE LAKE IS SINGING AS IT THAWS. THE SKALDS WILL SING OF YOU FOR A HUNDRED WINTERS.",
-                        "AND YET MOTHER YLVA DREAMS OF ASH AND ICE TOGETHER. THE ASH KING STIRS IN THE SOUTH, THE WYRM'S BONES IN THE NORTH. THEY WILL RISE AGAIN, AND STRONGER.",
+                        "THE COUNT IS DUST. THE MIST IS LIFTING FOR THE FIRST TIME IN THREE HUNDRED YEARS. I CAN SEE THE SUN, SORCERESS. THE ACTUAL SUN.",
+                        "BUT I HAVE HUNTED LONG ENOUGH TO KNOW: THE ASH KING, THE WYRM, THE COUNT... SOMETHING WOUND THEM ALL UP LIKE CLOCKS. THEY WILL TICK AGAIN, AND STRONGER.",
                         "IF YOU WOULD FACE THEM ONCE MORE, THE WORLD WILL BE HARDER, BUT ITS TREASURES RICHER. YOU KEEP ALL YOU HAVE LEARNED AND CARRY.",
                     ],
                 );
                 d.last_options = vec![(format!("BEGIN {next}"), Act::NextDifficulty), ("NOT YET".into(), Act::Close)];
                 d
             }
-            _ => Dialog::new("CAPTAIN BRENNA", &["EVEN HELL COULD NOT HOLD YOU. ASH AND ICE ARE BOTH BROKEN. GO IN PEACE, SORCERESS."]),
+            _ => Dialog::new("ABELARD THE HUNTER", &["EVEN HELL COULD NOT HOLD YOU. ASH, ICE AND BLOOD ARE ALL BROKEN. GO IN PEACE."]),
         },
+        Role::Widow => {
+            let mut d = Dialog::new("WIDOW KASIA", &["GARLIC, CANDLES, POTIONS, AND MY HUSBAND'S OLD GEAR. HE WON'T BE NEEDING IT."]);
+            d.options = vec![
+                (format!("HEALING POTION  {} GOLD", Ware::HealthPotion.price()), Act::Buy(Ware::HealthPotion)),
+                (format!("MANA POTION  {} GOLD", Ware::ManaPotion.price()), Act::Buy(Ware::ManaPotion)),
+                (format!("LOAF OF BREAD  {} GOLD", Ware::Bread.price()), Act::Buy(Ware::Bread)),
+                (format!("ROAST  {} GOLD", Ware::Roast.price()), Act::Buy(Ware::Roast)),
+                ("SHOW ME YOUR GEAR (AND BUY MINE)".into(), Act::Shop),
+                ("LEAVE".into(), Act::Close),
+            ];
+            d
+        }
+        Role::Priest => {
+            let mut d = Dialog::new("FATHER LUCIAN", &["THE LIGHT STILL BURNS IN THIS CHAPEL, CHILD, EVEN HERE. KNEEL, AND BE MENDED."]);
+            d.heals = true;
+            d
+        }
+        Role::Peasant(k) => {
+            let lines = [
+                "DON'T GO OUT AFTER DARK. IT'S ALWAYS DARK. DON'T GO OUT.",
+                "MY BROTHER HEARD THE SINGING FROM THE GALLOWS. HE WENT TO LOOK. WE BURIED HIM TWICE.",
+                "THE WOLVES HERE ARE NOT WOLVES. THEY WALK ON TWO LEGS WHEN THE MOON IS UP.",
+            ];
+            Dialog::new("PEASANT", &[lines[k as usize % 3]])
+        }
         Role::Trader => {
             let mut d = Dialog::new("OLD SIGURD", &["FURS, FOOD, AND STEEL THAT DOESN'T SHATTER IN THE COLD. SOUTHERN GOLD SPENDS THE SAME UP HERE."]);
             d.options = vec![
@@ -349,6 +453,13 @@ pub const EPILOGUE2: [&str; 4] = [
     "VORTHRAX THE RIME WYRM FALLS.",
     "THE GLACIER GROANS AND CRACKS, AND MELTWATER RUNS SOUTH FOR THE FIRST TIME IN AN AGE.",
     "IN KALDHOLM THE FISHERMEN DANCE ON THE THAWING LAKE. ASH AND ICE ARE BROKEN.",
+    "BUT TO THE EAST, A MIST THAT NO SUN BURNS AWAY IS ROLLING DOWN FROM THE MOUNTAINS...",
+];
+
+pub const EPILOGUE3: [&str; 4] = [
+    "COUNT VARDAK CRUMBLES TO DUST.",
+    "THE MIST TEARS LIKE OLD CLOTH, AND FOR THE FIRST TIME IN THREE HUNDRED YEARS THE SUN FALLS ON MOURNHOLD.",
+    "ABELARD SITS ON THE CASTLE STEPS AND WATCHES IT RISE. ASH, ICE AND BLOOD ARE BROKEN.",
     "THANK YOU FOR PLAYING ASHEN SANCTUM.",
 ];
 

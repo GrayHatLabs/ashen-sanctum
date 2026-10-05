@@ -465,6 +465,11 @@ pub static UNIQUES: &[UniqueDef] = &[
     UniqueDef { name: "MATRIARCH'S MANTLE", base: "chain", req: 18, stats: &[(Stat::Armor, 34), (Stat::Life, 40), (Stat::Hunger, 50), (Stat::LifeOnKill, 6)], boss: Some("yeti") },
     UniqueDef { name: "RIME CIRCLET", base: "circlet", req: 20, stats: &[(Stat::Skills, 1), (Stat::Mana, 55), (Stat::ManaRegen, 60), (Stat::Cast, 20)], boss: Some("witch") },
     UniqueDef { name: "WYRMHEART", base: "amulet", req: 22, stats: &[(Stat::Skills, 2), (Stat::Fire, 45), (Stat::Life, 50), (Stat::Magic, 30)], boss: Some("dragon") },
+    // ---- Act 3 ----
+    UniqueDef { name: "BONE BARON'S MANTLE", base: "chain", req: 24, stats: &[(Stat::Armor, 40), (Stat::Life, 60), (Stat::LifeOnKill, 8), (Stat::Skills, 1)], boss: Some("ossric") },
+    UniqueDef { name: "GRAVEFIRE CIRCLET", base: "circlet", req: 26, stats: &[(Stat::Skills, 1), (Stat::Fire, 40), (Stat::Mana, 60), (Stat::ManaOnKill, 5)], boss: Some("grimhilde") },
+    UniqueDef { name: "DEATHKNIGHT GAUNTLETS", base: "gauntlets", req: 28, stats: &[(Stat::Armor, 18), (Stat::Life, 50), (Stat::Cast, 20), (Stat::LifeRegen, 5)], boss: Some("malgrave") },
+    UniqueDef { name: "VARDAK'S SIGNET", base: "ring", req: 30, stats: &[(Stat::Skills, 2), (Stat::Fire, 35), (Stat::LifeOnKill, 10), (Stat::Magic, 40)], boss: Some("vardak") },
     UniqueDef { name: "SKALD'S STRIDE", base: "iboots", req: 16, stats: &[(Stat::Armor, 12), (Stat::Move, 25), (Stat::Stamina, 40), (Stat::Gold, 40)], boss: None },
 ];
 

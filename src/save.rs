@@ -123,10 +123,9 @@ pub fn delete_hero(slot: &str) {
 pub fn to_text(g: &Game) -> String {
     let p = &g.p;
     let q = &g.quest;
-    let seals: String = q.seals.iter().map(|s| if *s { '1' } else { '0' }).collect();
-    format!("name={}
-", g.hero_name)
-        + &format!(
+    let bits = |b: &[bool; 3]| b.iter().map(|s| if *s { '1' } else { '0' }).collect::<String>();
+    let mut s = format!("name={}\n", g.hero_name);
+    s += &format!(
         "version=1\nseed={}\nclvl={}\nxp={}\nmax_hp={}\nmax_mana={}\npower={}\ngold={}\nhp_pots={}\nmp_pots={}\nfood={}\nrunning={}\nstage={}\nseals={}\nkills={}\n",
         g.world_seed(),
         p.clvl,
@@ -140,23 +139,17 @@ pub fn to_text(g: &Game) -> String {
         p.food,
         p.running as u8,
         q.stage,
-        seals,
+        bits(&q.seals),
         g.kills
-    ) + &format!("difficulty={}
-", g.quest.difficulty)
-        + &format!(
-            "stage2={}
-runes={}
-act={}
-",
-            g.quest.stage2,
-            g.quest.runes.iter().map(|s| if *s { '1' } else { '0' }).collect::<String>(),
-            g.level.act()
-        )
-        + &p.skills.save_text()
-        + &format!("waypoints={}
-", g.waypoints.iter().map(|w| crate::levels::id_string(*w)).collect::<Vec<_>>().join(","))
-        + &p.gear.save_text()
+    );
+    s += &format!("difficulty={}\n", q.difficulty);
+    s += &format!("stage2={}\nrunes={}\n", q.stage2, bits(&q.runes));
+    s += &format!("stage3={}\nsigils={}\n", q.stage3, bits(&q.sigils));
+    s += &format!("act={}\n", g.level.act());
+    s += &p.skills.save_text();
+    s += &format!("waypoints={}\n", g.waypoints.iter().map(|w| crate::levels::id_string(*w)).collect::<Vec<_>>().join(","));
+    s += &p.gear.save_text();
+    s
 }
 
 /// Applies a saved character to a freshly created game. Returns false on a bad file.
@@ -189,7 +182,17 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
             g.quest.runes[i] = c == '1';
         }
     }
-    let act = if g.quest.north_open() { num("act").unwrap_or(0.0) as usize } else { 0 };
+    g.quest.stage3 = (num("stage3").unwrap_or(0.0) as u8).min(3);
+    if let Some(s) = get("sigils") {
+        for (i, c) in s.chars().take(3).enumerate() {
+            g.quest.sigils[i] = c == '1';
+        }
+    }
+    let act = match num("act").unwrap_or(0.0) as usize {
+        2 if g.quest.mists_open() => 2,
+        1 if g.quest.north_open() => 1,
+        _ => 0,
+    };
     if let Some(s) = get("seals") {
         for (i, c) in s.chars().take(3).enumerate() {
             g.quest.seals[i] = c == '1';
@@ -214,8 +217,8 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
         }
     }
     // You wake in the town of the act you saved in.
-    if g.quest.difficulty > 0 || act == 1 {
-        g.rebuild_world(act.min(1));
+    if g.quest.difficulty > 0 || act > 0 {
+        g.rebuild_world(act.min(2));
     }
     g.p.recalc();
     g.p.hp = g.p.max_hp;

@@ -16,9 +16,13 @@ pub enum Track {
     Frost,
     /// Act 2: the ice dungeons.
     Ice,
+    /// Act 3: the Mistwood (a haunted waltz).
+    Mist,
+    /// Act 3: the dungeons and Castle Vardak (a cathedral organ).
+    Crypt,
 }
 
-pub const TRACKS: [Track; 6] = [Track::Town, Track::Wilds, Track::Dungeon, Track::Boss, Track::Frost, Track::Ice];
+pub const TRACKS: [Track; 8] = [Track::Town, Track::Wilds, Track::Dungeon, Track::Boss, Track::Frost, Track::Ice, Track::Mist, Track::Crypt];
 
 fn hz(midi: f32) -> f32 {
     440.0 * 2f32.powf((midi - 69.0) / 12.0)
@@ -229,6 +233,8 @@ pub fn render(track: Track) -> Vec<f32> {
         Track::Boss => 41,
         Track::Frost => 53,
         Track::Ice => 67,
+        Track::Mist => 71,
+        Track::Crypt => 83,
     });
     match track {
         Track::Town => town(&mut rng),
@@ -237,6 +243,8 @@ pub fn render(track: Track) -> Vec<f32> {
         Track::Boss => boss(&mut rng),
         Track::Frost => frost(&mut rng),
         Track::Ice => ice(&mut rng),
+        Track::Mist => mist(&mut rng),
+        Track::Crypt => crypt(&mut rng),
     }
 }
 
@@ -354,6 +362,54 @@ fn frost(rng: &mut Rng) -> Vec<f32> {
         }
     }
     b.finish(0.5, 0.6)
+}
+
+/// The Mistwood: a slow, lopsided waltz on a music box over fog and a low drone (D harmonic minor).
+fn mist(rng: &mut Rng) -> Vec<f32> {
+    let bpm = 84.0;
+    let beat = 60.0 / bpm;
+    let bars = 16;
+    let mut b = Buf::new(bars as f32 * 3.0 * beat);
+    b.wind(0.18, rng);
+    b.drone(38.0, 0.04);
+    let chords: [(f32, [f32; 3]); 4] = [(50.0, [0.0, 3.0, 7.0]), (46.0, [0.0, 4.0, 7.0]), (43.0, [0.0, 3.0, 7.0]), (45.0, [0.0, 4.0, 7.0])];
+    let tune = [74.0, 73.0, 74.0, 77.0, 76.0, 74.0, 73.0, 69.0, 70.0, 69.0, 67.0, 65.0, 64.0, 65.0, 67.0, 69.0];
+    for bar in 0..bars {
+        let (root, iv) = chords[bar % 4];
+        let t0 = bar as f32 * 3.0 * beat;
+        // Oom-pah-pah, softly.
+        b.pluck(t0, root - 12.0, 0.35, 0.3, 0.996, rng);
+        b.pluck(t0 + beat, root + iv[1], 0.16, 0.5, 0.995, rng);
+        b.pluck(t0 + 2.0 * beat, root + iv[2], 0.16, 0.5, 0.995, rng);
+        b.pad(t0, 3.0 * beat, &[root, root + iv[1], root + iv[2]], 0.05, 380.0);
+        // The music box melody (bell-like, slightly late: haunted).
+        let m = tune[bar % tune.len()];
+        b.bell(t0 + 0.04, m, 0.06);
+        if bar % 2 == 1 {
+            b.bell(t0 + 1.5 * beat, m - 5.0, 0.04);
+        }
+    }
+    b.finish(0.55, 0.55)
+}
+
+/// Act 3's dungeons and Castle Vardak: a dark cathedral organ with a slow pulse.
+fn crypt(rng: &mut Rng) -> Vec<f32> {
+    let secs = 48.0;
+    let mut b = Buf::new(secs);
+    b.drone(26.0, 0.07);
+    let chords = [(38.0, 41.0, 45.0), (37.0, 41.0, 44.0), (34.0, 38.0, 41.0), (33.0, 37.0, 40.0)];
+    for (k, &(a, c, e)) in chords.iter().enumerate() {
+        b.pad(k as f32 * 12.0, 11.5, &[a, c, e, a + 12.0], 0.13, 600.0);
+    }
+    let mut t = 1.0;
+    while t < secs {
+        b.drum(t, 0.18, 42.0, rng);
+        t += 3.0;
+    }
+    for (k, m) in [62.0, 61.0, 58.0, 57.0].iter().enumerate() {
+        b.bell(4.0 + k as f32 * 12.0, *m + 12.0, 0.05);
+    }
+    b.finish(0.6, 0.6)
 }
 
 /// Ice dungeons: a deep cold drone, glassy bells and groaning ice.

@@ -143,9 +143,27 @@ Killing the Ash King opens the **mountain pass** north of Hollowmere. Beyond it 
 - **The cold**: frost attacks **chill** you (slower moving and casting). Creatures of the cold take 25%
   more fire damage.
 
-## After the Rime Wyrm
+## Act 3: the Mistwood
 
-Like Diablo 2, beating the game opens **Nightmare**, then **Hell**: talk to Captain Brenna. The
+Slaying the Rime Wyrm lifts the mist on the **road east** out of Kaldholm. Beyond it lies the
+**Mistwood**, a Ravenloft-style haunted forest of blue-grey earth, glowing green moss, twisted trees
+and graveyards, with the walled village of **Mournhold** and the dark spires of Castle Vardak above it.
+
+- **Abelard the Hunter** (story), **Widow Kasia** (shop) and **Father Lucian** (heals and resets skills).
+- **Count Vardak** rules from his castle. His three heralds, the skeleton lords, hold the **Blood Sigils**
+  that open the castle gate:
+  - **The Sunken Chapel**: **Lord Ossric, the Bone Baron**.
+  - **The Gallows Catacombs**: **Duchess Grimhilde**, a necromancer who hurls green soulfire.
+  - **The Barrow of Knights**: **Sir Malgrave, the Death Knight**.
+  - **Castle Vardak** (needs all three sigils): the Count himself. He duels with blood-bolt fans and
+    bats, turns to **mist** (untouchable, reappearing beside you while wolves answer his call), and at
+    the end becomes a **giant bat**.
+- **Monsters**: ghouls, werewolves (they regenerate), banshees, will-o'-wisps, cultists and vampire bats.
+- Fog banks and drifting wisp-lights over the forest; a haunted waltz in the woods, an organ in the crypts.
+
+## After Count Vardak
+
+Like Diablo 2, beating the game opens **Nightmare**, then **Hell**: talk to Abelard the Hunter. The
 world is rebuilt with much tougher monsters and richer drops, and the quests start over, while
 your character, skills and gear carry on.
 

@@ -159,10 +159,12 @@ pub fn fallback_ground(v: i32, base: u32, hi: u32) -> Sprite {
 }
 
 /// Props that have code-drawn stand-ins.
-pub const PROP_NAMES: [&str; 28] = [
+pub const PROP_NAMES: [&str; 41] = [
     "tree_oak", "tree_pine", "tree_dead", "rock1", "bush1", "house1", "house2", "tent1", "campfire", "well", "ent_crypt",
     "ent_warrens", "ent_catacombs", "ent_sanctum", "stairs_down", "stairs_up", "tree_snowpine", "tree_snowdead", "rock_snow",
     "ice_crystal", "longhouse1", "longhouse2", "stall_furs", "ent_mines", "ent_caves", "ent_temple", "ent_glacier", "pass_gate",
+    "tree_twisted", "tree_mistpine", "glow_shrooms", "gravestone", "cottage_mist", "cottage_mist2", "gallows", "merchant_cart",
+    "ent_chapel", "ent_gallows", "ent_barrow", "ent_castle", "pass_mist",
 ];
 
 /// Simple stand-in shapes for props (anchored at the bottom centre).
@@ -180,6 +182,14 @@ pub fn fallback_prop(name: &str) -> Sprite {
     };
     match name {
         "tree_snowpine" => return frost("tree_pine", 0xf0f8ff, 0.45),
+        "tree_twisted" => return frost("tree_dead", 0x304838, 0.5),
+        "tree_mistpine" => return frost("tree_pine", 0x203038, 0.5),
+        "glow_shrooms" => return frost("bush1", 0x40e060, 0.6),
+        "gravestone" => return frost("rock1", 0x707880, 0.3),
+        "cottage_mist" | "cottage_mist2" => return frost("house2", 0x303840, 0.35),
+        "gallows" | "merchant_cart" => return frost("tent1", 0x40302a, 0.6),
+        "ent_chapel" | "ent_gallows" | "ent_barrow" | "pass_mist" => return frost("ent_crypt", 0x305040, 0.45),
+        "ent_castle" => return frost("ent_crypt", 0x401018, 0.5),
         "tree_snowdead" => return frost("tree_dead", 0xe8f0f8, 0.4),
         "rock_snow" => return frost("rock1", 0xf0f4ff, 0.4),
         "longhouse1" | "longhouse2" => return frost("house1", 0xe8f0ff, 0.25),

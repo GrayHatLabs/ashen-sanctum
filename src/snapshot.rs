@@ -512,6 +512,51 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             }
         }
     }
+    // Act 3: Mournhold, the Mistwood, and Count Vardak's mist and bat forms.
+    {
+        let mut g = Game::new(7, h);
+        g.quest.stage = 3;
+        g.quest.stage2 = 3;
+        g.debug_goto(LevelId::Mistwood);
+        (g.p.x, g.p.y) = g.start;
+        g.banner_t = 0.0;
+        idle(&mut g, 60);
+        save(&mut g, scr, "act3_town");
+        g.debug_talk(Role::Hunter);
+        save(&mut g, scr, "act3_dialog");
+        g.dialog = None;
+        if let Some((x, y)) = g.bot_target().map(|t| (t.0, t.1)) {
+            g.debug_place_near(x, y, 4.0);
+            idle(&mut g, 40);
+            save(&mut g, scr, "act3_wilds");
+        }
+        // (The dungeons and heralds are staged with the others; here, the count's later forms.)
+        let k = crate::world::CASTLE;
+        g.debug_goto(LevelId::Dungeon(k, DUNGEONS[k].floors - 1));
+        g.p.base_hp = 9999.0;
+        g.p.recalc();
+        g.p.hp = 9999.0;
+        g.debug_near_boss();
+        idle(&mut g, 20);
+        // The count's mist and bat forms.
+        if let Some(i) = g.mobs.iter().position(|m| m.kind == crate::mobs::Kind::Vardak) {
+            g.mobs[i].hp = g.mobs[i].max_hp * 0.5;
+            g.mobs[i].special2 = 0.0;
+            for _ in 0..30 {
+                g.p.hp = 9999.0;
+                g.update(&Input::default());
+                g.sfx.clear();
+            }
+            save(&mut g, scr, "vardak_mist");
+            g.mobs[i].hp = g.mobs[i].max_hp * 0.2;
+            for _ in 0..60 {
+                g.p.hp = 9999.0;
+                g.update(&Input::default());
+                g.sfx.clear();
+            }
+            save(&mut g, scr, "vardak_bat");
+        }
+    }
     // A waypoint in a dungeon, with the travel menu open.
     {
         let mut g = Game::new(7, h);

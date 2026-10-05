@@ -25,6 +25,18 @@ pub enum Kind {
     YetiMatriarch,
     RimeWitch,
     WhiteDragon,
+    // ---- Act 3: the Mistwood ----
+    Ghoul,
+    Werewolf,
+    Banshee,
+    Wisp,
+    Cultist,
+    /// Count Vardak's bats.
+    Bat,
+    Ossric,
+    Grimhilde,
+    Malgrave,
+    Vardak,
 }
 
 pub struct Def {
@@ -43,8 +55,10 @@ pub struct Def {
     pub reach: f32,
     pub boss: bool,
     pub ranged: bool,
-    /// Creature of the cold: takes extra fire damage; its hits chill you.
+    /// Creature of the cold: takes extra fire damage.
     pub cold: bool,
+    /// Its hits chill / numb you (frost creatures, ghouls).
+    pub chills: bool,
 }
 
 /// Fire damage multiplier: creatures of the cold burn better.
@@ -71,6 +85,7 @@ pub fn def(k: Kind) -> Def {
         boss: false,
         ranged: false,
         cold: false,
+        chills: false,
     };
     match k {
         Kind::Zombie => d("zombie", "ROTTING ZOMBIE", 34.0, 1.25, (5.0, 9.0), 0.55, 1.5, 14.0),
@@ -102,38 +117,68 @@ pub fn def(k: Kind) -> Def {
             boss: true,
             ..d("boss_ashking", "THE ASH KING", 700.0, 1.6, (18.0, 26.0), 0.7, 1.6, 1500.0)
         },
-        Kind::FrostWolf => Def { r: 0.3, cold: true, ..d("frost_wolf", "WINTER WOLF", 18.0, 3.8, (4.0, 6.0), 0.3, 0.9, 11.0) },
-        Kind::Raider => Def { cold: true, ..d("raider", "NORTHERN RAIDER", 30.0, 2.6, (6.0, 10.0), 0.45, 1.2, 15.0) },
-        Kind::Yeti => Def { r: 0.42, reach: 1.0, cold: true, ..d("yeti", "YETI", 55.0, 1.6, (9.0, 14.0), 0.65, 1.7, 24.0) },
-        Kind::IceTroll => Def { r: 0.36, cold: true, ..d("ice_troll", "ICE TROLL", 40.0, 2.2, (6.0, 9.0), 0.4, 1.0, 20.0) },
-        Kind::IceWraith => Def { ranged: true, cold: true, ..d("ice_wraith", "ICE WRAITH", 22.0, 2.4, (5.0, 8.0), 0.55, 1.8, 16.0) },
+        Kind::FrostWolf => Def { r: 0.3, cold: true, chills: true, ..d("frost_wolf", "WINTER WOLF", 18.0, 3.8, (4.0, 6.0), 0.3, 0.9, 11.0) },
+        Kind::Raider => Def { cold: true, chills: true, ..d("raider", "NORTHERN RAIDER", 30.0, 2.6, (6.0, 10.0), 0.45, 1.2, 15.0) },
+        Kind::Yeti => Def { r: 0.42, reach: 1.0, cold: true, chills: true, ..d("yeti", "YETI", 55.0, 1.6, (9.0, 14.0), 0.65, 1.7, 24.0) },
+        Kind::IceTroll => Def { r: 0.36, cold: true, chills: true, ..d("ice_troll", "ICE TROLL", 40.0, 2.2, (6.0, 9.0), 0.4, 1.0, 20.0) },
+        Kind::IceWraith => Def { ranged: true, cold: true, chills: true, ..d("ice_wraith", "ICE WRAITH", 22.0, 2.4, (5.0, 8.0), 0.55, 1.8, 16.0) },
         Kind::FrostGiant => Def {
             r: 0.65,
             reach: 1.5,
             boss: true,
-            cold: true,
+            cold: true, chills: true,
             ..d("boss_giant", "THE FROST GIANT OVERSEER", 420.0, 1.4, (16.0, 24.0), 0.8, 1.8, 500.0)
         },
         Kind::YetiMatriarch => Def {
             r: 0.6,
             reach: 1.4,
             boss: true,
-            cold: true,
+            cold: true, chills: true,
             ..d("boss_yeti", "THE YETI MATRIARCH", 400.0, 1.9, (14.0, 20.0), 0.6, 1.5, 550.0)
         },
         Kind::RimeWitch => Def {
             r: 0.5,
             boss: true,
             ranged: true,
-            cold: true,
+            cold: true, chills: true,
             ..d("boss_witch", "THE RIME WITCH", 360.0, 1.8, (10.0, 14.0), 0.6, 2.0, 650.0)
         },
         Kind::WhiteDragon => Def {
             r: 0.9,
             reach: 1.9,
             boss: true,
-            cold: true,
+            cold: true, chills: true,
             ..d("boss_dragon", "VORTHRAX THE RIME WYRM", 1100.0, 1.5, (22.0, 32.0), 0.8, 1.7, 2500.0)
+        },
+        Kind::Ghoul => Def { chills: true, ..d("ghoul", "GHOUL", 45.0, 3.0, (8.0, 12.0), 0.35, 1.0, 24.0) },
+        Kind::Werewolf => Def { r: 0.42, reach: 1.0, ..d("werewolf", "WEREWOLF", 70.0, 3.6, (12.0, 18.0), 0.4, 1.1, 34.0) },
+        Kind::Banshee => Def { ranged: true, ..d("banshee", "BANSHEE", 40.0, 2.2, (8.0, 12.0), 0.6, 2.0, 30.0) },
+        Kind::Wisp => Def { r: 0.25, ranged: true, ..d("wisp", "WILL-O'-WISP", 20.0, 4.0, (5.0, 8.0), 0.4, 1.6, 18.0) },
+        Kind::Cultist => Def { ranged: true, ..d("cultist", "CULTIST", 45.0, 2.2, (9.0, 13.0), 0.6, 1.9, 28.0) },
+        Kind::Bat => Def { r: 0.22, ..d("vbat", "VAMPIRE BAT", 14.0, 4.6, (4.0, 6.0), 0.25, 0.8, 6.0) },
+        Kind::Ossric => Def {
+            r: 0.6,
+            reach: 1.5,
+            boss: true,
+            ..d("boss_ossric", "LORD OSSRIC, THE BONE BARON", 520.0, 1.6, (18.0, 26.0), 0.7, 1.6, 900.0)
+        },
+        Kind::Grimhilde => Def {
+            r: 0.5,
+            boss: true,
+            ranged: true,
+            ..d("boss_grimhilde", "DUCHESS GRIMHILDE", 480.0, 1.8, (12.0, 16.0), 0.6, 2.0, 1000.0)
+        },
+        Kind::Malgrave => Def {
+            r: 0.6,
+            reach: 1.6,
+            boss: true,
+            ..d("boss_malgrave", "SIR MALGRAVE, THE DEATH KNIGHT", 620.0, 1.5, (20.0, 30.0), 0.8, 1.7, 1100.0)
+        },
+        Kind::Vardak => Def {
+            r: 0.55,
+            reach: 1.5,
+            boss: true,
+            ..d("boss_vardak", "COUNT VARDAK", 1400.0, 2.0, (24.0, 34.0), 0.6, 1.5, 4000.0)
         },
     }
 }
@@ -237,6 +282,12 @@ pub struct Mob {
     pub charm: f32,
     /// A raised thrall crumbles when its charm runs out.
     pub thrall: bool,
+    /// Untouchable while this lasts (Count Vardak's mist form).
+    pub invuln: f32,
+    /// Boss form (Count Vardak: 1 = giant bat).
+    pub form: u8,
+    /// Charging (Sir Malgrave): moves much faster while this lasts.
+    pub rush: f32,
 }
 
 impl Mob {
@@ -282,6 +333,9 @@ impl Mob {
             name: None,
             charm: 0.0,
             thrall: false,
+            invuln: 0.0,
+            form: 0,
+            rush: 0.0,
         }
     }
 
@@ -341,6 +395,12 @@ pub enum ShotKind {
     Ice,
     /// The frost giant's thrown ice boulder.
     Boulder,
+    /// Green grave-fire (banshees, wisps, cultists, the lich duchess).
+    Necro,
+    /// Lord Ossric's bone spears.
+    Bone,
+    /// Count Vardak's blood bolts.
+    Blood,
 }
 
 pub struct Shot {
@@ -434,11 +494,13 @@ impl Game {
                 }
             } else {
                 m.burned = 0.0;
-                // Ice trolls knit back together unless they're burning.
-                if m.kind == Kind::IceTroll && m.hp < m.max_hp {
+                // Ice trolls and werewolves knit back together unless they're burning.
+                if matches!(m.kind, Kind::IceTroll | Kind::Werewolf) && m.hp < m.max_hp {
                     m.hp = (m.hp + m.max_hp * 0.03 * DT).min(m.max_hp);
                 }
             }
+            m.invuln = (m.invuln - DT).max(0.0);
+            m.rush = (m.rush - DT).max(0.0);
             if m.stun > 0.0 {
                 m.stun -= DT;
                 m.moving = false;
@@ -551,7 +613,7 @@ impl Game {
                     if m.flee > 0.0 {
                         away = true;
                     } else if m.ranged {
-                        let keep = if matches!(m.kind, Kind::HexWarden | Kind::RimeWitch) { 3.5 } else { 2.8 };
+                        let keep = if matches!(m.kind, Kind::HexWarden | Kind::RimeWitch | Kind::Grimhilde) { 3.5 } else { 2.8 };
                         if dist < keep {
                             away = true;
                         } else if dist <= 8.5 && los {
@@ -591,7 +653,7 @@ impl Game {
                     let (ddx, ddy) = (tx - m.x, ty - m.y);
                     let l = (ddx * ddx + ddy * ddy).sqrt().max(0.001);
                     let (ux, uy) = (ddx / l, ddy / l);
-                    let speed = m.speed * if m.enraged { 1.25 } else { 1.0 } * if m.flee > 0.0 { 1.1 } else { 1.0 };
+                    let speed = m.speed * if m.enraged { 1.25 } else { 1.0 } * if m.flee > 0.0 { 1.1 } else { 1.0 } * if m.rush > 0.0 { 3.2 } else { 1.0 };
                     let (mut x, mut y) = (m.x, m.y);
                     move_circle(&self.d, &mut x, &mut y, ux * speed * DT, uy * speed * DT, r);
                     m.x = x;
@@ -627,6 +689,14 @@ impl Game {
                                 }
                             }
                             Kind::IceWraith => shots.push((m.x, m.y, ux * 7.5, uy * 7.5, dmg, ShotKind::Ice)),
+                            Kind::Grimhilde => {
+                                let n = if m.enraged { 5 } else { 3 };
+                                for k in 0..n {
+                                    let a = uy.atan2(ux) + (k as f32 - (n - 1) as f32 * 0.5) * 0.24;
+                                    shots.push((m.x, m.y, a.cos() * 7.0, a.sin() * 7.0, dmg, ShotKind::Necro));
+                                }
+                            }
+                            Kind::Banshee | Kind::Wisp | Kind::Cultist => shots.push((m.x, m.y, ux * 7.0, uy * 7.0, dmg, ShotKind::Necro)),
                             _ => shots.push((m.x, m.y, ux * 9.0, uy * 9.0, dmg, ShotKind::Arrow)),
                         }
                     } else if player_alive && dist < m.reach + 0.4 {
@@ -688,7 +758,7 @@ impl Game {
         for (dmg, i) in hits {
             let before = self.p.hp;
             self.hurt_player(dmg);
-            if def(self.mobs[i].kind).cold {
+            if def(self.mobs[i].kind).chills {
                 self.chill(1.4);
             }
             let dealt = (before - self.p.hp).max(0.0);
@@ -960,6 +1030,126 @@ fn boss_specials(
                         around(rng, 3, Kind::FrostWolf, m.tier, spawns);
                     }
                     texts.push((m.x, m.y, "THE BROOD COMES!"));
+                }
+            }
+        }
+        Kind::Ossric => {
+            // Volleys of bone spears, and the dead rise around him.
+            if m.special <= 0.0 && dist < 10.0 {
+                m.special = if m.enraged { 2.6 } else { 3.6 };
+                let base = (py - m.y).atan2(px - m.x);
+                let n = if m.enraged { 5 } else { 3 };
+                for k in 0..n {
+                    let a = base + (k as f32 - (n - 1) as f32 * 0.5) * 0.2;
+                    shots.push((m.x, m.y, a.cos() * 8.5, a.sin() * 8.5, 11.0 * m.tier.powf(0.8), ShotKind::Bone));
+                }
+            }
+            if m.special2 <= 0.0 {
+                m.special2 = 10.0;
+                if summons < 6 {
+                    around(rng, 3, Kind::Skeleton, m.tier, spawns);
+                    texts.push((m.x, m.y, "RISE, MY VASSALS!"));
+                }
+            }
+        }
+        Kind::Grimhilde => {
+            if m.special <= 0.0 && dist < 2.5 {
+                m.special = 5.0;
+                for _ in 0..30 {
+                    let a = rng.f() * std::f32::consts::TAU;
+                    let rr = rng.rf(5.0, 7.0);
+                    let (nx, ny) = (px + a.cos() * rr, py + a.sin() * rr);
+                    if !d.blocked(nx, ny, m.r) && d.los(nx, ny, px, py) {
+                        m.x = nx;
+                        m.y = ny;
+                        m.path.clear();
+                        texts.push((m.x, m.y, "BLINK"));
+                        break;
+                    }
+                }
+            }
+            if m.special2 <= 0.0 && dist < 10.0 {
+                m.special2 = if m.enraged { 3.5 } else { 5.0 };
+                hazards.push(Hazard { x: px, y: py, r: 1.3, warn: 0.8, live: 4.5, dps: 7.0 * m.tier, burst: 0.0, t: 0.0, fired: false, kind: HazardKind::Poison });
+                if m.enraged && summons < 4 {
+                    around(rng, 2, Kind::Banshee, m.tier, spawns);
+                }
+            }
+        }
+        Kind::Malgrave => {
+            // Shield charge from range, ground slam up close, the dead knights answer.
+            if m.special <= 0.0 && (3.0..9.0).contains(&dist) {
+                m.special = if m.enraged { 4.5 } else { 6.0 };
+                m.rush = 0.9;
+                texts.push((m.x, m.y, "CHARGE!"));
+            }
+            if m.special2 <= 0.0 && dist < 3.0 {
+                m.special2 = if m.enraged { 3.5 } else { 5.0 };
+                hazards.push(Hazard { x: m.x, y: m.y, r: 2.6, warn: 0.9, live: 0.0, dps: 0.0, burst: 22.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Quake });
+            }
+            if m.enraged && summons < 4 && rng.chance(DT / 9.0) {
+                around(rng, 2, Kind::Archer, m.tier, spawns);
+                texts.push((m.x, m.y, "TO ME, MY KNIGHTS!"));
+            }
+        }
+        Kind::Vardak => {
+            let frac = m.hp / m.max_hp;
+            // Phase 3: the giant bat.
+            if frac < 0.33 && m.form == 0 {
+                m.form = 1;
+                m.speed *= 1.6;
+                m.reach = 1.7;
+                m.invuln = 1.0;
+                texts.push((m.x, m.y, "THE COUNT TAKES WING!"));
+            }
+            if m.form == 1 {
+                if m.special <= 0.0 && dist < 5.0 {
+                    m.special = 3.5;
+                    hazards.push(Hazard { x: m.x, y: m.y, r: 3.0, warn: 0.8, live: 0.0, dps: 0.0, burst: 22.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Nova });
+                    texts.push((m.x, m.y, "SCREEEE!"));
+                }
+                if m.special2 <= 0.0 && summons < 6 {
+                    m.special2 = 9.0;
+                    around(rng, 4, Kind::Bat, m.tier, spawns);
+                }
+                return;
+            }
+            // Phases 1 and 2: blood bolt fans.
+            if m.special <= 0.0 && dist < 10.0 {
+                m.special = if frac < 0.66 { 2.4 } else { 3.0 };
+                let base = (py - m.y).atan2(px - m.x);
+                let n = if frac < 0.66 { 7 } else { 5 };
+                for k in 0..n {
+                    let a = base + (k as f32 - (n - 1) as f32 * 0.5) * 0.2;
+                    shots.push((m.x, m.y, a.cos() * 8.0, a.sin() * 8.0, 12.0 * m.tier.powf(0.8), ShotKind::Blood));
+                }
+            }
+            if m.special2 <= 0.0 {
+                if frac < 0.66 {
+                    // Phase 2: mist. Untouchable, reappears elsewhere, wolves answer.
+                    m.special2 = 9.0;
+                    m.invuln = 2.5;
+                    for _ in 0..30 {
+                        let a = rng.f() * std::f32::consts::TAU;
+                        let rr = rng.rf(4.0, 7.0);
+                        let (nx, ny) = (px + a.cos() * rr, py + a.sin() * rr);
+                        if !d.blocked(nx, ny, m.r) && d.los(nx, ny, px, py) {
+                            m.x = nx;
+                            m.y = ny;
+                            m.path.clear();
+                            break;
+                        }
+                    }
+                    texts.push((m.x, m.y, "MIST..."));
+                    if summons < 6 {
+                        around(rng, 3, Kind::Wolf, m.tier, spawns);
+                    }
+                } else {
+                    m.special2 = 10.0;
+                    if summons < 6 {
+                        around(rng, 4, Kind::Bat, m.tier, spawns);
+                        texts.push((m.x, m.y, "CHILDREN OF THE NIGHT!"));
+                    }
                 }
             }
         }
