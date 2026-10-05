@@ -428,6 +428,55 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         save(&mut g, scr, "vampire_tree");
         g.tree = None;
     }
+    // The inventor: gadgets everywhere.
+    {
+        use crate::skills::{Class, Skill};
+        let mut g = Game::new(7, h);
+        g.set_class(Class::Inventor);
+        g.p.clvl = 18;
+        for s in crate::skills::INVENTOR {
+            g.p.skills.rank[s as usize] = 3;
+        }
+        g.p.base_hp = 9000.0;
+        g.p.recalc();
+        g.p.hp = 9000.0;
+        g.p.skills.primary = Skill::RayPistol;
+        g.p.skills.secondary = Skill::ClockBomb;
+        g.debug_goto(LevelId::Dungeon(0, 0));
+        g.banner_t = 0.0;
+        idle(&mut g, 100);
+        let target = g.bot_target().map(|t| (t.0, t.1)).unwrap_or((g.p.x + 3.0, g.p.y));
+        g.debug_place_near(target.0, target.1, 4.0);
+        let cast = |g: &mut Game, s: Skill, x: f32, y: f32| {
+            g.p.mana = g.p.max_mana * 0.5;
+            g.p.overheat = 0.0;
+            g.p.cast_cd = 0.0;
+            g.p.skills.cooldown = [0.0; crate::skills::ALL.len()];
+            g.cast_skill(s, x, y);
+        };
+        cast(&mut g, Skill::Turret, target.0, target.1);
+        cast(&mut g, Skill::Spider, target.0, target.1);
+        idle(&mut g, 30);
+        cast(&mut g, Skill::ClockBomb, target.0, target.1);
+        idle(&mut g, 30);
+        cast(&mut g, Skill::ArcCoil, target.0, target.1);
+        cast(&mut g, Skill::RayPistol, target.0, target.1);
+        idle(&mut g, 3);
+        g.p.mana = g.p.max_mana * 0.2;
+        save(&mut g, scr, "inventor_gadgets");
+        cast(&mut g, Skill::AirshipStrike, target.0, target.1);
+        cast(&mut g, Skill::TeslaField, target.0, target.1);
+        idle(&mut g, 25);
+        save(&mut g, scr, "inventor_airship");
+        let (px, py) = (g.p.x, g.p.y);
+        cast(&mut g, Skill::SteamSuit, px, py);
+        idle(&mut g, 10);
+        save(&mut g, scr, "inventor_suit");
+        g.p.skills.points = 2;
+        g.update(&Input { skills: true, ..Input::default() });
+        save(&mut g, scr, "inventor_tree");
+        g.tree = None;
+    }
     // Act 2: Kaldholm, the Frostmarch, each ice dungeon and its herald.
     {
         let mut g = Game::new(7, h);

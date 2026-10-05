@@ -309,6 +309,8 @@ impl Art {
             "boss_witch" => ("boss_hex", 1.0, 0x80d0ff, 0.5),
             "boss_dragon" => ("boss_ashking", 1.25, 0xe0f0ff, 0.6),
             "vampire" => ("mage", 1.0, 0x501060, 0.5),
+            "inventor" => ("mage", 1.0, 0x704820, 0.5),
+            "steam_suit" => ("boss_giant", 0.7, 0xb08840, 0.5),
             _ => ("mage", 1.0, 0, 0.0),
         };
         let base = if self.has_char(base) { base } else { "mage" };

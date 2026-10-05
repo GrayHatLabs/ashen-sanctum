@@ -44,6 +44,18 @@ A new character starts on the **class select** screen:
     Run it dry and she is **BLOODTHIRSTY**: she loses life and doesn't regenerate.
 `--vampire` or `--sorceress` skips the class screen for a new character.
 
+- **The Inventor** builds: a steampunk gunslinger who runs on **heat** instead of mana.
+  - **Heat:** firing heats her up (the orange gauge) and it cools on its own. Fill it and she
+    **overheats**: her weapons lock for 2 s and only a weak shot works.
+  - **Venting:** E / Y vents steam, dumping all heat and blasting foes back. Mana potions are coolant.
+  - **Running hot:** above 70% heat she hits harder.
+  - **Ray Pistol:** fast aether bolts. **Clockwork Bomb:** thrown, bursts after a fuse.
+    **Tinkerer** (passive).
+  - **Arc Coil:** chain lightning. **Sentry Turret.** **Grapple Hook:** zip to a spot, or yank a foe to you.
+  - **Tesla Field:** a shocking aura. **Clockwork Spider:** a companion. **Overclock** (passive).
+  - **Airship Strike:** carpet bombing. **Steam Suit:** half damage taken, faster, skills run cold.
+  - `--inventor` skips the class screen.
+
 ## The story
 
 Ash falls on the village of Hollowmere. Beneath the Ashen Sanctum sleeps the Ash King, a

@@ -304,11 +304,28 @@ impl Game {
 
         // 4. Unlit, additive fire and magic on top.
         let vampire = self.p.skills.class == crate::skills::Class::Vampire;
+        let inventor = self.p.skills.class == crate::skills::Class::Inventor;
         for b in &self.balls {
             let (sx, sy) = to_scr(b.x, b.y);
             let fl = ((self.tick as f32) * 0.9).sin() * 1.5;
-            // The vampire's bolts are blood, not fire.
-            let (outer, inner, core) = if vampire { (rgb(0xb00828), rgb(0xff4060), rgb(0xffd0d8)) } else { (rgb(0xff5010), rgb(0xffd060), rgb(0xfff4c0)) };
+            // The vampire's bolts are blood, the inventor's aether; the sorceress's fire.
+            let (outer, inner, core) = if vampire {
+                (rgb(0xb00828), rgb(0xff4060), rgb(0xffd0d8))
+            } else if inventor {
+                (rgb(0x109080), rgb(0x60f0e0), rgb(0xe0fffa))
+            } else {
+                (rgb(0xff5010), rgb(0xffd060), rgb(0xfff4c0))
+            };
+            if inventor {
+                // A short streak of aether.
+                let l = (b.vx * b.vx + b.vy * b.vy).sqrt().max(0.01);
+                let (ex, ey) = iso::to_screen(b.vx / l * 0.35, b.vy / l * 0.35);
+                let (ax, ay) = (sx + scr.shake.0, sy - 20 + scr.shake.1);
+                scr.glow(ax, ay, 9.0, outer, 0.9);
+                line(scr, ax - ex as i32, ay - ey as i32, ax + ex as i32, ay + ey as i32, inner);
+                scr.pset(ax + ex as i32, ay + ey as i32, core);
+                continue;
+            }
             if b.ember {
                 scr.glow(sx, sy - 22, 12.0 + fl * 0.5, outer, 0.9);
                 scr.disc(sx + scr.shake.0, sy - 22 + scr.shake.1, 1, core);
@@ -331,6 +348,92 @@ impl Game {
                 let ph = ((self.tick as f32) * 0.04 + d as f32 * 0.37).fract();
                 let dx = ((d as f32 * 2.3).sin() * rx as f32 * 0.6) as i32;
                 scr.fill(sx + dx, sy - 70 + (ph * 66.0) as i32, 1, 3, rgb(0xd02030));
+            }
+        }
+        // The inventor's gadgets.
+        for b in &self.bombs {
+            let k = (b.t / crate::inventor::BOMB_FLIGHT).min(1.0);
+            let (x, y) = (b.x0 + (b.x - b.x0) * k, b.y0 + (b.y - b.y0) * k);
+            let (sx, sy) = to_scr(x, y);
+            let arc = if k < 1.0 { ((k * std::f32::consts::PI).sin() * 30.0) as i32 } else { 0 };
+            let (bx, by) = (sx + scr.shake.0, sy - 6 - arc + scr.shake.1);
+            match self.art.item("gadget_bomb") {
+                Some(s) => scr.blit(s, bx, by + 6, Fx::default()),
+                None => {
+                    scr.disc(bx, by, 4, rgb(0x2a2018));
+                    scr.disc(bx, by, 3, rgb(0xb08840));
+                }
+            }
+            if k >= 1.0 && (self.tick / 5) % 2 == 0 {
+                scr.glow(bx, by - 5, 7.0, rgb(0xff6020), 0.9);
+                let rx = (crate::inventor::BOMB_RADIUS * iso::TW * 0.5) as i32;
+                ring(scr, sx, sy, rx, rx / 2, rgb(0xd09040));
+            }
+        }
+        for a in &self.arcs {
+            let fade = 1.0 - a.t / 0.25;
+            for w in a.pts.windows(2) {
+                let (x0, y0) = to_scr(w[0].0, w[0].1);
+                let (x1, y1) = to_scr(w[1].0, w[1].1);
+                let (x0, y0, x1, y1) = (x0, y0 - 20, x1, y1 - 20);
+                // Jagged: a few kinked segments.
+                let mut prev = (x0, y0);
+                for k in 1..=5 {
+                    let t = k as f32 / 5.0;
+                    let j = if k == 5 { 0 } else { (hash3(self.tick as i32 / 2, k, x0) % 9) as i32 - 4 };
+                    let p = (x0 + ((x1 - x0) as f32 * t) as i32 + j, y0 + ((y1 - y0) as f32 * t) as i32 - j);
+                    line(scr, prev.0 + scr.shake.0, prev.1 + scr.shake.1, p.0 + scr.shake.0, p.1 + scr.shake.1, mix(rgb(0x40c0b0), rgb(0xe0fffa), fade));
+                    scr.glow(p.0, p.1, 6.0, rgb(0x20a0a0), 0.6 * fade);
+                    prev = p;
+                }
+            }
+        }
+        for tu in &self.turrets {
+            let (sx, sy) = to_scr(tu.x, tu.y);
+            match self.art.item("gadget_turret") {
+                Some(s) => scr.blit(s, sx + scr.shake.0, sy + 2 + scr.shake.1, Fx::default()),
+                None => {
+                    scr.fill(sx - 5 + scr.shake.0, sy - 14 + scr.shake.1, 10, 10, rgb(0x8a6a30));
+                    scr.fill(sx - 1 + scr.shake.0, sy - 20 + scr.shake.1, 2, 6, rgb(0x504030));
+                }
+            }
+            scr.glow(sx, sy - 16, 8.0, rgb(0x40e0d0), 0.6 + 0.3 * ((self.tick as f32) * 0.2).sin());
+        }
+        for sp in &self.spiders {
+            let (sx, sy) = to_scr(sp.x, sp.y);
+            let bob = if sp.moving { ((self.tick as f32) * 0.8).sin().abs() as i32 * 2 } else { 0 };
+            match self.art.item("gadget_spider") {
+                Some(s) => scr.blit(s, sx + scr.shake.0, sy + 2 - bob + scr.shake.1, Fx::default()),
+                None => {
+                    scr.disc(sx + scr.shake.0, sy - 5 - bob + scr.shake.1, 4, rgb(0x8a6a30));
+                    for k in [-6, -3, 3, 6] {
+                        scr.fill(sx + k + scr.shake.0, sy - 3 + scr.shake.1, 1, 3, rgb(0x504030));
+                    }
+                }
+            }
+            scr.pset(sx - 1 + scr.shake.0, sy - 7 - bob + scr.shake.1, rgb(0x60f0e0));
+            scr.pset(sx + 1 + scr.shake.0, sy - 7 - bob + scr.shake.1, rgb(0x60f0e0));
+        }
+        for a in &self.airships {
+            let (sx, sy) = to_scr(a.x, a.y);
+            let (x, y) = (sx + scr.shake.0, sy - 110 + scr.shake.1);
+            blend_ellipse(scr, sx, sy, 22, 8, BLACK, 0.35);
+            match self.art.item("gadget_airship") {
+                Some(s) => scr.blit(s, x, y + s.h / 2, Fx::default()),
+                None => {
+                    blend_ellipse(scr, x, y - 8, 24, 9, rgb(0x8a6a40), 1.0);
+                    scr.fill(x - 8, y, 16, 5, rgb(0x504030));
+                }
+            }
+        }
+        if self.p.tesla_t > 0.0 {
+            let (psx, psy) = to_scr(self.p.x, self.p.y);
+            let rx = (crate::inventor::TESLA_RADIUS * iso::TW * 0.5) as i32;
+            ring(scr, psx, psy, rx, rx / 2, rgb(0x40c0b0));
+            for k in 0..6 {
+                let a = k as f32 * 1.05 + self.tick as f32 * 0.15;
+                let (dx, dy) = ((a.cos() * rx as f32) as i32, (a.sin() * rx as f32 * 0.5) as i32);
+                scr.glow(psx + dx, psy + dy - 4, 5.0, rgb(0x60f0e0), 0.8);
             }
         }
         // Bats.
@@ -735,7 +838,12 @@ impl Game {
     fn draw_player(&self, scr: &mut Screen, (sx, sy): (i32, i32)) {
         blend_ellipse(scr, sx, sy, 11, 4, BLACK, 0.5);
         let vampire = self.p.skills.class == crate::skills::Class::Vampire;
-        let sheet = if vampire { "vampire" } else { "mage" };
+        let sheet = match self.p.skills.class {
+            crate::skills::Class::Vampire => "vampire",
+            crate::skills::Class::Inventor if self.p.suit_t > 0.0 => "steam_suit",
+            crate::skills::Class::Inventor => "inventor",
+            crate::skills::Class::Sorceress => "mage",
+        };
         let art = self.art.char_art(sheet).0;
         // Rake is a claw slash (cast pose of exactly 0.3 s).
         let claw = vampire && (self.p.cast_len - 0.3).abs() < 0.001 && art.has("attack");
@@ -871,9 +979,23 @@ impl Game {
         // Globes.
         let gy = h - 28;
         globe(scr, 34, gy, 26, self.p.hp / self.p.max_hp, rgb(0xb01818), rgb(0xff6050));
-        globe(scr, w - 34, gy, 26, self.p.mana / self.p.max_mana, rgb(0x1830b0), rgb(0x6090ff));
+        if self.is_inventor() {
+            // Heat: an orange gauge that fills as she fires (it's her mana, upside down).
+            let heat = self.heat();
+            let (dark, hi) = if self.p.overheat > 0.0 && (self.tick / 6) % 2 == 0 { (rgb(0xe0e0e0), rgb(0xffffff)) } else { (rgb(0xb05010), rgb(0xffa040)) };
+            globe(scr, w - 34, gy, 26, heat, dark, hi);
+        } else {
+            globe(scr, w - 34, gy, 26, self.p.mana / self.p.max_mana, rgb(0x1830b0), rgb(0x6090ff));
+        }
         scr.text(&format!("{}/{}", self.p.hp.ceil() as i32, self.p.max_hp as i32), 34, gy - 4, WHITE, Align::Center, 1);
-        scr.text(&format!("{}/{}", self.p.mana.floor() as i32, self.p.max_mana as i32), w - 34, gy - 4, WHITE, Align::Center, 1);
+        if self.is_inventor() {
+            let label = if self.p.overheat > 0.0 { "HOT!".to_string() } else { format!("{}%", (self.heat() * 100.0).round() as i32) };
+            scr.text(&label, w - 34, gy - 4, WHITE, Align::Center, 1);
+            let vent = if self.p.vent_cd > 0.0 { format!("VENT {:.0}S", self.p.vent_cd.ceil()) } else { "VENT: E/Y".into() };
+            scr.text(&vent, w - 34, gy - 36, rgb(0xd8b080), Align::Center, 1);
+        } else {
+            scr.text(&format!("{}/{}", self.p.mana.floor() as i32, self.p.max_mana as i32), w - 34, gy - 4, WHITE, Align::Center, 1);
+        }
         // Skill slots: primary (left click / A) and secondary (right click / X), like D2.
         let ix = w / 2 - 12;
         let iy = top + 8;
@@ -894,10 +1016,14 @@ impl Game {
             scr.text(["L", "R"][k], sx + 1, iy + 1, rgb(0xd8c090), Align::Left, 1);
             skill_rects.push((sx - 2, iy - 2, 28, 28));
         }
-        let out = self.p.mana < crate::skills::mana_cost(self.p.skills.primary, self.p.skills.rank(self.p.skills.primary));
+        let out = self.p.mana < crate::skills::mana_cost(self.p.skills.primary, self.p.skills.rank(self.p.skills.primary)) || self.p.overheat > 0.0;
         if out {
-            let vampire = self.p.skills.class == crate::skills::Class::Vampire;
-            scr.text(if vampire { "BITE" } else { "EMBER" }, ix + 4, iy + 28, if vampire { rgb(0xd04060) } else { rgb(0xff9050) }, Align::Center, 1);
+            let (label, col) = match self.p.skills.class {
+                crate::skills::Class::Vampire => ("BITE", rgb(0xd04060)),
+                crate::skills::Class::Inventor => ("WEAK", rgb(0x60d0c0)),
+                crate::skills::Class::Sorceress => ("EMBER", rgb(0xff9050)),
+            };
+            scr.text(label, ix + 4, iy + 28, col, Align::Center, 1);
         }
         // Unspent skill points: a pulsing button (opens the tree, like D2's level-up button).
         if self.p.skills.points > 0 {
@@ -1299,3 +1425,10 @@ fn draw_pickup(scr: &mut Screen, k: &Pickup, sx: i32, sy: i32, tick: u32, art: &
     }
 }
 
+
+/// Small integer hash (lightning jitter).
+fn hash3(a: i32, b: i32, c: i32) -> u32 {
+    let mut h = (a as u32).wrapping_mul(374_761_393) ^ (b as u32).wrapping_mul(668_265_263) ^ (c as u32).wrapping_mul(2_246_822_519);
+    h = (h ^ (h >> 13)).wrapping_mul(1_274_126_177);
+    h ^ (h >> 16)
+}

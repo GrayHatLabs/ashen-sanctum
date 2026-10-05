@@ -243,6 +243,12 @@ pub struct Player {
     pub mist: f32,
     pub embrace_t: f32,
     pub embrace_rank: u8,
+    /// The inventor: overheat lock, vent cooldown, steam suit and Tesla field timers.
+    pub overheat: f32,
+    pub vent_cd: f32,
+    pub suit_t: f32,
+    pub tesla_t: f32,
+    pub tesla_dps: f32,
 }
 
 impl Player {
@@ -291,11 +297,32 @@ impl Player {
             mist: 0.0,
             embrace_t: 0.0,
             embrace_rank: 1,
+            overheat: 0.0,
+            vent_cd: 0.0,
+            suit_t: 0.0,
+            tesla_t: 0.0,
+            tesla_dps: 0.0,
         }
     }
 
     /// The gear you start with: the sorceress a gnarled staff, the vampire a plain amulet.
     pub fn starting_gear(&mut self) {
+        if self.skills.class == crate::skills::Class::Inventor {
+            // Her heat gauge is roomier than a caster's mana pool.
+            self.base_mana = 100.0;
+            self.gear = crate::items::Gear::default();
+            let ring = crate::items::Item {
+                base: crate::items::base_by_key("ring").unwrap(),
+                rarity: crate::items::Rarity::Normal,
+                ilvl: 1,
+                name: "BRASS RING".into(),
+                stats: vec![],
+                req: 1,
+            };
+            self.gear.worn[6] = Some(ring);
+            self.recalc();
+            return;
+        }
         if self.skills.class == crate::skills::Class::Vampire {
             self.gear = crate::items::Gear::default();
             let amulet = crate::items::Item {
@@ -400,6 +427,11 @@ pub struct Game {
     pub(crate) hydras: Vec<crate::skills::HydraFx>,
     pub(crate) bats: Vec<crate::vampire::BatFx>,
     pub(crate) fields: Vec<crate::vampire::BloodField>,
+    pub(crate) bombs: Vec<crate::inventor::BombFx>,
+    pub(crate) arcs: Vec<crate::inventor::ArcFx>,
+    pub(crate) turrets: Vec<crate::inventor::TurretFx>,
+    pub(crate) spiders: Vec<crate::inventor::SpiderFx>,
+    pub(crate) airships: Vec<crate::inventor::AirshipFx>,
     /// The skill tree screen, while open.
     pub tree: Option<crate::skills::TreeUi>,
     /// The inventory screen, while open.
@@ -488,6 +520,11 @@ impl Game {
             hydras: vec![],
             bats: vec![],
             fields: vec![],
+            bombs: vec![],
+            arcs: vec![],
+            turrets: vec![],
+            spiders: vec![],
+            airships: vec![],
             tree: None,
             inv: None,
             hero_name: "HERO".into(),
@@ -586,6 +623,14 @@ impl Game {
         self.hydras.clear();
         self.bats.clear();
         self.fields.clear();
+        self.bombs.clear();
+        self.arcs.clear();
+        self.turrets.clear();
+        self.airships.clear();
+        // The spider follows you between levels.
+        for s in self.spiders.iter_mut() {
+            (s.x, s.y) = self.start;
+        }
         self.tree = None;
         self.shots.clear();
         self.hazards.clear();
@@ -740,7 +785,11 @@ impl Game {
         }
         self.choose = Some(sel);
         if go {
-            let class = if sel == 1 { crate::skills::Class::Vampire } else { crate::skills::Class::Sorceress };
+            let class = match sel {
+                1 => crate::skills::Class::Vampire,
+                2 => crate::skills::Class::Inventor,
+                _ => crate::skills::Class::Sorceress,
+            };
             self.set_class(class);
             self.choose = None;
             self.sfx.push(Sfx::Descend);
@@ -1145,6 +1194,7 @@ impl Game {
         self.update_fire_ground();
         self.update_big_fire();
         self.update_vampire();
+        self.update_inventor();
         self.update_world();
         self.prev = inp.clone();
     }
@@ -1479,7 +1529,13 @@ impl Game {
         p.cast_cd = (p.cast_cd - DT * fcr).max(0.0);
         p.cast_t = (p.cast_t - DT * fcr).max(0.0);
         let mregen = 1.0 + p.bonus.frac(Stat::ManaRegen, 200);
-        p.mana = (p.mana + 2.2 * p.skills.regen_mult() * mregen * DT).min(p.max_mana);
+        let base_regen = if p.skills.class == crate::skills::Class::Inventor {
+            // Cooling (gear "mana regeneration" cools faster too).
+            crate::inventor::COOLING * crate::inventor::tinker_cool(p.skills.rank(crate::skills::Skill::Tinkerer))
+        } else {
+            2.2 * p.skills.regen_mult()
+        };
+        p.mana = (p.mana + base_regen * mregen * DT).min(p.max_mana);
         p.inferno = (p.inferno - DT).max(0.0);
         let starving = p.food <= 0.0;
         if !starving {
@@ -1516,7 +1572,9 @@ impl Game {
             self.sfx.push(Sfx::Drink);
             self.floater(self.p.x, self.p.y, "HEALED".into(), rgb(0xff5050));
         }
-        if inp.potion_mp && self.p.mp_pots > 0 && self.p.mana < self.p.max_mana {
+        // The inventor vents steam instead (mana potions are coolant when the vent isn't ready).
+        let vented = inp.potion_mp && self.is_inventor() && self.vent();
+        if inp.potion_mp && !vented && self.p.mp_pots > 0 && self.p.mana < self.p.max_mana {
             self.p.mp_pots -= 1;
             self.p.mana = (self.p.mana + 35.0 + self.p.max_mana * 0.15).min(self.p.max_mana);
             self.sfx.push(Sfx::Drink);
@@ -1679,7 +1737,7 @@ impl Game {
             self.p.food = (self.p.food - drain * DT).max(0.0);
         }
         let base = if run { RUN_SPEED } else { WALK_SPEED };
-        let base = if self.p.phoenix_t > 0.0 || self.p.embrace_t > 0.0 { base * 1.4 } else { base };
+        let base = if self.p.phoenix_t > 0.0 || self.p.embrace_t > 0.0 { base * 1.4 } else if self.p.suit_t > 0.0 { base * 1.2 } else { base };
         let base = base * (1.0 + gear.frac(crate::items::Stat::Move, 50));
         let base = if self.p.chill > 0.0 { base * 0.6 } else { base };
         let speed = if casting { base * 0.25 } else { base };
@@ -1829,6 +1887,28 @@ impl Game {
     pub(crate) fn cast_fireball(&mut self, tx: f32, ty: f32, ember: bool) {
         let p = &mut self.p;
         let vampire = p.skills.class == crate::skills::Class::Vampire;
+        let inventor = p.skills.class == crate::skills::Class::Inventor;
+        if inventor {
+            // Ray Pistol: fast single-target aether bolts (the weak shot when overheated).
+            let r = p.skills.rank(crate::skills::Skill::RayPistol);
+            if !ember {
+                p.mana -= crate::inventor::ray_heat(r);
+            }
+            p.cast_cd = 0.22;
+            p.cast_t = 0.22;
+            p.cast_len = 0.22;
+            let (px, py) = (p.x, p.y);
+            let (dx, dy) = (tx - px, ty - py);
+            let l = (dx * dx + dy * dy).sqrt().max(0.001);
+            let (ux, uy) = (dx / l, dy / l);
+            let (x, y) = (px + ux * 0.45, py + uy * 0.45);
+            let (lo, hi) = crate::inventor::ray_dmg(r);
+            let dmg = if ember { self.rng.rf(3.0, 5.0) * self.p.power.sqrt() } else { self.rng.rf(lo, hi) * self.fire_power() };
+            self.balls.push(Fireball { x, y, vx: ux * 15.0, vy: uy * 15.0, life: 0.6, dmg, ember: true });
+            self.stats.casts += 1;
+            self.sfx.push(Sfx::Cast);
+            return;
+        }
         let fb_rank = p.skills.rank(if vampire { crate::skills::Skill::BloodLance } else { crate::skills::Skill::Fireball });
         let (len, speed, life) = if ember { (EMBER_CAST_TIME, EMBER_SPEED, 0.7) } else { (CAST_TIME, FIREBALL_SPEED, 1.1) };
         if !ember {
@@ -1889,10 +1969,10 @@ impl Game {
 
     /// Damage multiplier against a monster: cold creatures burn better, the bloodless resist blood.
     pub(crate) fn taken(&self, kind: Kind) -> f32 {
-        if self.p.skills.class == crate::skills::Class::Vampire {
-            crate::vampire::blood_taken(kind)
-        } else {
-            crate::mobs::fire_taken(kind)
+        match self.p.skills.class {
+            crate::skills::Class::Vampire => crate::vampire::blood_taken(kind),
+            crate::skills::Class::Inventor => 1.0,
+            crate::skills::Class::Sorceress => crate::mobs::fire_taken(kind),
         }
     }
 
@@ -1911,6 +1991,8 @@ impl Game {
         }
         // Mist can't be touched.
         let dmg = if self.p.mist > 0.0 { 0.0 } else { self.p.armored(dmg) };
+        // The steam suit takes half.
+        let dmg = if self.p.suit_t > 0.0 { dmg * 0.5 } else { dmg };
         if dmg > 0.0 {
             self.p.hp -= dmg;
             self.stats.damage_taken += dmg;
@@ -2848,6 +2930,119 @@ mod tests {
         g.p.cast_cd = 0.0;
         g.cast_skill(Skill::BloodLance, zx, zy);
         assert_eq!(g.p.mana, mana, "skills are free as a bat");
+    }
+
+    fn inventor_game() -> Game {
+        let mut g = quiet_game();
+        g.set_class(crate::skills::Class::Inventor);
+        g.p.clvl = 18;
+        for s in crate::skills::INVENTOR {
+            g.p.skills.rank[s as usize] = 3;
+        }
+        g
+    }
+
+    #[test]
+    fn the_inventor_runs_on_heat() {
+        use crate::skills::Skill;
+        let mut g = inventor_game();
+        assert_eq!(g.heat(), 0.0, "starts cold");
+        let mut m = Mob::new(Kind::Zombie, g.p.x + 4.0, g.p.y, 1.0, &mut g.rng);
+        m.max_hp = 9000.0;
+        m.hp = 9000.0;
+        m.dmg = (0.0, 0.0);
+        g.mobs.push(m);
+        let (zx, zy) = (g.mobs[0].x, g.mobs[0].y);
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::RayPistol, zx, zy);
+        assert!(g.heat() > 0.0, "firing heats her up");
+        for _ in 0..30 {
+            g.update(&Input::default());
+        }
+        assert!(g.mobs[0].hp < 9000.0, "the bolt hit");
+        // Fire until she overheats: weapons lock, only the weak shot works.
+        for _ in 0..200 {
+            g.p.cast_cd = 0.0;
+            g.cast_skill(Skill::ClockBomb, zx, zy);
+            if g.p.overheat > 0.0 {
+                break;
+            }
+        }
+        assert!(g.p.overheat > 0.0, "overheated");
+        let bombs = g.bombs.len();
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::ClockBomb, zx, zy);
+        assert_eq!(g.bombs.len(), bombs, "locked: no bomb");
+        // Venting dumps the heat (and pushes foes back).
+        g.update(&Input { potion_mp: true, ..Input::default() });
+        assert_eq!(g.heat(), 0.0);
+        assert!(g.p.overheat <= 0.0 && g.p.vent_cd > 0.0);
+        // Bombs burst after their fuse.
+        let hp = g.mobs[0].hp;
+        for _ in 0..120 {
+            g.update(&Input::default());
+        }
+        assert!(g.mobs[0].hp < hp, "boom");
+        // Cooling: heat drains on its own.
+        g.p.mana = 10.0;
+        for _ in 0..60 {
+            g.update(&Input::default());
+        }
+        assert!(g.p.mana > 15.0);
+    }
+
+    #[test]
+    fn the_inventors_gadgets_work() {
+        use crate::skills::Skill;
+        let mut g = inventor_game();
+        for k in 0..3 {
+            let mut m = Mob::new(Kind::Zombie, g.p.x + 3.0 + k as f32 * 1.5, g.p.y, 1.0, &mut g.rng);
+            m.max_hp = 9000.0;
+            m.hp = 9000.0;
+            m.dmg = (0.0, 0.0);
+            m.speed = 0.0;
+            g.mobs.push(m);
+        }
+        let (zx, zy) = (g.mobs[0].x, g.mobs[0].y);
+        let cast = |g: &mut Game, s: Skill, x: f32, y: f32| {
+            g.p.mana = g.p.max_mana;
+            g.p.overheat = 0.0;
+            g.p.cast_cd = 0.0;
+            g.cast_skill(s, x, y);
+        };
+        cast(&mut g, Skill::ArcCoil, zx, zy);
+        assert!(g.mobs.iter().filter(|m| m.hp < 9000.0).count() >= 2, "the arc chained");
+        cast(&mut g, Skill::Turret, zx, zy);
+        cast(&mut g, Skill::Spider, zx, zy);
+        cast(&mut g, Skill::TeslaField, zx, zy);
+        assert_eq!((g.turrets.len(), g.spiders.len()), (1, 1));
+        let hp: f32 = g.mobs.iter().map(|m| m.hp).sum();
+        for _ in 0..240 {
+            g.update(&Input::default());
+        }
+        assert!(g.mobs.iter().map(|m| m.hp).sum::<f32>() < hp, "turret and spider at work");
+        cast(&mut g, Skill::AirshipStrike, zx, zy);
+        assert_eq!(g.airships.len(), 1);
+        for _ in 0..150 {
+            g.update(&Input::default());
+        }
+        assert!(g.airships.is_empty());
+        // Grapple: yank a foe to you, or zip to the floor.
+        let d0 = (g.mobs[2].x - g.p.x).abs();
+        let (fx, fy) = (g.mobs[2].x, g.mobs[2].y);
+        cast(&mut g, Skill::Grapple, fx, fy);
+        assert!((g.mobs[2].x - g.p.x).abs() < d0, "yanked closer");
+        // Steam suit halves damage and makes skills free.
+        let (px, py) = (g.p.x, g.p.y);
+        cast(&mut g, Skill::SteamSuit, px, py);
+        assert!(g.p.suit_t > 0.0);
+        let hp = g.p.hp;
+        g.hurt_player(20.0);
+        assert!(hp - g.p.hp < 10.5);
+        let mana = g.p.mana;
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::ClockBomb, zx, zy);
+        assert_eq!(g.p.mana, mana, "free in the suit");
     }
 
     #[test]

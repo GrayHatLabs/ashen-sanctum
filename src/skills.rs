@@ -32,12 +32,25 @@ pub enum Skill {
     NightMastery,
     BloodMoon,
     Embrace,
+    // ---- the Inventor ----
+    RayPistol,
+    ClockBomb,
+    Tinkerer,
+    ArcCoil,
+    Turret,
+    Grapple,
+    TeslaField,
+    Spider,
+    Overclock,
+    AirshipStrike,
+    SteamSuit,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
 pub enum Class {
     Sorceress,
     Vampire,
+    Inventor,
 }
 
 impl Class {
@@ -45,12 +58,14 @@ impl Class {
         match self {
             Class::Sorceress => "SORCERESS",
             Class::Vampire => "VAMPIRE",
+            Class::Inventor => "INVENTOR",
         }
     }
     pub fn key(self) -> &'static str {
         match self {
             Class::Sorceress => "sorceress",
             Class::Vampire => "vampire",
+            Class::Inventor => "inventor",
         }
     }
     /// The skill you start with (rank 1, never refunded).
@@ -58,12 +73,14 @@ impl Class {
         match self {
             Class::Sorceress => Skill::Fireball,
             Class::Vampire => Skill::BloodLance,
+            Class::Inventor => Skill::RayPistol,
         }
     }
     pub fn tree(self) -> &'static [Skill] {
         match self {
             Class::Sorceress => &SORCERESS,
             Class::Vampire => &VAMPIRE,
+            Class::Inventor => &INVENTOR,
         }
     }
 }
@@ -96,8 +113,22 @@ pub const VAMPIRE: [Skill; 11] = [
     Skill::Embrace,
 ];
 
+pub const INVENTOR: [Skill; 11] = [
+    Skill::RayPistol,
+    Skill::ClockBomb,
+    Skill::Tinkerer,
+    Skill::ArcCoil,
+    Skill::Turret,
+    Skill::Grapple,
+    Skill::TeslaField,
+    Skill::Spider,
+    Skill::Overclock,
+    Skill::AirshipStrike,
+    Skill::SteamSuit,
+];
+
 /// Every skill of every class (save files, rank arrays).
-pub const ALL: [Skill; 22] = [
+pub const ALL: [Skill; 33] = [
     Skill::Fireball,
     Skill::Inferno,
     Skill::Warmth,
@@ -120,6 +151,17 @@ pub const ALL: [Skill; 22] = [
     Skill::NightMastery,
     Skill::BloodMoon,
     Skill::Embrace,
+    Skill::RayPistol,
+    Skill::ClockBomb,
+    Skill::Tinkerer,
+    Skill::ArcCoil,
+    Skill::Turret,
+    Skill::Grapple,
+    Skill::TeslaField,
+    Skill::Spider,
+    Skill::Overclock,
+    Skill::AirshipStrike,
+    Skill::SteamSuit,
 ];
 /// Character level needed for each tree row.
 pub const TIER_LEVELS: [u32; 4] = [1, 6, 12, 18];
@@ -160,6 +202,17 @@ pub fn def(s: Skill) -> Def {
         Skill::NightMastery => Def { name: "NIGHT MASTERY", key: "nightmastery", level: 12, prereq: Some(Skill::MistStep), passive: true, cell: (2, 2) },
         Skill::BloodMoon => Def { name: "BLOOD MOON", key: "bloodmoon", level: 18, prereq: Some(Skill::CrimsonNova), passive: false, cell: (3, 0) },
         Skill::Embrace => Def { name: "EMBRACE", key: "embrace", level: 18, prereq: Some(Skill::Thrall), passive: false, cell: (3, 1) },
+        Skill::RayPistol => Def { name: "RAY PISTOL", key: "raypistol", level: 1, prereq: None, passive: false, cell: (0, 0) },
+        Skill::ClockBomb => Def { name: "CLOCKWORK BOMB", key: "clockbomb", level: 1, prereq: None, passive: false, cell: (0, 1) },
+        Skill::Tinkerer => Def { name: "TINKERER", key: "tinkerer", level: 1, prereq: None, passive: true, cell: (0, 2) },
+        Skill::ArcCoil => Def { name: "ARC COIL", key: "arccoil", level: 6, prereq: Some(Skill::RayPistol), passive: false, cell: (1, 0) },
+        Skill::Turret => Def { name: "SENTRY TURRET", key: "turret", level: 6, prereq: Some(Skill::ClockBomb), passive: false, cell: (1, 1) },
+        Skill::Grapple => Def { name: "GRAPPLE HOOK", key: "grapple", level: 6, prereq: Some(Skill::Tinkerer), passive: false, cell: (1, 2) },
+        Skill::TeslaField => Def { name: "TESLA FIELD", key: "tesla", level: 12, prereq: Some(Skill::ArcCoil), passive: false, cell: (2, 0) },
+        Skill::Spider => Def { name: "CLOCK SPIDER", key: "spider", level: 12, prereq: Some(Skill::Turret), passive: false, cell: (2, 1) },
+        Skill::Overclock => Def { name: "OVERCLOCK", key: "overclock", level: 12, prereq: Some(Skill::Grapple), passive: true, cell: (2, 2) },
+        Skill::AirshipStrike => Def { name: "AIRSHIP STRIKE", key: "airship", level: 18, prereq: Some(Skill::TeslaField), passive: false, cell: (3, 0) },
+        Skill::SteamSuit => Def { name: "STEAM SUIT", key: "steamsuit", level: 18, prereq: Some(Skill::Spider), passive: false, cell: (3, 1) },
     }
 }
 
@@ -257,7 +310,7 @@ impl Skills {
 
     /// Damage multiplier for this class's skills: Fire Mastery or Night Mastery, plus gear.
     pub fn fire_mult(&self) -> f32 {
-        1.0 + 0.08 * (self.rank(Skill::Mastery) + self.rank(Skill::NightMastery)) as f32 + self.gear_fire
+        1.0 + 0.08 * (self.rank(Skill::Mastery) + self.rank(Skill::NightMastery) + self.rank(Skill::Overclock)) as f32 + self.gear_fire
     }
 
     /// Burn duration multiplier from Fire Mastery.
@@ -288,7 +341,11 @@ impl Skills {
     pub fn load_text(text: &str) -> Option<Skills> {
         let get = |k: &str| text.lines().find_map(|l| l.strip_prefix(k).and_then(|r| r.strip_prefix('='))).map(str::trim);
         let by_key = |k: &str| ALL.iter().copied().find(|s| def(*s).key == k);
-        let class = if get("class") == Some("vampire") { Class::Vampire } else { Class::Sorceress };
+        let class = match get("class") {
+            Some("vampire") => Class::Vampire,
+            Some("inventor") => Class::Inventor,
+            _ => Class::Sorceress,
+        };
         let first = class.first_skill();
         let mut sk = Skills {
             rank: [0; ALL.len()],
@@ -436,6 +493,7 @@ pub fn mana_cost(s: Skill, r: u8) -> f32 {
         Skill::Hydra => hydra_mana(r),
         Skill::Phoenix => phoenix_mana(r),
         Skill::Warmth | Skill::Mastery => 0.0,
+        s if crate::inventor::is_inventor(s) => crate::inventor::mana_cost(s, r),
         _ => crate::vampire::mana_cost(s, r),
     }
 }
@@ -446,6 +504,7 @@ pub fn cooldown_of(s: Skill) -> f32 {
         Skill::Hydra => HYDRA_CD,
         Skill::Phoenix => PHOENIX_CD,
         s if crate::vampire::is_vampire(s) => crate::vampire::cooldown_of(s),
+        s if crate::inventor::is_inventor(s) => crate::inventor::cooldown_of(s),
         _ => 0.0,
     }
 }
@@ -454,6 +513,9 @@ pub fn cooldown_of(s: Skill) -> f32 {
 pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
     if crate::vampire::is_vampire(s) {
         return crate::vampire::describe(s, r, power, sk);
+    }
+    if crate::inventor::is_inventor(s) {
+        return crate::inventor::describe(s, r, power, sk);
     }
     let wall_rank = sk.rank(Skill::FireWall);
     let power = power * if s == Skill::Mastery { 1.0 } else { sk.fire_mult() };
@@ -612,14 +674,22 @@ impl Game {
             }
             return true;
         }
-        // Ash Phoenix / Countess's Embrace: everything is free while it lasts (mana is restored after the cast).
-        let phoenix = self.p.phoenix_t > 0.0 || self.p.embrace_t > 0.0;
+        // Ash Phoenix / Countess's Embrace / Steam Suit: everything is free while it lasts (mana is restored after the cast).
+        let phoenix = self.p.phoenix_t > 0.0 || self.p.embrace_t > 0.0 || self.p.suit_t > 0.0;
         let mana_before = self.p.mana;
         if phoenix {
             self.p.mana = self.p.max_mana.max(mana_cost(s, r));
         }
         // Out of mana: the free Ember Bolt keeps you fighting.
-        if self.p.mana < mana_cost(s, r) {
+        // The inventor: overheated guns only fire the weak shot.
+        let mut locked = self.p.skills.class == Class::Inventor && self.p.overheat > 0.0;
+        // Firing past the top of her gauge overheats her.
+        if self.p.skills.class == Class::Inventor && !locked && self.p.mana < mana_cost(s, r) && self.p.cast_cd <= 0.0 {
+            self.p.mana = 0.0;
+            self.check_overheat();
+            locked = true;
+        }
+        if self.p.mana < mana_cost(s, r) || locked {
             if self.p.cast_cd <= 0.0 {
                 // The vampire bites instead of the ember spark.
                 if self.p.skills.class == Class::Vampire {
@@ -627,6 +697,13 @@ impl Game {
                 } else {
                     self.cast_fireball(tx, ty, true);
                 }
+            }
+            return true;
+        }
+        if crate::inventor::is_inventor(s) {
+            self.cast_inventor(s, tx, ty, r);
+            if phoenix {
+                self.p.mana = mana_before;
             }
             return true;
         }
@@ -661,7 +738,9 @@ impl Game {
 
     /// Damage multiplier for fire skills: levels, seals and Fire Mastery.
     pub(crate) fn fire_power(&self) -> f32 {
-        self.p.power * self.p.skills.fire_mult()
+        // The inventor running hot (above 70% heat) hits harder.
+        let hot = if self.p.skills.class == Class::Inventor && self.heat() > 0.7 { 1.2 } else { 1.0 };
+        self.p.power * self.p.skills.fire_mult() * hot
     }
 
     fn meteor(&mut self, tx: f32, ty: f32, r: u8) {
@@ -792,7 +871,7 @@ impl Game {
     }
 
     /// A big fire explosion: damages and knocks back everything in radius `r`.
-    fn blast(&mut self, x: f32, y: f32, r: f32, dmg: f32, burn: f32) {
+    pub(crate) fn blast(&mut self, x: f32, y: f32, r: f32, dmg: f32, burn: f32) {
         self.sfx.push(Sfx::Boom);
         self.lights.push(Light { x, y, r: 240.0, s: 1.5, life: 0.5, max: 0.5 });
         self.decals.push(crate::game::Decal { x, y, r: r * 0.7, col: rgb(0x100804), a: 0.6 });
@@ -1231,7 +1310,11 @@ impl Game {
             scr.fill(x, y, w, h, rgb(0x8a7050));
         }
         let sk = &self.p.skills;
-        let title = if sk.class == Class::Vampire { "BLOOD SKILLS" } else { "FIRE SKILLS" };
+        let title = match sk.class {
+            Class::Vampire => "BLOOD SKILLS",
+            Class::Inventor => "INVENTIONS",
+            Class::Sorceress => "FIRE SKILLS",
+        };
         scr.text(title, x0 + 10, y0 + 8, rgb(0xffd080), Align::Left, 1);
         let pts_col = if sk.points > 0 && (self.tick / 20) % 2 == 0 { rgb(0xffe080) } else { rgb(0xd8b878) };
         scr.text(&format!("SKILL POINTS: {}", sk.points), x0 + pw - 10, y0 + 8, pts_col, Align::Right, 1);

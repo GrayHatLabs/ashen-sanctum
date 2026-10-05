@@ -273,6 +273,112 @@ pub fn fallback_prop(name: &str) -> Sprite {
     s
 }
 
+/// The inventor's icons: brass and teal on soot black.
+fn inventor_icon(s: crate::skills::Skill, im: &mut Sprite) {
+    use crate::skills::Skill;
+    im.fill(0, 0, 24, 24, rgb(0x14120e));
+    let brass = rgb(0xc89a40);
+    let dark = rgb(0x6a4a20);
+    let teal = rgb(0x50e0d0);
+    let gear = |im: &mut Sprite, cx: f32, cy: f32, r: f32, c: u32| {
+        for y in 0..24 {
+            for x in 0..24 {
+                let (dx, dy) = (x as f32 - cx, y as f32 - cy);
+                let d = (dx * dx + dy * dy).sqrt();
+                let a = dy.atan2(dx);
+                let tooth = if (a * 4.0 / std::f32::consts::PI).rem_euclid(2.0) < 1.0 { 1.5 } else { 0.0 };
+                if d < r + tooth && d > r * 0.45 {
+                    im.set(x, y, c);
+                }
+            }
+        }
+    };
+    match s {
+        Skill::RayPistol => {
+            im.fill(4, 9, 12, 5, brass);
+            im.fill(5, 14, 4, 7, dark);
+            im.fill(16, 10, 5, 3, teal);
+            im.set(22, 11, rgb(0xe0fffa));
+        }
+        Skill::ClockBomb => {
+            im.ellipse(11.0, 14.0, 7.0, 7.0, brass);
+            im.ellipse(11.0, 14.0, 4.0, 4.0, rgb(0xe8d8b0));
+            im.fill(11, 11, 1, 4, BLACK);
+            im.fill(15, 4, 2, 5, dark);
+            im.set(17, 3, rgb(0xff8030));
+        }
+        Skill::Tinkerer => {
+            gear(im, 9.0, 10.0, 6.0, brass);
+            gear(im, 16.0, 16.0, 4.5, dark);
+        }
+        Skill::ArcCoil => {
+            let pts = [(3, 4), (10, 9), (7, 13), (15, 15), (12, 19), (21, 21)];
+            for w in pts.windows(2) {
+                let (a, b) = (w[0], w[1]);
+                for k in 0..=10 {
+                    let t = k as f32 / 10.0;
+                    im.set(a.0 + ((b.0 - a.0) as f32 * t) as i32, a.1 + ((b.1 - a.1) as f32 * t) as i32, teal);
+                }
+            }
+        }
+        Skill::Turret => {
+            im.fill(7, 10, 10, 7, brass);
+            im.fill(15, 12, 7, 3, dark);
+            im.fill(9, 17, 2, 5, dark);
+            im.fill(14, 17, 2, 5, dark);
+            im.set(11, 12, teal);
+        }
+        Skill::Grapple => {
+            for k in 0..14 {
+                im.set(3 + k, 20 - k, dark);
+            }
+            im.fill(16, 3, 2, 7, brass);
+            im.fill(13, 3, 8, 2, brass);
+            im.set(13, 5, brass);
+            im.set(20, 5, brass);
+        }
+        Skill::TeslaField => {
+            im.ellipse(12.0, 12.0, 9.0, 9.0, rgb(0x103830));
+            im.ellipse(12.0, 12.0, 3.0, 3.0, teal);
+            for k in 0..8 {
+                let a = k as f32 * std::f32::consts::FRAC_PI_4;
+                im.set((12.0 + a.cos() * 8.0) as i32, (12.0 + a.sin() * 8.0) as i32, rgb(0xe0fffa));
+            }
+        }
+        Skill::Spider => {
+            im.ellipse(12.0, 13.0, 5.0, 4.0, brass);
+            for k in 0..4 {
+                let y = 9 + k * 3;
+                im.fill(2, y, 6, 1, dark);
+                im.fill(16, y, 6, 1, dark);
+            }
+            im.set(10, 11, teal);
+            im.set(14, 11, teal);
+        }
+        Skill::Overclock => {
+            gear(im, 12.0, 12.0, 8.0, brass);
+            im.fill(12, 6, 1, 7, BLACK);
+            im.fill(12, 12, 5, 1, BLACK);
+        }
+        Skill::AirshipStrike => {
+            im.ellipse(12.0, 8.0, 10.0, 5.0, brass);
+            im.fill(9, 13, 6, 3, dark);
+            for k in 0..3 {
+                im.fill(7 + k * 5, 19 + (k % 2) * 2, 2, 2, rgb(0x2a2018));
+            }
+        }
+        Skill::SteamSuit => {
+            im.fill(7, 6, 10, 11, brass);
+            im.fill(9, 8, 6, 4, teal);
+            im.fill(5, 9, 2, 8, dark);
+            im.fill(17, 9, 3, 4, dark);
+            im.fill(8, 17, 3, 5, dark);
+            im.fill(13, 17, 3, 5, dark);
+        }
+        _ => {}
+    }
+}
+
 /// The vampire's icons: crimson and violet on near-black.
 fn vampire_icon(s: crate::skills::Skill, im: &mut Sprite) {
     use crate::skills::Skill;
@@ -520,6 +626,7 @@ pub fn skill_icon(s: crate::skills::Skill) -> Sprite {
             }
         }
         Skill::Fireball => {}
+        s if crate::inventor::is_inventor(s) => inventor_icon(s, &mut im),
         _ => vampire_icon(s, &mut im),
     }
     im.ax = 0;

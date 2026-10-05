@@ -55,7 +55,11 @@ pub fn heroes_dir() -> PathBuf {
 /// Reads the hero summary out of a save file's text.
 pub fn hero_info(slot: &str, text: &str) -> Option<HeroInfo> {
     let get = |k: &str| text.lines().find_map(|l| l.strip_prefix(k).and_then(|r| r.strip_prefix('='))).map(str::trim);
-    let class = if get("class") == Some("vampire") { crate::skills::Class::Vampire } else { crate::skills::Class::Sorceress };
+    let class = match get("class") {
+        Some("vampire") => crate::skills::Class::Vampire,
+        Some("inventor") => crate::skills::Class::Inventor,
+        _ => crate::skills::Class::Sorceress,
+    };
     Some(HeroInfo {
         slot: slot.to_string(),
         name: get("name").filter(|n| !n.is_empty()).unwrap_or("HERO").to_string(),

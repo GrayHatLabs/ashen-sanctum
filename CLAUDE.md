@@ -24,6 +24,7 @@ Project rules and reference. Read this before every major change.
 - `levels.rs` + `build.rs`: JSON level files (folder override, embedded at build, generator fallback).
   Editor: `tools/level-editor/index.html`. Format: `docs/LEVEL_FORMAT.md`. Keep the editor's catalog
   (kinds, footprints, validation) in sync with `levels.rs` when adding props/monsters/NPCs.
+- `inventor.rs`: the Inventor class (docs/INVENTOR_CLASS.md). Heat is `p.mana` upside down (capacity left).
 - `vampire.rs`: the Vampire class (docs/VAMPIRE_CLASS.md). Each class has its own 11-skill tree
   (`Class::tree()`); `Game::taken()` and `Game::drain()` handle fire vs blood damage.
 - `skills.rs`: skill points, ranks, slots, Inferno / Fire Nova / Warmth, the skill tree screen. Plan for

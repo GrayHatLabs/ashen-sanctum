@@ -102,6 +102,14 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Title screen (painted background, logo, embers), character select (8 hero slots, portraits, delete with confirm), class select (3 cards, Inventor "coming soon"), naming (typed or random), options (music, controls) | H S | `menu.rs`; unit tests for the flow and hero files; test flags (--new, --act2, --vampire, --level) skip it |
 | One save per hero (`heroes/<slot>.txt`, `name=` line); old save.txt migrates; Esc saves and returns to the heroes | H | |
 
+## The Inventor class (2026-10-05)
+
+| Feature | Status | Notes |
+|---|---|---|
+| Heat instead of mana (`p.mana` = heat capacity left), cooling, overheat lock, vent (E/Y) + coolant, +20% damage above 70% heat; orange HUD gauge | H S | Unit test: heat, overheat, vent, cooling |
+| 11 skills (`inventor.rs`): Ray Pistol, Clockwork Bomb, Tinkerer, Arc Coil, Sentry Turret, Grapple Hook, Tesla Field, Clock Spider, Overclock, Airship Strike, Steam Suit | H S | Unit test: arc chain, turret + spider damage, airship, grapple yank, suit |
+| Art: portrait, sprite, walk; turret / spider / airship / bomb props; steam suit (shoot / throw / suit animations generating) | S | Code-drawn icons |
+
 ## The Vampire class (2026-10-05)
 
 | Feature | Status | Notes |

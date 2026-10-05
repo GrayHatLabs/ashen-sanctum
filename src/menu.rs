@@ -35,7 +35,7 @@ pub enum MenuOut {
 const CLASSES: [(&str, &str, &str, &str, u32, bool); 3] = [
     ("SORCERESS", "portrait_sorceress", "FIRE: FIREBALLS, FLAME WALLS,", "METEORS, AN ASH PHOENIX.", 0xff9040, true),
     ("VAMPIRE", "portrait_vampire", "BLOOD: EVERY HIT DRAINS LIFE,", "BATS, MIST STEP, THRALLS.", 0xd04060, true),
-    ("INVENTOR", "portrait_inventor", "AETHER GUNS AND GADGETS,", "TURRETS AND A STEAM SUIT.", 0x40c0b0, false),
+    ("INVENTOR", "portrait_inventor", "AETHER GUNS, BOMBS, TURRETS,", "HEAT INSTEAD OF MANA.", 0x40c0b0, true),
 ];
 
 const NAMES: [&str; 16] = [
@@ -258,7 +258,11 @@ impl Menu {
                     if name.is_empty() {
                         self.say("GIVE YOUR HERO A NAME");
                     } else {
-                        let class = if self.class_sel == 1 { Class::Vampire } else { Class::Sorceress };
+                        let class = match self.class_sel {
+                            1 => Class::Vampire,
+                            2 => Class::Inventor,
+                            _ => Class::Sorceress,
+                        };
                         return Some(MenuOut::New(class, name));
                     }
                 }
@@ -506,6 +510,7 @@ fn class_look(c: Class) -> (&'static str, u32) {
     match c {
         Class::Sorceress => ("portrait_sorceress", rgb(0xff9040)),
         Class::Vampire => ("portrait_vampire", rgb(0xd04060)),
+        Class::Inventor => ("portrait_inventor", rgb(0x40c0b0)),
     }
 }
 
@@ -527,13 +532,8 @@ mod tests {
         let mut m = Menu::new(vec![]);
         press(&mut m, |i| i.confirm = true);
         assert_eq!(m.stage, Stage::Create);
-        // The Inventor isn't playable yet.
-        press(&mut m, |i| i.move_x = 1.0);
-        press(&mut m, |i| i.move_x = 1.0);
-        press(&mut m, |i| i.confirm = true);
-        assert_eq!(m.stage, Stage::Create);
         // The vampire, named by typing.
-        press(&mut m, |i| i.move_x = -1.0);
+        press(&mut m, |i| i.move_x = 1.0);
         press(&mut m, |i| i.confirm = true);
         assert_eq!(m.stage, Stage::Name);
         assert!(!m.name.is_empty(), "a random name to start");
