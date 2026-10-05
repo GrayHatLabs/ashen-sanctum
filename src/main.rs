@@ -127,14 +127,26 @@ fn main() -> Result<(), String> {
     let mut pads: Vec<GameController> = Vec::new();
     let mut audio = audio_sys.as_ref().and_then(audio::Audio::open);
     let seed = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_nanos() as u64).unwrap_or(1);
+    // --act2: a ready-made level 18 character in Kaldholm, with its own save file
+    // (save_act2.txt) so your real character is never touched. --act2 --new starts it over.
+    let act2 = args.iter().any(|a| a == "--act2");
+    if act2 {
+        save::use_file("save_act2.txt");
+    }
     // Continue the saved character (fresh world from the same seed), unless --new.
     let saved = if args.iter().any(|a| a == "--new") { None } else { save::read() };
     let seed = seed_arg.or_else(|| saved.as_deref().and_then(save::seed_of)).unwrap_or(seed);
     let mut game = Game::new(seed, view_h);
+    let mut loaded = false;
     if let Some(text) = saved.as_deref() {
         if save::apply(&mut game, text) {
             game.welcome_back();
+            loaded = true;
         }
+    }
+    if act2 && !loaded {
+        game.act2_start();
+        save::write(&game);
     }
     // --level <name>: jump straight into a level to test it (e.g. bone_crypt_floor1).
     if let Some(name) = args.iter().position(|a| a == "--level").and_then(|i| args.get(i + 1)) {

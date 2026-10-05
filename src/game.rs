@@ -675,6 +675,47 @@ impl Game {
         self.dialog = Some(d);
     }
 
+    /// `--act2`: a character as if Act 1 were done: level 18, the three seals' power, unspent
+    /// skill points, gold, potions and a full set of level-appropriate gear, standing in Kaldholm.
+    pub fn act2_start(&mut self) {
+        use crate::items::{self, Rarity, WORN};
+        let clvl = 18;
+        let p = &mut self.p;
+        p.clvl = clvl;
+        p.xp = 0.0;
+        p.base_hp = 70.0 + 8.0 * (clvl - 1) as f32 + 45.0;
+        p.base_mana = 50.0 + 4.0 * (clvl - 1) as f32 + 30.0;
+        p.power = 1.07f32.powi(clvl as i32 - 1) * 1.15f32.powi(3);
+        p.skills = crate::skills::Skills::default();
+        p.skills.points = clvl + 3;
+        p.gold = 3000;
+        p.hp_pots = 8;
+        p.mp_pots = 8;
+        p.food = MAX_FOOD;
+        // Gear: magic or rare pieces around item level 18 in every slot.
+        let mut rng = Rng::new(self.world_seed ^ 0xAC72);
+        for (w, slot) in WORN.iter().enumerate() {
+            let base = (0..items::BASES.len())
+                .rev()
+                .find(|&b| items::BASES[b].slot == *slot && !items::BASES[b].unique_only && items::BASES[b].lvl <= 16)
+                .unwrap();
+            let rarity = if rng.chance(0.4) { Rarity::Rare } else { Rarity::Magic };
+            let mut it = items::roll_base(base, 16, rarity, &mut rng);
+            it.req = it.req.min(clvl);
+            p.gear.worn[w] = Some(it);
+        }
+        p.gear.bag[0] = Some(items::roll(14, Rarity::Rare, &mut rng));
+        p.recalc();
+        p.hp = p.max_hp;
+        p.mana = p.max_mana;
+        self.quest = Quest { stage: 3, seals: [true; 3], difficulty: 0, stage2: 0, runes: [false; 3] };
+        self.waypoints = vec![LevelId::Overworld, LevelId::Frostmarch];
+        self.go_to(LevelId::Frostmarch, None);
+        (self.p.x, self.p.y) = self.town_start;
+        self.stats.levels_entered = 1;
+        self.say(format!("ACT 2 TEST CHARACTER: {} SKILL POINTS TO SPEND (K)", self.p.skills.points));
+    }
+
     /// Rebuilds an act's overland at the current difficulty (after loading a save).
     pub(crate) fn rebuild_world(&mut self, act: usize) {
         self.parked.clear();
@@ -2480,6 +2521,25 @@ mod tests {
         assert!(matches!(g.state, State::Victory(_)));
         assert_eq!(g.quest.stage2, 3);
         assert!(g.quest.captain_has_news(), "she offers nightmare");
+    }
+
+    #[test]
+    fn act2_start_makes_a_ready_character_in_kaldholm() {
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        g.act2_start();
+        assert_eq!(g.level, LevelId::Frostmarch);
+        assert!(g.in_safe(g.p.x, g.p.y));
+        assert_eq!(g.p.clvl, 18);
+        assert_eq!(g.p.skills.points, 21);
+        assert!(g.quest.north_open() && g.quest.seal_count() == 3);
+        assert!(g.p.gear.worn.iter().all(|w| w.is_some()), "a full set of gear");
+        assert!(g.p.max_hp > 250.0 && g.p.power > 4.0);
+        // It saves and loads back into Kaldholm.
+        let text = crate::save::to_text(&g);
+        let mut h = Game::new(5, crate::gfx::SH_WIDE);
+        crate::save::apply(&mut h, &text);
+        assert_eq!(h.level, LevelId::Frostmarch);
+        assert_eq!(h.p.clvl, 18);
     }
 
     #[test]

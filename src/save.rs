@@ -5,15 +5,26 @@ use std::path::PathBuf;
 
 /// `$XDG_DATA_HOME/ashensanctum/save.txt` (or `~/.local/share/...`); next to the
 /// executable when neither is set (handheld ports).
+static FILE_NAME: std::sync::OnceLock<&'static str> = std::sync::OnceLock::new();
+
+/// Use another save file in the same folder (`--act2` keeps its test character apart).
+pub fn use_file(name: &'static str) {
+    let _ = FILE_NAME.set(name);
+}
+
 pub fn path() -> PathBuf {
     if let Ok(p) = std::env::var("ASHEN_SAVE") {
-        return PathBuf::from(p);
+        let p = PathBuf::from(p);
+        return match FILE_NAME.get() {
+            Some(n) => p.with_file_name(n),
+            None => p,
+        };
     }
     let base = std::env::var("XDG_DATA_HOME")
         .map(PathBuf::from)
         .or_else(|_| std::env::var("HOME").map(|h| PathBuf::from(h).join(".local/share")))
         .unwrap_or_else(|_| PathBuf::from("."));
-    base.join("ashensanctum").join("save.txt")
+    base.join("ashensanctum").join(FILE_NAME.get().copied().unwrap_or("save.txt"))
 }
 
 pub fn to_text(g: &Game) -> String {

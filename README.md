@@ -144,6 +144,10 @@ start the game. Start a brand-new character with `--new`. Your gear and bag are 
 
 To listen to the music outside the game: `--export-music music` writes the loops as WAV files.
 
+To try Act 2 straight away, `--act2` starts a ready-made level 18 sorceress in Kaldholm (Act 1
+done, skill points to spend, a full set of gear). It has its own save file (`save_act2.txt`), so your
+real character is untouched; `--act2 --new` starts it over.
+
 For testing, `--cheats` turns on F9 (gain a character level) and F10 (drop loot at your feet).
 
 ## Building
