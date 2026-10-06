@@ -92,6 +92,18 @@ pub enum Skill {
     CycleOfRot,
     Pestilence,
     ThornWarden,
+    // ---- the Inquisitor ----
+    CenserStrike,
+    BrandOfJudgment,
+    Zealotry,
+    ChainLash,
+    Hook,
+    IronHalo,
+    CenserSweep,
+    BindingChains,
+    ChainLinks,
+    Purification,
+    FinalJudgment,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
@@ -103,9 +115,11 @@ pub enum Class {
     Berserker,
     Reaper,
     Druid,
+    Inquisitor,
 }
 
-pub const ALL_CLASSES: [Class; 7] = [Class::Sorceress, Class::Vampire, Class::Inventor, Class::Valkyrie, Class::Berserker, Class::Reaper, Class::Druid];
+pub const ALL_CLASSES: [Class; 8] =
+    [Class::Sorceress, Class::Vampire, Class::Inventor, Class::Valkyrie, Class::Berserker, Class::Reaper, Class::Druid, Class::Inquisitor];
 
 impl Class {
     pub fn name(self) -> &'static str {
@@ -117,6 +131,7 @@ impl Class {
             Class::Berserker => "BERSERKER",
             Class::Reaper => "REAPER",
             Class::Druid => "DRUID",
+            Class::Inquisitor => "INQUISITOR",
         }
     }
     pub fn key(self) -> &'static str {
@@ -128,6 +143,7 @@ impl Class {
             Class::Berserker => "berserker",
             Class::Reaper => "reaper",
             Class::Druid => "druid",
+            Class::Inquisitor => "inquisitor",
         }
     }
     /// The skill you start with (rank 1, never refunded).
@@ -140,6 +156,7 @@ impl Class {
             Class::Berserker => Skill::Cleave,
             Class::Reaper => Skill::ReapingScythe,
             Class::Druid => Skill::SporeCloud,
+            Class::Inquisitor => Skill::CenserStrike,
         }
     }
     pub fn tree(self) -> &'static [Skill] {
@@ -151,6 +168,7 @@ impl Class {
             Class::Berserker => &BERSERKER,
             Class::Reaper => &REAPER,
             Class::Druid => &DRUID,
+            Class::Inquisitor => &INQUISITOR,
         }
     }
 }
@@ -253,8 +271,22 @@ pub const DRUID: [Skill; 11] = [
     Skill::ThornWarden,
 ];
 
+pub const INQUISITOR: [Skill; 11] = [
+    Skill::CenserStrike,
+    Skill::BrandOfJudgment,
+    Skill::Zealotry,
+    Skill::ChainLash,
+    Skill::Hook,
+    Skill::IronHalo,
+    Skill::CenserSweep,
+    Skill::BindingChains,
+    Skill::ChainLinks,
+    Skill::Purification,
+    Skill::FinalJudgment,
+];
+
 /// Every skill of every class (save files, rank arrays).
-pub const ALL: [Skill; 77] = [
+pub const ALL: [Skill; 88] = [
     Skill::Fireball,
     Skill::Inferno,
     Skill::Warmth,
@@ -332,6 +364,17 @@ pub const ALL: [Skill; 77] = [
     Skill::CycleOfRot,
     Skill::Pestilence,
     Skill::ThornWarden,
+    Skill::CenserStrike,
+    Skill::BrandOfJudgment,
+    Skill::Zealotry,
+    Skill::ChainLash,
+    Skill::Hook,
+    Skill::IronHalo,
+    Skill::CenserSweep,
+    Skill::BindingChains,
+    Skill::ChainLinks,
+    Skill::Purification,
+    Skill::FinalJudgment,
 ];
 /// Character level needed for each tree row.
 pub const TIER_LEVELS: [u32; 4] = [1, 6, 12, 18];
@@ -427,6 +470,17 @@ pub fn def(s: Skill) -> Def {
         Skill::CycleOfRot => Def { name: "CYCLE OF ROT", key: "cycleofrot", level: 12, prereq: Some(Skill::Rejuvenate), passive: true, cell: (2, 2) },
         Skill::Pestilence => Def { name: "PESTILENCE", key: "pestilence", level: 18, prereq: Some(Skill::FungalBloom), passive: false, cell: (3, 0) },
         Skill::ThornWarden => Def { name: "THORN WARDEN", key: "thornwarden", level: 18, prereq: Some(Skill::CorpseBloom), passive: false, cell: (3, 1) },
+        Skill::CenserStrike => Def { name: "CENSER STRIKE", key: "censerstrike", level: 1, prereq: None, passive: false, cell: (0, 0) },
+        Skill::BrandOfJudgment => Def { name: "BRAND OF JUDGMENT", key: "brand", level: 1, prereq: None, passive: false, cell: (0, 1) },
+        Skill::Zealotry => Def { name: "ZEALOTRY", key: "zealotry", level: 1, prereq: None, passive: true, cell: (0, 2) },
+        Skill::ChainLash => Def { name: "CHAIN LASH", key: "chainlash", level: 6, prereq: Some(Skill::CenserStrike), passive: false, cell: (1, 0) },
+        Skill::Hook => Def { name: "HOOK", key: "hook", level: 6, prereq: Some(Skill::BrandOfJudgment), passive: false, cell: (1, 1) },
+        Skill::IronHalo => Def { name: "IRON HALO", key: "ironhalo", level: 6, prereq: Some(Skill::Zealotry), passive: true, cell: (1, 2) },
+        Skill::CenserSweep => Def { name: "CENSER SWEEP", key: "censersweep", level: 12, prereq: Some(Skill::ChainLash), passive: false, cell: (2, 0) },
+        Skill::BindingChains => Def { name: "BINDING CHAINS", key: "bindingchains", level: 12, prereq: Some(Skill::Hook), passive: false, cell: (2, 1) },
+        Skill::ChainLinks => Def { name: "CHAIN LINKS", key: "chainlinks", level: 12, prereq: Some(Skill::IronHalo), passive: true, cell: (2, 2) },
+        Skill::Purification => Def { name: "PURIFICATION", key: "purification", level: 18, prereq: Some(Skill::CenserSweep), passive: false, cell: (3, 0) },
+        Skill::FinalJudgment => Def { name: "FINAL JUDGMENT", key: "finaljudgment", level: 18, prereq: Some(Skill::BindingChains), passive: false, cell: (3, 1) },
     }
 }
 
@@ -562,6 +616,7 @@ impl Skills {
             Some("berserker") => Class::Berserker,
             Some("reaper") => Class::Reaper,
             Some("druid") => Class::Druid,
+            Some("inquisitor") => Class::Inquisitor,
             _ => Class::Sorceress,
         };
         let first = class.first_skill();
@@ -716,6 +771,7 @@ pub fn mana_cost(s: Skill, r: u8) -> f32 {
         s if crate::berserker::is_berserker(s) => crate::berserker::mana_cost(s, r),
         s if crate::reaper::is_reaper(s) => crate::reaper::mana_cost(s, r),
         s if crate::druid::is_druid(s) => crate::druid::mana_cost(s, r),
+        s if crate::inquisitor::is_inquisitor(s) => crate::inquisitor::mana_cost(s, r),
         _ => crate::vampire::mana_cost(s, r),
     }
 }
@@ -731,6 +787,7 @@ pub fn cooldown_of(s: Skill) -> f32 {
         s if crate::berserker::is_berserker(s) => crate::berserker::cooldown_of(s),
         s if crate::reaper::is_reaper(s) => crate::reaper::cooldown_of(s),
         s if crate::druid::is_druid(s) => crate::druid::cooldown_of(s),
+        s if crate::inquisitor::is_inquisitor(s) => crate::inquisitor::cooldown_of(s),
         _ => 0.0,
     }
 }
@@ -754,6 +811,9 @@ pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
     }
     if crate::druid::is_druid(s) {
         return crate::druid::describe(s, r, power, sk);
+    }
+    if crate::inquisitor::is_inquisitor(s) {
+        return crate::inquisitor::describe(s, r, power, sk);
     }
     let wall_rank = sk.rank(Skill::FireWall);
     let power = power * if s == Skill::Mastery { 1.0 } else { sk.fire_mult() };
@@ -944,6 +1004,8 @@ impl Game {
                     self.reaping_scythe(tx, ty);
                 } else if self.p.skills.class == Class::Druid {
                     self.spore_puff(tx, ty);
+                } else if self.p.skills.class == Class::Inquisitor {
+                    self.censer_strike(tx, ty);
                 } else if self.p.skills.class == Class::Vampire {
                     self.bite(tx, ty);
                 } else {
@@ -955,6 +1017,13 @@ impl Game {
         if crate::inventor::is_inventor(s) {
             self.p.throwing = matches!(s, Skill::ClockBomb | Skill::Turret | Skill::Spider | Skill::TeslaField);
             self.cast_inventor(s, tx, ty, r);
+            if phoenix {
+                self.p.mana = mana_before;
+            }
+            return true;
+        }
+        if crate::inquisitor::is_inquisitor(s) {
+            self.cast_inquisitor(s, tx, ty, r);
             if phoenix {
                 self.p.mana = mana_before;
             }
@@ -1025,6 +1094,8 @@ impl Game {
         let hot = if self.blazing() { hot * crate::valkyrie::BLAZING } else { hot };
         // The berserker: pain, the war cry and exhaustion.
         let hot = hot * self.fury();
+        // The inquisitor in Final Judgment: the more she has branded, the more terrible.
+        let hot = hot * self.judgment();
         self.p.power * self.p.skills.fire_mult() * hot
     }
 
@@ -1613,6 +1684,7 @@ impl Game {
             Class::Berserker => "FURY",
             Class::Reaper => "THE LEDGER",
             Class::Druid => "ROT AND BLOOM",
+            Class::Inquisitor => "JUDGMENT",
             Class::Sorceress => "FIRE SKILLS",
         };
         scr.text(title, x0 + 10, y0 + 8, rgb(0xffd080), Align::Left, 1);

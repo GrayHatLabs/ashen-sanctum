@@ -208,7 +208,7 @@ pub fn def(k: Kind) -> Def {
             ..d("boss_vardak", "COUNT VARDAK", 1400.0, 2.0, (24.0, 34.0), 0.6, 1.5, 4000.0)
         },
         Kind::Scarab => Def { r: 0.3, ..d("brass_scarab", "BRASS SCARAB", 42.0, 3.8, (8.0, 12.0), 0.3, 0.8, 24.0) },
-        Kind::Inquisitor => Def { ranged: true, ..d("inquisitor", "INQUISITOR AUTOMATON", 60.0, 2.1, (10.0, 14.0), 0.6, 1.9, 32.0) },
+        Kind::Inquisitor => Def { ranged: true, ..d("inquisitor", "CENSER AUTOMATON", 60.0, 2.1, (10.0, 14.0), 0.6, 1.9, 32.0) },
         Kind::Gearwraith => d("gearwraith", "GEARWRAITH", 40.0, 3.0, (9.0, 13.0), 0.4, 1.2, 28.0),
         Kind::SpringJack => d("spring_jack", "SPRING-HEELED JACK", 45.0, 3.4, (11.0, 16.0), 0.3, 1.0, 30.0),
         Kind::BoilerBrute => Def { r: 0.5, reach: 1.1, ..d("boiler_brute", "BOILER BRUTE", 120.0, 1.7, (16.0, 24.0), 0.7, 1.6, 48.0) },
@@ -380,6 +380,11 @@ pub struct Mob {
     pub post: (f32, f32),
     /// Seconds a squad stays broken after its marshal falls (takes extra damage).
     pub broken: f32,
+    /// The inquisitor's Brand of Judgment (seconds left).
+    pub brand_t: f32,
+    /// Her holy fire: damage per second, seconds left. It ignores fire resistance.
+    pub holy: f32,
+    pub holy_t: f32,
 }
 
 impl Mob {
@@ -442,6 +447,9 @@ impl Mob {
             drilled: false,
             post: (0.0, 0.0),
             broken: 0.0,
+            brand_t: 0.0,
+            holy: 0.0,
+            holy_t: 0.0,
         }
     }
 
@@ -982,7 +990,8 @@ impl Game {
         }
         for (dmg, i) in hits {
             let before = self.p.hp;
-            self.hurt_player(dmg);
+            let src = self.mobs[i].kind;
+            self.hurt_by(dmg, Some(src));
             if def(self.mobs[i].kind).chills {
                 self.chill(1.4);
             }
@@ -1067,7 +1076,10 @@ impl Game {
         }
         self.shots.retain(|s| s.life > 0.0);
         for (d, kind) in hits {
+            // Necromantic and hex bolts come from cursed hands.
+            self.hurt_cursed = matches!(kind, ShotKind::Necro | ShotKind::Hex);
             self.hurt_player(d);
+            self.hurt_cursed = false;
             match kind {
                 ShotKind::Ice => self.chill(2.0),
                 ShotKind::Boulder => {
@@ -1127,7 +1139,10 @@ impl Game {
         }
         self.hazards.retain(|h| h.t < h.warn + h.live.max(0.3));
         if burst > 0.0 {
+            // Ground hazards are a boss's (or its curse's) doing.
+            self.hurt_cursed = true;
             self.hurt_player(burst);
+            self.hurt_cursed = false;
         }
         if dmg > 0.0 {
             // Poison ticks quietly (no flash spam), but it still kills.

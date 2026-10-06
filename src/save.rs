@@ -64,6 +64,7 @@ pub fn hero_info(slot: &str, text: &str) -> Option<HeroInfo> {
         Some("berserker") => crate::skills::Class::Berserker,
         Some("reaper") => crate::skills::Class::Reaper,
         Some("druid") => crate::skills::Class::Druid,
+        Some("inquisitor") => crate::skills::Class::Inquisitor,
         _ => crate::skills::Class::Sorceress,
     };
     Some(HeroInfo {

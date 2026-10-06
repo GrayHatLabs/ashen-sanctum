@@ -358,6 +358,8 @@ impl Art {
             "npc_captain" => ("npc_guard", 1.0, 0xc8b070, 0.3),
             "npc_trader" => ("npc_merchant", 1.05, 0x6a4a30, 0.4),
             // ---- jewelers (stand-ins until their art) ----
+            // ---- the Inquisitor (until her PixelLab art exists): a dark hooded figure ----
+            "inquisitor_hero" => ("mage", 1.0, 0x1a1414, 0.55),
             "clock_crow" => ("vbat", 0.95, 0xb08840, 0.55),
             "npc_jeweler0" => ("npc_merchant", 0.95, 0x7040a0, 0.45),
             "npc_jeweler1" => ("npc_trader", 1.0, 0x4080c0, 0.45),

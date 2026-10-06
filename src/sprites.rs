@@ -650,6 +650,7 @@ pub fn skill_icon(s: crate::skills::Skill) -> Sprite {
         s if crate::berserker::is_berserker(s) => berserker_icon(s, &mut im),
         s if crate::reaper::is_reaper(s) => reaper_icon(s, &mut im),
         s if crate::druid::is_druid(s) => druid_icon(s, &mut im),
+        s if crate::inquisitor::is_inquisitor(s) => inquisitor_icon(s, &mut im),
         _ => vampire_icon(s, &mut im),
     }
     im.ax = 0;
@@ -779,6 +780,156 @@ fn valkyrie_icon(s: crate::skills::Skill, im: &mut Sprite) {
                 im.set(12 - k, 10 + k / 3, ice(k as f32 / 9.0));
                 im.set(12 + k, 10 + k / 3, ice(k as f32 / 9.0));
             }
+        }
+        _ => {}
+    }
+}
+
+/// The inquisitor's icons: blackened iron chain, a brass censer of coals, and the amber-gold of
+/// her brands and holy fire, on charcoal with an oxblood edge.
+fn inquisitor_icon(s: crate::skills::Skill, im: &mut Sprite) {
+    use crate::skills::Skill;
+    im.fill(0, 0, 24, 24, rgb(0x120c0c));
+    for k in 0..24 {
+        im.set(k, 23, rgb(0x3a1012));
+        im.set(23, k, rgb(0x3a1012));
+    }
+    let link_a = rgb(0x5a5450);
+    let link_b = rgb(0x9a9080);
+    let gold = rgb(0xffb040);
+    let brass = rgb(0xa07830);
+    // A chain of links from (x0, y0) to (x1, y1).
+    let chain = |im: &mut Sprite, x0: i32, y0: i32, x1: i32, y1: i32| {
+        let n = (x1 - x0).abs().max((y1 - y0).abs()).max(1);
+        for t in 0..=n {
+            im.set(x0 + (x1 - x0) * t / n, y0 + (y1 - y0) * t / n, if (t / 2) % 2 == 0 { link_a } else { link_b });
+        }
+    };
+    // The censer: a spiked brass ball with glowing coals.
+    let censer = |im: &mut Sprite, cx: i32, cy: i32, r: i32| {
+        for y in -r..=r {
+            for x in -r..=r {
+                if x * x + y * y <= r * r {
+                    im.set(cx + x, cy + y, if (x + y) % 3 == 0 { rgb(0xffa030) } else { brass });
+                }
+            }
+        }
+        for (dx, dy) in [(0, -1), (1, 0), (0, 1), (-1, 0)] {
+            im.set(cx + dx * (r + 1), cy + dy * (r + 1), rgb(0xc0b090));
+        }
+        im.set(cx, cy, rgb(0xffe0a0));
+    };
+    // A brand: a ring with spikes.
+    let seal = |im: &mut Sprite, cx: i32, cy: i32, r: f32| {
+        for k in 0..24 {
+            let a = k as f32 / 24.0 * std::f32::consts::TAU;
+            im.set(cx + (a.cos() * r) as i32, cy + (a.sin() * r) as i32, gold);
+            if k % 3 == 0 {
+                im.set(cx + (a.cos() * (r + 2.0)) as i32, cy + (a.sin() * (r + 2.0)) as i32, rgb(0xd08020));
+            }
+        }
+        im.set(cx, cy, gold);
+    };
+    match s {
+        Skill::CenserStrike => {
+            chain(im, 3, 20, 14, 9);
+            censer(im, 16, 7, 3);
+        }
+        Skill::BrandOfJudgment => {
+            seal(im, 12, 12, 6.0);
+            for k in 0..3 {
+                im.set(11 + k, 12, gold);
+                im.set(12, 11 + k, gold);
+            }
+        }
+        Skill::Zealotry => {
+            // A raised eye of amber fire.
+            for x in 5..20 {
+                let h = (4.0 - ((x as f32 - 12.0) / 2.0).powi(2) / 4.0).max(0.0) as i32;
+                for y in 12 - h..=12 + h {
+                    im.set(x, y, rgb(0xd8c8b0));
+                }
+            }
+            im.fill(10, 10, 5, 5, gold);
+            im.fill(12, 11, 1, 3, rgb(0x201008));
+        }
+        Skill::ChainLash => {
+            chain(im, 2, 19, 21, 5);
+            for k in 0..4 {
+                im.set(18 + k, 3 + k, gold);
+            }
+        }
+        Skill::Hook => {
+            chain(im, 3, 12, 15, 12);
+            // The hook.
+            for y in 7..16 {
+                im.set(17, y, link_b);
+            }
+            for x in 17..21 {
+                im.set(x, 16, link_b);
+            }
+            im.set(20, 15, link_b);
+            im.set(20, 14, rgb(0xd0d0d0));
+        }
+        Skill::IronHalo => {
+            for k in 0..16 {
+                let a = k as f32 / 16.0 * std::f32::consts::TAU;
+                let (c, s2) = (a.cos(), a.sin());
+                for d in 5..7 {
+                    im.set(12 + (c * d as f32) as i32, 12 + (s2 * d as f32) as i32, rgb(0x6a5a40));
+                }
+                if k % 2 == 0 {
+                    for d in 7..11 {
+                        im.set(12 + (c * d as f32) as i32, 12 + (s2 * d as f32) as i32, rgb(0x3a3430));
+                    }
+                }
+            }
+        }
+        Skill::CenserSweep => {
+            for k in 0..20 {
+                let a = k as f32 / 20.0 * std::f32::consts::TAU;
+                im.set(12 + (a.cos() * 8.0) as i32, 12 + (a.sin() * 8.0) as i32, if k % 2 == 0 { link_a } else { rgb(0xd07020) });
+            }
+            censer(im, 19, 9, 2);
+            im.fill(11, 11, 2, 2, rgb(0xd8c8b0));
+        }
+        Skill::BindingChains => {
+            for x0 in [5, 12, 19] {
+                chain(im, x0, 21, x0 + 1, 6);
+            }
+            for x in 4..21 {
+                im.set(x, 21, rgb(0x6a5030));
+            }
+        }
+        Skill::ChainLinks => {
+            seal(im, 6, 7, 3.0);
+            seal(im, 18, 7, 3.0);
+            seal(im, 12, 18, 3.0);
+            chain(im, 8, 8, 16, 8);
+            chain(im, 7, 10, 11, 16);
+            chain(im, 17, 10, 13, 16);
+        }
+        Skill::Purification => {
+            censer(im, 12, 15, 3);
+            for k in 0..3 {
+                let r = 5.0 + k as f32 * 2.5;
+                for j in 0..14 {
+                    let a = std::f32::consts::PI + j as f32 / 13.0 * std::f32::consts::PI;
+                    im.set(12 + (a.cos() * r) as i32, 15 + (a.sin() * r * 0.6) as i32, if k == 0 { gold } else { rgb(0xc07030) });
+                }
+            }
+        }
+        Skill::FinalJudgment => {
+            // The ignited halo: white-gold spikes around a dark hood.
+            for k in 0..12 {
+                let a = k as f32 / 12.0 * std::f32::consts::TAU;
+                for d in 6..11 {
+                    im.set(12 + (a.cos() * d as f32) as i32, 12 + (a.sin() * d as f32) as i32, if d > 8 { rgb(0xfff0c0) } else { gold });
+                }
+            }
+            im.fill(9, 9, 7, 8, rgb(0x1a1414));
+            im.set(11, 12, gold);
+            im.set(14, 12, gold);
         }
         _ => {}
     }

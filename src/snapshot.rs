@@ -665,6 +665,61 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         save(&mut g, scr, "berserker_tree");
         g.tree = None;
     }
+    // The Inquisitor: the censer on its chain, brands, the lash, binding chains, the sweep, Final Judgment.
+    {
+        use crate::skills::{Class, Skill};
+        let mut g = Game::new(7, h);
+        g.set_class(Class::Inquisitor);
+        g.p.clvl = 18;
+        for s in crate::skills::INQUISITOR {
+            g.p.skills.rank[s as usize] = 3;
+        }
+        g.p.base_hp = 9000.0;
+        g.p.recalc();
+        g.p.hp = 9000.0;
+        g.p.skills.primary = Skill::CenserStrike;
+        g.p.skills.secondary = Skill::BrandOfJudgment;
+        g.debug_goto(LevelId::Dungeon(0, 0));
+        g.banner_t = 0.0;
+        idle(&mut g, 100);
+        let target = g.bot_target().map(|t| (t.0, t.1)).unwrap_or((g.p.x + 3.0, g.p.y));
+        g.debug_place_near(target.0, target.1, 2.4);
+        idle(&mut g, 10);
+        let cast = |g: &mut Game, s: Skill, x: f32, y: f32| {
+            g.p.mana = g.p.max_mana * 0.8;
+            g.p.cast_cd = 0.0;
+            g.p.skills.cooldown = [0.0; crate::skills::ALL.len()];
+            g.cast_skill(s, x, y);
+        };
+        let target = g.bot_target().map(|t| (t.0, t.1)).unwrap_or(target);
+        cast(&mut g, Skill::BrandOfJudgment, target.0, target.1);
+        idle(&mut g, 4);
+        cast(&mut g, Skill::CenserStrike, target.0, target.1);
+        idle(&mut g, 3);
+        save(&mut g, scr, "inquisitor_strike");
+        let target = g.bot_target().map(|t| (t.0, t.1)).unwrap_or(target);
+        cast(&mut g, Skill::ChainLash, target.0, target.1);
+        idle(&mut g, 4);
+        save(&mut g, scr, "inquisitor_lash");
+        let target = g.bot_target().map(|t| (t.0, t.1)).unwrap_or(target);
+        cast(&mut g, Skill::BindingChains, target.0, target.1);
+        idle(&mut g, 10);
+        save(&mut g, scr, "inquisitor_bind");
+        let (px, py) = (g.p.x, g.p.y);
+        cast(&mut g, Skill::CenserSweep, px, py);
+        idle(&mut g, 20);
+        save(&mut g, scr, "inquisitor_sweep");
+        idle(&mut g, 120);
+        let (px, py) = (g.p.x, g.p.y);
+        cast(&mut g, Skill::Purification, px, py);
+        cast(&mut g, Skill::FinalJudgment, px, py);
+        idle(&mut g, 8);
+        save(&mut g, scr, "inquisitor_judgment");
+        g.p.skills.points = 2;
+        g.update(&Input { skills: true, ..Input::default() });
+        save(&mut g, scr, "inquisitor_tree");
+        g.tree = None;
+    }
     // The Reaper: the scythe and its runes, souls, chains, the hourglass, the open Ledger.
     {
         use crate::skills::{Class, Skill};

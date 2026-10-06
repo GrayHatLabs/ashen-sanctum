@@ -131,6 +131,8 @@ pub enum PKind {
     Frost,
     /// The druid's glowing green spores.
     Spore,
+    /// The inquisitor's holy fire: white-gold flames that rise slowly.
+    Holy,
 }
 
 pub struct Particle {
@@ -230,6 +232,9 @@ pub struct Player {
     pub warcry_t: f32,
     pub berserk_t: f32,
     pub exhaust_t: f32,
+    // ---- the inquisitor (Censer Sweep reuses the whirl fields) ----
+    /// Final Judgment.
+    pub judge_t: f32,
     pub wolf_cd: f32,
     pub howl_t: f32,
     // ---- the reaper ----
@@ -329,6 +334,7 @@ impl Player {
             warcry_t: 0.0,
             berserk_t: 0.0,
             exhaust_t: 0.0,
+            judge_t: 0.0,
             wolf_cd: 0.0,
             howl_t: 0.0,
             runes: 0,
@@ -607,6 +613,11 @@ pub struct Game {
     pub(crate) hud_bag: (i32, i32, i32, i32),
     pub(crate) shots: Vec<Shot>,
     pub(crate) hazards: Vec<Hazard>,
+    /// The inquisitor's chains drawn for a moment, and her binding chains.
+    pub(crate) links: Vec<crate::inquisitor::ChainLinkFx>,
+    pub(crate) binds: Vec<crate::inquisitor::BindFx>,
+    /// The blow being dealt to you comes from something cursed (her Iron Halo).
+    pub(crate) hurt_cursed: bool,
     /// Act 4: stop-clocks and law zones on this level (`clockwork.rs`).
     pub clocks: Vec<crate::clockwork::TimeClock>,
     pub laws: Vec<crate::clockwork::LawZone>,
@@ -709,6 +720,9 @@ impl Game {
             hud_bag: (0, 0, 0, 0),
             shots: vec![],
             hazards: vec![],
+            links: vec![],
+            binds: vec![],
+            hurt_cursed: false,
             clocks: vec![],
             laws: vec![],
             law_here: None,
@@ -943,7 +957,11 @@ impl Game {
         self.p.starting_gear();
         self.p.hp = self.p.max_hp;
         // Valor starts empty: she earns it in the fight.
-        self.p.mana = if matches!(class, crate::skills::Class::Valkyrie | crate::skills::Class::Berserker | crate::skills::Class::Reaper) { 0.0 } else { self.p.max_mana };
+        self.p.mana = if matches!(class, crate::skills::Class::Valkyrie | crate::skills::Class::Berserker | crate::skills::Class::Reaper | crate::skills::Class::Inquisitor) {
+            0.0
+        } else {
+            self.p.max_mana
+        };
     }
 
     /// Class select controls: left / right (or click) to pick, confirm to start.
@@ -954,7 +972,7 @@ impl Game {
             sel = sel.saturating_sub(1);
         }
         if edge(inp.move_x, self.prev.move_x, false) || edge(inp.move_y, self.prev.move_y, false) {
-            sel = (sel + 1).min(6);
+            sel = (sel + 1).min(crate::skills::ALL_CLASSES.len() - 1);
         }
         let mut go = confirm;
         if let (Some((mx, my)), true) = (inp.mouse, click) {
@@ -972,6 +990,7 @@ impl Game {
                 4 => crate::skills::Class::Berserker,
                 5 => crate::skills::Class::Reaper,
                 6 => crate::skills::Class::Druid,
+                7 => crate::skills::Class::Inquisitor,
                 _ => crate::skills::Class::Sorceress,
             };
             self.set_class(class);
@@ -1125,6 +1144,9 @@ impl Game {
         self.fungi.clear();
         self.vines.clear();
         self.glasses.clear();
+        self.links.clear();
+        self.binds.clear();
+        self.p.judge_t = 0.0;
         self.p.rune_prey = None;
         self.p.runes = 0;
         self.p.charge = None;
@@ -1521,6 +1543,7 @@ impl Game {
         self.update_berserker();
         self.update_reaper();
         self.update_druid();
+        self.update_inquisitor();
         self.update_world();
         self.prev = inp.clone();
     }
@@ -1943,8 +1966,8 @@ impl Game {
         let base_regen = if p.skills.class == crate::skills::Class::Inventor {
             // Cooling (gear "mana regeneration" cools faster too).
             crate::inventor::COOLING * crate::inventor::tinker_cool(p.skills.rank(crate::skills::Skill::Tinkerer))
-        } else if matches!(p.skills.class, crate::skills::Class::Valkyrie | crate::skills::Class::Berserker | crate::skills::Class::Reaper) {
-            // Valor and rage don't regenerate: they fight for it.
+        } else if matches!(p.skills.class, crate::skills::Class::Valkyrie | crate::skills::Class::Berserker | crate::skills::Class::Reaper | crate::skills::Class::Inquisitor) {
+            // Valor, rage and judgment don't regenerate: they fight for it.
             0.0
         } else {
             2.2 * p.skills.regen_mult()
@@ -1996,6 +2019,8 @@ impl Game {
                 "INK"
             } else if self.is_valkyrie() || self.is_berserker() {
                 "MEAD"
+            } else if self.is_inquisitor() {
+                "HOLY OIL"
             } else {
                 "MANA"
             };
@@ -2086,6 +2111,8 @@ impl Game {
                 crate::berserker::reach_of(skill)
             } else if self.is_reaper() {
                 crate::reaper::reach_of(skill)
+            } else if self.is_inquisitor() {
+                crate::inquisitor::reach_of(skill, self.p.skills.rank(crate::skills::Skill::Zealotry))
             } else {
                 None
             };
@@ -2464,7 +2491,7 @@ impl Game {
             crate::skills::Class::Vampire => crate::vampire::blood_taken(kind),
             crate::skills::Class::Inventor => 1.0,
             crate::skills::Class::Valkyrie => crate::valkyrie::frost_taken(kind),
-            crate::skills::Class::Berserker | crate::skills::Class::Reaper | crate::skills::Class::Druid => 1.0,
+            crate::skills::Class::Berserker | crate::skills::Class::Reaper | crate::skills::Class::Druid | crate::skills::Class::Inquisitor => 1.0,
             crate::skills::Class::Sorceress => crate::mobs::fire_taken(kind),
         }
     }
@@ -2478,6 +2505,13 @@ impl Game {
             self.floater(x, y, "CHILLED".into(), rgb(0x90d0ff));
         }
         self.p.chill = self.p.chill.max(t);
+    }
+
+    /// A blow from a monster of this kind (the Iron Halo turns away the cursed).
+    pub(crate) fn hurt_by(&mut self, dmg: f32, src: Option<Kind>) {
+        self.hurt_cursed = src.map_or(false, crate::inquisitor::kind_cursed);
+        self.hurt_player(dmg);
+        self.hurt_cursed = false;
     }
 
     pub(crate) fn hurt_player(&mut self, dmg: f32) {
@@ -2497,6 +2531,17 @@ impl Game {
             let dmg = dmg * (1.0 - dr);
             if dmg > 0.0 {
                 self.gain_rage(dmg * crate::berserker::RAGE_PER_HURT);
+            }
+            dmg
+        } else {
+            dmg
+        };
+        // The inquisitor: the Iron Halo turns away the cursed, and pain hardens her Judgment.
+        let dmg = if self.is_inquisitor() {
+            let r = self.p.skills.rank(crate::skills::Skill::IronHalo);
+            let dmg = if self.hurt_cursed { dmg * (1.0 - crate::inquisitor::halo_dr(r)) } else { dmg };
+            if dmg > 0.0 {
+                self.gain_judgment(dmg * crate::inquisitor::halo_judge(r));
             }
             dmg
         } else {
@@ -2735,6 +2780,8 @@ impl Game {
         if shatter {
             self.shatter(x, y);
         }
+        // Holy fire leaps from a cursed foe that dies burning.
+        self.holy_leap(i);
         if self.is_berserker() && kind != Kind::DireWolf {
             self.berserker_kill();
         }
@@ -3018,7 +3065,7 @@ impl Game {
             p.y += p.vy * DT;
             p.z += p.vz * DT;
             match p.kind {
-                PKind::Fire | PKind::Magic | PKind::Spore => p.vz += 12.0 * DT,
+                PKind::Fire | PKind::Magic | PKind::Spore | PKind::Holy => p.vz += 12.0 * DT,
                 PKind::Frost => p.vz -= 60.0 * DT,
                 PKind::Smoke => p.vz = 14.0,
                 PKind::Bone | PKind::Blood => {

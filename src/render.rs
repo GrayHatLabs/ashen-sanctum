@@ -520,6 +520,59 @@ impl Game {
             scr.disc(x, y, 2, rgb(0xd8f0ff));
             scr.pset(x, y - 3, rgb(0xa0d8ff));
         }
+        // The inquisitor's chain: dark iron links, glinting, from her hand to the censer.
+        for c in &self.links {
+            let (x0, y0) = to_scr(c.x0, c.y0);
+            let (x1, y1) = to_scr(c.x1, c.y1);
+            let fade = 1.0 - (c.t / c.max).min(1.0);
+            let n = ((((x1 - x0).pow(2) + (y1 - y0).pow(2)) as f32).sqrt() / 3.0) as i32 + 2;
+            for k in 0..=n {
+                let t = k as f32 / n as f32;
+                let x = x0 + ((x1 - x0) as f32 * t) as i32 + scr.shake.0;
+                let y = y0 - 22 + ((y1 - y0 + 8) as f32 * t) as i32 + scr.shake.1;
+                let col = if k % 2 == 0 { rgb(0x3a3430) } else { rgb(0x8a8070) };
+                scr.fill(x - 1, y - 1, 2, 2, col);
+            }
+            // The censer at the end, coals glowing.
+            let (ex, ey) = (x1 + scr.shake.0, y1 - 14 + scr.shake.1);
+            scr.glow(ex, ey, 10.0, rgb(0xffd060), 0.6 * fade + 0.25);
+            scr.disc(ex, ey, 3, rgb(0x8a6a28));
+            scr.pset(ex, ey, rgb(0xfff6d0));
+        }
+        // Binding chains: links from the floor to every foe held, under a ring of iron.
+        for b in &self.binds {
+            let (cx, cy) = to_scr(b.x, b.y);
+            scr.glow(cx, cy, 18.0, rgb(0xc08030), 0.35);
+            for &i in &b.held {
+                if let Some(m) = self.mobs.get(i).filter(|m| m.alive()) {
+                    let (mx, my) = to_scr(m.x, m.y);
+                    for side in [-6, 6] {
+                        let n = 8;
+                        for k in 0..n {
+                            let t = k as f32 / n as f32;
+                            let x = mx + side + ((-side) as f32 * t * 0.6) as i32 + scr.shake.0;
+                            let y = my + 4 - (t * 18.0) as i32 + scr.shake.1;
+                            scr.fill(x - 1, y - 1, 2, 2, if k % 2 == 0 { rgb(0x4a4038) } else { rgb(0x9a8a70) });
+                        }
+                    }
+                }
+            }
+        }
+        // Brands of Judgment: a burning seal under each branded foe, and a sigil over its head.
+        for m in self.mobs.iter().filter(|m| m.brand_t > 0.0 && m.alive()) {
+            let (mx, my) = to_scr(m.x, m.y);
+            let pulse = 0.5 + 0.5 * ((self.tick as f32) * 0.15 + m.x).sin();
+            let a = (m.brand_t * 2.0).min(1.0);
+            blend_ellipse(scr, mx, my, 12, 5, rgb(0xffa030), 0.12 * a + 0.08 * pulse * a);
+            for k in 0..8 {
+                let ang = k as f32 / 8.0 * std::f32::consts::TAU + self.tick as f32 * 0.03;
+                scr.pset(mx + (ang.cos() * 11.0) as i32, my + (ang.sin() * 4.5) as i32, rgb(0xffd080));
+            }
+            let (sx, sy) = (mx + scr.shake.0, my - 52 + scr.shake.1);
+            scr.glow(sx, sy, 6.0, rgb(0xffa030), 0.6 * a);
+            scr.disc(sx, sy, 3, rgb(0xffb040));
+            scr.disc(sx, sy, 1, rgb(0x402010));
+        }
         for c in &self.chains_fx {
             let (cx, cy) = to_scr(c.x, c.y);
             for &i in &c.held {
@@ -820,6 +873,17 @@ impl Game {
                     let i = (sy * scr.w + sx) as usize;
                     scr.px[i] = add(scr.px[i], rgb(0x90e040), 0.5 + k);
                 }
+                PKind::Holy => {
+                    // White at the heart, gold as it rises, never the red of ordinary fire.
+                    let c = if k > 0.6 { rgb(0xfffbe8) } else if k > 0.3 { rgb(0xffd870) } else { rgb(0xd09a30) };
+                    let i = (sy * scr.w + sx) as usize;
+                    scr.px[i] = add(scr.px[i], c, 0.6 + k);
+                    scr.pset(sx, sy - 1, mix(scr.px[i], c, 0.5 * k));
+                    if k > 0.5 {
+                        scr.pset(sx + 1, sy, mix(scr.px[i], c, 0.6));
+                        scr.pset(sx - 1, sy, mix(scr.px[i], c, 0.4));
+                    }
+                }
             }
         }
         scr.shake = (0, 0);
@@ -1073,6 +1137,7 @@ impl Game {
             ("BERSERKER", "portrait_berserker", "berserker", "GIANT AXE,", "DIRE WOLF.", rgb(0xd07040)),
             ("REAPER", "portrait_reaper", "reaper", "RUNE SCYTHE,", "SOULS.", rgb(0x9ad8ff)),
             ("DRUID", "portrait_druid", "druid", "PLAGUE AND", "SUMMONS.", rgb(0x90d050)),
+            ("INQUISITOR", "portrait_inquisitor", "inquisitor_hero", "CHAINED CENSER,", "BRANDS.", rgb(0xe0a040)),
         ];
         let pw = (w - 20 - 10 * (classes.len() as i32 - 1)) / classes.len() as i32;
         let ph = h - 70;
@@ -1139,13 +1204,18 @@ impl Game {
             crate::skills::Class::Berserker => "berserker",
             crate::skills::Class::Reaper => "reaper",
             crate::skills::Class::Druid => "druid",
+            crate::skills::Class::Inquisitor => "inquisitor_hero",
             crate::skills::Class::Sorceress => "mage",
         };
         let art = self.art.char_art(sheet).0;
         // The melee heroes pick their own attack poses (thrust, sweep, whirl, throw, cast).
         let valkyrie = matches!(
             self.p.skills.class,
-            crate::skills::Class::Valkyrie | crate::skills::Class::Berserker | crate::skills::Class::Reaper | crate::skills::Class::Druid
+            crate::skills::Class::Valkyrie
+                | crate::skills::Class::Berserker
+                | crate::skills::Class::Reaper
+                | crate::skills::Class::Druid
+                | crate::skills::Class::Inquisitor
         );
         // Rake is a claw slash (cast pose of exactly 0.3 s).
         let claw = vampire && (self.p.cast_len - 0.3).abs() < 0.001 && art.has("attack");
@@ -1196,6 +1266,17 @@ impl Game {
         // The valkyrie's wings: raven feathers turning to ice, spread behind her.
         if self.p.skills.class == crate::skills::Class::Valkyrie && self.p.wings_t > 0.0 {
             draw_wings(scr, sx, sy - 30, self.tick, (self.p.wings_t * 3.0).min(1.0));
+        }
+        // The inquisitor's Iron Halo ignites in Final Judgment: spikes of light behind her head.
+        if self.p.skills.class == crate::skills::Class::Inquisitor && self.p.judge_t > 0.0 {
+            let (hx, hy) = (sx, sy - 44);
+            scr.glow(hx, hy, 22.0, rgb(0xffb040), 0.55 + 0.15 * ((self.tick as f32) * 0.2).sin());
+            for k in 0..12 {
+                let a = k as f32 / 12.0 * std::f32::consts::TAU + self.tick as f32 * 0.01;
+                for d in 9..15 {
+                    scr.pset(hx + (a.cos() * d as f32) as i32, hy + (a.sin() * d as f32) as i32, rgb(0xffe0a0));
+                }
+            }
         }
         self.blit_char(scr, sheet, anim, (sx, sy), fx, self.p.moving);
         // Until her own sprite exists, draw the scythe in her hands (resting, or swinging with the cut).
@@ -1361,6 +1442,10 @@ impl Game {
             // Rage: dark crimson, pulsing in the red mist.
             let (dark, hi) = if self.p.berserk_t > 0.0 && (self.tick / 6) % 2 == 0 { (rgb(0xe02010), rgb(0xffa080)) } else { (rgb(0x701010), rgb(0xd04030)) };
             globe(scr, w - 34, gy, 26, self.p.mana / self.p.max_mana, dark, hi);
+        } else if self.is_inquisitor() {
+            // Judgment: oxblood, burning gold in Final Judgment.
+            let (dark, hi) = if self.p.judge_t > 0.0 && (self.tick / 6) % 2 == 0 { (rgb(0xc08020), rgb(0xfff0a0)) } else { (rgb(0x5a1418), rgb(0xe09040)) };
+            globe(scr, w - 34, gy, 26, self.p.mana / self.p.max_mana, dark, hi);
         } else if self.is_valkyrie() {
             // Valor: icy blue, blazing white when full.
             let (dark, hi) = if self.blazing() && (self.tick / 8) % 2 == 0 { (rgb(0x90c0e0), rgb(0xffffff)) } else { (rgb(0x2a5a90), rgb(0x90d8ff)) };
@@ -1413,6 +1498,9 @@ impl Game {
                 "RAGE"
             };
             scr.text(label, w - 34, gy - 36, rgb(0xe08060), Align::Center, 1);
+        } else if self.is_inquisitor() {
+            scr.text(&format!("{}", self.p.mana.floor() as i32), w - 34, gy - 4, WHITE, Align::Center, 1);
+            scr.text(if self.p.judge_t > 0.0 { "JUDGMENT!" } else { "JUDGMENT" }, w - 34, gy - 36, rgb(0xe8b060), Align::Center, 1);
         } else if self.is_valkyrie() {
             scr.text(&format!("{}", self.p.mana.floor() as i32), w - 34, gy - 4, WHITE, Align::Center, 1);
             scr.text(if self.blazing() { "VALOR!" } else { "VALOR" }, w - 34, gy - 36, rgb(0xa0d8ff), Align::Center, 1);
@@ -1448,6 +1536,7 @@ impl Game {
                 crate::skills::Class::Berserker => ("CLEAVE", rgb(0xe08060)),
                 crate::skills::Class::Reaper => ("SCYTHE", rgb(0xa0d8ff)),
                 crate::skills::Class::Druid => ("SPORE", rgb(0x90d050)),
+                crate::skills::Class::Inquisitor => ("CENSER", rgb(0xe8b060)),
                 crate::skills::Class::Sorceress => ("EMBER", rgb(0xff9050)),
             };
             scr.text(label, ix + 4, iy + 28, col, Align::Center, 1);
