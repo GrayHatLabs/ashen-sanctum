@@ -159,7 +159,8 @@ impl Menu {
             self.sel = (self.sel + 1) % n;
         }
         if let (Some((mx, my)), true) = (inp.mouse, inp.lmb && !prev.lmb) {
-            if let Some(&(.., k)) = self.rects.iter().find(|&&(x, y, w, h, _)| mx >= x && mx < x + w && my >= y && my < y + h) {
+            // The topmost (last drawn) thing under the mouse wins: the delete prompt sits over the hero list.
+            if let Some(&(.., k)) = self.rects.iter().rev().find(|&&(x, y, w, h, _)| mx >= x && mx < x + w && my >= y && my < y + h) {
                 // Click to select, click the selected one again to choose (single click on buttons).
                 let button = self.stage == Stage::Heroes && k >= self.heroes.len();
                 if k == self.sel || button || !matches!(self.stage, Stage::Heroes | Stage::Create) {
@@ -660,6 +661,14 @@ mod tests {
         let d = *m.rects.iter().find(|r| r.4 == 12).unwrap();
         m.update(&Input { mouse: Some((d.0 + 4, d.1 + 4)), lmb: true, ..Input::default() });
         assert_eq!(m.stage, Stage::Delete(2));
+        // Click DELETE in the prompt (it sits over the list): the hero is gone and the list shrinks.
+        m.update(&Input::default());
+        m.draw(&mut scr, &art);
+        let yes = *m.rects.iter().rev().find(|r| r.4 == 0).unwrap();
+        m.update(&Input { mouse: Some((yes.0 + 4, yes.1 + 4)), lmb: true, ..Input::default() });
+        assert_eq!(m.stage, Stage::Heroes);
+        assert_eq!(m.heroes.len(), 9);
+        assert!(m.heroes.iter().all(|h| h.name != "HERO 2"), "the right hero was deleted");
     }
 
     #[test]
