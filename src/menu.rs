@@ -32,13 +32,14 @@ pub enum MenuOut {
 }
 
 /// The classes on the create screen: (name, portrait, two lines, colour, playable, in-game sheet).
-const CLASSES: [(&str, &str, &str, &str, u32, bool, &str); 6] = [
+const CLASSES: [(&str, &str, &str, &str, u32, bool, &str); 7] = [
     ("SORCERESS", "portrait_sorceress", "FIREBALLS,", "METEORS.", 0xff9040, true, "mage"),
-    ("VAMPIRE", "portrait_vampire", "BLOOD MAGIC,", "BATS, THRALLS.", 0xd04060, true, "vampire"),
+    ("VAMPIRE", "portrait_vampire", "BLOOD MAGIC,", "THRALLS.", 0xd04060, true, "vampire"),
     ("INVENTOR", "portrait_inventor", "AETHER GUNS,", "TURRETS.", 0x40c0b0, true, "inventor"),
     ("VALKYRIE", "portrait_valkyrie", "FROST SPEAR,", "SHATTER.", 0x80d0ff, true, "valkyrie"),
     ("BERSERKER", "portrait_berserker", "GIANT AXE,", "DIRE WOLF.", 0xd07040, true, "berserker"),
-    ("REAPER", "portrait_reaper", "RUNE SCYTHE,", "SOULS, SPIRITS", 0x9ad8ff, true, "reaper"),
+    ("REAPER", "portrait_reaper", "RUNE SCYTHE,", "SOULS.", 0x9ad8ff, true, "reaper"),
+    ("DRUID", "portrait_druid", "PLAGUE AND", "SUMMONS.", 0x90d050, true, "druid"),
 ];
 
 const NAMES: [&str; 16] = [
@@ -267,6 +268,7 @@ impl Menu {
                             3 => Class::Valkyrie,
                             4 => Class::Berserker,
                             5 => Class::Reaper,
+                            6 => Class::Druid,
                             _ => Class::Sorceress,
                         };
                         return Some(MenuOut::New(class, name));
@@ -535,6 +537,7 @@ fn class_look(c: Class) -> (&'static str, u32) {
         Class::Valkyrie => ("portrait_valkyrie", rgb(0x80d0ff)),
         Class::Berserker => ("portrait_berserker", rgb(0xd07040)),
         Class::Reaper => ("portrait_reaper", rgb(0x9ad8ff)),
+        Class::Druid => ("portrait_druid", rgb(0x90d050)),
     }
 }
 

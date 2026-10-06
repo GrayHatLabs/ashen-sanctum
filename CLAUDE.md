@@ -26,6 +26,8 @@ Project rules and reference. Read this before every major change.
 - `levels.rs` + `build.rs`: JSON level files (folder override, embedded at build, generator fallback).
   Editor: `tools/level-editor/index.html`. Format: `docs/LEVEL_FORMAT.md`. Keep the editor's catalog
   (kinds, footprints, validation) in sync with `levels.rs` when adding props/monsters/NPCs.
+- `druid.rs`: the Druid class (docs/DRUID_CLASS.md): mana + `p.balance` (Decay -1 .. Bloom +1); poison lives on
+  `Mob.poison / poison_t / plagued`; her allies are charmed `Rat`, `MossWolf` (carried in `go_to`), `ThornWarden`.
 - `reaper.rs`: the Reaper class (docs/REAPER_CLASS.md). Souls are `p.mana` (10 per soul, `soul_cap()`);
   `reaper_kill` (from `kill`) releases drifting souls; scholar spirits are timed charmed `Kind::Scholar`.
 - `berserker.rs`: the Berserker class (docs/BERSERKER_CLASS.md). Rage is `p.mana` (no regen); her wolf is a

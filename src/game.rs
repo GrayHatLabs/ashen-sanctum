@@ -125,6 +125,8 @@ pub enum PKind {
     Magic,
     /// Ice shards and snow puffs.
     Frost,
+    /// The druid's glowing green spores.
+    Spore,
 }
 
 pub struct Particle {
@@ -233,6 +235,12 @@ pub struct Player {
     pub rune_t: f32,
     /// The Ledger is open.
     pub ledger_t: f32,
+    // ---- the druid ----
+    /// Decay (-1) .. Bloom (+1).
+    pub balance: f32,
+    /// Rejuvenate: seconds left and life per second.
+    pub regrow_t: f32,
+    pub regrow_rate: f32,
     pub cast_t: f32,
     pub cast_cd: f32,
     /// Length of the current cast animation (fireball or ember).
@@ -323,6 +331,9 @@ impl Player {
             rune_prey: None,
             rune_t: 0.0,
             ledger_t: 0.0,
+            balance: 0.0,
+            regrow_t: 0.0,
+            regrow_rate: 0.0,
             cast_t: 0.0,
             cast_cd: 0.0,
             cast_len: CAST_TIME,
@@ -548,6 +559,9 @@ pub struct Game {
     pub(crate) chains_fx: Vec<crate::reaper::ChainsFx>,
     pub(crate) glasses: Vec<crate::reaper::GlassFx>,
     pub(crate) sweeps: Vec<crate::reaper::SweepFx>,
+    pub(crate) clouds: Vec<crate::druid::CloudFx>,
+    pub(crate) fungi: Vec<crate::druid::FungusFx>,
+    pub(crate) vines: Vec<crate::druid::VineFx>,
     pub(crate) fields: Vec<crate::vampire::BloodField>,
     pub(crate) bombs: Vec<crate::inventor::BombFx>,
     pub(crate) arcs: Vec<crate::inventor::ArcFx>,
@@ -651,6 +665,9 @@ impl Game {
             chains_fx: vec![],
             glasses: vec![],
             sweeps: vec![],
+            clouds: vec![],
+            fungi: vec![],
+            vines: vec![],
             fields: vec![],
             bombs: vec![],
             arcs: vec![],
@@ -910,7 +927,7 @@ impl Game {
             sel = sel.saturating_sub(1);
         }
         if edge(inp.move_x, self.prev.move_x, false) || edge(inp.move_y, self.prev.move_y, false) {
-            sel = (sel + 1).min(5);
+            sel = (sel + 1).min(6);
         }
         let mut go = confirm;
         if let (Some((mx, my)), true) = (inp.mouse, click) {
@@ -927,6 +944,7 @@ impl Game {
                 3 => crate::skills::Class::Valkyrie,
                 4 => crate::skills::Class::Berserker,
                 5 => crate::skills::Class::Reaper,
+                6 => crate::skills::Class::Druid,
                 _ => crate::skills::Class::Sorceress,
             };
             self.set_class(class);
@@ -1065,6 +1083,8 @@ impl Game {
     }
 
     pub fn go_to(&mut self, id: LevelId, from: Option<LevelId>) {
+        // The druid's moss wolf follows her (it stays until it falls).
+        let wolf = self.mobs.iter().position(|m| m.kind == Kind::MossWolf && m.alive()).map(|i| self.mobs.remove(i));
         self.trail.clear();
         // Her raven, javelins and charge don't follow her between levels.
         self.ravens.clear();
@@ -1074,6 +1094,9 @@ impl Game {
         self.lanterns.clear();
         self.chains_fx.clear();
         self.sweeps.clear();
+        self.clouds.clear();
+        self.fungi.clear();
+        self.vines.clear();
         self.glasses.clear();
         self.p.rune_prey = None;
         self.p.runes = 0;
@@ -1104,6 +1127,13 @@ impl Game {
         let (x, y) = spot.unwrap_or(self.start);
         self.p.x = x;
         self.p.y = y;
+        if let Some(mut w) = wolf {
+            let (wx, wy) = if self.d.blocked(x + 1.0, y, 0.35) { (x, y) } else { (x + 1.0, y) };
+            w.x = wx;
+            w.y = wy;
+            w.path.clear();
+            self.mobs.push(w);
+        }
     }
 
     /// A walkable spot next to a portal of this kind (so you don't land back on it).
@@ -1419,6 +1449,7 @@ impl Game {
         self.update_valkyrie();
         self.update_berserker();
         self.update_reaper();
+        self.update_druid();
         self.update_world();
         self.prev = inp.clone();
     }
@@ -2333,7 +2364,7 @@ impl Game {
             crate::skills::Class::Vampire => crate::vampire::blood_taken(kind),
             crate::skills::Class::Inventor => 1.0,
             crate::skills::Class::Valkyrie => crate::valkyrie::frost_taken(kind),
-            crate::skills::Class::Berserker | crate::skills::Class::Reaper => 1.0,
+            crate::skills::Class::Berserker | crate::skills::Class::Reaper | crate::skills::Class::Druid => 1.0,
             crate::skills::Class::Sorceress => crate::mobs::fire_taken(kind),
         }
     }
@@ -2577,6 +2608,7 @@ impl Game {
     pub(crate) fn kill(&mut self, i: usize) {
         let (x, y, kind, boss, xp) = (self.mobs[i].x, self.mobs[i].y, self.mobs[i].kind, self.mobs[i].boss, self.mobs[i].xp);
         let marked = self.mobs[i].marked > 0.0;
+        let (poisoned, plagued, pdps) = (self.mobs[i].poison_t > 0.0, self.mobs[i].plagued, self.mobs[i].poison);
         // The valkyrie kills a frozen foe: it shatters (after it's counted dead, so shards can't re-kill it).
         let shatter = self.is_valkyrie() && self.mobs[i].frozen > 0.0 && self.p.skills.rank(crate::skills::Skill::FrostBrand) > 0;
         self.mobs[i].frozen = 0.0;
@@ -2605,6 +2637,9 @@ impl Game {
         }
         if self.is_berserker() && kind != Kind::DireWolf {
             self.berserker_kill();
+        }
+        if self.is_druid() && !matches!(kind, Kind::Rat | Kind::MossWolf | Kind::ThornWarden) {
+            self.druid_kill(x, y, poisoned, plagued, pdps);
         }
         if self.is_reaper() && kind != Kind::Scholar {
             self.reaper_kill(x, y, boss, marked);
@@ -2850,7 +2885,7 @@ impl Game {
             p.y += p.vy * DT;
             p.z += p.vz * DT;
             match p.kind {
-                PKind::Fire | PKind::Magic => p.vz += 12.0 * DT,
+                PKind::Fire | PKind::Magic | PKind::Spore => p.vz += 12.0 * DT,
                 PKind::Frost => p.vz -= 60.0 * DT,
                 PKind::Smoke => p.vz = 14.0,
                 PKind::Bone | PKind::Blood => {
@@ -4046,6 +4081,117 @@ mod tests {
         g.kill(d);
         assert!(g.mobs.iter().filter(|m| m.kind == Kind::Scholar).count() > before, "the dead rise");
         assert_eq!(g.souls.last().map(|s| s.n), Some(2.0), "double souls");
+    }
+
+    fn druid_game() -> Game {
+        let mut g = quiet_game();
+        g.set_class(crate::skills::Class::Druid);
+        g.p.clvl = 18;
+        // A level-18 mana pool (her ultimates cost 50+).
+        g.p.base_mana = 120.0;
+        g.p.recalc();
+        for s in crate::skills::DRUID {
+            g.p.skills.rank[s as usize] = 3;
+        }
+        g
+    }
+
+    #[test]
+    fn the_druid_poisons_and_keeps_the_balance() {
+        use crate::skills::Skill;
+        let mut g = druid_game();
+        g.waypoint = (-99.0, -99.0);
+        let cast = |g: &mut Game, s: Skill, x: f32, y: f32| {
+            g.p.mana = g.p.max_mana;
+            g.p.cast_cd = 0.0;
+            g.p.skills.cooldown = [0.0; crate::skills::ALL.len()];
+            g.cast_skill(s, x, y);
+        };
+        // Spore Cloud poisons, and pushes toward Decay.
+        let z = dummy(&mut g, 3.0, 0.0);
+        let (zx, zy) = (g.mobs[z].x, g.mobs[z].y);
+        cast(&mut g, Skill::SporeCloud, zx, zy);
+        assert!(g.p.balance < 0.0, "decay");
+        let hp = g.mobs[z].hp;
+        for _ in 0..60 {
+            g.update(&Input::default());
+        }
+        assert!(g.mobs[z].poison_t > 0.0 && g.mobs[z].hp < hp, "poisoned");
+        // Toward Decay, her creatures grow stronger; toward Bloom, her plague does.
+        g.p.balance = -1.0;
+        assert!(g.growth_mult() > 1.25 && (g.plague_mult() - 1.0).abs() < 1e-6);
+        g.p.balance = 1.0;
+        assert!(g.plague_mult() > 1.25);
+        g.p.balance = 0.0;
+        // Rat Swarm: rats fight for her, and push toward Bloom.
+        let (px, py) = (g.p.x, g.p.y);
+        cast(&mut g, Skill::RatSwarm, px, py);
+        assert_eq!(g.mobs.iter().filter(|m| m.kind == Kind::Rat && m.alive() && m.charm > 0.0).count(), crate::druid::rats(3));
+        assert!(g.p.balance > 0.0, "bloom");
+        // Thorn Lash binds.
+        let t = dummy(&mut g, 2.0, 0.0);
+        let (tx, ty) = (g.mobs[t].x, g.mobs[t].y);
+        cast(&mut g, Skill::ThornLash, tx, ty);
+        assert!(g.mobs[t].stun > 1.0, "bound by thorns");
+        // Rejuvenate heals her over time.
+        g.p.hp = g.p.max_hp * 0.3;
+        let hp = g.p.hp;
+        let (px, py) = (g.p.x, g.p.y);
+        cast(&mut g, Skill::Rejuvenate, px, py);
+        for _ in 0..240 {
+            g.update(&Input::default());
+        }
+        assert!(g.p.hp > hp + 20.0, "rejuvenated");
+        // Fungal Bloom: mushrooms burst into clouds.
+        cast(&mut g, Skill::FungalBloom, tx, ty);
+        assert!(!g.fungi.is_empty());
+        for _ in 0..100 {
+            g.update(&Input::default());
+        }
+        assert!(g.fungi.is_empty() && !g.clouds.is_empty(), "they burst");
+    }
+
+    #[test]
+    fn the_druids_creatures_and_plague_work() {
+        use crate::skills::Skill;
+        let mut g = druid_game();
+        g.waypoint = (-99.0, -99.0);
+        let cast = |g: &mut Game, s: Skill, x: f32, y: f32| {
+            g.p.mana = g.p.max_mana;
+            g.p.cast_cd = 0.0;
+            g.p.skills.cooldown = [0.0; crate::skills::ALL.len()];
+            g.cast_skill(s, x, y);
+        };
+        let (px, py) = (g.p.x, g.p.y);
+        // The moss wolf stays, and follows her to the next level.
+        cast(&mut g, Skill::MossWolf, px, py);
+        assert_eq!(g.mobs.iter().filter(|m| m.kind == Kind::MossWolf && m.alive()).count(), 1);
+        g.debug_goto(LevelId::Dungeon(0, 1));
+        assert_eq!(g.mobs.iter().filter(|m| m.kind == Kind::MossWolf && m.alive()).count(), 1, "it came along");
+        g.mobs.retain(|m| m.kind == Kind::MossWolf);
+        // Corpse Bloom: a corpse bursts and rats crawl out.
+        let c = dummy(&mut g, 2.0, 0.0);
+        g.mobs[c].hp = 0.0;
+        g.kill(c);
+        let (px, py) = (g.p.x, g.p.y);
+        cast(&mut g, Skill::CorpseBloom, px, py);
+        assert_eq!(g.mobs.iter().filter(|m| m.kind == Kind::Rat && m.alive()).count(), 3);
+        // Pestilence poisons everything around, and the plague spreads when one dies.
+        let a = dummy(&mut g, 2.0, 1.0);
+        let b = dummy(&mut g, 2.5, 1.5);
+        cast(&mut g, Skill::Pestilence, px, py);
+        assert!(g.mobs[a].plagued && g.mobs[a].poison_t > 0.0);
+        let far = dummy(&mut g, 0.0, 0.0);
+        g.mobs[far].x = g.mobs[a].x + 1.0;
+        g.mobs[far].y = g.mobs[a].y - 1.0;
+        g.mobs[far].poison_t = 0.0;
+        g.mobs[a].hp = 0.0;
+        g.kill(a);
+        assert!(g.mobs[far].poison_t > 0.0, "the plague spread");
+        let _ = b;
+        // The Thorn Warden rises.
+        cast(&mut g, Skill::ThornWarden, px, py);
+        assert_eq!(g.mobs.iter().filter(|m| m.kind == Kind::ThornWarden && m.alive() && m.charm > 0.0).count(), 1);
     }
 
     #[test]

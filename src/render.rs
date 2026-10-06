@@ -449,6 +449,50 @@ impl Game {
             scr.pset(x - 1, y - 1, rgb(0x80e0ff));
             scr.glow(x, y, 6.0, rgb(0x60c0ff), 0.4);
         }
+        // The druid: spore clouds, mushrooms about to burst, thorn vines.
+        for c in &self.clouds {
+            let (cx, cy) = to_scr(c.x, c.y);
+            let rx = (c.r * iso::TW * 0.5) as i32;
+            let fade = (c.t / 1.0).min(1.0);
+            blend_ellipse(scr, cx + scr.shake.0, cy - 4 + scr.shake.1, rx, rx / 2, rgb(0x5a8a20), 0.28 * fade);
+            for k in 0..8 {
+                let h = ((k as u32).wrapping_mul(2654435761) >> 8) as f32 / 16_777_216.0;
+                let a = h * std::f32::consts::TAU + self.tick as f32 * 0.02;
+                let (x, y) = (cx + (a.cos() * rx as f32 * 0.7) as i32, cy - 6 - ((self.tick as f32 * 0.3 + h * 40.0) % 18.0) as i32 + (a.sin() * rx as f32 * 0.3) as i32);
+                scr.glow(x, y, 3.0, rgb(0xa0f050), 0.4 * fade);
+            }
+        }
+        for f in &self.fungi {
+            let (sx, sy) = to_scr(f.x, f.y);
+            let grow = (f.t / 0.5).min(1.0);
+            let pulse = if f.t > 1.0 { ((self.tick as f32) * 0.6).sin().abs() } else { 0.0 };
+            let r = (2.0 + 3.0 * grow + pulse) as i32;
+            let (x, y) = (sx + scr.shake.0, sy + scr.shake.1);
+            scr.fill(x - 1, y - r, 2, r, rgb(0xd8d0b0));
+            blend_ellipse(scr, x, y - r, r + 1, (r + 1) / 2 + 1, rgb(0x7a3a80), 0.95);
+            scr.pset(x - 1, y - r - 1, rgb(0xe0f080));
+            scr.pset(x + 1, y - r, rgb(0xe0f080));
+            scr.glow(x, y - r, 5.0 + pulse * 4.0, rgb(0x90e040), 0.4 + 0.3 * pulse);
+        }
+        for v in &self.vines {
+            let n = 24;
+            for k in 0..n {
+                let t = k as f32 / n as f32;
+                let (wx, wy) = (v.x0 + (v.x1 - v.x0) * t, v.y0 + (v.y1 - v.y0) * t);
+                let (x, y) = to_scr(wx, wy);
+                let wave = ((t * 18.0 + self.tick as f32 * 0.2).sin() * 2.0) as i32;
+                let (x, y) = (x + scr.shake.0, y - 3 + wave + scr.shake.1);
+                scr.fill(x - 1, y - 1, 3, 2, rgb(0x1a1a10));
+                if k % 3 == 0 {
+                    // Thorns.
+                    scr.pset(x, y - 3, rgb(0x2a2a18));
+                    scr.pset(x + 1, y - 4, rgb(0x2a2a18));
+                }
+                if k % 5 == 0 {
+                    scr.pset(x, y, rgb(0x70b030));
+                }
+            }
+        }
         // The reaper: souls drifting home, the lantern's flame, chains and hourglass sand.
         for s in &self.souls {
             let (sx, sy) = to_scr(s.x, s.y);
@@ -699,6 +743,9 @@ impl Game {
                 rgb(0x60c8ff)
             } else if n.blood {
                 rgb(0xc01030)
+            } else if self.is_druid() {
+                // The druid's waves are plague and growth: sickly green.
+                rgb(0x80d030)
             } else {
                 rgb(0xff6010)
             };
@@ -757,6 +804,10 @@ impl Game {
                     let i = (sy * scr.w + sx) as usize;
                     scr.px[i] = add(scr.px[i], rgb(0xc0e8ff), 0.4 + k);
                     scr.pset(sx + 1, sy, rgb(0xf0faff));
+                }
+                PKind::Spore => {
+                    let i = (sy * scr.w + sx) as usize;
+                    scr.px[i] = add(scr.px[i], rgb(0x90e040), 0.5 + k);
                 }
             }
         }
@@ -1010,6 +1061,7 @@ impl Game {
             ("VALKYRIE", "portrait_valkyrie", "valkyrie", "FROST SPEAR,", "SHATTER.", rgb(0x80d0ff)),
             ("BERSERKER", "portrait_berserker", "berserker", "GIANT AXE,", "DIRE WOLF.", rgb(0xd07040)),
             ("REAPER", "portrait_reaper", "reaper", "RUNE SCYTHE,", "SOULS.", rgb(0x9ad8ff)),
+            ("DRUID", "portrait_druid", "druid", "PLAGUE AND", "SUMMONS.", rgb(0x90d050)),
         ];
         let pw = (w - 20 - 10 * (classes.len() as i32 - 1)) / classes.len() as i32;
         let ph = h - 70;
@@ -1075,11 +1127,15 @@ impl Game {
             crate::skills::Class::Valkyrie => "valkyrie",
             crate::skills::Class::Berserker => "berserker",
             crate::skills::Class::Reaper => "reaper",
+            crate::skills::Class::Druid => "druid",
             crate::skills::Class::Sorceress => "mage",
         };
         let art = self.art.char_art(sheet).0;
         // The melee heroes pick their own attack poses (thrust, sweep, whirl, throw, cast).
-        let valkyrie = matches!(self.p.skills.class, crate::skills::Class::Valkyrie | crate::skills::Class::Berserker | crate::skills::Class::Reaper);
+        let valkyrie = matches!(
+            self.p.skills.class,
+            crate::skills::Class::Valkyrie | crate::skills::Class::Berserker | crate::skills::Class::Reaper | crate::skills::Class::Druid
+        );
         // Rake is a claw slash (cast pose of exactly 0.3 s).
         let claw = vampire && (self.p.cast_len - 0.3).abs() < 0.001 && art.has("attack");
         let anim = if self.p.cast_t > 0.0 && claw {
@@ -1177,6 +1233,10 @@ impl Game {
         };
         let (art, scale, ..) = self.art.char_art(name);
         let mut fx = Fx::default();
+        if m.poison_t > 0.0 && m.frozen <= 0.0 {
+            fx.tint = rgb(0x70c030);
+            fx.tint_a = 0.3;
+        }
         if m.frozen > 0.0 {
             // Frozen solid.
             fx.tint = rgb(0xb8ecff);
@@ -1239,7 +1299,7 @@ impl Game {
             fx.tint = rgb(0x9ad8ff);
             fx.tint_a = 0.6;
             fx.dither = (self.tick / 2) % 3 == 0;
-        } else if m.charm > 0.0 && m.kind != crate::mobs::Kind::DireWolf {
+        } else if m.charm > 0.0 && !matches!(m.kind, crate::mobs::Kind::DireWolf | crate::mobs::Kind::Rat | crate::mobs::Kind::MossWolf | crate::mobs::Kind::ThornWarden) {
             fx.tint = rgb(0xa040e0);
             fx.tint_a = 0.35;
         }
@@ -1300,6 +1360,23 @@ impl Game {
             scr.text(&label, w - 34, gy - 4, WHITE, Align::Center, 1);
             let vent = if self.p.vent_cd > 0.0 { format!("VENT {:.0}S", self.p.vent_cd.ceil()) } else { "VENT: E/Y".into() };
             scr.text(&vent, w - 34, gy - 36, rgb(0xd8b080), Align::Center, 1);
+        } else if self.is_druid() {
+            scr.text(&format!("{}/{}", self.p.mana.floor() as i32, self.p.max_mana as i32), w - 34, gy - 4, WHITE, Align::Center, 1);
+            // Decay (left, sickly yellow-green) ... Bloom (right, fresh green), with a marker.
+            let (bx, by, bw) = (w - 82, gy + 18, 48);
+            scr.fill(bx - 1, by - 1, bw + 2, 6, rgb(0x100c08));
+            scr.fill(bx, by, bw / 2, 4, rgb(0x6a6a18));
+            scr.fill(bx + bw / 2, by, bw / 2, 4, rgb(0x2a7a2a));
+            let mx = bx + bw / 2 + (self.p.balance * (bw / 2) as f32) as i32;
+            scr.fill(mx - 1, by - 2, 3, 8, rgb(0xf0f0d0));
+            let label = if self.p.balance < -0.3 {
+                "DECAY"
+            } else if self.p.balance > 0.3 {
+                "BLOOM"
+            } else {
+                "BALANCE"
+            };
+            scr.text(label, w - 34, gy - 36, rgb(0xa0d870), Align::Center, 1);
         } else if self.is_reaper() {
             let souls = (self.p.mana / crate::reaper::SOUL).floor() as i32;
             scr.text(&format!("{souls}"), w - 34, gy - 4, WHITE, Align::Center, 1);
@@ -1356,6 +1433,7 @@ impl Game {
                 crate::skills::Class::Valkyrie => ("SPEAR", rgb(0x90d8ff)),
                 crate::skills::Class::Berserker => ("CLEAVE", rgb(0xe08060)),
                 crate::skills::Class::Reaper => ("SCYTHE", rgb(0xa0d8ff)),
+                crate::skills::Class::Druid => ("SPORE", rgb(0x90d050)),
                 crate::skills::Class::Sorceress => ("EMBER", rgb(0xff9050)),
             };
             scr.text(label, ix + 4, iy + 28, col, Align::Center, 1);

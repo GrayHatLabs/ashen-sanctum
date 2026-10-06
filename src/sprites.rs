@@ -649,6 +649,7 @@ pub fn skill_icon(s: crate::skills::Skill) -> Sprite {
         s if crate::valkyrie::is_valkyrie(s) => valkyrie_icon(s, &mut im),
         s if crate::berserker::is_berserker(s) => berserker_icon(s, &mut im),
         s if crate::reaper::is_reaper(s) => reaper_icon(s, &mut im),
+        s if crate::druid::is_druid(s) => druid_icon(s, &mut im),
         _ => vampire_icon(s, &mut im),
     }
     im.ax = 0;
@@ -1030,6 +1031,118 @@ fn reaper_icon(s: crate::skills::Skill, im: &mut Sprite) {
                     }
                 }
             }
+        }
+        _ => {}
+    }
+}
+
+/// The druid's icons: sickly green, moss, bark and bone on dark earth.
+fn druid_icon(s: crate::skills::Skill, im: &mut Sprite) {
+    use crate::skills::Skill;
+    im.fill(0, 0, 24, 24, rgb(0x10120c));
+    let spore = |d: f32| mix(rgb(0xd8f080), rgb(0x305010), d.clamp(0.0, 1.0));
+    let bark = rgb(0x3a2a1a);
+    let blob = |im: &mut Sprite, cx: f32, cy: f32, r: f32, seed: i32| {
+        for y in 0..24 {
+            for x in 0..24 {
+                let d = ((x as f32 - cx).powi(2) + (y as f32 - cy).powi(2)).sqrt();
+                if d < r && hash(x, y, seed) % 3 != 0 {
+                    im.set(x, y, spore(d / r));
+                }
+            }
+        }
+    };
+    let rat = |im: &mut Sprite, x: i32, y: i32| {
+        im.fill(x, y, 6, 3, rgb(0x1a1814));
+        im.fill(x + 5, y - 1, 2, 2, rgb(0x1a1814));
+        im.set(x + 6, y - 1, rgb(0xc04030));
+        for k in 0..4 {
+            im.set(x - 1 - k, y + 2 + k / 2, rgb(0x6a5a50));
+        }
+    };
+    match s {
+        Skill::SporeCloud => blob(im, 12.0, 12.0, 9.0, 3),
+        Skill::RatSwarm => {
+            rat(im, 4, 8);
+            rat(im, 12, 13);
+            rat(im, 5, 18);
+        }
+        Skill::GreenDoctor => {
+            // The beaked plague mask.
+            im.fill(5, 7, 8, 8, rgb(0x2a2420));
+            for k in 0..10 {
+                im.fill(12 + k, 10 + k / 3, 1, 3 - k / 4, rgb(0x3a3028));
+            }
+            im.fill(7, 9, 2, 2, rgb(0x90e040));
+            im.fill(10, 9, 2, 2, rgb(0x90e040));
+        }
+        Skill::ThornLash => {
+            for t in 0..20 {
+                let x = 2 + t;
+                let y = 18 - t / 2 + if t % 4 < 2 { 1 } else { -1 };
+                im.set(x, y, bark);
+                im.set(x, y + 1, bark);
+                if t % 3 == 0 {
+                    im.set(x, y - 2, rgb(0x5a5040));
+                }
+            }
+        }
+        Skill::MossWolf => {
+            im.fill(5, 11, 11, 7, rgb(0x3a4a30));
+            im.fill(14, 7, 6, 6, rgb(0x3a4a30));
+            im.set(18, 9, rgb(0xc0e060));
+            for k in 0..5 {
+                im.set(6 + k * 2, 11, rgb(0x70a040));
+            }
+        }
+        Skill::Rejuvenate => {
+            for k in 0..3 {
+                let x = 6 + k * 6;
+                for y in 8..20 {
+                    im.set(x, y, rgb(0x4a8a30));
+                }
+                im.fill(x - 2, 7, 3, 2, rgb(0x80d050));
+                im.fill(x + 1, 10, 3, 2, rgb(0x80d050));
+            }
+        }
+        Skill::FungalBloom => {
+            for (x, h) in [(6, 8), (12, 12), (18, 9)] {
+                im.fill(x - 1, 22 - h, 2, h, rgb(0xd8d0b0));
+                im.fill(x - 3, 22 - h - 2, 7, 3, rgb(0x7a3a80));
+                im.set(x - 1, 22 - h - 2, rgb(0xe0f080));
+            }
+        }
+        Skill::CorpseBloom => {
+            im.fill(6, 15, 12, 4, rgb(0x6a5a4a));
+            blob(im, 12.0, 11.0, 6.0, 9);
+            rat(im, 3, 20);
+        }
+        Skill::CycleOfRot => {
+            for k in 0..40 {
+                let a = k as f32 * std::f32::consts::TAU / 40.0;
+                let c = if k < 20 { rgb(0x6a6a18) } else { rgb(0x4a9a30) };
+                im.set(12 + (a.cos() * 8.0) as i32, 12 + (a.sin() * 8.0) as i32, c);
+            }
+            im.fill(11, 8, 2, 8, bark);
+            im.fill(9, 8, 2, 2, rgb(0x80d050));
+        }
+        Skill::Pestilence => {
+            blob(im, 12.0, 12.0, 11.0, 17);
+            im.fill(9, 9, 6, 6, rgb(0xd8d0b0));
+            im.set(10, 11, BLACK);
+            im.set(13, 11, BLACK);
+        }
+        Skill::ThornWarden => {
+            // A tree-guardian with antlers and a green heart.
+            im.fill(8, 9, 8, 12, bark);
+            im.fill(9, 4, 6, 5, rgb(0xd8d0b0));
+            for k in 0..4 {
+                im.set(8 - k, 4 - k, bark);
+                im.set(15 + k, 4 - k, bark);
+            }
+            im.fill(11, 13, 2, 2, rgb(0x90f040));
+            im.fill(5, 10, 3, 7, bark);
+            im.fill(16, 10, 3, 7, bark);
         }
         _ => {}
     }

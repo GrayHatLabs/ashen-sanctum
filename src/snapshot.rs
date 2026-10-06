@@ -628,6 +628,50 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         save(&mut g, scr, "reaper_tree");
         g.tree = None;
     }
+    // The Druid: spores and thorns, her creatures, the balance bar.
+    {
+        use crate::skills::{Class, Skill};
+        let mut g = Game::new(7, h);
+        g.set_class(Class::Druid);
+        g.p.clvl = 18;
+        g.p.base_mana = 150.0;
+        for s in crate::skills::DRUID {
+            g.p.skills.rank[s as usize] = 3;
+        }
+        g.p.base_hp = 9000.0;
+        g.p.recalc();
+        g.p.hp = 9000.0;
+        g.p.skills.primary = Skill::SporeCloud;
+        g.p.skills.secondary = Skill::RatSwarm;
+        g.debug_goto(LevelId::Dungeon(0, 0));
+        g.banner_t = 0.0;
+        idle(&mut g, 100);
+        let target = g.bot_target().map(|t| (t.0, t.1)).unwrap_or((g.p.x + 3.0, g.p.y));
+        g.debug_place_near(target.0, target.1, 3.0);
+        idle(&mut g, 4);
+        let cast = |g: &mut Game, s: Skill, x: f32, y: f32| {
+            g.p.mana = g.p.max_mana;
+            g.p.cast_cd = 0.0;
+            g.p.skills.cooldown = [0.0; crate::skills::ALL.len()];
+            g.cast_skill(s, x, y);
+        };
+        let (px, py) = (g.p.x, g.p.y);
+        cast(&mut g, Skill::MossWolf, px, py);
+        cast(&mut g, Skill::RatSwarm, px, py);
+        cast(&mut g, Skill::SporeCloud, target.0, target.1);
+        cast(&mut g, Skill::ThornLash, target.0, target.1);
+        cast(&mut g, Skill::FungalBloom, target.0 + 1.0, target.1);
+        idle(&mut g, 30);
+        save(&mut g, scr, "druid_plague");
+        cast(&mut g, Skill::ThornWarden, px, py);
+        cast(&mut g, Skill::Pestilence, px, py);
+        idle(&mut g, 20);
+        save(&mut g, scr, "druid_warden");
+        g.p.skills.points = 2;
+        g.update(&Input { skills: true, ..Input::default() });
+        save(&mut g, scr, "druid_tree");
+        g.tree = None;
+    }
     // Act 2: Kaldholm, the Frostmarch, each ice dungeon and its herald.
     {
         let mut g = Game::new(7, h);

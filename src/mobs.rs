@@ -58,6 +58,10 @@ pub enum Kind {
     DireWolf,
     /// The reaper's scholar spirits (on her side for a while).
     Scholar,
+    /// The druid's creatures.
+    Rat,
+    MossWolf,
+    ThornWarden,
 }
 
 pub struct Def {
@@ -228,6 +232,9 @@ pub fn def(k: Kind) -> Def {
             ranged: true,
             ..d("boss_archivist", "THE ARCHIVIST", 680.0, 1.8, (14.0, 20.0), 0.6, 1.8, 1600.0)
         },
+        Kind::Rat => Def { r: 0.2, ..d("plague_rat", "PLAGUE RAT", 14.0, 4.5, (3.0, 5.0), 0.25, 0.7, 0.0) },
+        Kind::MossWolf => Def { r: 0.36, ..d("moss_wolf", "MOSS WOLF", 80.0, 4.4, (5.0, 8.0), 0.3, 0.8, 0.0) },
+        Kind::ThornWarden => Def { r: 0.6, reach: 1.4, ..d("thorn_warden", "THORN WARDEN", 300.0, 2.2, (16.0, 24.0), 0.6, 1.4, 0.0) },
         Kind::Scholar => Def { r: 0.3, reach: 2.4, ..d("scholar_spirit", "SCHOLAR SPIRIT", 50.0, 3.0, (7.0, 11.0), 0.35, 1.1, 0.0) },
         Kind::DireWolf => Def { r: 0.36, ..d("dire_wolf", "DIRE WOLF", 80.0, 4.6, (4.0, 7.0), 0.3, 0.8, 0.0) },
         Kind::Einherjar => Def { r: 0.32, ..d("einherjar", "EINHERJAR", 60.0, 3.0, (8.0, 12.0), 0.35, 1.0, 0.0) },
@@ -351,6 +358,10 @@ pub struct Mob {
     pub sunder: f32,
     /// Caught in the reaper's hourglass: crawling.
     pub slow_t: f32,
+    /// The druid's poison: damage per second and seconds left; plagued foes pass it on when they die.
+    pub poison: f32,
+    pub poison_t: f32,
+    pub plagued: bool,
     /// Untouchable while this lasts (Count Vardak's mist form).
     pub invuln: f32,
     /// Boss form (Count Vardak: 1 = giant bat).
@@ -414,6 +425,9 @@ impl Mob {
             bleed_t: 0.0,
             sunder: 0.0,
             slow_t: 0.0,
+            poison: 0.0,
+            poison_t: 0.0,
+            plagued: false,
             invuln: 0.0,
             form: 0,
             rush: 0.0,

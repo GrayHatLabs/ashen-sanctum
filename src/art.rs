@@ -389,6 +389,11 @@ impl Art {
             // ---- the Reaper (until her PixelLab art exists): the hooded cultist with a tome ----
             "reaper" => ("cultist", 1.05, 0x343a44, 0.72),
             "scholar_spirit" => ("npc_priest", 1.0, 0x9ad8ff, 0.6),
+            // ---- the Druid (until her PixelLab art exists) ----
+            "druid" => ("npc_widow", 1.0, 0x3a4a28, 0.5),
+            "plague_rat" => ("wolf", 0.45, 0x241e1a, 0.7),
+            "moss_wolf" => ("wolf", 1.25, 0x3a5a30, 0.55),
+            "thorn_warden" => ("boss_giant", 1.05, 0x2a3a20, 0.6),
             // ---- Act 4 stand-ins ----
             "brass_scarab" => ("boss_plague", 0.45, 0xc89040, 0.65),
             "inquisitor" => ("archer", 1.0, 0x302820, 0.6),

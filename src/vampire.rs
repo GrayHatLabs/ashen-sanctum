@@ -155,6 +155,7 @@ pub fn bloodless(k: Kind) -> bool {
             | Kind::Archivist
             | Kind::Einherjar
             | Kind::Scholar
+            | Kind::ThornWarden
     )
 }
 

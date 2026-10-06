@@ -19,7 +19,7 @@ The game opens on the **title screen**: Play, Options (music, controls), Quit.
 - **In game, Esc** saves and returns to the character select.
 - Each hero has their own save file in `~/.local/share/ashensanctum/heroes/`. An old single save is copied in as the first hero.
 
-## Six heroes
+## Seven heroes
 
 A new character starts on the **class select** screen:
 
@@ -97,7 +97,21 @@ A new character starts on the **class select** screen:
   - **Archive Chains** (bind an area), **Hourglass** (foes crawl), **Rune Blade** (passive).
   - **Soul Harvest:** a great circle that reaps the badly wounded outright. **Open the Ledger:**
     double souls, and the dead rise as scholar spirits.
-  - `--reaper` skips the class screen. Her own art isn't made yet (a hooded stand-in for now).
+  - `--reaper` skips the class screen.
+
+- **The Druid** is a plague summoner who keeps nature's balance. Her creatures fight while she spreads
+  poison and mends her own.
+  - **Decay and Bloom:** besides mana she has a balance bar. Plague skills push it toward Decay, growth skills
+    (summons, healing) toward Bloom, and each side empowers the other's skills by up to +30%, so she
+    plays best alternating. It drifts back to the middle.
+  - **Spore Cloud**, **Rat Swarm**, **Green Doctor** (passive: stronger poison, tougher creatures).
+  - **Thorn Lash** (vines bind a line of foes), **Moss Wolf** (stays until it falls, follows her between
+    levels), **Rejuvenate** (heals her and her creatures).
+  - **Fungal Bloom** (mushrooms burst into poison), **Corpse Bloom** (a corpse bursts and rats crawl
+    out), **Cycle of Rot** (passive).
+  - **Pestilence** (poisons everything around; the plague spreads when they die) and the **Thorn Warden**,
+    a guardian of dead trees, roots and bone.
+  - `--druid` skips the class screen.
 
 ## The story
 

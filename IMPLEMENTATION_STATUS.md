@@ -127,6 +127,16 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Title screen (painted background, logo, embers), character select (8 hero slots, portraits, delete with confirm), class select (3 cards, Inventor "coming soon"), naming (typed or random), options (music, controls) | H S | `menu.rs`; unit tests for the flow and hero files; test flags (--new, --act2, --vampire, --level) skip it |
 | One save per hero (`heroes/<slot>.txt`, `name=` line); old save.txt migrates; Esc saves and returns to the heroes | H | |
 
+## The Druid class (2026-10-06)
+
+| Feature | Status | Notes |
+|---|---|---|
+| Mana + Decay/Bloom balance (`p.balance`), each side empowering the other; drifts to the middle | H S | Unit test |
+| Poison on monsters (dps + timer), plague that spreads on death, Cycle of Rot heals | H S | Unit tests |
+| 11 skills (`druid.rs`): Spore Cloud, Rat Swarm, Green Doctor, Thorn Lash, Moss Wolf, Rejuvenate, Fungal Bloom, Corpse Bloom, Cycle of Rot, Pestilence, Thorn Warden | H S | Unit tests cover every active |
+| Allies: rats (timed), moss wolf (until it falls, carried between levels), Thorn Warden | H S | |
+| Art: sprite + portrait (D2) + cathedral background; animations, moss wolf and Thorn Warden generating; rats code-scaled | S | |
+
 ## The Reaper class (2026-10-05)
 
 | Feature | Status | Notes |
