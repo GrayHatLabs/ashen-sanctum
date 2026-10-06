@@ -127,6 +127,16 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Title screen (painted background, logo, embers), character select (8 hero slots, portraits, delete with confirm), class select (3 cards, Inventor "coming soon"), naming (typed or random), options (music, controls) | H S | `menu.rs`; unit tests for the flow and hero files; test flags (--new, --act2, --vampire, --level) skip it |
 | One save per hero (`heroes/<slot>.txt`, `name=` line); old save.txt migrates; Esc saves and returns to the heroes | H | |
 
+## The Reaper class (2026-10-05)
+
+| Feature | Status | Notes |
+|---|---|---|
+| Souls (`p.mana`, 10 per soul): gathered from deaths nearby (drifting wisps), 3 for bosses / ledger-marked; scythe free | H S | Unit test |
+| Rune blade: 7 hunt stacks on one prey, then a triple-damage cleave | H S | Unit test |
+| 11 skills (`reaper.rs`): Reaping Scythe, Spirit Lantern, Patient Archivist, Ledger Mark, Scholar Spirits, Shadow Step, Archive Chains, Hourglass, Rune Blade, Soul Harvest, Open the Ledger | H S | Unit test covers every active |
+| Sixth class card (names drop to the small font when six share the row) | S | |
+| Art: none yet; hooded cultist stand-in, code-drawn souls / lantern / chains / hourglass / Ledger / icons | | |
+
 ## The Berserker class (2026-10-05)
 
 | Feature | Status | Notes |

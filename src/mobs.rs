@@ -56,6 +56,8 @@ pub enum Kind {
     Einherjar,
     /// The berserker's dire wolf (always on her side).
     DireWolf,
+    /// The reaper's scholar spirits (on her side for a while).
+    Scholar,
 }
 
 pub struct Def {
@@ -226,6 +228,7 @@ pub fn def(k: Kind) -> Def {
             ranged: true,
             ..d("boss_archivist", "THE ARCHIVIST", 680.0, 1.8, (14.0, 20.0), 0.6, 1.8, 1600.0)
         },
+        Kind::Scholar => Def { r: 0.3, reach: 2.4, ..d("scholar_spirit", "SCHOLAR SPIRIT", 50.0, 3.0, (7.0, 11.0), 0.35, 1.1, 0.0) },
         Kind::DireWolf => Def { r: 0.36, ..d("dire_wolf", "DIRE WOLF", 80.0, 4.6, (4.0, 7.0), 0.3, 0.8, 0.0) },
         Kind::Einherjar => Def { r: 0.32, ..d("einherjar", "EINHERJAR", 60.0, 3.0, (8.0, 12.0), 0.35, 1.0, 0.0) },
         Kind::Clockmaker => Def {
@@ -346,6 +349,8 @@ pub struct Mob {
     pub bleed: f32,
     pub bleed_t: f32,
     pub sunder: f32,
+    /// Caught in the reaper's hourglass: crawling.
+    pub slow_t: f32,
     /// Untouchable while this lasts (Count Vardak's mist form).
     pub invuln: f32,
     /// Boss form (Count Vardak: 1 = giant bat).
@@ -408,6 +413,7 @@ impl Mob {
             bleed: 0.0,
             bleed_t: 0.0,
             sunder: 0.0,
+            slow_t: 0.0,
             invuln: 0.0,
             form: 0,
             rush: 0.0,
@@ -750,7 +756,7 @@ impl Game {
                     let (ddx, ddy) = (tx - m.x, ty - m.y);
                     let l = (ddx * ddx + ddy * ddy).sqrt().max(0.001);
                     let (ux, uy) = (ddx / l, ddy / l);
-                    let speed = m.speed * if m.enraged { 1.25 } else { 1.0 } * if m.flee > 0.0 { 1.1 } else { 1.0 } * if m.rush > 0.0 { 3.2 } else { 1.0 } * if m.drilled { 1.3 } else { 1.0 } * (1.0 - 0.35 * m.frost);
+                    let speed = m.speed * if m.enraged { 1.25 } else { 1.0 } * if m.flee > 0.0 { 1.1 } else { 1.0 } * if m.rush > 0.0 { 3.2 } else { 1.0 } * if m.drilled { 1.3 } else { 1.0 } * (1.0 - 0.35 * m.frost) * if m.slow_t > 0.0 { 0.35 } else { 1.0 };
                     let (mut x, mut y) = (m.x, m.y);
                     move_circle(&self.d, &mut x, &mut y, ux * speed * DT, uy * speed * DT, r);
                     m.x = x;

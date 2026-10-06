@@ -26,6 +26,8 @@ Project rules and reference. Read this before every major change.
 - `levels.rs` + `build.rs`: JSON level files (folder override, embedded at build, generator fallback).
   Editor: `tools/level-editor/index.html`. Format: `docs/LEVEL_FORMAT.md`. Keep the editor's catalog
   (kinds, footprints, validation) in sync with `levels.rs` when adding props/monsters/NPCs.
+- `reaper.rs`: the Reaper class (docs/REAPER_CLASS.md). Souls are `p.mana` (10 per soul, `soul_cap()`);
+  `reaper_kill` (from `kill`) releases drifting souls; scholar spirits are timed charmed `Kind::Scholar`.
 - `berserker.rs`: the Berserker class (docs/BERSERKER_CLASS.md). Rage is `p.mana` (no regen); her wolf is a
   permanent charmed `Kind::DireWolf` kept by `keep_wolf` and stripped from a level on `go_to`.
 - `valkyrie.rs`: the Valkyrie class (docs/VALKYRIE_CLASS.md), the first melee hero. Valor is `p.mana`

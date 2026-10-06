@@ -32,12 +32,13 @@ pub enum MenuOut {
 }
 
 /// The classes on the create screen: (name, portrait, two lines, colour, playable, in-game sheet).
-const CLASSES: [(&str, &str, &str, &str, u32, bool, &str); 5] = [
-    ("SORCERESS", "portrait_sorceress", "FIREBALLS, WALLS,", "METEORS, PHOENIX.", 0xff9040, true, "mage"),
+const CLASSES: [(&str, &str, &str, &str, u32, bool, &str); 6] = [
+    ("SORCERESS", "portrait_sorceress", "FIREBALLS,", "METEORS.", 0xff9040, true, "mage"),
     ("VAMPIRE", "portrait_vampire", "BLOOD MAGIC,", "BATS, THRALLS.", 0xd04060, true, "vampire"),
-    ("INVENTOR", "portrait_inventor", "AETHER GUNS,", "BOMBS, TURRETS.", 0x40c0b0, true, "inventor"),
-    ("VALKYRIE", "portrait_valkyrie", "FROST SPEAR,", "FREEZE, SHATTER.", 0x80d0ff, true, "valkyrie"),
-    ("BERSERKER", "portrait_berserker", "GIANT AXE, RAGE,", "AND A DIRE WOLF.", 0xd07040, true, "berserker"),
+    ("INVENTOR", "portrait_inventor", "AETHER GUNS,", "TURRETS.", 0x40c0b0, true, "inventor"),
+    ("VALKYRIE", "portrait_valkyrie", "FROST SPEAR,", "SHATTER.", 0x80d0ff, true, "valkyrie"),
+    ("BERSERKER", "portrait_berserker", "GIANT AXE,", "DIRE WOLF.", 0xd07040, true, "berserker"),
+    ("REAPER", "portrait_reaper", "RUNE SCYTHE,", "SOULS, SPIRITS", 0x9ad8ff, true, "reaper"),
 ];
 
 const NAMES: [&str; 16] = [
@@ -265,6 +266,7 @@ impl Menu {
                             2 => Class::Inventor,
                             3 => Class::Valkyrie,
                             4 => Class::Berserker,
+                            5 => Class::Reaper,
                             _ => Class::Sorceress,
                         };
                         return Some(MenuOut::New(class, name));
@@ -468,7 +470,10 @@ impl Menu {
             } else {
                 rgb(0x9a8a78)
             };
-            scr.text(name, cx, y0 + ph - 50, ncol, Align::Center, 2);
+            // Big names when they fit the card, small when six cards share the row.
+            // One size for every card: big names only if they all fit.
+            let sc = if CLASSES.iter().all(|c| crate::gfx::text_width(c.0, 2) <= pw - 6) { 2 } else { 1 };
+            scr.text(name, cx, y0 + ph - 50 + (2 - sc) * 6, ncol, Align::Center, sc);
             if *playable {
                 scr.text(l1, cx, y0 + ph - 28, rgb(0xb0a090), Align::Center, 1);
                 scr.text(l2, cx, y0 + ph - 17, rgb(0xb0a090), Align::Center, 1);
@@ -529,6 +534,7 @@ fn class_look(c: Class) -> (&'static str, u32) {
         Class::Inventor => ("portrait_inventor", rgb(0x40c0b0)),
         Class::Valkyrie => ("portrait_valkyrie", rgb(0x80d0ff)),
         Class::Berserker => ("portrait_berserker", rgb(0xd07040)),
+        Class::Reaper => ("portrait_reaper", rgb(0x9ad8ff)),
     }
 }
 

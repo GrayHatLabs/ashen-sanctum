@@ -68,6 +68,18 @@ pub enum Skill {
     Executioner,
     HurlAxe,
     Berserk,
+    // ---- the Reaper ----
+    ReapingScythe,
+    SpiritLantern,
+    PatientArchivist,
+    LedgerMark,
+    ScholarSpirits,
+    ShadowStep,
+    ChainsOfArchive,
+    Hourglass,
+    RuneBlade,
+    SoulHarvest,
+    OpenLedger,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
@@ -77,6 +89,7 @@ pub enum Class {
     Inventor,
     Valkyrie,
     Berserker,
+    Reaper,
 }
 
 impl Class {
@@ -87,6 +100,7 @@ impl Class {
             Class::Inventor => "INVENTOR",
             Class::Valkyrie => "VALKYRIE",
             Class::Berserker => "BERSERKER",
+            Class::Reaper => "REAPER",
         }
     }
     pub fn key(self) -> &'static str {
@@ -96,6 +110,7 @@ impl Class {
             Class::Inventor => "inventor",
             Class::Valkyrie => "valkyrie",
             Class::Berserker => "berserker",
+            Class::Reaper => "reaper",
         }
     }
     /// The skill you start with (rank 1, never refunded).
@@ -106,6 +121,7 @@ impl Class {
             Class::Inventor => Skill::RayPistol,
             Class::Valkyrie => Skill::RuneSpear,
             Class::Berserker => Skill::Cleave,
+            Class::Reaper => Skill::ReapingScythe,
         }
     }
     pub fn tree(self) -> &'static [Skill] {
@@ -115,6 +131,7 @@ impl Class {
             Class::Inventor => &INVENTOR,
             Class::Valkyrie => &VALKYRIE,
             Class::Berserker => &BERSERKER,
+            Class::Reaper => &REAPER,
         }
     }
 }
@@ -189,8 +206,22 @@ pub const BERSERKER: [Skill; 11] = [
     Skill::Berserk,
 ];
 
+pub const REAPER: [Skill; 11] = [
+    Skill::ReapingScythe,
+    Skill::SpiritLantern,
+    Skill::PatientArchivist,
+    Skill::LedgerMark,
+    Skill::ScholarSpirits,
+    Skill::ShadowStep,
+    Skill::ChainsOfArchive,
+    Skill::Hourglass,
+    Skill::RuneBlade,
+    Skill::SoulHarvest,
+    Skill::OpenLedger,
+];
+
 /// Every skill of every class (save files, rank arrays).
-pub const ALL: [Skill; 55] = [
+pub const ALL: [Skill; 66] = [
     Skill::Fireball,
     Skill::Inferno,
     Skill::Warmth,
@@ -246,6 +277,17 @@ pub const ALL: [Skill; 55] = [
     Skill::Executioner,
     Skill::HurlAxe,
     Skill::Berserk,
+    Skill::ReapingScythe,
+    Skill::SpiritLantern,
+    Skill::PatientArchivist,
+    Skill::LedgerMark,
+    Skill::ScholarSpirits,
+    Skill::ShadowStep,
+    Skill::ChainsOfArchive,
+    Skill::Hourglass,
+    Skill::RuneBlade,
+    Skill::SoulHarvest,
+    Skill::OpenLedger,
 ];
 /// Character level needed for each tree row.
 pub const TIER_LEVELS: [u32; 4] = [1, 6, 12, 18];
@@ -319,6 +361,17 @@ pub fn def(s: Skill) -> Def {
         Skill::Executioner => Def { name: "EXECUTIONER", key: "executioner", level: 12, prereq: Some(Skill::Bloodlust), passive: true, cell: (2, 2) },
         Skill::HurlAxe => Def { name: "HURL AXE", key: "hurlaxe", level: 18, prereq: Some(Skill::WarCry), passive: false, cell: (3, 0) },
         Skill::Berserk => Def { name: "BERSERK", key: "berserk", level: 18, prereq: Some(Skill::Whirlwind), passive: false, cell: (3, 1) },
+        Skill::ReapingScythe => Def { name: "REAPING SCYTHE", key: "reapingscythe", level: 1, prereq: None, passive: false, cell: (0, 0) },
+        Skill::SpiritLantern => Def { name: "SPIRIT LANTERN", key: "spiritlantern", level: 1, prereq: None, passive: false, cell: (0, 1) },
+        Skill::PatientArchivist => Def { name: "PATIENT ARCHIVIST", key: "patientarchivist", level: 1, prereq: None, passive: true, cell: (0, 2) },
+        Skill::LedgerMark => Def { name: "LEDGER MARK", key: "ledgermark", level: 6, prereq: Some(Skill::ReapingScythe), passive: false, cell: (1, 0) },
+        Skill::ScholarSpirits => Def { name: "SCHOLAR SPIRITS", key: "scholarspirits", level: 6, prereq: Some(Skill::SpiritLantern), passive: false, cell: (1, 1) },
+        Skill::ShadowStep => Def { name: "SHADOW STEP", key: "shadowstep", level: 6, prereq: Some(Skill::PatientArchivist), passive: false, cell: (1, 2) },
+        Skill::ChainsOfArchive => Def { name: "ARCHIVE CHAINS", key: "chains", level: 12, prereq: Some(Skill::LedgerMark), passive: false, cell: (2, 0) },
+        Skill::Hourglass => Def { name: "HOURGLASS", key: "hourglass", level: 12, prereq: Some(Skill::ScholarSpirits), passive: false, cell: (2, 1) },
+        Skill::RuneBlade => Def { name: "RUNE BLADE", key: "runeblade", level: 12, prereq: Some(Skill::ShadowStep), passive: true, cell: (2, 2) },
+        Skill::SoulHarvest => Def { name: "SOUL HARVEST", key: "soulharvest", level: 18, prereq: Some(Skill::ChainsOfArchive), passive: false, cell: (3, 0) },
+        Skill::OpenLedger => Def { name: "OPEN THE LEDGER", key: "openledger", level: 18, prereq: Some(Skill::Hourglass), passive: false, cell: (3, 1) },
     }
 }
 
@@ -452,6 +505,7 @@ impl Skills {
             Some("inventor") => Class::Inventor,
             Some("valkyrie") => Class::Valkyrie,
             Some("berserker") => Class::Berserker,
+            Some("reaper") => Class::Reaper,
             _ => Class::Sorceress,
         };
         let first = class.first_skill();
@@ -604,6 +658,7 @@ pub fn mana_cost(s: Skill, r: u8) -> f32 {
         s if crate::inventor::is_inventor(s) => crate::inventor::mana_cost(s, r),
         s if crate::valkyrie::is_valkyrie(s) => crate::valkyrie::mana_cost(s, r),
         s if crate::berserker::is_berserker(s) => crate::berserker::mana_cost(s, r),
+        s if crate::reaper::is_reaper(s) => crate::reaper::mana_cost(s, r),
         _ => crate::vampire::mana_cost(s, r),
     }
 }
@@ -617,6 +672,7 @@ pub fn cooldown_of(s: Skill) -> f32 {
         s if crate::inventor::is_inventor(s) => crate::inventor::cooldown_of(s),
         s if crate::valkyrie::is_valkyrie(s) => crate::valkyrie::cooldown_of(s),
         s if crate::berserker::is_berserker(s) => crate::berserker::cooldown_of(s),
+        s if crate::reaper::is_reaper(s) => crate::reaper::cooldown_of(s),
         _ => 0.0,
     }
 }
@@ -634,6 +690,9 @@ pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
     }
     if crate::berserker::is_berserker(s) {
         return crate::berserker::describe(s, r, power, sk);
+    }
+    if crate::reaper::is_reaper(s) {
+        return crate::reaper::describe(s, r, power, sk);
     }
     let wall_rank = sk.rank(Skill::FireWall);
     let power = power * if s == Skill::Mastery { 1.0 } else { sk.fire_mult() };
@@ -820,6 +879,8 @@ impl Game {
                     self.rune_spear(tx, ty);
                 } else if self.p.skills.class == Class::Berserker {
                     self.cleave(tx, ty);
+                } else if self.p.skills.class == Class::Reaper {
+                    self.reaping_scythe(tx, ty);
                 } else if self.p.skills.class == Class::Vampire {
                     self.bite(tx, ty);
                 } else {
@@ -831,6 +892,13 @@ impl Game {
         if crate::inventor::is_inventor(s) {
             self.p.throwing = matches!(s, Skill::ClockBomb | Skill::Turret | Skill::Spider | Skill::TeslaField);
             self.cast_inventor(s, tx, ty, r);
+            if phoenix {
+                self.p.mana = mana_before;
+            }
+            return true;
+        }
+        if crate::reaper::is_reaper(s) {
+            self.cast_reaper(s, tx, ty, r);
             if phoenix {
                 self.p.mana = mana_before;
             }
@@ -1462,6 +1530,7 @@ impl Game {
             Class::Inventor => "INVENTIONS",
             Class::Valkyrie => "WAR RUNES",
             Class::Berserker => "FURY",
+            Class::Reaper => "THE LEDGER",
             Class::Sorceress => "FIRE SKILLS",
         };
         scr.text(title, x0 + 10, y0 + 8, rgb(0xffd080), Align::Left, 1);

@@ -19,7 +19,7 @@ The game opens on the **title screen**: Play, Options (music, controls), Quit.
 - **In game, Esc** saves and returns to the character select.
 - Each hero has their own save file in `~/.local/share/ashensanctum/heroes/`. An old single save is copied in as the first hero.
 
-## Five heroes
+## Six heroes
 
 A new character starts on the **class select** screen:
 
@@ -84,6 +84,20 @@ A new character starts on the **class select** screen:
   - **Hurl Axe:** it spins through a line and comes back. **Berserk:** for a while she can't die, swings
     faster and heals with every hit, then she's spent.
   - `--berserker` skips the class screen. Her own art isn't made yet (a raider stand-in for now).
+
+- **The Reaper** is an immortal guardian of a forbidden library, with a rune scythe, a spirit lantern
+  and the Ledger of the Forgotten. Half melee, half spirit magic.
+  - **Souls** instead of mana: every foe that dies near her releases a soul that drifts into her
+    lantern (3 for bosses and for foes written in her Ledger). Skills spend souls; the scythe is free.
+  - **The rune blade:** each hit on the same prey lights a rune; at seven the blade blazes and her
+    next sweep cleaves for triple damage.
+  - **Reaping Scythe**, **Spirit Lantern** (a homing spirit flame), **Patient Archivist** (passive).
+  - **Ledger Mark** (a marked foe takes more and gives 3 souls), **Scholar Spirits** (ghost allies),
+    **Shadow Step**.
+  - **Archive Chains** (bind an area), **Hourglass** (foes crawl), **Rune Blade** (passive).
+  - **Soul Harvest:** a great circle that reaps the badly wounded outright. **Open the Ledger:**
+    double souls, and the dead rise as scholar spirits.
+  - `--reaper` skips the class screen. Her own art isn't made yet (a hooded stand-in for now).
 
 ## The story
 

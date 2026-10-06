@@ -449,6 +449,56 @@ impl Game {
             scr.pset(x - 1, y - 1, rgb(0x80e0ff));
             scr.glow(x, y, 6.0, rgb(0x60c0ff), 0.4);
         }
+        // The reaper: souls drifting home, the lantern's flame, chains and hourglass sand.
+        for s in &self.souls {
+            let (sx, sy) = to_scr(s.x, s.y);
+            let (x, y) = (sx + scr.shake.0, sy - 24 + scr.shake.1 + ((s.t * 9.0).sin() * 3.0) as i32);
+            scr.glow(x, y, 9.0, rgb(0x80c8ff), 0.8);
+            scr.disc(x, y, 2, rgb(0xe0f4ff));
+            scr.pset(x, y + 3, rgb(0x80c8ff));
+        }
+        for f in &self.lanterns {
+            let (sx, sy) = to_scr(f.x, f.y);
+            let (x, y) = (sx + scr.shake.0, sy - 22 + scr.shake.1);
+            let fl = ((self.tick as f32) * 0.7).sin();
+            scr.glow(x, y, 12.0 + fl, rgb(0x60b0ff), 0.9);
+            scr.disc(x, y, 2, rgb(0xd8f0ff));
+            scr.pset(x, y - 3, rgb(0xa0d8ff));
+        }
+        for c in &self.chains_fx {
+            let (cx, cy) = to_scr(c.x, c.y);
+            for &i in &c.held {
+                if let Some(m) = self.mobs.get(i).filter(|m| m.alive()) {
+                    let (mx, my) = to_scr(m.x, m.y);
+                    // A chain from the floor at the circle's heart to the bound foe, link by link.
+                    let n = 10;
+                    for k in 0..n {
+                        let t = k as f32 / n as f32;
+                        let x = cx + ((mx - cx) as f32 * t) as i32 + scr.shake.0;
+                        let y = cy + ((my - 12 - cy) as f32 * t) as i32 + scr.shake.1;
+                        scr.fill(x - 1, y - 1, 2, 2, if k % 2 == 0 { rgb(0x7a8a9a) } else { rgb(0xb0d0f0) });
+                    }
+                }
+            }
+            scr.glow(cx, cy, 16.0, rgb(0x6090c0), 0.4);
+        }
+        for g in &self.glasses {
+            let steps = 48;
+            for i in 0..steps {
+                let a = i as f32 / steps as f32 * std::f32::consts::TAU;
+                let (x, y) = to_scr(g.x + a.cos() * crate::reaper::GLASS_RADIUS, g.y + a.sin() * crate::reaper::GLASS_RADIUS);
+                // The ring fades as the sand runs out.
+                scr.glow(x, y - 2, 5.0, rgb(0xd0a050), 0.15 + 0.4 * (g.t / g.max).min(1.0));
+            }
+            for k in 0..14 {
+                let h1 = ((k as u32).wrapping_mul(2654435761) >> 8) as f32 / 16_777_216.0;
+                let fall = (self.tick as f32 * 0.02 + h1).fract();
+                let a = h1 * std::f32::consts::TAU * 3.0;
+                let rr = (h1 * 7.0).fract() * crate::reaper::GLASS_RADIUS;
+                let (x, y) = to_scr(g.x + a.cos() * rr, g.y + a.sin() * rr);
+                scr.pset(x, y - 30 + (fall * 30.0) as i32, rgb(0xe8c070));
+            }
+        }
         for a in &self.axes {
             // A spinning axe: a dark iron head on a short haft, turning.
             let (sx, sy) = to_scr(a.x, a.y);
@@ -931,10 +981,11 @@ impl Game {
         scr.text("CHOOSE YOUR HERO", w / 2, 10, rgb(0xffd080), Align::Center, 2);
         let classes = [
             ("SORCERESS", "portrait_sorceress", "mage", "FIREBALLS,", "METEORS.", rgb(0xff9040)),
-            ("VAMPIRE", "portrait_vampire", "vampire", "BLOOD MAGIC,", "BATS, THRALLS.", rgb(0xd04060)),
-            ("INVENTOR", "portrait_inventor", "inventor", "AETHER GUNS,", "TURRETS, SUIT.", rgb(0x40c0b0)),
-            ("VALKYRIE", "portrait_valkyrie", "valkyrie", "FROST SPEAR,", "FREEZE, SHATTER.", rgb(0x80d0ff)),
-            ("BERSERKER", "portrait_berserker", "berserker", "GIANT AXE, RAGE,", "A DIRE WOLF.", rgb(0xd07040)),
+            ("VAMPIRE", "portrait_vampire", "vampire", "BLOOD MAGIC,", "THRALLS.", rgb(0xd04060)),
+            ("INVENTOR", "portrait_inventor", "inventor", "AETHER GUNS,", "TURRETS.", rgb(0x40c0b0)),
+            ("VALKYRIE", "portrait_valkyrie", "valkyrie", "FROST SPEAR,", "SHATTER.", rgb(0x80d0ff)),
+            ("BERSERKER", "portrait_berserker", "berserker", "GIANT AXE,", "DIRE WOLF.", rgb(0xd07040)),
+            ("REAPER", "portrait_reaper", "reaper", "RUNE SCYTHE,", "SOULS.", rgb(0x9ad8ff)),
         ];
         let pw = (w - 20 - 10 * (classes.len() as i32 - 1)) / classes.len() as i32;
         let ph = h - 70;
@@ -962,7 +1013,8 @@ impl Game {
                     scr.blit_scaled(spr, cx, y0 + ph - 60, 2.5, Fx { tint, tint_a, ..Fx::default() });
                 }
             }
-            scr.text(name, cx, y0 + ph - 46, if on { *col } else { rgb(0x8a7a68) }, Align::Center, 2);
+            let sc = if classes.iter().all(|c| crate::gfx::text_width(c.0, 2) <= pw - 6) { 2 } else { 1 };
+            scr.text(name, cx, y0 + ph - 46 + (2 - sc) * 6, if on { *col } else { rgb(0x8a7a68) }, Align::Center, sc);
             scr.text(l1, cx, y0 + ph - 24, rgb(0xb0a090), Align::Center, 1);
             scr.text(l2, cx, y0 + ph - 13, rgb(0xb0a090), Align::Center, 1);
             rects.push((x0, y0, pw, ph));
@@ -998,11 +1050,12 @@ impl Game {
             crate::skills::Class::Valkyrie if self.p.charge.is_some() => "valkyrie_horse",
             crate::skills::Class::Valkyrie => "valkyrie",
             crate::skills::Class::Berserker => "berserker",
+            crate::skills::Class::Reaper => "reaper",
             crate::skills::Class::Sorceress => "mage",
         };
         let art = self.art.char_art(sheet).0;
         // The melee heroes pick their own attack poses (thrust, sweep, whirl, throw, cast).
-        let valkyrie = matches!(self.p.skills.class, crate::skills::Class::Valkyrie | crate::skills::Class::Berserker);
+        let valkyrie = matches!(self.p.skills.class, crate::skills::Class::Valkyrie | crate::skills::Class::Berserker | crate::skills::Class::Reaper);
         // Rake is a claw slash (cast pose of exactly 0.3 s).
         let claw = vampire && (self.p.cast_len - 0.3).abs() < 0.001 && art.has("attack");
         let anim = if self.p.cast_t > 0.0 && claw {
@@ -1054,6 +1107,18 @@ impl Game {
             draw_wings(scr, sx, sy - 30, self.tick, (self.p.wings_t * 3.0).min(1.0));
         }
         self.blit_char(scr, sheet, anim, (sx, sy), fx, self.p.moving);
+        // The Ledger of the Forgotten floats open beside her.
+        if self.p.ledger_t > 0.0 {
+            let bob = ((self.tick as f32) * 0.08).sin() * 2.0;
+            let (bx, by) = (sx + 14, sy - 46 + bob as i32);
+            scr.fill(bx - 7, by - 4, 6, 8, rgb(0xe8dcc0));
+            scr.fill(bx + 1, by - 4, 6, 8, rgb(0xe8dcc0));
+            scr.fill(bx - 1, by - 5, 2, 10, rgb(0x2a1a10));
+            for k in 0..3 {
+                scr.fill(bx - 6, by - 2 + k * 2, 4, 1, rgb(0x6a8ab0));
+                scr.fill(bx + 2, by - 2 + k * 2, 4, 1, rgb(0x6a8ab0));
+            }
+        }
     }
 
     fn draw_npc(&self, scr: &mut Screen, i: usize, (sx, sy): (i32, i32)) {
@@ -1136,8 +1201,8 @@ impl Game {
             fx.tint = rgb(0xff2010);
             fx.tint_a = 0.18;
         }
-        // Mesmerized foes and thralls glow violet; the valkyrie's Einherjar are pale blue ghosts.
-        if m.kind == crate::mobs::Kind::Einherjar {
+        // Mesmerized foes and thralls glow violet; the valkyrie's Einherjar and the reaper's scholars are pale ghosts.
+        if matches!(m.kind, crate::mobs::Kind::Einherjar | crate::mobs::Kind::Scholar) {
             fx.tint = rgb(0x9ad8ff);
             fx.tint_a = 0.6;
             fx.dither = (self.tick / 2) % 3 == 0;
@@ -1181,6 +1246,10 @@ impl Game {
             let heat = self.heat();
             let (dark, hi) = if self.p.overheat > 0.0 && (self.tick / 6) % 2 == 0 { (rgb(0xe0e0e0), rgb(0xffffff)) } else { (rgb(0xb05010), rgb(0xffa040)) };
             globe(scr, w - 34, gy, 26, heat, dark, hi);
+        } else if self.is_reaper() {
+            // Souls: a pale spirit-blue lantern.
+            let (dark, hi) = if self.p.ledger_t > 0.0 && (self.tick / 8) % 2 == 0 { (rgb(0xb09040), rgb(0xffe0a0)) } else { (rgb(0x2a4a70), rgb(0xa0d8ff)) };
+            globe(scr, w - 34, gy, 26, self.p.mana / self.soul_cap(), dark, hi);
         } else if self.is_berserker() {
             // Rage: dark crimson, pulsing in the red mist.
             let (dark, hi) = if self.p.berserk_t > 0.0 && (self.tick / 6) % 2 == 0 { (rgb(0xe02010), rgb(0xffa080)) } else { (rgb(0x701010), rgb(0xd04030)) };
@@ -1198,6 +1267,18 @@ impl Game {
             scr.text(&label, w - 34, gy - 4, WHITE, Align::Center, 1);
             let vent = if self.p.vent_cd > 0.0 { format!("VENT {:.0}S", self.p.vent_cd.ceil()) } else { "VENT: E/Y".into() };
             scr.text(&vent, w - 34, gy - 36, rgb(0xd8b080), Align::Center, 1);
+        } else if self.is_reaper() {
+            let souls = (self.p.mana / crate::reaper::SOUL).floor() as i32;
+            scr.text(&format!("{souls}"), w - 34, gy - 4, WHITE, Align::Center, 1);
+            scr.text("SOULS", w - 34, gy - 36, rgb(0xa0d8ff), Align::Center, 1);
+            // The scythe's seven runes.
+            let blaze = self.p.runes >= crate::reaper::RUNES;
+            for k in 0..crate::reaper::RUNES as i32 {
+                let lit = (k as u8) < self.p.runes;
+                let c = if blaze && (self.tick / 5) % 2 == 0 { rgb(0xffffff) } else if lit { rgb(0x80d0ff) } else { rgb(0x3a4450) };
+                let x = w - 70 - (crate::reaper::RUNES as i32 - 1 - k) * 6;
+                scr.fill(x, gy + 18, 3, 5, c);
+            }
         } else if self.is_berserker() {
             scr.text(&format!("{}", self.p.mana.floor() as i32), w - 34, gy - 4, WHITE, Align::Center, 1);
             let label = if self.p.berserk_t > 0.0 {
@@ -1241,6 +1322,7 @@ impl Game {
                 crate::skills::Class::Inventor => ("WEAK", rgb(0x60d0c0)),
                 crate::skills::Class::Valkyrie => ("SPEAR", rgb(0x90d8ff)),
                 crate::skills::Class::Berserker => ("CLEAVE", rgb(0xe08060)),
+                crate::skills::Class::Reaper => ("SCYTHE", rgb(0xa0d8ff)),
                 crate::skills::Class::Sorceress => ("EMBER", rgb(0xff9050)),
             };
             scr.text(label, ix + 4, iy + 28, col, Align::Center, 1);

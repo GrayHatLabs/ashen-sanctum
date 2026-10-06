@@ -226,6 +226,13 @@ pub struct Player {
     pub exhaust_t: f32,
     pub wolf_cd: f32,
     pub howl_t: f32,
+    // ---- the reaper ----
+    /// Runes lit on her scythe (0..7), the prey they were lit on, and how long until they fade.
+    pub runes: u8,
+    pub rune_prey: Option<usize>,
+    pub rune_t: f32,
+    /// The Ledger is open.
+    pub ledger_t: f32,
     pub cast_t: f32,
     pub cast_cd: f32,
     /// Length of the current cast animation (fireball or ember).
@@ -312,6 +319,10 @@ impl Player {
             exhaust_t: 0.0,
             wolf_cd: 0.0,
             howl_t: 0.0,
+            runes: 0,
+            rune_prey: None,
+            rune_t: 0.0,
+            ledger_t: 0.0,
             cast_t: 0.0,
             cast_cd: 0.0,
             cast_len: CAST_TIME,
@@ -356,6 +367,24 @@ impl Player {
 
     /// The gear you start with: the sorceress a gnarled staff, the vampire a plain amulet.
     pub fn starting_gear(&mut self) {
+        if self.skills.class == crate::skills::Class::Reaper {
+            // Ten souls fill her lantern (gear "+mana" adds room); she starts with none.
+            self.base_mana = 100.0;
+            self.base_hp += 15.0;
+            self.gear = crate::items::Gear::default();
+            let amulet = crate::items::Item {
+                base: crate::items::base_by_key("amulet").unwrap(),
+                rarity: crate::items::Rarity::Normal,
+                ilvl: 1,
+                name: "ARCHIVE KEY".into(),
+                stats: vec![],
+                req: 1,
+            };
+            let slot = crate::items::WORN.iter().position(|s| *s == crate::items::Slot::Amulet).unwrap();
+            self.gear.worn[slot] = Some(amulet);
+            self.recalc();
+            return;
+        }
         if self.skills.class == crate::skills::Class::Berserker {
             // Rage fills to 100 from pain and kills; she's big, and wears what she took from the dead.
             self.base_mana = 100.0;
@@ -514,6 +543,10 @@ pub struct Game {
     pub(crate) ravens: Vec<crate::valkyrie::RavenFx>,
     pub(crate) javelins: Vec<crate::valkyrie::JavelinFx>,
     pub(crate) axes: Vec<crate::berserker::AxeFx>,
+    pub(crate) souls: Vec<crate::reaper::SoulFx>,
+    pub(crate) lanterns: Vec<crate::reaper::LanternFx>,
+    pub(crate) chains_fx: Vec<crate::reaper::ChainsFx>,
+    pub(crate) glasses: Vec<crate::reaper::GlassFx>,
     pub(crate) fields: Vec<crate::vampire::BloodField>,
     pub(crate) bombs: Vec<crate::inventor::BombFx>,
     pub(crate) arcs: Vec<crate::inventor::ArcFx>,
@@ -612,6 +645,10 @@ impl Game {
             ravens: vec![],
             javelins: vec![],
             axes: vec![],
+            souls: vec![],
+            lanterns: vec![],
+            chains_fx: vec![],
+            glasses: vec![],
             fields: vec![],
             bombs: vec![],
             arcs: vec![],
@@ -860,7 +897,7 @@ impl Game {
         self.p.starting_gear();
         self.p.hp = self.p.max_hp;
         // Valor starts empty: she earns it in the fight.
-        self.p.mana = if matches!(class, crate::skills::Class::Valkyrie | crate::skills::Class::Berserker) { 0.0 } else { self.p.max_mana };
+        self.p.mana = if matches!(class, crate::skills::Class::Valkyrie | crate::skills::Class::Berserker | crate::skills::Class::Reaper) { 0.0 } else { self.p.max_mana };
     }
 
     /// Class select controls: left / right (or click) to pick, confirm to start.
@@ -871,7 +908,7 @@ impl Game {
             sel = sel.saturating_sub(1);
         }
         if edge(inp.move_x, self.prev.move_x, false) || edge(inp.move_y, self.prev.move_y, false) {
-            sel = (sel + 1).min(4);
+            sel = (sel + 1).min(5);
         }
         let mut go = confirm;
         if let (Some((mx, my)), true) = (inp.mouse, click) {
@@ -887,6 +924,7 @@ impl Game {
                 2 => crate::skills::Class::Inventor,
                 3 => crate::skills::Class::Valkyrie,
                 4 => crate::skills::Class::Berserker,
+                5 => crate::skills::Class::Reaper,
                 _ => crate::skills::Class::Sorceress,
             };
             self.set_class(class);
@@ -1030,6 +1068,12 @@ impl Game {
         self.ravens.clear();
         self.javelins.clear();
         self.axes.clear();
+        self.souls.clear();
+        self.lanterns.clear();
+        self.chains_fx.clear();
+        self.glasses.clear();
+        self.p.rune_prey = None;
+        self.p.runes = 0;
         self.p.charge = None;
         self.p.whirl_t = 0.0;
         // Her wolf comes with her (it's made anew beside her on the other side).
@@ -1371,6 +1415,7 @@ impl Game {
         self.update_inventor();
         self.update_valkyrie();
         self.update_berserker();
+        self.update_reaper();
         self.update_world();
         self.prev = inp.clone();
     }
@@ -1764,7 +1809,7 @@ impl Game {
         let base_regen = if p.skills.class == crate::skills::Class::Inventor {
             // Cooling (gear "mana regeneration" cools faster too).
             crate::inventor::COOLING * crate::inventor::tinker_cool(p.skills.rank(crate::skills::Skill::Tinkerer))
-        } else if matches!(p.skills.class, crate::skills::Class::Valkyrie | crate::skills::Class::Berserker) {
+        } else if matches!(p.skills.class, crate::skills::Class::Valkyrie | crate::skills::Class::Berserker | crate::skills::Class::Reaper) {
             // Valor and rage don't regenerate: they fight for it.
             0.0
         } else {
@@ -1813,7 +1858,13 @@ impl Game {
             self.p.mp_pots -= 1;
             self.p.mana = (self.p.mana + 35.0 + self.p.max_mana * 0.15).min(self.p.max_mana);
             self.sfx.push(Sfx::Drink);
-            let word = if self.is_valkyrie() || self.is_berserker() { "MEAD" } else { "MANA" };
+            let word = if self.is_reaper() {
+                "INK"
+            } else if self.is_valkyrie() || self.is_berserker() {
+                "MEAD"
+            } else {
+                "MANA"
+            };
             self.floater(self.p.x, self.p.y, word.into(), rgb(0x5080ff));
         }
 
@@ -1899,6 +1950,8 @@ impl Game {
                 crate::valkyrie::reach_of(skill)
             } else if self.is_berserker() {
                 crate::berserker::reach_of(skill)
+            } else if self.is_reaper() {
+                crate::reaper::reach_of(skill)
             } else {
                 None
             };
@@ -2277,7 +2330,7 @@ impl Game {
             crate::skills::Class::Vampire => crate::vampire::blood_taken(kind),
             crate::skills::Class::Inventor => 1.0,
             crate::skills::Class::Valkyrie => crate::valkyrie::frost_taken(kind),
-            crate::skills::Class::Berserker => 1.0,
+            crate::skills::Class::Berserker | crate::skills::Class::Reaper => 1.0,
             crate::skills::Class::Sorceress => crate::mobs::fire_taken(kind),
         }
     }
@@ -2520,6 +2573,7 @@ impl Game {
 
     pub(crate) fn kill(&mut self, i: usize) {
         let (x, y, kind, boss, xp) = (self.mobs[i].x, self.mobs[i].y, self.mobs[i].kind, self.mobs[i].boss, self.mobs[i].xp);
+        let marked = self.mobs[i].marked > 0.0;
         // The valkyrie kills a frozen foe: it shatters (after it's counted dead, so shards can't re-kill it).
         let shatter = self.is_valkyrie() && self.mobs[i].frozen > 0.0 && self.p.skills.rank(crate::skills::Skill::FrostBrand) > 0;
         self.mobs[i].frozen = 0.0;
@@ -2548,6 +2602,13 @@ impl Game {
         }
         if self.is_berserker() && kind != Kind::DireWolf {
             self.berserker_kill();
+        }
+        if self.is_reaper() && kind != Kind::Scholar {
+            self.reaper_kill(x, y, boss, marked);
+            // With the Ledger open, the dead rise to serve her.
+            if self.p.ledger_t > 0.0 && (x - self.p.x).powi(2) + (y - self.p.y).powi(2) < 64.0 {
+                self.raise_scholar(x, y, 10.0);
+            }
         }
         // Boiler brutes blow their boilers when they fall.
         if kind == Kind::BoilerBrute {
@@ -3864,6 +3925,124 @@ mod tests {
         let (px, py) = (g.p.x, g.p.y);
         cast(&mut g, Skill::DireWolf, px, py);
         assert!(g.mobs[near].flee > 0.0, "howl");
+    }
+
+    fn reaper_game() -> Game {
+        let mut g = quiet_game();
+        g.set_class(crate::skills::Class::Reaper);
+        g.p.clvl = 18;
+        for s in crate::skills::REAPER {
+            g.p.skills.rank[s as usize] = 3;
+        }
+        g
+    }
+
+    #[test]
+    fn the_reaper_gathers_souls_and_her_runes_blaze() {
+        use crate::skills::Skill;
+        let mut g = reaper_game();
+        assert_eq!(g.p.mana, 0.0, "no souls yet");
+        // A death nearby: its soul drifts into her lantern.
+        let a = dummy(&mut g, 1.6, 0.0);
+        g.mobs[a].hp = 1.0;
+        let (ax, ay) = (g.mobs[a].x, g.mobs[a].y);
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::ReapingScythe, ax, ay);
+        assert!(!g.mobs[a].alive());
+        assert_eq!(g.souls.len(), 1);
+        for _ in 0..90 {
+            g.update(&Input::default());
+        }
+        assert!(g.souls.is_empty());
+        assert_eq!(g.p.mana, crate::reaper::SOUL, "one soul");
+        // Hunting the same prey lights the runes; at seven the next sweep blazes for triple.
+        let b = dummy(&mut g, 1.6, 0.0);
+        let (bx, by) = (g.mobs[b].x, g.mobs[b].y);
+        let mut last = 0.0;
+        for k in 0..8 {
+            g.p.cast_cd = 0.0;
+            // (Her sweeps knock it back; keep it in reach.)
+            (g.mobs[b].x, g.mobs[b].y) = (bx, by);
+            let before = g.mobs[b].hp;
+            g.cast_skill(Skill::ReapingScythe, bx, by);
+            last = before - g.mobs[b].hp;
+            if k == 6 {
+                assert_eq!(g.p.runes, crate::reaper::RUNES, "seven runes");
+            }
+        }
+        assert_eq!(g.p.runes, 0, "the blaze spent the runes");
+        assert!(last > 25.0, "the blazing cleave hit hard ({last})");
+        // Out of souls her skills fall back to the free scythe.
+        g.p.mana = 0.0;
+        g.p.cast_cd = 0.0;
+        let before = g.mobs[b].hp;
+        g.cast_skill(Skill::SpiritLantern, bx, by);
+        assert!(g.lanterns.is_empty() && g.mobs[b].hp < before);
+    }
+
+    #[test]
+    fn the_reapers_skills_work() {
+        use crate::skills::Skill;
+        let mut g = reaper_game();
+        g.waypoint = (-99.0, -99.0);
+        let cast = |g: &mut Game, s: Skill, x: f32, y: f32| {
+            g.p.mana = g.soul_cap();
+            g.p.cast_cd = 0.0;
+            g.p.skills.cooldown = [0.0; crate::skills::ALL.len()];
+            g.cast_skill(s, x, y);
+        };
+        let z = dummy(&mut g, 4.0, 0.0);
+        let (zx, zy) = (g.mobs[z].x, g.mobs[z].y);
+        // Spirit Lantern hunts it down.
+        let hp = g.mobs[z].hp;
+        cast(&mut g, Skill::SpiritLantern, zx, zy);
+        for _ in 0..90 {
+            g.update(&Input::default());
+        }
+        assert!(g.mobs[z].hp < hp, "the flame struck");
+        // The Ledger: marked, it takes more, and it's worth three souls.
+        cast(&mut g, Skill::LedgerMark, zx, zy);
+        assert!(g.mobs[z].marked > 0.0);
+        g.mobs[z].hp = 1.0;
+        g.p.mana = 0.0;
+        g.p.cast_cd = 0.0;
+        g.p.x = zx - 1.5;
+        g.cast_skill(Skill::ReapingScythe, zx, zy);
+        assert!(!g.mobs[z].alive());
+        assert_eq!(g.souls.last().map(|s| s.n), Some(3.0));
+        // Chains bind, the hourglass slows.
+        let c = dummy(&mut g, 2.0, 1.0);
+        let (cx, cy) = (g.mobs[c].x, g.mobs[c].y);
+        cast(&mut g, Skill::ChainsOfArchive, cx, cy);
+        assert!(g.mobs[c].stun > 1.0, "bound");
+        cast(&mut g, Skill::Hourglass, cx, cy);
+        g.update(&Input::default());
+        assert!(g.mobs[c].slow_t > 0.0, "time crawls");
+        // Scholars fight for her.
+        let (px, py) = (g.p.x, g.p.y);
+        cast(&mut g, Skill::ScholarSpirits, px, py);
+        assert_eq!(g.mobs.iter().filter(|m| m.kind == Kind::Scholar && m.alive() && m.charm > 0.0).count(), crate::reaper::scholars(3));
+        // Shadow Step.
+        let x0 = g.p.x;
+        let py = g.p.y;
+        cast(&mut g, Skill::ShadowStep, x0 - 4.0, py);
+        assert!(g.p.x < x0 - 1.5, "stepped through the smoke");
+        // Soul Harvest reaps the badly wounded outright.
+        let w = dummy(&mut g, 1.5, 0.0);
+        g.mobs[w].hp = g.mobs[w].max_hp * 0.1;
+        let (px, py) = (g.p.x, g.p.y);
+        cast(&mut g, Skill::SoulHarvest, px, py);
+        assert!(!g.mobs[w].alive(), "reaped");
+        // Open the Ledger: the dead rise as scholars, and souls come double.
+        let (px, py) = (g.p.x, g.p.y);
+        cast(&mut g, Skill::OpenLedger, px, py);
+        assert!(g.p.ledger_t > 0.0);
+        let d = dummy(&mut g, 1.5, 0.0);
+        let before = g.mobs.iter().filter(|m| m.kind == Kind::Scholar).count();
+        g.mobs[d].hp = 0.0;
+        g.kill(d);
+        assert!(g.mobs.iter().filter(|m| m.kind == Kind::Scholar).count() > before, "the dead rise");
+        assert_eq!(g.souls.last().map(|s| s.n), Some(2.0), "double souls");
     }
 
     #[test]

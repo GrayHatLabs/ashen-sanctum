@@ -386,6 +386,9 @@ impl Art {
             // ---- the Berserker (until her PixelLab art exists): the raider has an axe ----
             "berserker" => ("raider", 1.08, 0x3a2418, 0.35),
             "dire_wolf" => ("wolf", 1.4, 0x161414, 0.65),
+            // ---- the Reaper (until her PixelLab art exists): the hooded cultist with a tome ----
+            "reaper" => ("cultist", 1.05, 0x343a44, 0.72),
+            "scholar_spirit" => ("npc_priest", 1.0, 0x9ad8ff, 0.6),
             // ---- Act 4 stand-ins ----
             "brass_scarab" => ("boss_plague", 0.45, 0xc89040, 0.65),
             "inquisitor" => ("archer", 1.0, 0x302820, 0.6),

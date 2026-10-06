@@ -648,6 +648,7 @@ pub fn skill_icon(s: crate::skills::Skill) -> Sprite {
         s if crate::inventor::is_inventor(s) => inventor_icon(s, &mut im),
         s if crate::valkyrie::is_valkyrie(s) => valkyrie_icon(s, &mut im),
         s if crate::berserker::is_berserker(s) => berserker_icon(s, &mut im),
+        s if crate::reaper::is_reaper(s) => reaper_icon(s, &mut im),
         _ => vampire_icon(s, &mut im),
     }
     im.ax = 0;
@@ -911,6 +912,124 @@ fn berserker_icon(s: crate::skills::Skill, im: &mut Sprite) {
             im.fill(9, 9, 6, 6, rgb(0x200808));
             im.set(10, 11, rgb(0xff6040));
             im.set(13, 11, rgb(0xff6040));
+        }
+        _ => {}
+    }
+}
+
+/// The reaper's icons: spectral blue, aged bronze and parchment on charcoal.
+fn reaper_icon(s: crate::skills::Skill, im: &mut Sprite) {
+    use crate::skills::Skill;
+    im.fill(0, 0, 24, 24, rgb(0x101216));
+    let spirit = |d: f32| mix(rgb(0xe0f4ff), rgb(0x2a4a70), d.clamp(0.0, 1.0));
+    let bronze = rgb(0xa07840);
+    let parch = rgb(0xd8ccb0);
+    let wood = rgb(0x2a2220);
+    // The scythe: a long haft and a curved blade at the top.
+    let scythe = |im: &mut Sprite, glow: bool| {
+        for t in 0..18 {
+            im.set(5 + t / 2, 21 - t, wood);
+        }
+        for k in 0..12 {
+            let a = 3.6 + k as f32 * 0.16;
+            let (x, y) = (14 + (a.cos() * 9.0) as i32, 8 + (a.sin() * 5.0) as i32);
+            im.set(x, y, if glow { spirit(k as f32 / 14.0) } else { rgb(0x6a7280) });
+            im.set(x, y + 1, rgb(0x30343a));
+        }
+    };
+    match s {
+        Skill::ReapingScythe => scythe(im, true),
+        Skill::SpiritLantern => {
+            im.fill(9, 6, 6, 1, bronze);
+            im.fill(8, 7, 8, 11, rgb(0x2a2a30));
+            im.fill(9, 8, 6, 9, spirit(0.3));
+            im.fill(11, 10, 2, 4, spirit(0.0));
+            im.fill(11, 3, 2, 3, bronze);
+        }
+        Skill::PatientArchivist => {
+            // An hourglass with a key.
+            for y in 4..20 {
+                let w = ((y as i32 - 12).abs() / 2).max(1);
+                for x in 12 - w..12 + w {
+                    im.set(x, y, if y > 12 { rgb(0xd0a050) } else { rgb(0x3a4048) });
+                }
+            }
+            im.fill(7, 3, 10, 1, bronze);
+            im.fill(7, 20, 10, 1, bronze);
+        }
+        Skill::LedgerMark => {
+            im.fill(5, 6, 7, 12, parch);
+            im.fill(12, 6, 7, 12, parch);
+            im.fill(11, 5, 2, 14, rgb(0x2a1a10));
+            for k in 0..4 {
+                im.fill(6, 8 + k * 2, 5, 1, rgb(0x5a6a80));
+                im.fill(13, 8 + k * 2, 4 - k % 2, 1, spirit(0.2));
+            }
+        }
+        Skill::ScholarSpirits => {
+            for (cx, sh) in [(8, 0.2f32), (16, 0.45)] {
+                im.fill(cx - 2, 5, 4, 4, spirit(sh));
+                im.fill(cx - 3, 9, 6, 10, spirit(sh + 0.15));
+                im.fill(cx + 2, 11, 3, 4, parch);
+            }
+        }
+        Skill::ShadowStep => {
+            for y in 0..24 {
+                for x in 0..24 {
+                    let d = ((x as f32 - 12.0).powi(2) + (y as f32 - 12.0).powi(2)).sqrt();
+                    if d < 9.0 && hash(x, y, 21) % 3 == 0 {
+                        im.set(x, y, if d < 4.0 { rgb(0x0c0c10) } else { rgb(0x2a2c34) });
+                    }
+                }
+            }
+            for x in 4..20 {
+                im.set(x, 12, spirit(0.5));
+            }
+        }
+        Skill::ChainsOfArchive => {
+            for k in 0..8 {
+                let (x, y) = (4 + k * 2, 20 - k * 2);
+                im.fill(x, y, 3, 2, if k % 2 == 0 { rgb(0x8a96a8) } else { spirit(0.3) });
+                let (x2, y2) = (20 - k * 2, 20 - k * 2);
+                im.fill(x2 - 2, y2, 3, 2, if k % 2 == 1 { rgb(0x8a96a8) } else { spirit(0.3) });
+            }
+        }
+        Skill::Hourglass => {
+            for y in 3..21 {
+                let w = ((y as i32 - 12).abs() * 2 / 3).max(1);
+                for x in 12 - w..12 + w {
+                    im.set(x, y, if (y > 13 && y > 20 - w) || (y < 11 && y > 4 + (12 - w)) { rgb(0xe0b060) } else { rgb(0x3a4048) });
+                }
+            }
+            im.fill(6, 2, 12, 1, bronze);
+            im.fill(6, 21, 12, 1, bronze);
+            im.set(12, 12, rgb(0xe0b060));
+        }
+        Skill::RuneBlade => {
+            scythe(im, false);
+            for k in 0..7 {
+                let a = 3.6 + k as f32 * 0.28;
+                im.set(14 + (a.cos() * 8.0) as i32, 9 + (a.sin() * 4.0) as i32, spirit(0.0));
+            }
+        }
+        Skill::SoulHarvest => {
+            for k in 0..48 {
+                let a = k as f32 / 48.0 * std::f32::consts::TAU;
+                im.set(12 + (a.cos() * 9.0) as i32, 12 + (a.sin() * 9.0) as i32, spirit((k % 12) as f32 / 12.0));
+            }
+            scythe(im, true);
+        }
+        Skill::OpenLedger => {
+            im.fill(3, 8, 9, 11, parch);
+            im.fill(12, 8, 9, 11, parch);
+            im.fill(11, 7, 2, 13, rgb(0x2a1a10));
+            for y in 0..8 {
+                for x in 0..24 {
+                    if hash(x, y, 33) % 6 == 0 {
+                        im.set(x, y, spirit((y as f32) / 8.0));
+                    }
+                }
+            }
         }
         _ => {}
     }
