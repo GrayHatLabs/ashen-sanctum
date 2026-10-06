@@ -1425,7 +1425,9 @@ impl Game {
         }
         let burn = burn * self.p.skills.burn_mult();
         let kind = self.mobs[i].kind;
-        let dmg = dmg * self.taken(kind);
+        // Mechanus's laws: inside a law zone, forbidden blows barely scratch.
+        let law = self.law_scale(i);
+        let dmg = dmg * self.taken(kind) * law;
         self.drain(kind, dmg, 1.0);
         let m = &mut self.mobs[i];
         let (mx, my, boss, r) = (m.x, m.y, m.boss, m.r);
@@ -1452,7 +1454,8 @@ impl Game {
         self.focus_t = 3.0;
         self.stats.hits += 1;
         if show {
-            self.floater(mx, my, format!("{}", dmg.round() as i32), rgb(0xffb040));
+            let col = if law < 1.0 { rgb(0x9a9080) } else { rgb(0xffb040) };
+            self.floater(mx, my, format!("{}", dmg.round() as i32), col);
         }
         if self.mobs[i].hp <= 0.0 && self.mobs[i].alive() {
             self.kill(i);

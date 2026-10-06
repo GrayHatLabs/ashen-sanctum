@@ -4,6 +4,7 @@
 mod art;
 mod art_gen;
 mod audio;
+mod clockwork;
 mod dungeon;
 mod game;
 mod gfx;

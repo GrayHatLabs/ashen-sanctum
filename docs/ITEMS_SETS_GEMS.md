@@ -82,4 +82,4 @@ Each jeweler offers two things:
 - **`src/inventory.rs`:** `InvUi.jewel` (the bench) and `InvUi.holding` (a gem in hand), plus the gem and socket icons.
 - **`src/story.rs`:** `Role::Jeweler(act)`, `Act::Combine` and `Act::Jewel`.
 - **`src/world.rs`:** the jewelers' places in each town.
-- **Art:** `tools/jeweler_art.py` (art repo) and gem icons in `tools/items_art.py`. Code-drawn stand-ins until those are imported.
+- **Art:** `tools/jeweler_art.py` (art repo) and gem icons in `tools/items_art.py`, imported. The game draws better grades bigger.

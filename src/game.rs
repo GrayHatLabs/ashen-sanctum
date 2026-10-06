@@ -607,6 +607,11 @@ pub struct Game {
     pub(crate) hud_bag: (i32, i32, i32, i32),
     pub(crate) shots: Vec<Shot>,
     pub(crate) hazards: Vec<Hazard>,
+    /// Act 4: stop-clocks and law zones on this level (`clockwork.rs`).
+    pub clocks: Vec<crate::clockwork::TimeClock>,
+    pub laws: Vec<crate::clockwork::LawZone>,
+    /// The law zone you're standing in (announced on entry).
+    pub law_here: Option<usize>,
     pub(crate) parts: Vec<Particle>,
     pub(crate) floaters: Vec<Floater>,
     pub(crate) lights: Vec<Light>,
@@ -704,6 +709,9 @@ impl Game {
             hud_bag: (0, 0, 0, 0),
             shots: vec![],
             hazards: vec![],
+            clocks: vec![],
+            laws: vec![],
+            law_here: None,
             parts: vec![],
             floaters: vec![],
             lights: vec![],
@@ -821,6 +829,7 @@ impl Game {
         if !lv.id.overland() {
             self.shop_stale = true;
         }
+        self.place_clockwork();
     }
 
     /// Gerta's stock: mostly magic gear around your level, now and then a rare.
@@ -1457,6 +1466,7 @@ impl Game {
         }
         self.update_shots();
         self.update_hazards();
+        self.update_clockwork();
         self.update_balls();
         self.update_novas();
         self.update_fire_ground();

@@ -804,6 +804,32 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             idle(&mut g, 40);
             save(&mut g, scr, "act4_wilds");
         }
+        // Time mechanics: a struck stop-clock beside a law zone, foes crawling in its field.
+        if !g.laws.is_empty() && !g.clocks.is_empty() {
+            let (zx, zy) = (g.laws[0].x, g.laws[0].y);
+            let spot = [(2.5f32, 1.0f32), (-2.5, 1.0), (1.0, 2.5), (1.0, -2.5)].into_iter().map(|(dx, dy)| (zx + dx, zy + dy)).find(|&(x, y)| !g.d.blocked(x, y, 0.6));
+            if let Some((cx, cy)) = spot {
+                (g.clocks[0].x, g.clocks[0].y) = (cx, cy);
+                g.mobs.retain(|m| (m.x - zx).powi(2) + (m.y - zy).powi(2) > 400.0);
+                for k in 0..4 {
+                    let a = k as f32 * 1.6;
+                    let (mx, my) = (zx + a.cos() * 2.0, zy + a.sin() * 2.0);
+                    if !g.d.blocked(mx, my, 0.4) {
+                        let m = crate::mobs::Mob::new(crate::mobs::Kind::Scarab, mx, my, 7.0, &mut g.rng);
+                        g.mobs.push(m);
+                    }
+                }
+                (g.p.x, g.p.y) = (cx, cy + 0.5);
+                g.p.base_hp = 9999.0;
+                g.p.recalc();
+                g.p.hp = 9999.0;
+                idle(&mut g, 2);
+                // Step back so the clock shows.
+                (g.p.x, g.p.y) = (cx + 1.5, cy + 1.5);
+                idle(&mut g, 30);
+                save(&mut g, scr, "act4_clock_law");
+            }
+        }
         let k = crate::world::HEART;
         g.debug_goto(LevelId::Dungeon(k, DUNGEONS[k].floors - 1));
         g.p.base_hp = 9999.0;

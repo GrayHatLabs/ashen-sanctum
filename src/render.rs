@@ -97,6 +97,7 @@ impl Game {
             let (sx, sy) = to_scr(h.x, h.y);
             draw_hazard(scr, h.kind, sx, sy, h.r, h.t, h.warn, h.live, self.tick);
         }
+        self.draw_clockwork_floor(scr, &to_scr);
         // The waypoint: a rune circle in the floor, lit blue once activated.
         {
             let (sx, sy) = to_scr(self.waypoint.0, self.waypoint.1);
@@ -129,6 +130,7 @@ impl Game {
             Player,
             Ball(usize),
             Shot(usize),
+            Clock(usize),
         }
         let mut list: Vec<(f32, D)> = vec![];
         for ty in y0..=y1 {
@@ -155,6 +157,11 @@ impl Game {
             }
         }
         list.push((px + py, D::Player));
+        for (i, c) in self.clocks.iter().enumerate() {
+            if in_view(c.x, c.y) {
+                list.push((c.x + c.y, D::Clock(i)));
+            }
+        }
         for (i, b) in self.balls.iter().enumerate() {
             list.push((b.x + b.y, D::Ball(i)));
         }
@@ -212,6 +219,10 @@ impl Game {
                 D::Mob(i) => self.draw_mob(scr, i, to_scr(self.mobs[i].x, self.mobs[i].y)),
                 D::Npc(i) => self.draw_npc(scr, i, to_scr(self.npcs[i].x, self.npcs[i].y)),
                 D::Player => self.draw_player(scr, (psx, psy)),
+                D::Clock(i) => {
+                    let (sx, sy) = to_scr(self.clocks[i].x, self.clocks[i].y);
+                    self.draw_clock(scr, i, sx, sy);
+                }
                 D::Ball(i) => {
                     let b = &self.balls[i];
                     let (sx, sy) = to_scr(b.x, b.y);
@@ -1719,7 +1730,7 @@ fn draw_hazard(scr: &mut Screen, kind: HazardKind, sx: i32, sy: i32, r: f32, t: 
     }
 }
 
-fn ring(scr: &mut Screen, cx: i32, cy: i32, rx: i32, ry: i32, c: u32) {
+pub(crate) fn ring(scr: &mut Screen, cx: i32, cy: i32, rx: i32, ry: i32, c: u32) {
     let n = (rx * 4).max(12);
     for i in 0..n {
         let a = i as f32 / n as f32 * std::f32::consts::TAU;
