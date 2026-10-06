@@ -606,10 +606,12 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             g.p.skills.cooldown = [0.0; crate::skills::ALL.len()];
             g.cast_skill(s, x, y);
         };
+        save(&mut g, scr, "reaper_idle");
         for _ in 0..4 {
             cast(&mut g, Skill::ReapingScythe, target.0, target.1);
             idle(&mut g, 2);
         }
+        save(&mut g, scr, "reaper_swing");
         cast(&mut g, Skill::ChainsOfArchive, target.0, target.1);
         cast(&mut g, Skill::Hourglass, target.0, target.1);
         cast(&mut g, Skill::SpiritLantern, target.0, target.1);

@@ -217,6 +217,18 @@ pub struct ChainsFx {
     pub held: Vec<usize>,
 }
 
+/// A scythe sweep's crescent, drawn as it cuts (`half` = PI for Soul Harvest's full circle).
+pub struct SweepFx {
+    pub x: f32,
+    pub y: f32,
+    pub a0: f32,
+    pub half: f32,
+    pub reach: f32,
+    pub t: f32,
+    pub blaze: bool,
+}
+pub const ARC_TIME: f32 = 0.28;
+
 /// An hourglass slowing an area.
 pub struct GlassFx {
     pub x: f32,
@@ -281,6 +293,7 @@ impl Game {
         let (lo, hi) = scythe_dmg(r);
         let power = self.fire_power();
         let mult = if blazing { blaze_mult(self.p.skills.rank(Skill::RuneBlade).max(1)) } else { 1.0 };
+        self.sweeps.push(SweepFx { x: px, y: py, a0, half, reach: SCYTHE_REACH + if blazing { 0.6 } else { 0.0 }, t: 0.0, blaze: blazing });
         let hits = self.in_cone(tx, ty, SCYTHE_REACH + if blazing { 0.6 } else { 0.0 }, half);
         // Her prey: the hit foe nearest where she aimed.
         let prey = hits.iter().copied().min_by(|&a, &b| {
@@ -465,6 +478,7 @@ impl Game {
         self.shake = self.shake.max(0.5);
         let (px, py) = (self.p.x, self.p.y);
         self.novas.push(Nova { x: px, y: py, r: HARVEST_RADIUS, t: 0.0, blood: false, frost: true });
+        self.sweeps.push(SweepFx { x: px, y: py, a0: 0.0, half: std::f32::consts::PI, reach: HARVEST_RADIUS, t: 0.0, blaze: true });
         let dmg = harvest_dmg(r) * self.fire_power();
         let cut = harvest_cut(r);
         for i in self.in_circle(px, py, HARVEST_RADIUS) {
@@ -510,6 +524,10 @@ impl Game {
         for c in self.chains_fx.iter_mut() {
             c.t -= DT;
         }
+        for a in self.sweeps.iter_mut() {
+            a.t += DT;
+        }
+        self.sweeps.retain(|a| a.t < ARC_TIME);
         self.chains_fx.retain(|c| c.t > 0.0);
         if !self.is_reaper() {
             return;

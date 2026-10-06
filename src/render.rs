@@ -482,6 +482,30 @@ impl Game {
             }
             scr.glow(cx, cy, 16.0, rgb(0x6090c0), 0.4);
         }
+        // Scythe sweeps: a crescent that races from one end of the cut to the other and fades.
+        for a in &self.sweeps {
+            let k = (a.t / crate::reaper::ARC_TIME).min(1.0);
+            let fade = 1.0 - k;
+            let steps = (a.half * 2.0 * a.reach * 9.0) as i32 + 8;
+            let lead = -a.half + 2.0 * a.half * (k * 1.6).min(1.0);
+            for i in 0..=steps {
+                let ang = -a.half + 2.0 * a.half * i as f32 / steps as f32;
+                if ang > lead {
+                    break;
+                }
+                // Brighter near the leading edge of the swing.
+                let near = 1.0 - ((lead - ang) / (2.0 * a.half)).min(1.0);
+                for (rr, w) in [(a.reach, 1.0f32), (a.reach - 0.25, 0.6), (a.reach - 0.5, 0.3)] {
+                    let (x, y) = to_scr(a.x + (a.a0 + ang).cos() * rr, a.y + (a.a0 + ang).sin() * rr);
+                    let (x, y) = (x + scr.shake.0, y - 16 + scr.shake.1);
+                    let col = if a.blaze { rgb(0xe8f8ff) } else { rgb(0x9ad8ff) };
+                    scr.glow(x, y, if a.blaze { 7.0 } else { 5.0 }, rgb(0x60b0ff), 0.5 * fade * w * (0.4 + 0.6 * near));
+                    if w >= 1.0 {
+                        scr.pset(x, y, col);
+                    }
+                }
+            }
+        }
         for g in &self.glasses {
             let steps = 48;
             for i in 0..steps {
@@ -1107,6 +1131,15 @@ impl Game {
             draw_wings(scr, sx, sy - 30, self.tick, (self.p.wings_t * 3.0).min(1.0));
         }
         self.blit_char(scr, sheet, anim, (sx, sy), fx, self.p.moving);
+        // Until her own sprite exists, draw the scythe in her hands (resting, or swinging with the cut).
+        if self.p.skills.class == crate::skills::Class::Reaper && !self.art.has_char("reaper") && !matches!(self.state, State::Dead(_)) {
+            let swing = self.sweeps.last().filter(|a| a.t < crate::reaper::ARC_TIME);
+            let ang = match swing {
+                Some(a) => a.a0 - a.half + 2.0 * a.half * (a.t / crate::reaper::ARC_TIME * 1.6).min(1.0),
+                None => -1.9,
+            };
+            draw_scythe(scr, sx, sy - 18, ang, swing.is_some(), self.p.runes, self.tick);
+        }
         // The Ledger of the Forgotten floats open beside her.
         if self.p.ledger_t > 0.0 {
             let bob = ((self.tick as f32) * 0.08).sin() * 2.0;
@@ -1807,4 +1840,45 @@ fn draw_wings(scr: &mut Screen, cx: i32, cy: i32, tick: u32, k: f32) {
         }
     }
     scr.glow(cx, cy, 26.0 * k, rgb(0x60b0ff), 0.25);
+}
+
+/// The reaper's scythe (a stand-in until her sprite exists): a dark shaft from her hands and a curved
+/// black blade with rune lights. `ang` is the world angle the blade points (swinging, it sweeps round).
+fn draw_scythe(scr: &mut Screen, cx: i32, cy: i32, ang: f32, swinging: bool, runes: u8, tick: u32) {
+    // World direction -> screen (isometric squash), then a long shaft from her grip.
+    let (dx, dy) = iso::to_screen(ang.cos(), ang.sin());
+    let l = (dx * dx + dy * dy).sqrt().max(0.01);
+    let (ux, uy) = (dx / l, dy / l);
+    let len = if swinging { 30.0 } else { 26.0 };
+    // Resting, the scythe stands upright at her side; swinging, it reaches out along the cut.
+    let (tx, ty) = if swinging { (cx as f32 + ux * len, cy as f32 + uy * len * 0.8 - 6.0) } else { (cx as f32 + 7.0, cy as f32 - 30.0) };
+    let (bx, by) = if swinging { (cx as f32 - ux * 6.0, cy as f32 - uy * 4.0 + 6.0) } else { (cx as f32 + 5.0, cy as f32 + 14.0) };
+    let (sx, sy) = (scr.shake.0 as f32, scr.shake.1 as f32);
+    line(scr, (bx + sx) as i32, (by + sy) as i32, (tx + sx) as i32, (ty + sy) as i32, rgb(0x2a2220));
+    line(scr, (bx + sx) as i32 + 1, (by + sy) as i32, (tx + sx) as i32 + 1, (ty + sy) as i32, rgb(0x3a302a));
+    // The blade: a crescent leaving the top of the shaft, curving back.
+    let (px, py) = if swinging { (-uy, ux) } else { (1.0, 0.25) };
+    for k in 0..14 {
+        let t = k as f32 / 13.0;
+        let bend = (t * std::f32::consts::PI * 0.9).sin() * 7.0;
+        let x = tx + px * t * 16.0 - (if swinging { ux } else { 0.0 }) * bend;
+        let y = ty + py * t * 16.0 - (if swinging { uy } else { 1.0 }) * bend;
+        let (x, y) = ((x + sx) as i32, (y + sy) as i32);
+        scr.pset(x, y, rgb(0x30343c));
+        scr.pset(x, y + 1, rgb(0x1a1c22));
+        // The runes along the edge: lit ones glow.
+        if k % 2 == 1 {
+            let lit = (k / 2) < runes as i32;
+            if lit {
+                scr.glow(x, y - 1, 3.0, rgb(0x60c0ff), 0.6);
+            }
+            scr.pset(x, y - 1, if lit { rgb(0xd8f4ff) } else { rgb(0x4a6a8a) });
+        }
+    }
+    // The spirit lantern swinging under the blade.
+    let sway = ((tick as f32) * 0.12).sin() * 1.5;
+    let (lx, ly) = ((tx + px * 5.0 + sway + sx) as i32, (ty + py * 5.0 + 6.0 + sy) as i32);
+    scr.fill(lx - 1, ly - 1, 3, 4, rgb(0x202026));
+    scr.pset(lx, ly, rgb(0xb8e8ff));
+    scr.glow(lx, ly, 6.0, rgb(0x60b0ff), 0.5);
 }

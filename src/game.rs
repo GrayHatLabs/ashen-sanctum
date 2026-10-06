@@ -547,6 +547,7 @@ pub struct Game {
     pub(crate) lanterns: Vec<crate::reaper::LanternFx>,
     pub(crate) chains_fx: Vec<crate::reaper::ChainsFx>,
     pub(crate) glasses: Vec<crate::reaper::GlassFx>,
+    pub(crate) sweeps: Vec<crate::reaper::SweepFx>,
     pub(crate) fields: Vec<crate::vampire::BloodField>,
     pub(crate) bombs: Vec<crate::inventor::BombFx>,
     pub(crate) arcs: Vec<crate::inventor::ArcFx>,
@@ -649,6 +650,7 @@ impl Game {
             lanterns: vec![],
             chains_fx: vec![],
             glasses: vec![],
+            sweeps: vec![],
             fields: vec![],
             bombs: vec![],
             arcs: vec![],
@@ -1071,6 +1073,7 @@ impl Game {
         self.souls.clear();
         self.lanterns.clear();
         self.chains_fx.clear();
+        self.sweeps.clear();
         self.glasses.clear();
         self.p.rune_prey = None;
         self.p.runes = 0;
