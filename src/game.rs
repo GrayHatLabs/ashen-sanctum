@@ -1222,9 +1222,30 @@ impl Game {
         !self.portals.iter().any(|p| p.kind == k)
     }
 
-    /// First dungeon whose seal the bot doesn't have yet (the Sanctum once unlocked).
+    /// First dungeon of this act whose herald token the bot doesn't have yet (then the act's
+    /// last dungeon). Each act has four dungeons in order: three heralds, then the final one.
     fn bot_dungeon(&self) -> usize {
-        (0..3).find(|&k| !self.quest.seals[k]).unwrap_or(SANCTUM)
+        let a = self.level.act().min(3);
+        let got = match a {
+            0 => self.quest.seals,
+            1 => self.quest.runes,
+            2 => self.quest.sigils,
+            _ => self.quest.keys,
+        };
+        let _ = SANCTUM;
+        (0..3).find(|&k| !got[k]).map_or(a * 4 + 3, |k| a * 4 + k)
+    }
+
+    /// The act's story-giver, when they have news for the bot (Elder, Captain, Hunter, Tally).
+    pub fn bot_story_npc(&self) -> Option<Role> {
+        let q = &self.quest;
+        match self.level {
+            LevelId::Overworld if q.elder_has_news() => Some(Role::Elder),
+            LevelId::Frostmarch if q.captain_has_news() => Some(Role::Captain),
+            LevelId::Mistwood if q.hunter_has_news() => Some(Role::Hunter),
+            LevelId::Mechanus if q.tally_has_news() => Some(Role::Tally),
+            _ => None,
+        }
     }
 
     /// Path from the player to (tx, ty), for the bot.
@@ -2722,6 +2743,8 @@ impl Game {
                 if matches!(m.kind, Kind::Ordinal | Kind::Prism) && m.alive() && (m.x - x).powi(2) + (m.y - y).powi(2) < 100.0 {
                     m.stun = m.stun.max(2.5);
                     m.drilled = false;
+                    // Broken ranks: no shield wall, and they take extra damage for a while.
+                    m.broken = 6.0;
                     any = true;
                 }
             }
@@ -3433,6 +3456,69 @@ mod tests {
         g.mobs[m].hp = 0.0;
         g.kill(m);
         assert!(squad.iter().all(|&i| g.mobs[i].stun > 2.0), "disorder");
+    }
+
+    #[test]
+    fn ordinal_ranks_hold_a_shield_wall_and_break_with_their_marshal() {
+        use crate::mobs::{Kind, Mob, MobState};
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        g.debug_goto(LevelId::Mechanus);
+        // A fresh squad in open ground, you to the east.
+        g.mobs.clear();
+        let (cx, cy) = g.clocks.first().map(|c| (c.x, c.y)).unwrap_or(g.start);
+        let (ox, oy) = (cx + 3.0, cy);
+        let mut marshal = Mob::new(Kind::Marshal, ox, oy, 7.0, &mut g.rng);
+        marshal.state = MobState::Chase;
+        g.mobs.push(marshal);
+        for (dx, dy) in [(-1.2f32, 0.8f32), (1.2, 0.8), (0.0, 1.8)] {
+            let mut m = Mob::new(Kind::Ordinal, ox - 3.0, oy - 3.0, 7.0, &mut g.rng);
+            m.post = (dx, dy);
+            m.state = MobState::Chase;
+            g.mobs.push(m);
+        }
+        g.clocks.clear();
+        g.laws.clear();
+        (g.p.x, g.p.y) = (ox + 6.0, oy);
+        g.p.base_hp = 99999.0;
+        g.p.recalc();
+        // Wait for a marching beat, then let them march.
+        while g.tick % 60 >= 40 {
+            g.update(&Input::default());
+        }
+        let before: Vec<f32> = (1..4).map(|i| ((g.mobs[i].x - ox).powi(2) + (g.mobs[i].y - oy).powi(2)).sqrt()).collect();
+        for _ in 0..30 {
+            g.mobs[0].x = ox;
+            g.mobs[0].y = oy;
+            g.p.hp = g.p.max_hp;
+            g.update(&Input::default());
+        }
+        for i in 1..4 {
+            let d = ((g.mobs[i].x - ox).powi(2) + (g.mobs[i].y - oy).powi(2)).sqrt();
+            assert!(d < before[i - 1], "ordinal {i} closes on its post");
+            assert!(g.mobs[i].x < ox + 0.5, "the ranks stay behind the marshal (you are east)");
+        }
+        // Shield wall: in step they take less damage...
+        assert!(g.mobs[1].drilled);
+        let hp = g.mobs[1].hp;
+        g.hit_mob(1, 10.0, 0.0, 0.0, None, false);
+        let walled = hp - g.mobs[1].hp;
+        assert!((walled - 7.0).abs() < 0.01, "shield wall: {walled}");
+        // ...and with the marshal dead, they're broken and take more.
+        g.mobs[0].hp = 0.0;
+        g.kill(0);
+        g.update(&Input::default());
+        assert!(!g.mobs[1].drilled && g.mobs[1].broken > 0.0);
+        let hp = g.mobs[1].hp;
+        g.hit_mob(1, 10.0, 0.0, 0.0, None, false);
+        assert!((hp - g.mobs[1].hp - 13.0).abs() < 0.01);
+    }
+
+    #[test]
+    fn clockwork_crows_flock_in_mechanus() {
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        g.debug_goto(LevelId::Mechanus);
+        let n = g.mobs.iter().filter(|m| m.kind == crate::mobs::Kind::ClockCrow).count();
+        assert!(n >= 6, "a flock or more of crows: {n}");
     }
 
     #[test]

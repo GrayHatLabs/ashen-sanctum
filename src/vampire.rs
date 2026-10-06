@@ -150,6 +150,7 @@ pub fn bloodless(k: Kind) -> bool {
             | Kind::Ordinal
             | Kind::Prism
             | Kind::Marshal
+            | Kind::ClockCrow
             | Kind::Forgemother
             | Kind::Cantor
             | Kind::Archivist

@@ -132,6 +132,9 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Feature | Status | Notes |
 |---|---|---|
 | Stop-clocks (`clockwork.rs`) in the Grinding Fields (5) and clockwork dungeons (3): walk into one to stop time for 8 s in a 4.5-tile circle (foes move at a third, wind up blows slowly); 14 s to rewind | H S | Unit test: placement, strike, slow, rewind |
+| Ordinal formations: squads keep their posts behind the marshal as it turns to face you, march on a shared beat (40 ticks) and halt to fire together (20 ticks); in step they hold a shield wall (-30% damage); marshal dead = stunned, then broken for 6 s (+30% damage) | H S | Unit test: ranks close on their posts behind the marshal, shield wall, broken |
+| Clockwork crows: fast, fragile flocks of 6-9 in the Grinding Fields and the Archive; jink as they come, then circle you pecking; drawn flying (bitforge art, `tools/crow_art.py`) | H S | Unit test: flocks spawn |
+| Test bot plays any act: heads for that act's story-giver and dungeons (`bot_story_npc`, `bot_dungeon`); `scripts/bot-acts.sh` runs all 7 heroes per act | H | All 28 act x hero runs pass |
 | Law zones (3 overland, 2 per dungeon): BLADE (only close blows), ARROW (only blows from 4+ tiles), STILLNESS (only foes not moving); forbidden blows do 10% (grey numbers); lure foes out to fight freely | H S | Unit test covers all three laws and leaving the zone |
 
 ## Sets, gems and jewelers (2026-10-06)

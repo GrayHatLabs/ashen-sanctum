@@ -1285,8 +1285,11 @@ impl Game {
             _ if m.moving => CharFrame::Loop("walk", m.dir, m.anim_t),
             _ => CharFrame::Loop("idle", m.dir, 0.0),
         };
-        let shadow = if m.boss { 20 } else { 10 };
-        blend_ellipse(scr, sx, sy, shadow, shadow * 2 / 5, BLACK, 0.45);
+        let crow = m.kind == crate::mobs::Kind::ClockCrow;
+        let shadow = if m.boss { 20 } else if crow { 6 } else { 10 };
+        blend_ellipse(scr, sx, sy, shadow, shadow * 2 / 5, BLACK, if crow { 0.3 } else { 0.45 });
+        // Crows fly: drawn above their shadow, bobbing with each wingbeat.
+        let sy = if crow { sy - 16 - ((self.tick as f32 * 0.25 + i as f32 * 1.3).sin() * 3.0) as i32 } else { sy };
         if m.flash > 0.0 {
             fx.tint = WHITE;
             fx.tint_a = 0.7;

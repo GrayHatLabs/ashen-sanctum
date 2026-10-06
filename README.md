@@ -182,6 +182,9 @@ take back their Seals, unseal the Sanctum and end the Ash King.
   - In **Mechanus** (Act 4), brass **stop-clocks** stand in the fields and works: walk into one to
     slow every foe around it for 8 seconds. **Law zones** (glowing brass circles) decree how foes inside
     may be hurt: only close blows, only blows from afar, or only while they stand still.
+  - Act 4's **Ordinal squads** march in ranks behind their marshal, halting on the beat to fire
+    together behind a shield wall. Kill the marshal and the squad breaks. **Clockwork crows** come in
+    flocks that circle you.
   - A **jeweler** in every town joins three alike gems into a better one, cuts sockets in plain
     white gear, and takes gems back out unharmed, all for gold. See [docs/ITEMS_SETS_GEMS.md](docs/ITEMS_SETS_GEMS.md).
 - **Monsters**: zombies are slow and hit hard, skeletons are fast and fragile, wolves hunt in fast

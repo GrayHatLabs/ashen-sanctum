@@ -307,7 +307,7 @@ pub const DUNGEONS: [DungeonDef; 16] = [
         floors: 3,
         theme: Theme::Archive,
         boss: Kind::Archivist,
-        monsters: &[Kind::Gearwraith, Kind::SpringJack, Kind::Inquisitor],
+        monsters: &[Kind::Gearwraith, Kind::SpringJack, Kind::Inquisitor, Kind::ClockCrow],
         tier: 8.6,
         entrance: (90, 24),
         act: 3,
@@ -1476,7 +1476,11 @@ pub fn mechanus(seed: u64) -> Level {
             continue;
         }
         let tier = if far < 34.0 { 7.2 } else { 7.7 };
-        let kinds: &[Kind] = if far < 34.0 { &[Kind::Scarab, Kind::Ordinal, Kind::Inquisitor] } else { &[Kind::Scarab, Kind::SpringJack, Kind::Inquisitor, Kind::BoilerBrute, Kind::Ordinal] };
+        let kinds: &[Kind] = if far < 34.0 {
+            &[Kind::Scarab, Kind::Ordinal, Kind::Inquisitor, Kind::ClockCrow]
+        } else {
+            &[Kind::Scarab, Kind::SpringJack, Kind::Inquisitor, Kind::BoilerBrute, Kind::Ordinal, Kind::ClockCrow]
+        };
         let kind = kinds[rng.range(0, kinds.len() as i32) as usize];
         if kind == Kind::Ordinal {
             // An ordinal squad: the marshal in front, prisms on its flanks, cubits in ranks behind.
@@ -1487,13 +1491,24 @@ pub fn mechanus(seed: u64) -> Level {
             for (kind, dx, dy) in squad {
                 let (sx, sy) = (x + dx, y + dy);
                 if !d.blocked(sx, sy, 0.35) {
-                    lv.mobs.push(Mob::new(kind, sx, sy, tier, &mut rng));
+                    let mut m = Mob::new(kind, sx, sy, tier, &mut rng);
+                    // Its place in the ranks (across, behind), kept as the squad turns to face you.
+                    m.post = (dx, dy);
+                    lv.mobs.push(m);
                 }
             }
             packs += 1;
             continue;
         }
-        let n = if kind == Kind::BoilerBrute { rng.range(1, 3) } else if kind == Kind::Scarab { rng.range(4, 7) } else { rng.range(3, 6) };
+        let n = if kind == Kind::BoilerBrute {
+            rng.range(1, 3)
+        } else if kind == Kind::Scarab {
+            rng.range(4, 7)
+        } else if kind == Kind::ClockCrow {
+            rng.range(6, 10)
+        } else {
+            rng.range(3, 6)
+        };
         for _ in 0..n {
             for _try in 0..10 {
                 let (mx, my) = (x + rng.rf(-2.0, 2.0), y + rng.rf(-2.0, 2.0));

@@ -48,6 +48,8 @@ pub enum Kind {
     Ordinal,
     Prism,
     Marshal,
+    /// Clockwork crows: fast, fragile, in jittering flocks.
+    ClockCrow,
     Forgemother,
     Cantor,
     Archivist,
@@ -213,6 +215,7 @@ pub fn def(k: Kind) -> Def {
         Kind::Ordinal => Def { r: 0.25, ranged: true, ..d("ordinal", "ORDINAL CUBIT", 24.0, 3.0, (5.0, 8.0), 0.4, 1.4, 16.0) },
         Kind::Prism => Def { r: 0.28, ranged: true, ..d("ordinal_prism", "ORDINAL PRISM", 34.0, 2.6, (6.0, 9.0), 0.5, 1.8, 22.0) },
         Kind::Marshal => Def { r: 0.4, ranged: true, ..d("ordinal_marshal", "ORDINAL MARSHAL", 90.0, 2.4, (9.0, 13.0), 0.6, 2.2, 45.0) },
+        Kind::ClockCrow => Def { r: 0.2, ..d("clock_crow", "CLOCKWORK CROW", 14.0, 4.8, (3.0, 5.0), 0.2, 0.7, 7.0) },
         Kind::Forgemother => Def {
             r: 0.6,
             reach: 1.5,
@@ -371,8 +374,12 @@ pub struct Mob {
     /// A one-off order to the game (the Clockmaker: 1 = rewind the player; the Archivist:
     /// 2 = file the player away elsewhere). The game clears it.
     pub cue: u8,
-    /// An ordinal marching in step with a living marshal (faster).
+    /// An ordinal marching in step with a living marshal (faster, shielded).
     pub drilled: bool,
+    /// Its place in a squad's ranks: (across, behind the marshal) in tiles; (0, 0) = no place.
+    pub post: (f32, f32),
+    /// Seconds a squad stays broken after its marshal falls (takes extra damage).
+    pub broken: f32,
 }
 
 impl Mob {
@@ -433,6 +440,8 @@ impl Mob {
             rush: 0.0,
             cue: 0,
             drilled: false,
+            post: (0.0, 0.0),
+            broken: 0.0,
         }
     }
 
@@ -564,10 +573,22 @@ impl Game {
         let mut texts: Vec<(f32, f32, &'static str)> = vec![];
         let summons = self.mobs.iter().filter(|m| m.alive() && !m.boss && m.home.0 < -999.0).count();
         // Ordinals near a living marshal march in step.
-        let marshals: Vec<(f32, f32)> = self.mobs.iter().filter(|m| m.kind == Kind::Marshal && m.alive()).map(|m| (m.x, m.y)).collect();
+        // Each marshal faces you; its squad keeps its ranks behind it.
+        let marshals: Vec<(f32, f32, f32, f32)> = self
+            .mobs
+            .iter()
+            .filter(|m| m.kind == Kind::Marshal && m.alive())
+            .map(|m| {
+                let (fx, fy) = (px - m.x, py - m.y);
+                let l = (fx * fx + fy * fy).sqrt().max(0.01);
+                (m.x, m.y, fx / l, fy / l)
+            })
+            .collect();
         for m in self.mobs.iter_mut().filter(|m| matches!(m.kind, Kind::Ordinal | Kind::Prism)) {
-            m.drilled = marshals.iter().any(|&(x, y)| (m.x - x).powi(2) + (m.y - y).powi(2) < 64.0);
+            m.drilled = m.broken <= 0.0 && marshals.iter().any(|&(x, y, ..)| (m.x - x).powi(2) + (m.y - y).powi(2) < 64.0);
         }
+        // The lockstep beat: march for 40 ticks, halt (and fire together) for 20.
+        let halt = self.tick % 60 >= 40;
         // Charmed monsters hunt the hostile ones.
         let foes: Vec<(usize, f32, f32, f32)> = self.mobs.iter().enumerate().filter(|(_, m)| m.alive() && m.charm <= 0.0).map(|(i, m)| (i, m.x, m.y, m.r)).collect();
         let mut ally_hits: Vec<(usize, f32)> = vec![];
@@ -615,6 +636,7 @@ impl Game {
             }
             m.invuln = (m.invuln - DT).max(0.0);
             m.rush = (m.rush - DT).max(0.0);
+            m.broken = (m.broken - DT).max(0.0);
             if m.stun > 0.0 {
                 m.stun -= DT;
                 m.moving = false;
@@ -724,6 +746,61 @@ impl Game {
                     if m.kind == Kind::SpringJack && m.rush <= 0.0 && (2.5..7.0).contains(&dist) && rv < DT / 1.5 {
                         m.rush = 0.45;
                     }
+                    // Crows close in and circle you, pecking as they pass.
+                    if m.kind == Kind::ClockCrow && dist < m.reach + 1.2 {
+                        if dist < m.reach + 0.3 && m.cd <= 0.0 {
+                            m.state = MobState::Attack(m.windup);
+                        }
+                        let side = if i % 2 == 0 { 1.0 } else { -1.0 };
+                        let want = 1.0 + (i % 3) as f32 * 0.35;
+                        let (ux, uy) = (dx / dist.max(0.01), dy / dist.max(0.01));
+                        let pull = (dist - want).clamp(-1.0, 1.0);
+                        let (vx, vy) = (-uy * side + ux * pull, ux * side + uy * pull);
+                        let sp = m.speed * 0.7 * if m.slow_t > 0.0 { 0.35 } else { 1.0 };
+                        let (mut x, mut y) = (m.x, m.y);
+                        move_circle(&self.d, &mut x, &mut y, vx * sp * DT, vy * sp * DT, r);
+                        m.x = x;
+                        m.y = y;
+                        m.dir = iso::dir8(vx, vy);
+                        m.moving = true;
+                        continue;
+                    }
+                    // Ordinal squads march in step: to their places in the ranks on the beat, then
+                    // halt and fire together. The marshal halts with them.
+                    let in_ranks = m.drilled && m.post != (0.0, 0.0);
+                    if (in_ranks || m.kind == Kind::Marshal) && halt && dist < 9.5 {
+                        m.dir = iso::dir8(dx, dy);
+                        if m.cd <= 0.0 && dist <= 9.0 && self.d.los(m.x, m.y, px, py) {
+                            m.state = MobState::Attack(m.windup);
+                        }
+                        continue;
+                    }
+                    if in_ranks {
+                        let near = marshals.iter().min_by(|a, b| {
+                            let da = (a.0 - m.x).powi(2) + (a.1 - m.y).powi(2);
+                            let db = (b.0 - m.x).powi(2) + (b.1 - m.y).powi(2);
+                            da.partial_cmp(&db).unwrap()
+                        });
+                        if let Some(&(mx, my, fx, fy)) = near {
+                            let (sx, sy) = (mx - fx * m.post.1 - fy * m.post.0, my - fy * m.post.1 + fx * m.post.0);
+                            let (gx, gy) = (sx - m.x, sy - m.y);
+                            let gl = (gx * gx + gy * gy).sqrt();
+                            if gl < 0.15 {
+                                m.dir = iso::dir8(dx, dy);
+                                continue;
+                            }
+                            let sp = m.speed * 1.3 * if m.slow_t > 0.0 { 0.35 } else { 1.0 } * (1.0 - 0.35 * m.frost);
+                            let step = (sp * DT).min(gl);
+                            let (mut x, mut y) = (m.x, m.y);
+                            move_circle(&self.d, &mut x, &mut y, gx / gl * step, gy / gl * step, r);
+                            m.x = x;
+                            m.y = y;
+                            m.dir = iso::dir8(gx, gy);
+                            m.moving = true;
+                            m.anim_t += DT * sp / 1.6;
+                            continue;
+                        }
+                    }
                     let los = self.d.los(m.x, m.y, px, py);
                     // Where to go this tick.
                     let mut away = false;
@@ -769,7 +846,12 @@ impl Game {
                     };
                     let (ddx, ddy) = (tx - m.x, ty - m.y);
                     let l = (ddx * ddx + ddy * ddy).sqrt().max(0.001);
-                    let (ux, uy) = (ddx / l, ddy / l);
+                    let (mut ux, mut uy) = (ddx / l, ddy / l);
+                    if m.kind == Kind::ClockCrow {
+                        // Crows jink from side to side as they come.
+                        let a = (tick as f32 * 0.12 + i as f32 * 1.7).sin() * 0.9;
+                        (ux, uy) = (ux * a.cos() - uy * a.sin(), ux * a.sin() + uy * a.cos());
+                    }
                     let speed = m.speed * if m.enraged { 1.25 } else { 1.0 } * if m.flee > 0.0 { 1.1 } else { 1.0 } * if m.rush > 0.0 { 3.2 } else { 1.0 } * if m.drilled { 1.3 } else { 1.0 } * (1.0 - 0.35 * m.frost) * if m.slow_t > 0.0 { 0.35 } else { 1.0 };
                     let (mut x, mut y) = (m.x, m.y);
                     move_circle(&self.d, &mut x, &mut y, ux * speed * DT, uy * speed * DT, r);

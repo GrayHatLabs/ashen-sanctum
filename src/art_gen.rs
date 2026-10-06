@@ -40,6 +40,7 @@ pub static CHARS: &[CharDef] = &[
     CharDef { name: "ordinal", cell: (22, 22), anchor: (11, 20), data: include_bytes!("../assets/art/ordinal.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
     CharDef { name: "ordinal_prism", cell: (21, 24), anchor: (10, 22), data: include_bytes!("../assets/art/ordinal_prism.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
     CharDef { name: "ordinal_marshal", cell: (32, 52), anchor: (16, 50), data: include_bytes!("../assets/art/ordinal_marshal.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
+    CharDef { name: "clock_crow", cell: (22, 18), anchor: (11, 16), data: include_bytes!("../assets/art/clock_crow.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
     CharDef { name: "npc_tally", cell: (22, 53), anchor: (11, 48), data: include_bytes!("../assets/art/npc_tally.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
     CharDef { name: "npc_vesper", cell: (22, 51), anchor: (11, 45), data: include_bytes!("../assets/art/npc_vesper.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
     CharDef { name: "npc_oiler", cell: (22, 47), anchor: (11, 42), data: include_bytes!("../assets/art/npc_oiler.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },

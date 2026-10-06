@@ -80,9 +80,9 @@ impl Bot {
             }
             return inp;
         }
-        // The elder first, and again with three seals.
-        if g.quest.elder_has_news() && g.level == LevelId::Overworld {
-            if let Some((ex, ey)) = g.bot_npc(Role::Elder) {
+        // The act's story-giver first, and again with all three herald tokens.
+        if let Some(role) = g.bot_story_npc() {
+            if let Some((ex, ey)) = g.bot_npc(role) {
                 if (ex - g.p.x).powi(2) + (ey - g.p.y).powi(2) < 2.0 {
                     inp.confirm = t % 10 == 0;
                 } else {
@@ -118,7 +118,7 @@ impl Bot {
             }
             // Bosses are worth walking to; everything else only if it's right there.
             let boss_near = g.boss_alive_near(14.0);
-            if (dist < 6.0 || boss_near) && g.level != LevelId::Overworld {
+            if (dist < 6.0 || boss_near) && !g.level.overland() {
                 self.steer(g, t, (mx, my), &mut inp);
                 return inp;
             }
@@ -191,7 +191,7 @@ pub fn run(dir: Option<&str>, tall: bool) -> i32 {
         assert!(g.d.walkable(g.p.x.floor() as i32, g.p.y.floor() as i32), "player inside a wall at {:.2},{:.2} in {}", g.p.x, g.p.y, g.level_name);
     }
     println!(
-        "selftest ok: {} ticks in {:.2?}, avg draw {:.2?}, kills={} clvl={} seals={} quest={:?} levels visited={} stats={:?}",
+        "selftest ok: {} ticks in {:.2?}, avg draw {:.2?}, kills={} clvl={} seals={} quest={:?} acts2-4={}/{}/{} tokens={}/{}/{} levels visited={} stats={:?}",
         total,
         t0.elapsed(),
         draw_time / draws.max(1),
@@ -199,6 +199,12 @@ pub fn run(dir: Option<&str>, tall: bool) -> i32 {
         g.p.clvl,
         g.quest.seal_count(),
         g.quest.stage,
+        g.quest.stage2,
+        g.quest.stage3,
+        g.quest.stage4,
+        g.quest.rune_count(),
+        g.quest.sigil_count(),
+        g.quest.key_count(),
         visited.len(),
         g.stats
     );
@@ -828,6 +834,29 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
                 (g.p.x, g.p.y) = (cx + 1.5, cy + 1.5);
                 idle(&mut g, 30);
                 save(&mut g, scr, "act4_clock_law");
+            }
+        }
+        // An ordinal squad marching in ranks behind its marshal, crows wheeling in.
+        if let Some(mi) = g.mobs.iter().position(|m| m.kind == crate::mobs::Kind::Marshal && m.alive()) {
+            let (mx, my) = (g.mobs[mi].x, g.mobs[mi].y);
+            let spot = [(5.0f32, 0.0f32), (0.0, 5.0), (-5.0, 0.0), (0.0, -5.0), (4.0, 3.0)].into_iter().map(|(dx, dy)| (mx + dx, my + dy)).find(|&(x, y)| !g.d.blocked(x, y, 0.4));
+            if let Some((x, y)) = spot {
+                (g.p.x, g.p.y) = (x, y);
+                g.clocks.clear();
+                g.laws.clear();
+                for k in 0..6 {
+                    let (cx, cy) = (x + 3.0 + (k % 3) as f32 * 0.6, y - 2.0 + (k / 3) as f32 * 0.7);
+                    if !g.d.blocked(cx, cy, 0.3) {
+                        let c = crate::mobs::Mob::new(crate::mobs::Kind::ClockCrow, cx, cy, 7.0, &mut g.rng);
+                        g.mobs.push(c);
+                    }
+                }
+                for _ in 0..50 {
+                    g.p.hp = g.p.max_hp;
+                    g.update(&Input::default());
+                    g.sfx.clear();
+                }
+                save(&mut g, scr, "act4_ordinals");
             }
         }
         let k = crate::world::HEART;

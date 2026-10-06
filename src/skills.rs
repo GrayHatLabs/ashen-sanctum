@@ -1427,7 +1427,15 @@ impl Game {
         let kind = self.mobs[i].kind;
         // Mechanus's laws: inside a law zone, forbidden blows barely scratch.
         let law = self.law_scale(i);
-        let dmg = dmg * self.taken(kind) * law;
+        // Ordinals in step hold a shield wall; a broken squad is easy prey.
+        let ranks = if self.mobs[i].drilled {
+            0.7
+        } else if self.mobs[i].broken > 0.0 {
+            1.3
+        } else {
+            1.0
+        };
+        let dmg = dmg * self.taken(kind) * law * ranks;
         self.drain(kind, dmg, 1.0);
         let m = &mut self.mobs[i];
         let (mx, my, boss, r) = (m.x, m.y, m.boss, m.r);
