@@ -24,10 +24,29 @@ pub enum Track {
     Gears,
     /// Act 4: the works and the Heart of the Clock (clanking engine).
     Engine,
+    /// Kaldholm: a fireside folk tune over a drone.
+    Hearth,
+    /// Mournhold: a candlelit lament on a lute, a bell tolling far off.
+    Vigil,
+    /// The Last Escapement: a gentle music-box waltz, the one warm place in Mechanus.
+    Refuge,
 }
 
-pub const TRACKS: [Track; 10] =
-    [Track::Town, Track::Wilds, Track::Dungeon, Track::Boss, Track::Frost, Track::Ice, Track::Mist, Track::Crypt, Track::Gears, Track::Engine];
+pub const TRACKS: [Track; 13] = [
+    Track::Town,
+    Track::Wilds,
+    Track::Dungeon,
+    Track::Boss,
+    Track::Frost,
+    Track::Ice,
+    Track::Mist,
+    Track::Crypt,
+    Track::Gears,
+    Track::Engine,
+    Track::Hearth,
+    Track::Vigil,
+    Track::Refuge,
+];
 
 fn hz(midi: f32) -> f32 {
     440.0 * 2f32.powf((midi - 69.0) / 12.0)
@@ -242,6 +261,9 @@ pub fn render(track: Track) -> Vec<f32> {
         Track::Crypt => 83,
         Track::Gears => 97,
         Track::Engine => 101,
+        Track::Hearth => 107,
+        Track::Vigil => 113,
+        Track::Refuge => 127,
     });
     match track {
         Track::Town => town(&mut rng),
@@ -254,7 +276,156 @@ pub fn render(track: Track) -> Vec<f32> {
         Track::Crypt => crypt(&mut rng),
         Track::Gears => gears(&mut rng),
         Track::Engine => engine(&mut rng),
+        Track::Hearth => hearth(&mut rng),
+        Track::Vigil => vigil(&mut rng),
+        Track::Refuge => refuge(&mut rng),
     }
+}
+
+/// Kaldholm: a lilting 6/8 folk tune (D mixolydian) on plucked strings over a bagpipe-like
+/// drone, a frame drum, and the crackle of the longhouse fire.
+fn hearth(rng: &mut Rng) -> Vec<f32> {
+    let bpm = 100.0;
+    let eighth = 60.0 / bpm / 2.0;
+    let bars = 16;
+    let bar_len = 6.0 * eighth;
+    let mut b = Buf::new(bars as f32 * bar_len);
+    b.drone(38.0, 0.03); // D2
+    b.drone(45.0, 0.018); // A2
+    // Fire crackle: sparse soft clicks.
+    let mut t = 0.2;
+    while t < bars as f32 * bar_len {
+        b.drum(t, rng.rf(0.02, 0.05), rng.rf(900.0, 1600.0), rng);
+        t += rng.rf(0.08, 0.6);
+    }
+    let chords: [(f32, [f32; 3]); 4] = [(50.0, [0.0, 4.0, 7.0]), (48.0, [0.0, 4.0, 7.0]), (50.0, [0.0, 4.0, 7.0]), (45.0, [0.0, 3.0, 7.0])];
+    // Two four-bar phrases (in eighths), the second answering the first.
+    let tune: [[f32; 6]; 8] = [
+        [62.0, 66.0, 69.0, 71.0, 69.0, 66.0],
+        [64.0, 67.0, 72.0, 71.0, 69.0, 67.0],
+        [66.0, 69.0, 74.0, 72.0, 71.0, 69.0],
+        [67.0, 66.0, 64.0, 62.0, 64.0, 66.0],
+        [69.0, 71.0, 72.0, 74.0, 72.0, 71.0],
+        [72.0, 71.0, 69.0, 67.0, 69.0, 72.0],
+        [74.0, 72.0, 71.0, 69.0, 67.0, 66.0],
+        [64.0, 66.0, 64.0, 62.0, 62.0, 62.0],
+    ];
+    for bar in 0..bars {
+        let t0 = bar as f32 * bar_len + 0.05;
+        let (root, iv) = chords[bar % 4];
+        // Frame drum on 1 and 4.
+        b.drum(t0, 0.22, 62.0, rng);
+        b.drum(t0 + 3.0 * eighth, 0.12, 70.0, rng);
+        // Strummed chord on the beats.
+        for k in [0usize, 3] {
+            for (q, i) in iv.iter().enumerate() {
+                b.pluck(t0 + k as f32 * eighth + q as f32 * 0.012, root - 12.0 + i, 0.12, 0.45, 0.995, rng);
+            }
+        }
+        b.pad(t0, bar_len, &[root - 12.0, root - 5.0], 0.05, 400.0);
+        // The melody after the first time round: the fiddle comes in.
+        if bar >= 4 {
+            let phrase = tune[(bar - 4) % 8];
+            for (k, m) in phrase.iter().enumerate() {
+                if k > 0 && *m == phrase[k - 1] {
+                    continue;
+                }
+                let g = if k == 0 || k == 3 { 0.3 } else { 0.22 };
+                b.pluck(t0 + k as f32 * eighth, *m, g, 0.75, 0.9965, rng);
+            }
+        }
+    }
+    b.finish(0.4, 0.62)
+}
+
+/// Mournhold: a slow lute lament (A minor) by candlelight, a soft organ, and a bell
+/// tolling far off every few bars.
+fn vigil(rng: &mut Rng) -> Vec<f32> {
+    let bpm = 60.0;
+    let beat = 60.0 / bpm;
+    let bars = 12;
+    let mut b = Buf::new(bars as f32 * 4.0 * beat);
+    b.wind(0.1, rng);
+    b.drone(33.0, 0.03); // A1
+    let prog: [(f32, [f32; 4]); 6] = [
+        (45.0, [0.0, 7.0, 12.0, 15.0]), // Am
+        (41.0, [0.0, 7.0, 12.0, 16.0]), // F
+        (43.0, [0.0, 7.0, 12.0, 16.0]), // G
+        (40.0, [0.0, 7.0, 12.0, 16.0]), // E
+        (45.0, [0.0, 7.0, 12.0, 15.0]), // Am
+        (38.0, [0.0, 7.0, 12.0, 15.0]), // Dm
+    ];
+    let tune = [72.0, 71.0, 69.0, 68.0, 69.0, 72.0, 76.0, 74.0, 72.0, 71.0, 69.0, 64.0];
+    for bar in 0..bars {
+        let (root, iv) = prog[bar % prog.len()];
+        let t0 = bar as f32 * 4.0 * beat;
+        // Fingerpicked lute: slow, rolling.
+        for (k, p) in [0usize, 1, 2, 3, 2, 1].iter().enumerate() {
+            b.pluck(t0 + k as f32 * beat * 0.66, root + iv[*p], if k == 0 { 0.32 } else { 0.18 }, 0.5, 0.9965, rng);
+        }
+        b.pad(t0, 4.0 * beat, &[root, root + 7.0, root + iv[3] - 12.0], 0.06, 450.0);
+        // A falling melody on the second half.
+        if bar >= 6 {
+            let m = tune[(bar - 6) * 2 % tune.len()];
+            let n = tune[((bar - 6) * 2 + 1) % tune.len()];
+            b.pluck(t0 + 0.02, m, 0.26, 0.7, 0.998, rng);
+            b.pluck(t0 + 2.0 * beat, n, 0.22, 0.7, 0.998, rng);
+        }
+        if bar % 4 == 0 {
+            b.bell(t0 + 0.5, 57.0, 0.05);
+        }
+    }
+    b.finish(0.6, 0.55)
+}
+
+/// The Last Escapement: a gentle music-box waltz (F major) with a soft tick, warm pads and a
+/// little countermelody, the one warm place in Mechanus.
+fn refuge(rng: &mut Rng) -> Vec<f32> {
+    let bpm = 92.0;
+    let beat = 60.0 / bpm;
+    let bars = 16;
+    let mut b = Buf::new(bars as f32 * 3.0 * beat);
+    let chords: [(f32, [f32; 3]); 4] = [(53.0, [0.0, 4.0, 7.0]), (50.0, [0.0, 3.0, 7.0]), (46.0, [0.0, 4.0, 7.0]), (48.0, [0.0, 4.0, 7.0])];
+    let tune = [
+        [77.0, 76.0, 74.0],
+        [72.0, 74.0, 77.0],
+        [74.0, 72.0, 70.0],
+        [69.0, 70.0, 72.0],
+        [77.0, 79.0, 81.0],
+        [79.0, 77.0, 74.0],
+        [74.0, 76.0, 77.0],
+        [76.0, 72.0, 72.0],
+    ];
+    for bar in 0..bars {
+        let (root, iv) = chords[bar % 4];
+        // A hair late, so nothing starts exactly on the loop seam.
+        let t0 = bar as f32 * 3.0 * beat + 0.05;
+        // The escapement's soft tick on every beat.
+        for k in 0..3 {
+            b.drum(t0 + k as f32 * beat, 0.035, 1200.0, rng);
+        }
+        // Waltz bass and chord.
+        b.pluck(t0, root - 12.0, 0.26, 0.35, 0.996, rng);
+        for k in 1..3 {
+            for (q, i) in iv.iter().enumerate().skip(1) {
+                b.pluck(t0 + k as f32 * beat + q as f32 * 0.01, root + i, 0.08, 0.5, 0.995, rng);
+            }
+        }
+        b.pad(t0, 3.0 * beat, &[root - 12.0, root + iv[1] - 12.0, root + iv[2] - 12.0], 0.05, 420.0);
+        // The music box tune.
+        let phrase = tune[bar % 8];
+        for (k, m) in phrase.iter().enumerate() {
+            if k > 0 && *m == phrase[k - 1] {
+                continue;
+            }
+            b.bell(t0 + k as f32 * beat + 0.01, *m, if k == 0 { 0.07 } else { 0.05 });
+        }
+        // Second time through: a countermelody a sixth below.
+        if bar >= 8 && bar % 2 == 0 {
+            b.bell(t0 + 1.5 * beat, phrase[0] - 9.0, 0.035);
+        }
+    }
+    b.finish(0.5, 0.58)
 }
 
 /// Hollowmere: a lone plucked guitar in D minor over a soft pad.

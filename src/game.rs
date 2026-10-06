@@ -1322,6 +1322,9 @@ impl Game {
         use crate::music::Track;
         if self.mobs.iter().any(|m| m.boss && m.alive() && m.state != MobState::Idle) {
             Track::Boss
+        } else if self.in_safe(self.p.x, self.p.y) || matches!(self.state, State::Victory(_)) {
+            // Each town has its own tune.
+            [Track::Town, Track::Hearth, Track::Vigil, Track::Refuge][self.level.act().min(3)]
         } else if self.level.act() == 3 {
             // Mechanus: a ticking harpsichord outside, the engine's clangour in the works.
             if self.level.overland() {
@@ -1343,8 +1346,6 @@ impl Game {
             } else {
                 Track::Ice
             }
-        } else if self.in_safe(self.p.x, self.p.y) || matches!(self.state, State::Victory(_)) {
-            Track::Town
         } else if self.level.overland() {
             Track::Wilds
         } else {
@@ -4740,6 +4741,26 @@ mod tests {
             g.update(&Input::default());
         }
         assert!(g.p.hp < hp, "standing in the burst hurts");
+    }
+
+    #[test]
+    fn each_town_has_its_own_music() {
+        use crate::music::Track;
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        for (id, town, wild) in [
+            (LevelId::Overworld, Track::Town, Track::Wilds),
+            (LevelId::Frostmarch, Track::Hearth, Track::Frost),
+            (LevelId::Mistwood, Track::Vigil, Track::Mist),
+            (LevelId::Mechanus, Track::Refuge, Track::Gears),
+        ] {
+            g.debug_goto(id);
+            (g.p.x, g.p.y) = g.start;
+            assert!(g.in_safe(g.p.x, g.p.y));
+            assert_eq!(g.music_track(), town, "{id:?} town");
+            let (x0, y0, ..) = g.safe.unwrap();
+            (g.p.x, g.p.y) = (x0 - 12.0, y0 - 12.0);
+            assert_eq!(g.music_track(), wild, "{id:?} outside town");
+        }
     }
 
     #[test]

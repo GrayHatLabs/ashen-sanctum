@@ -213,6 +213,7 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Feature | Status | Notes |
 |---|---|---|
 | 4 synthesised loops (`music.rs`): town (plucked guitar, D minor), wilds, dungeon, boss; rendered on a background thread; 2.5 s crossfades by area; N toggles | built | Unit test: loops render, levels sane. Spectrum checked; **not listened to by a human yet**. `--export-music` writes WAVs |
+| Town music (2026-10-06): Kaldholm `Hearth` (6/8 folk tune, drone, fire crackle), Mournhold `Vigil` (lute lament, distant bell), the Last Escapement `Refuge` (music-box waltz); each town plays its own | built | Unit test: each town's track, and the wilds outside it |
 
 ## Art status
 
