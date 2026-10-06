@@ -32,7 +32,7 @@ pub enum MenuOut {
 }
 
 /// The classes on the create screen: (name, portrait, two lines, colour, playable, in-game sheet).
-const CLASSES: [(&str, &str, &str, &str, u32, bool, &str); 8] = [
+pub(crate) const CLASSES: [(&str, &str, &str, &str, u32, bool, &str); 8] = [
     ("SORCERESS", "portrait_sorceress", "FIREBALLS,", "METEORS.", 0xff9040, true, "mage"),
     ("VAMPIRE", "portrait_vampire", "BLOOD MAGIC,", "THRALLS.", 0xd04060, true, "vampire"),
     ("INVENTOR", "portrait_inventor", "AETHER GUNS,", "TURRETS.", 0x40c0b0, true, "inventor"),
@@ -153,6 +153,7 @@ impl Menu {
         let back = inp.cancel || (inp.run_toggle && !typing);
         let n = self.items().max(1);
         let horizontal = self.stage == Stage::Create;
+        let (left, right) = if horizontal { (left || inp.wheel > 0, right || inp.wheel < 0) } else { (left, right) };
         if (up && !horizontal) || (left && horizontal) {
             self.sel = (self.sel + n - 1) % n;
         }
@@ -480,63 +481,8 @@ impl Menu {
 
     fn draw_create(&mut self, scr: &mut Screen, art: &Art, w: i32, h: i32) {
         scr.text("CHOOSE YOUR HERO", w / 2, 10, rgb(0xffd080), Align::Center, 2);
-        let n = CLASSES.len() as i32;
-        let gap = 12;
-        let pw = (w - 24 - gap * (n - 1)) / n;
-        let ph = h - 66;
-        for (k, (name, portrait, l1, l2, col, playable, sheet)) in CLASSES.iter().enumerate() {
-            let x0 = 12 + k as i32 * (pw + gap);
-            let y0 = 34;
-            let on = self.sel == k;
-            scr.blend(x0, y0, pw, ph, if on { rgb(0x1c1418) } else { BLACK }, 0.85);
-            let edge = if on { rgb(*col) } else { rgb(0x3a3026) };
-            for (ex, ey, ew, eh) in [(x0, y0, pw, 2), (x0, y0 + ph - 2, pw, 2), (x0, y0, 2, ph), (x0 + pw - 2, y0, 2, ph)] {
-                scr.fill(ex, ey, ew, eh, edge);
-            }
-            let cx = x0 + pw / 2;
-            if let Some(s) = art.item(portrait) {
-                let scale = ((ph - 62) as f32 / s.h as f32).min((pw - 12) as f32 / s.w as f32);
-                let dim = if !playable {
-                    0.65
-                } else if on {
-                    0.0
-                } else {
-                    0.4
-                };
-                scr.blit_scaled(s, cx, y0 + 6 + (s.h as f32 * scale) as i32, scale, Fx { tint: BLACK, tint_a: dim, ..Fx::default() });
-            } else {
-                // No portrait yet: the in-game sprite, big.
-                // (A stand-in sheet comes with its own tint; selected cards show it, others are dimmed.)
-                let (ca, _, tint, tint_a) = art.char_art(sheet);
-                let spr = ca.frame("idle", 0, 0.0);
-                let fx = match (on, tint_a > 0.0) {
-                    (true, _) => Fx { tint, tint_a, ..Fx::default() },
-                    // Dimmed, but still in the stand-in's colours.
-                    (false, true) => Fx { tint: crate::gfx::mix(tint, BLACK, 0.5), tint_a: (tint_a + 0.1).min(0.95), ..Fx::default() },
-                    (false, false) => Fx { tint: BLACK, tint_a: 0.5, ..Fx::default() },
-                };
-                scr.blit_scaled(spr, cx, y0 + ph - 62, 2.5, fx);
-            }
-            let ncol = if !playable {
-                rgb(0x6a5a4a)
-            } else if on {
-                rgb(*col)
-            } else {
-                rgb(0x9a8a78)
-            };
-            // Big names when they fit the card, small when six cards share the row.
-            // One size for every card: big names only if they all fit.
-            let sc = if CLASSES.iter().all(|c| crate::gfx::text_width(c.0, 2) <= pw - 6) { 2 } else { 1 };
-            scr.text(name, cx, y0 + ph - 50 + (2 - sc) * 6, ncol, Align::Center, sc);
-            if *playable {
-                scr.text(l1, cx, y0 + ph - 28, rgb(0xb0a090), Align::Center, 1);
-                scr.text(l2, cx, y0 + ph - 17, rgb(0xb0a090), Align::Center, 1);
-            } else {
-                scr.text("COMING SOON", cx, y0 + ph - 24, rgb(0x40c0b0), Align::Center, 1);
-            }
-            self.rects.push((x0, y0, pw, ph, k));
-        }
-        scr.text("LEFT / RIGHT TO CHOOSE, ENTER / A TO PICK, ESC / B: BACK", w / 2, h - 14, rgb(0x7a6a5a), Align::Center, 1);
+        self.rects.extend(draw_carousel(scr, art, w, h, self.sel, self.t));
+        scr.text("LEFT / RIGHT OR WHEEL TO TURN, ENTER / A TO PICK, ESC / B: BACK", w / 2, h - 14, rgb(0x7a6a5a), Align::Center, 1);
     }
 
     fn draw_name(&mut self, scr: &mut Screen, art: &Art, w: i32, h: i32) {
@@ -579,6 +525,92 @@ impl Menu {
             scr.text(l, w / 2, 150 + k as i32 * 14, col, Align::Center, 1);
         }
     }
+}
+
+/// The hero carousel (create screen and in-game class select): the chosen hero large in the middle,
+/// two neighbours shrinking away on each side, wrapping around, so it never gets cramped however
+/// many heroes there are. Returns the clickable cards (x, y, w, h, class index), the centre card last.
+pub(crate) fn draw_carousel(scr: &mut Screen, art: &Art, w: i32, h: i32, sel: usize, t: f32) -> Vec<(i32, i32, i32, i32, usize)> {
+    let n = CLASSES.len();
+    let top = 32;
+    // The centre card: portrait-shaped, as big as the screen allows.
+    let ph_c = (h - 70).min(((w as f32 * 0.3) / 0.66) as i32);
+    let pw_c = (ph_c as f32 * 0.66) as i32;
+    const SCALE: [f32; 3] = [1.0, 0.7, 0.48];
+    let size = |d: usize| ((pw_c as f32 * SCALE[d]) as i32, (ph_c as f32 * SCALE[d]) as i32);
+    let (pw1, _) = size(1);
+    let (pw2, _) = size(2);
+    let d1 = pw_c / 2 + (pw1 as f32 * 0.42) as i32 + 6;
+    let d2 = d1 + (pw1 as f32 * 0.42) as i32 + (pw2 as f32 * 0.42) as i32 + 4;
+    let reach = 2.min((n - 1) / 2);
+    let mut rects = vec![];
+    // Outermost first, so nearer cards overlap them and the centre is on top.
+    let mut order: Vec<i32> = vec![];
+    for d in (1..=reach as i32).rev() {
+        order.push(-d);
+        order.push(d);
+    }
+    order.push(0);
+    for off in order {
+        let d = off.unsigned_abs() as usize;
+        let k = (sel as i32 + off).rem_euclid(n as i32) as usize;
+        let (name, portrait, l1, l2, col, playable, sheet) = CLASSES[k];
+        let (pw, ph) = size(d);
+        let cx = w / 2 + off.signum() * if d == 1 { d1 } else if d == 2 { d2 } else { 0 };
+        let x0 = cx - pw / 2;
+        let y0 = top + (ph_c - ph) / 2;
+        let on = d == 0;
+        scr.fill(x0, y0, pw, ph, if on { rgb(0x1c1418) } else { rgb(0x0e0a0c) });
+        // The chosen card's edge glows gently in its hero's colour.
+        let edge = if on { mix(rgb(col), rgb(0xffffff), 0.15 + 0.15 * (t * 3.0).sin()) } else { rgb(0x3a3026) };
+        for (ex, ey, ew, eh) in [(x0, y0, pw, 2), (x0, y0 + ph - 2, pw, 2), (x0, y0, 2, ph), (x0 + pw - 2, y0, 2, ph)] {
+            scr.fill(ex, ey, ew, eh, edge);
+        }
+        // Text at the foot of the card: name and two lines in the middle, just the name at the sides.
+        let foot = if on { 58 } else { 16 };
+        let dim = if !playable {
+            0.65
+        } else {
+            [0.0, 0.45, 0.65][d]
+        };
+        if let Some(s) = art.item(portrait) {
+            let scale = ((ph - foot - 8) as f32 / s.h as f32).min((pw - 8) as f32 / s.w as f32);
+            scr.blit_scaled(s, x0 + pw / 2, y0 + 4 + (s.h as f32 * scale) as i32, scale, Fx { tint: BLACK, tint_a: dim, ..Fx::default() });
+        } else {
+            // No portrait yet: the in-game sprite, big.
+            let (ca, _, tint, tint_a) = art.char_art(sheet);
+            let spr = ca.frame("idle", 0, 0.0);
+            let fx = if tint_a > 0.0 { Fx { tint, tint_a, ..Fx::default() } } else { Fx { tint: BLACK, tint_a: dim, ..Fx::default() } };
+            scr.blit_scaled(spr, x0 + pw / 2, y0 + ph - foot - 6, 2.5 * SCALE[d], fx);
+        }
+        if on {
+            let sc = if crate::gfx::text_width(name, 2) <= pw - 6 { 2 } else { 1 };
+            scr.text(name, x0 + pw / 2, y0 + ph - 52 + (2 - sc) * 6, rgb(col), Align::Center, sc);
+            if playable {
+                scr.text(l1, x0 + pw / 2, y0 + ph - 30, rgb(0xb0a090), Align::Center, 1);
+                scr.text(l2, x0 + pw / 2, y0 + ph - 19, rgb(0xb0a090), Align::Center, 1);
+            } else {
+                scr.text("COMING SOON", x0 + pw / 2, y0 + ph - 24, rgb(0x40c0b0), Align::Center, 1);
+            }
+        } else if crate::gfx::text_width(name, 1) <= pw - 4 {
+            scr.text(name, x0 + pw / 2, y0 + ph - 12, rgb(0x8a7a68), Align::Center, 1);
+        }
+        rects.push((x0, y0, pw, ph, k));
+    }
+    // Arrows either side, and a dot per hero.
+    let ay = top + ph_c / 2 - 6;
+    let ax = (d2 + pw2 / 2 + 12).min(w / 2 - 10);
+    let pulse = 0.6 + 0.4 * (t * 4.0).sin();
+    let acol = mix(rgb(0x6a5a4a), rgb(0xffd080), pulse);
+    scr.text("<", w / 2 - ax, ay, acol, Align::Center, 2);
+    scr.text(">", w / 2 + ax, ay, acol, Align::Center, 2);
+    let dy = top + ph_c + 8;
+    for k in 0..n {
+        let x = w / 2 - (n as i32 - 1) * 5 + k as i32 * 10;
+        let c = if k == sel { rgb(CLASSES[k].4) } else { rgb(0x4a3e30) };
+        scr.fill(x - 2, dy, 4, 4, c);
+    }
+    rects
 }
 
 fn class_look(c: Class) -> (&'static str, u32) {

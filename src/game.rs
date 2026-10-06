@@ -598,7 +598,7 @@ pub struct Game {
     pub hero_name: String,
     /// The class select screen for a new character (0 = Sorceress, 1 = Vampire).
     pub choose: Option<usize>,
-    pub(crate) choose_rects: Vec<(i32, i32, i32, i32)>,
+    pub(crate) choose_rects: Vec<(i32, i32, i32, i32, usize)>,
     /// Waypoints you have touched (D2 fast travel), and this level's waypoint.
     pub waypoints: Vec<LevelId>,
     pub(crate) waypoint: (f32, f32),
@@ -968,15 +968,18 @@ impl Game {
     fn update_choose(&mut self, inp: &Input, sel: usize, confirm: bool, click: bool) {
         let mut sel = sel;
         let edge = |now: f32, before: f32, neg: bool| if neg { now < -0.5 && before >= -0.5 } else { now > 0.5 && before <= 0.5 };
-        if edge(inp.move_x, self.prev.move_x, true) || edge(inp.move_y, self.prev.move_y, true) {
-            sel = sel.saturating_sub(1);
+        // The carousel wraps around.
+        let n = crate::skills::ALL_CLASSES.len();
+        if edge(inp.move_x, self.prev.move_x, true) || edge(inp.move_y, self.prev.move_y, true) || inp.wheel > 0 {
+            sel = (sel + n - 1) % n;
         }
-        if edge(inp.move_x, self.prev.move_x, false) || edge(inp.move_y, self.prev.move_y, false) {
-            sel = (sel + 1).min(crate::skills::ALL_CLASSES.len() - 1);
+        if edge(inp.move_x, self.prev.move_x, false) || edge(inp.move_y, self.prev.move_y, false) || inp.wheel < 0 {
+            sel = (sel + 1) % n;
         }
         let mut go = confirm;
         if let (Some((mx, my)), true) = (inp.mouse, click) {
-            if let Some(k) = self.choose_rects.iter().position(|&(x, y, w, h)| mx >= x && mx < x + w && my >= y && my < y + h) {
+            // The topmost card under the mouse (the centre one is drawn last).
+            if let Some(&(.., k)) = self.choose_rects.iter().rev().find(|&&(x, y, w, h, _)| mx >= x && mx < x + w && my >= y && my < y + h) {
                 go = k == sel;
                 sel = k;
             }

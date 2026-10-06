@@ -1123,55 +1123,14 @@ impl Game {
         scr.text("MAP", scr.w - 30, 8, rgb(0xc8b088), Align::Center, 1);
     }
 
-    /// The class select screen: two portraits side by side.
+    /// The class select screen: the hero carousel (shared with the menu).
     fn draw_choose(&mut self, scr: &mut Screen) {
         let Some(sel) = self.choose else { return };
         let (w, h) = (scr.w, self.view_h);
         scr.fill(0, 0, w, h, rgb(0x08060a));
         scr.text("CHOOSE YOUR HERO", w / 2, 10, rgb(0xffd080), Align::Center, 2);
-        let classes = [
-            ("SORCERESS", "portrait_sorceress", "mage", "FIREBALLS,", "METEORS.", rgb(0xff9040)),
-            ("VAMPIRE", "portrait_vampire", "vampire", "BLOOD MAGIC,", "THRALLS.", rgb(0xd04060)),
-            ("INVENTOR", "portrait_inventor", "inventor", "AETHER GUNS,", "TURRETS.", rgb(0x40c0b0)),
-            ("VALKYRIE", "portrait_valkyrie", "valkyrie", "FROST SPEAR,", "SHATTER.", rgb(0x80d0ff)),
-            ("BERSERKER", "portrait_berserker", "berserker", "GIANT AXE,", "DIRE WOLF.", rgb(0xd07040)),
-            ("REAPER", "portrait_reaper", "reaper", "RUNE SCYTHE,", "SOULS.", rgb(0x9ad8ff)),
-            ("DRUID", "portrait_druid", "druid", "PLAGUE AND", "SUMMONS.", rgb(0x90d050)),
-            ("INQUISITOR", "portrait_inquisitor", "inquisitor_hero", "HOLY FIRE,", "BRANDS.", rgb(0xe0a040)),
-        ];
-        let pw = (w - 20 - 10 * (classes.len() as i32 - 1)) / classes.len() as i32;
-        let ph = h - 70;
-        let mut rects = vec![];
-        for (k, (name, portrait, sheet, l1, l2, col)) in classes.iter().enumerate() {
-            let x0 = 10 + k as i32 * (pw + 10);
-            let y0 = 34;
-            let on = k == sel;
-            scr.fill(x0, y0, pw, ph, if on { rgb(0x1c1418) } else { rgb(0x100c0e) });
-            let edge = if on { *col } else { rgb(0x3a3026) };
-            for (ex, ey, ew, eh) in [(x0, y0, pw, 2), (x0, y0 + ph - 2, pw, 2), (x0, y0, 2, ph), (x0 + pw - 2, y0, 2, ph)] {
-                scr.fill(ex, ey, ew, eh, edge);
-            }
-            let cx = x0 + pw / 2;
-            match self.art.item(portrait) {
-                Some(s) => {
-                    let scale = ((ph - 60) as f32 / s.h as f32).min((pw - 20) as f32 / s.w as f32).min(1.5);
-                    let fx = Fx { tint: BLACK, tint_a: if on { 0.0 } else { 0.45 }, ..Fx::default() };
-                    scr.blit_scaled(s, cx, y0 + 8 + (s.h as f32 * scale) as i32, scale, fx);
-                }
-                None => {
-                    // No portrait yet: the in-game sprite, big.
-                    let (art, _, tint, tint_a) = self.art.char_art(sheet);
-                    let spr = art.frame("idle", 0, 0.0);
-                    scr.blit_scaled(spr, cx, y0 + ph - 60, 2.5, Fx { tint, tint_a, ..Fx::default() });
-                }
-            }
-            let sc = if classes.iter().all(|c| crate::gfx::text_width(c.0, 2) <= pw - 6) { 2 } else { 1 };
-            scr.text(name, cx, y0 + ph - 46 + (2 - sc) * 6, if on { *col } else { rgb(0x8a7a68) }, Align::Center, sc);
-            scr.text(l1, cx, y0 + ph - 24, rgb(0xb0a090), Align::Center, 1);
-            scr.text(l2, cx, y0 + ph - 13, rgb(0xb0a090), Align::Center, 1);
-            rects.push((x0, y0, pw, ph));
-        }
-        scr.text("LEFT / RIGHT TO CHOOSE, ENTER / A TO BEGIN (OR CLICK TWICE)", w / 2, h - 18, rgb(0x8a7a68), Align::Center, 1);
+        let rects = crate::menu::draw_carousel(scr, &self.art, w, h, sel, self.tick as f32 / 60.0);
+        scr.text("LEFT / RIGHT TO TURN, ENTER / A TO BEGIN (OR CLICK THE MIDDLE CARD)", w / 2, h - 14, rgb(0x8a7a68), Align::Center, 1);
         self.choose_rects = rects;
     }
 
