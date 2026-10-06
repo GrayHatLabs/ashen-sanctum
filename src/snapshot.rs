@@ -99,7 +99,13 @@ impl Bot {
         }
         if let Some((mx, my, dist, visible)) = g.bot_target() {
             if visible && dist < 9.0 && !g.in_safe(g.p.x, g.p.y) {
-                inp.cast = true;
+                // Every third press uses the secondary skill, and it cycles through all she knows.
+                if t % 3 == 0 {
+                    inp.cast2 = true;
+                } else {
+                    inp.cast = true;
+                }
+                inp.cycle = t % 150 == 0;
                 // Back off when something is in melee range.
                 if dist < 1.6 {
                     let (sx, sy) = crate::iso::to_screen(g.p.x - mx, g.p.y - my);
@@ -127,6 +133,22 @@ impl Bot {
 pub fn run(dir: Option<&str>, tall: bool) -> i32 {
     let h = if tall { SH_TALL } else { SH_WIDE };
     let mut g = Game::new(7, h);
+    // ASHEN_CLASS=druid / ASHEN_ACT=4: let the bot play any hero, from any act (crash hunting).
+    if let Ok(c) = std::env::var("ASHEN_CLASS") {
+        let class = crate::skills::ALL_CLASSES.iter().copied().find(|k| k.key() == c).unwrap_or(crate::skills::Class::Sorceress);
+        g.set_class(class);
+        // Every skill learned, so the bot uses them all.
+        for s in class.tree() {
+            g.p.skills.rank[*s as usize] = 3;
+        }
+    }
+    if let Some(act) = std::env::var("ASHEN_ACT").ok().and_then(|a| a.parse::<usize>().ok()).filter(|a| *a > 1) {
+        let skills = g.p.skills.clone();
+        g.act_start(act - 1);
+        let points = g.p.skills.points;
+        g.p.skills = skills;
+        g.p.skills.points = points;
+    }
     let mut scr = Screen::new(h);
     if let Some(d) = dir {
         std::fs::create_dir_all(d).ok();

@@ -61,6 +61,8 @@ pub struct Menu {
     prev: Input,
     /// Clickable rectangles from the last draw: (x, y, w, h, item index).
     rects: Vec<(i32, i32, i32, i32, usize)>,
+    /// The hero last highlighted in the list (what the DELETE HERO button acts on).
+    hero_sel: usize,
     seed: u32,
 }
 
@@ -77,6 +79,7 @@ impl Menu {
             msg: None,
             prev: Input::default(),
             rects: vec![],
+            hero_sel: 0,
             seed: 1,
         }
     }
@@ -91,7 +94,7 @@ impl Menu {
     fn items(&self) -> usize {
         match self.stage {
             Stage::Title => 3,
-            Stage::Heroes => self.heroes.len() + 2,
+            Stage::Heroes => self.heroes.len() + 3,
             Stage::Create => CLASSES.len(),
             Stage::Name => 3,
             Stage::Options => 2,
@@ -180,10 +183,20 @@ impl Menu {
                     return None;
                 }
                 let k = self.sel;
-                // X / Space / Delete: delete the selected hero (asks first).
-                if (inp.cast2 && !prev.cast2) && k < self.heroes.len() {
-                    self.go(Stage::Delete(k));
+                if k < self.heroes.len() {
+                    self.hero_sel = k;
+                }
+                // X / Space / Delete / Backspace, or the DELETE HERO button: delete a hero (asks first).
+                let del_key = (inp.cast2 && !prev.cast2) || (inp.backspace && !prev.backspace);
+                let del_button = confirm && k == self.heroes.len() + 2;
+                if (del_key || del_button) && !self.heroes.is_empty() {
+                    let h = if k < self.heroes.len() { k } else { self.hero_sel.min(self.heroes.len() - 1) };
+                    self.go(Stage::Delete(h));
                     self.sel = 1;
+                    return None;
+                }
+                if del_button {
+                    self.say("NO HEROES TO DELETE");
                     return None;
                 }
                 if confirm {
@@ -400,6 +413,7 @@ impl Menu {
         let nh = self.heroes.len();
         self.button(scr, "NEW HERO", lx + lw / 2, by, lw, nh, nh < MAX_HEROES);
         self.button(scr, "BACK", lx + lw / 2, by + 24, lw, nh + 1, true);
+        self.button(scr, "DELETE HERO", lx + lw / 2, by + 48, lw, nh + 2, nh > 0);
         // The selected hero, big, on the right.
         if let Some(hero) = self.heroes.get(self.sel.min(self.heroes.len().saturating_sub(1))).filter(|_| self.sel < nh) {
             let (pname, col) = class_look(hero.class);
@@ -422,7 +436,7 @@ impl Menu {
             self.button(scr, "DELETE", w / 2 - 60, y + 40, 100, 0, true);
             self.button(scr, "KEEP", w / 2 + 60, y + 40, 100, 1, true);
         } else {
-            scr.text("ENTER / A: PLAY    X / SPACE: DELETE    ESC / B: BACK", w / 2, h - 14, rgb(0x7a6a5a), Align::Center, 1);
+            scr.text("ENTER / A: PLAY    DEL / X: DELETE    ESC / B: BACK", w / 2, h - 14, rgb(0x7a6a5a), Align::Center, 1);
         }
     }
 

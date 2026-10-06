@@ -255,7 +255,7 @@ fn main() -> Result<(), String> {
                         E if !repeat => pot_mp = true,
                         Tab | M if !repeat => map = true,
                         Escape if !repeat => cancel = true,
-                        Backspace => backspace = true,
+                        Backspace | Delete => backspace = true,
                         _ => {}
                     }
                 }

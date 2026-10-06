@@ -105,6 +105,8 @@ pub enum Class {
     Druid,
 }
 
+pub const ALL_CLASSES: [Class; 7] = [Class::Sorceress, Class::Vampire, Class::Inventor, Class::Valkyrie, Class::Berserker, Class::Reaper, Class::Druid];
+
 impl Class {
     pub fn name(self) -> &'static str {
         match self {
