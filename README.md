@@ -303,7 +303,16 @@ scripts/dev-build.sh run          # desktop build + play (WSLg window)
 scripts/dev-build.sh run --tall   # the handheld's 640x480 view on desktop
 scripts/test.sh                   # unit tests, 6-minute bot self-test, snapshot frames
 scripts/build-handheld.sh         # dist/AshenSanctum-aarch64.zip for PortMaster
+scripts/build-windows.sh          # dist/AshenSanctum-windows/AshenSanctum.exe (+ .zip): standalone, no DLLs
 ```
+
+The Windows build runs on any Windows PC without WSL: copy the `AshenSanctum-windows` folder (or unzip
+`AshenSanctum-windows.zip`) anywhere and double-click `AshenSanctum.exe`. It saves heroes in
+`%APPDATA%shensanctum`. It needs `cmake`, `mingw-w64` and `rustup target add x86_64-pc-windows-gnu`
+in WSL to build.
+
+The handheld build: copy the contents of `AshenSanctum-aarch64.zip` (the `ports` folder) onto the
+handheld's SD card and start Ashen Sanctum from PortMaster.
 
 From Windows PowerShell: `wsl -d Ubuntu -e bash scripts/dev-build.sh run`.
 
