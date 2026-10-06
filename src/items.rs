@@ -441,7 +441,7 @@ pub static SETS: &[SetDef] = &[
     },
     SetDef {
         name: "BRASSWORK",
-        hero: Some("INVENTOR"),
+        hero: Some("SKY PIRATE"),
         req: 14,
         pieces: &[
             sp("BRASSWORK GOGGLES", "horned", &[(Stat::Armor, 12), (Stat::Magic, 15)]),

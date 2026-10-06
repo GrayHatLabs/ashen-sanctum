@@ -35,7 +35,7 @@ pub enum MenuOut {
 pub(crate) const CLASSES: [(&str, &str, &str, &str, u32, bool, &str); 8] = [
     ("SORCERESS", "portrait_sorceress", "FIREBALLS,", "METEORS.", 0xff9040, true, "mage"),
     ("VAMPIRE", "portrait_vampire", "BLOOD MAGIC,", "THRALLS.", 0xd04060, true, "vampire"),
-    ("INVENTOR", "portrait_inventor", "AETHER GUNS,", "TURRETS.", 0x40c0b0, true, "inventor"),
+    ("SKY PIRATE", "portrait_inventor", "FLINTLOCK,", "BROADSIDES.", 0xd0a050, true, "inventor"),
     ("VALKYRIE", "portrait_valkyrie", "FROST SPEAR,", "SHATTER.", 0x80d0ff, true, "valkyrie"),
     ("BERSERKER", "portrait_berserker", "GIANT AXE,", "DIRE WOLF.", 0xd07040, true, "berserker"),
     ("REAPER", "portrait_reaper", "RUNE SCYTHE,", "SOULS.", 0x9ad8ff, true, "reaper"),
@@ -266,7 +266,7 @@ impl Menu {
                         self.random_name();
                         self.go(Stage::Name);
                     } else {
-                        self.say("THE INVENTOR IS COMING SOON");
+                        self.say("THAT HERO IS COMING SOON");
                     }
                 }
             }
@@ -617,7 +617,7 @@ fn class_look(c: Class) -> (&'static str, u32) {
     match c {
         Class::Sorceress => ("portrait_sorceress", rgb(0xff9040)),
         Class::Vampire => ("portrait_vampire", rgb(0xd04060)),
-        Class::Inventor => ("portrait_inventor", rgb(0x40c0b0)),
+        Class::Inventor => ("portrait_inventor", rgb(0xd0a050)),
         Class::Valkyrie => ("portrait_valkyrie", rgb(0x80d0ff)),
         Class::Berserker => ("portrait_berserker", rgb(0xd07040)),
         Class::Reaper => ("portrait_reaper", rgb(0x9ad8ff)),

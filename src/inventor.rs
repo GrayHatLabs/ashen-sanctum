@@ -135,27 +135,27 @@ pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
             Skill::ClockBomb => format!("{} DAMAGE, RADIUS {:.1}, {:.0} HEAT", (bomb_dmg(r) * power) as i32, BOMB_RADIUS, bomb_heat(r)),
             Skill::Tinkerer => format!("{:.0}% FASTER COOLING, GADGETS LAST {:.0}% LONGER", (tinker_cool(r) - 1.0) * 100.0, (tinker_time(r) - 1.0) * 100.0),
             Skill::ArcCoil => format!("{} DAMAGE, CHAINS TO {} FOES, {:.0} HEAT", (arc_dmg(r) * power) as i32, arc_jumps(r), arc_heat(r)),
-            Skill::Turret => format!("{} DAMAGE PER SHOT, UP TO {} TURRETS, {:.0} HEAT", (turret_dmg(r) * power) as i32, turret_max(r), turret_heat(r)),
+            Skill::Turret => format!("{} DAMAGE PER SHOT, UP TO {} SWIVEL GUNS, {:.0} HEAT", (turret_dmg(r) * power) as i32, turret_max(r), turret_heat(r)),
             Skill::Grapple => format!("{:.0} TILES, {:.0} SEC COOLDOWN, 8 HEAT", GRAPPLE_RANGE, GRAPPLE_CD),
             Skill::TeslaField => format!("{} DAMAGE/SEC FOR {:.0} SEC, SLOWS, {:.0} HEAT", (tesla_dps(r) * power) as i32, TESLA_TIME, tesla_heat(r)),
             Skill::Spider => format!("{} DAMAGE PER BITE FOR {:.0} SEC, {:.0} HEAT", (spider_dmg(r) * power) as i32, SPIDER_TIME, spider_heat(r)),
-            Skill::Overclock => format!("+{}% AETHER DAMAGE, RAY PISTOL {}% FASTER", 8 * r.max(1) as i32, 4 * r.max(1) as i32),
+            Skill::Overclock => format!("+{}% AETHER DAMAGE, FLINTLOCK {}% FASTER", 8 * r.max(1) as i32, 4 * r.max(1) as i32),
             Skill::AirshipStrike => format!("{} DAMAGE PER BOMB, {:.0} HEAT, {:.0} SEC COOLDOWN", (airship_dmg(r) * power) as i32, airship_heat(r), AIRSHIP_CD),
             Skill::SteamSuit => format!("{:.0} SEC, HALF DAMAGE TAKEN, {:.0} HEAT, {:.0} SEC COOLDOWN", suit_time(r), suit_heat(r), SUIT_CD),
             _ => String::new(),
         }
     };
     let what = match s {
-        Skill::RayPistol => "FAST AETHER BOLTS FROM YOUR BRASS RAY PISTOL. YOUR BREAD AND BUTTER.",
-        Skill::ClockBomb => "THROWS A TICKING BRASS BOMB. IT BURSTS A SECOND LATER AND HURLS FOES BACK.",
+        Skill::RayPistol => "FAST AETHER SHOTS FROM YOUR BRASS FLINTLOCK. A PIRATE'S BREAD AND BUTTER.",
+        Skill::ClockBomb => "LOBS A FUSED POWDER KEG. IT BURSTS A SECOND LATER AND HURLS FOES BACK.",
         Skill::Tinkerer => "PASSIVE. YOUR GEAR COOLS FASTER AND YOUR GADGETS LAST LONGER.",
         Skill::ArcCoil => "A BOLT OF AETHER LIGHTNING THAT LEAPS FROM FOE TO FOE.",
-        Skill::Turret => "SETS DOWN A BRASS SENTRY TURRET THAT SHOOTS NEARBY FOES.",
-        Skill::Grapple => "FIRES A HOOK. ON THE GROUND YOU ZIP THERE; ON A FOE YOU YANK IT TO YOU.",
+        Skill::Turret => "PLANTS A BRASS SWIVEL GUN THAT SHOOTS NEARBY FOES.",
+        Skill::Grapple => "FIRES A BOARDING HOOK. ON THE GROUND YOU SWING THERE; ON A FOE YOU HAUL IT ABOARD.",
         Skill::TeslaField => "A CRACKLING FIELD AROUND YOU SHOCKS AND STAGGERS EVERYTHING NEARBY.",
         Skill::Spider => "WINDS UP A CLOCKWORK SPIDER THAT FOLLOWS YOU AND BITES YOUR FOES.",
-        Skill::Overclock => "PASSIVE. MORE AETHER DAMAGE, AND THE RAY PISTOL FIRES FASTER.",
-        Skill::AirshipStrike => "YOUR AIRSHIP PASSES OVERHEAD AND CARPET-BOMBS A LINE TOWARD THE TARGET.",
+        Skill::Overclock => "PASSIVE. MORE AETHER DAMAGE, AND THE FLINTLOCK FIRES FASTER.",
+        Skill::AirshipStrike => "YOUR PIRATE AIRSHIP SWEEPS OVERHEAD AND FIRES A BROADSIDE DOWN A LINE TOWARD THE TARGET.",
         Skill::SteamSuit => "CLIMB INTO YOUR STEAM SUIT: HALF DAMAGE TAKEN, FASTER, AND YOUR SKILLS RUN COLD.",
         _ => "",
     };
@@ -308,7 +308,7 @@ impl Game {
                 // It flies in from behind you and over the target.
                 let dmg = airship_dmg(r) * self.fire_power();
                 self.airships.push(AirshipFx { x: self.p.x - ux * 3.0, y: self.p.y - uy * 3.0, dx: ux, dy: uy, t: 0.0, drops: 0, dmg });
-                self.say("AIRSHIP INBOUND".into());
+                self.say("BROADSIDE! ALL HANDS!".into());
             }
             Skill::SteamSuit => {
                 self.p.mana -= suit_heat(r);

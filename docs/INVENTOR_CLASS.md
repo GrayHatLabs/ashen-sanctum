@@ -1,5 +1,27 @@
 # The Inventor: third playable class (design, 2026-10-05)
 
+> **Redesigned 2026-10-06 as the SKY PIRATE** (the user: "a pirate theme and look... still keep it steampunk", with a
+> reference sheet of a gothic pirate queen). She has the same skills and mechanics, and the same save keys (`inventor`).
+>
+> **Look:**
+> - a black tricorn with gold trim, skulls and red feathers;
+> - wavy ash-blonde hair with braids;
+> - a buckled black corset over a white ruffled blouse, under a tattered black and crimson coat;
+> - thigh-high skull-buckled boots;
+> - brass lanterns and gears on chains;
+> - her brass clockwork arm, holding an ornate brass flintlock;
+> - a cutlass.
+>
+> **Renamed skills:**
+> - Ray Pistol is now Aether Flintlock.
+> - Clockwork Bomb is now Powder Keg.
+> - Sentry Turret is now Swivel Gun.
+> - Grapple Hook is now Boarding Hook.
+> - Airship Strike is now Broadside.
+> - Her skill tree is titled "The Pirate's Kit".
+>
+> **Art:** `tools/pirate_art.py`. The old art is kept in `generated/_old/inventor_v1`.
+
 **Decided with the user:**
 - **Name:** Inventor.
 - **Playstyle:** gunslinger + gadgets.

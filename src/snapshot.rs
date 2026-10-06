@@ -715,6 +715,13 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         cast(&mut g, Skill::FinalJudgment, px, py);
         idle(&mut g, 8);
         save(&mut g, scr, "inquisitor_judgment");
+        // Walking toward the camera (the user saw her legs float here).
+        g.p.judge_t = 0.0;
+        for _ in 0..14 {
+            g.update(&Input { move_y: 1.0, ..Input::default() });
+            g.sfx.clear();
+        }
+        save(&mut g, scr, "inquisitor_walk");
         g.p.skills.points = 2;
         g.update(&Input { skills: true, ..Input::default() });
         save(&mut g, scr, "inquisitor_tree");
