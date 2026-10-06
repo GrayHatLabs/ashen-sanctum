@@ -63,6 +63,10 @@ pub struct Menu {
     rects: Vec<(i32, i32, i32, i32, usize)>,
     /// The hero last highlighted in the list (what the DELETE HERO button acts on).
     hero_sel: usize,
+    /// First hero row shown (the list scrolls when it doesn't fit).
+    scroll: usize,
+    /// Rows that fit on screen (from the last draw).
+    rows_fit: usize,
     seed: u32,
 }
 
@@ -80,6 +84,8 @@ impl Menu {
             prev: Input::default(),
             rects: vec![],
             hero_sel: 0,
+            scroll: 0,
+            rows_fit: 7,
             seed: 1,
         }
     }
@@ -155,7 +161,8 @@ impl Menu {
         if let (Some((mx, my)), true) = (inp.mouse, inp.lmb && !prev.lmb) {
             if let Some(&(.., k)) = self.rects.iter().find(|&&(x, y, w, h, _)| mx >= x && mx < x + w && my >= y && my < y + h) {
                 // Click to select, click the selected one again to choose (single click on buttons).
-                if k == self.sel || !matches!(self.stage, Stage::Heroes | Stage::Create) {
+                let button = self.stage == Stage::Heroes && k >= self.heroes.len();
+                if k == self.sel || button || !matches!(self.stage, Stage::Heroes | Stage::Create) {
                     confirm = true;
                 }
                 self.sel = k;
@@ -182,6 +189,21 @@ impl Menu {
                     self.go(Stage::Title);
                     return None;
                 }
+                // The mouse wheel scrolls the list; keyboard / pad selection keeps the pick in view.
+                let nh = self.heroes.len();
+                let max_scroll = nh.saturating_sub(self.rows_fit);
+                if inp.wheel > 0 {
+                    self.scroll = self.scroll.saturating_sub(inp.wheel as usize);
+                } else if inp.wheel < 0 {
+                    self.scroll = (self.scroll + (-inp.wheel) as usize).min(max_scroll);
+                } else if self.sel < nh {
+                    if self.sel < self.scroll {
+                        self.scroll = self.sel;
+                    } else if self.sel >= self.scroll + self.rows_fit {
+                        self.scroll = self.sel + 1 - self.rows_fit;
+                    }
+                }
+                self.scroll = self.scroll.min(max_scroll);
                 let k = self.sel;
                 if k < self.heroes.len() {
                     self.hero_sel = k;
@@ -388,8 +410,21 @@ impl Menu {
         scr.text("SELECT YOUR HERO", w / 2, 10, rgb(0xffd080), Align::Center, 2);
         let (lx, ly, lw) = (24, 40, w / 2 - 24);
         let row = 30;
+        // The buttons sit in a fixed bar at the bottom; the list scrolls in the space above.
+        let bar_y = h - 50;
+        self.rows_fit = (((bar_y - 14 - ly) / (row + 2)).max(1)) as usize;
+        let shown = self.scroll..(self.scroll + self.rows_fit).min(self.heroes.len());
+        if self.scroll > 0 {
+            scr.text("- MORE ABOVE -", lx + lw / 2, ly - 10, rgb(0x9a8a70), Align::Center, 1);
+        }
+        if shown.end < self.heroes.len() {
+            scr.text("- MORE BELOW (SCROLL) -", lx + lw / 2, bar_y - 12, rgb(0x9a8a70), Align::Center, 1);
+        }
         for (k, hero) in self.heroes.clone().iter().enumerate() {
-            let y = ly + k as i32 * (row + 2);
+            if !shown.contains(&k) {
+                continue;
+            }
+            let y = ly + (k - self.scroll) as i32 * (row + 2);
             let on = self.sel == k;
             scr.blend(lx, y, lw, row, if on { rgb(0x3a1a08) } else { BLACK }, if on { 0.85 } else { 0.5 });
             if on {
@@ -409,11 +444,11 @@ impl Menu {
             scr.text(&line, lx + 42, y + 17, col, Align::Left, 1);
             self.rects.push((lx, y, lw, row, k));
         }
-        let by = ly + self.heroes.len() as i32 * (row + 2) + 8;
         let nh = self.heroes.len();
-        self.button(scr, "NEW HERO", lx + lw / 2, by, lw, nh, nh < MAX_HEROES);
-        self.button(scr, "BACK", lx + lw / 2, by + 24, lw, nh + 1, true);
-        self.button(scr, "DELETE HERO", lx + lw / 2, by + 48, lw, nh + 2, nh > 0);
+        let bw = (lw - 8) / 3;
+        self.button(scr, "NEW HERO", lx + bw / 2, bar_y, bw, nh, nh < MAX_HEROES);
+        self.button(scr, "DELETE HERO", lx + bw + 4 + bw / 2, bar_y, bw, nh + 2, nh > 0);
+        self.button(scr, "BACK", lx + 2 * (bw + 4) + bw / 2, bar_y, bw, nh + 1, true);
         // The selected hero, big, on the right.
         if let Some(hero) = self.heroes.get(self.sel.min(self.heroes.len().saturating_sub(1))).filter(|_| self.sel < nh) {
             let (pname, col) = class_look(hero.class);
@@ -593,6 +628,38 @@ mod tests {
         // Esc from the title quits.
         let mut m = Menu::new(vec![]);
         assert_eq!(press(&mut m, |i| i.cancel = true), Some(MenuOut::Quit));
+    }
+
+    #[test]
+    fn the_hero_list_scrolls_and_deletes_with_one_click() {
+        let heroes: Vec<HeroInfo> = (0..10)
+            .map(|k| HeroInfo { slot: format!("zz_test_{k}"), name: format!("HERO {k}"), clvl: 1, class: Class::Sorceress, act: 0, difficulty: 0 })
+            .collect();
+        let mut m = Menu::new(heroes);
+        m.go(Stage::Heroes);
+        let mut scr = crate::gfx::Screen::new(crate::gfx::SH_WIDE);
+        let art = crate::art::Art::load();
+        m.draw(&mut scr, &art);
+        assert!(m.rows_fit < 10, "not all ten fit");
+        // Every button is on screen.
+        let h = crate::gfx::SH_WIDE;
+        for k in 10..13 {
+            let r = m.rects.iter().find(|r| r.4 == k).expect("button drawn");
+            assert!(r.1 + r.3 <= h, "button {k} is on screen");
+        }
+        // Scrolling with the wheel shows later heroes.
+        m.update(&Input { wheel: -3, ..Input::default() });
+        assert!(m.scroll > 0);
+        // Highlight hero 2 with a click, then click DELETE HERO once: it asks.
+        m.scroll = 0;
+        m.draw(&mut scr, &art);
+        let r = *m.rects.iter().find(|r| r.4 == 2).unwrap();
+        m.update(&Input { mouse: Some((r.0 + 4, r.1 + 4)), lmb: true, ..Input::default() });
+        m.update(&Input::default());
+        m.draw(&mut scr, &art);
+        let d = *m.rects.iter().find(|r| r.4 == 12).unwrap();
+        m.update(&Input { mouse: Some((d.0 + 4, d.1 + 4)), lmb: true, ..Input::default() });
+        assert_eq!(m.stage, Stage::Delete(2));
     }
 
     #[test]

@@ -382,6 +382,17 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         m.stage = Stage::Heroes;
         m.sel = 1;
         shot(&mut m, scr, "menu_heroes");
+        {
+            // A full roster: the list scrolls and the buttons stay on screen.
+            let classes = crate::skills::ALL_CLASSES;
+            let many: Vec<HeroInfo> = (0..10)
+                .map(|k| HeroInfo { slot: format!("h{k}"), name: format!("HERO {}", k + 1), class: classes[k % classes.len()], clvl: 5 + k as u32 * 3, act: k % 4, difficulty: 0 })
+                .collect();
+            let mut mm = Menu::new(many);
+            mm.stage = Stage::Heroes;
+            mm.sel = 9;
+            shot(&mut mm, scr, "menu_heroes_many");
+        }
         m.stage = Stage::Delete(0);
         m.sel = 1;
         shot(&mut m, scr, "menu_delete");

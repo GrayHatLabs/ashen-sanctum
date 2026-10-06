@@ -184,6 +184,7 @@ fn main() -> Result<(), String> {
     }
     video.text_input().start();
     let (mut typed, mut backspace) = (String::new(), false);
+    let mut wheel = 0i32;
     let mut menu_out: Option<menu::MenuOut> = None;
     if let (Some(n), false) = (test_act, loaded) {
         game.act_start(n);
@@ -273,6 +274,7 @@ fn main() -> Result<(), String> {
                         _ => {}
                     }
                 }
+                Event::MouseWheel { y, .. } => wheel += y,
                 Event::MouseMotion { x, y, .. } => {
                     if !handheld {
                         inp.mouse = Some(to_fb(x, y, dst, view_h, &canvas));
@@ -393,6 +395,7 @@ fn main() -> Result<(), String> {
             inp.inv = inv_key;
             inp.typed = std::mem::take(&mut typed);
             inp.backspace = backspace;
+            inp.wheel = wheel;
             inp.cheat_level = cheat_level;
             inp.cheat_loot = cheat_loot;
             inp.cycle = cycle;
@@ -406,6 +409,7 @@ fn main() -> Result<(), String> {
                 None => game.update(&inp),
             }
             backspace = false;
+            wheel = 0;
             confirm = false;
             pot_hp = false;
             pot_mp = false;

@@ -82,6 +82,8 @@ pub struct Input {
     /// Text typed this tick (hero names) and Backspace.
     pub typed: String,
     pub backspace: bool,
+    /// Mouse wheel this tick (+ up, - down).
+    pub wheel: i32,
     /// `--cheats` only: F9 gains a level, F10 drops loot (one-shot).
     pub cheat_level: bool,
     pub cheat_loot: bool,
