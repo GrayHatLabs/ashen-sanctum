@@ -40,7 +40,7 @@ const CLASSES: [(&str, &str, &str, &str, u32, bool, &str); 8] = [
     ("BERSERKER", "portrait_berserker", "GIANT AXE,", "DIRE WOLF.", 0xd07040, true, "berserker"),
     ("REAPER", "portrait_reaper", "RUNE SCYTHE,", "SOULS.", 0x9ad8ff, true, "reaper"),
     ("DRUID", "portrait_druid", "PLAGUE AND", "SUMMONS.", 0x90d050, true, "druid"),
-    ("INQUISITOR", "portrait_inquisitor", "CHAINED CENSER,", "BRANDS.", 0xe0a040, true, "inquisitor_hero"),
+    ("INQUISITOR", "portrait_inquisitor", "HOLY FIRE,", "BRANDS.", 0xe0a040, true, "inquisitor_hero"),
 ];
 
 const NAMES: [&str; 16] = [

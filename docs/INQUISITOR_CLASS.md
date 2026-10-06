@@ -35,7 +35,7 @@ She **brands** what she hunts.
 ## Holy fire (added at the user's request, 2026-10-06)
 
 Her censer burns with **holy fire**, white-gold flames unlike any ordinary fire.
-- **Burning:** every foe her censer touches (strikes and the sweep) keeps burning for 3 seconds, taking a quarter of the blow's damage per second. Cursed foes burn twice as hard.
+- **Burning:** every foe her censer touches (strikes and the sweep) keeps burning for 3 seconds, taking an eighth of the blow's damage per second. Cursed foes burn twice as hard.
 - **Resistance:** holy fire ignores fire resistance.
 - **Spreading:** when a cursed foe dies burning, the flame leaps to the nearest unburnt foe within 4 tiles.
 
@@ -70,6 +70,16 @@ Her censer burns with **holy fire**, white-gold flames unlike any ordinary fire.
 | 4 | **Final Judgment** | Her ultimate state, for a few seconds: the halo ignites and every brand blazes. She moves and strikes faster, and hits harder for every branded foe nearby. Every censer hit sends holy fire to all branded foes. |
 
 **Out of Judgment:** any skill falls back to the free Censer Strike.
+
+## Art as built (2026-10-06, iterated with the user)
+
+- **Sprite:** v2, chosen for its spiked halo, black leather and oxblood.
+- **Halo:** `tools/inquisitor_halo.py` (run by pack.py on every frame):
+  - strips PixelLab's gold sun halo;
+  - paints the user's design: spikes behind her head, with a band arching through them;
+  - colours the halo and her armor in **darkened gold** (the user: "kind of darkened gold").
+- **The censer** is drawn by the game on her chain when she strikes.
+- **Portrait:** built from her sprite, standing straight (the user didn't want bent legs), and redrawn at strength 450. The halo was then painted back in, the censer's gem recoloured to holy fire, and her eyes made amber (`tools/inquisitor_portrait.py`).
 
 ## Art plan (PixelLab, `tools/inquisitor_art.py`)
 

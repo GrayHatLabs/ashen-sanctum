@@ -1137,7 +1137,7 @@ impl Game {
             ("BERSERKER", "portrait_berserker", "berserker", "GIANT AXE,", "DIRE WOLF.", rgb(0xd07040)),
             ("REAPER", "portrait_reaper", "reaper", "RUNE SCYTHE,", "SOULS.", rgb(0x9ad8ff)),
             ("DRUID", "portrait_druid", "druid", "PLAGUE AND", "SUMMONS.", rgb(0x90d050)),
-            ("INQUISITOR", "portrait_inquisitor", "inquisitor_hero", "CHAINED CENSER,", "BRANDS.", rgb(0xe0a040)),
+            ("INQUISITOR", "portrait_inquisitor", "inquisitor_hero", "HOLY FIRE,", "BRANDS.", rgb(0xe0a040)),
         ];
         let pw = (w - 20 - 10 * (classes.len() as i32 - 1)) / classes.len() as i32;
         let ph = h - 70;

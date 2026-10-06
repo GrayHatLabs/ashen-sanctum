@@ -138,6 +138,16 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Fixes found by the long runs: a boss's town portal could land between you and its token (now placed beyond the boss); area names repeated (NIGHTMARE) on every re-entry | H | |
 | Law zones (3 overland, 2 per dungeon): BLADE (only close blows), ARROW (only blows from 4+ tiles), STILLNESS (only foes not moving); forbidden blows do 10% (grey numbers); lure foes out to fight freely | H S | Unit test covers all three laws and leaving the zone |
 
+## The Inquisitor class (2026-10-06)
+
+| Feature | Status | Notes |
+|---|---|---|
+| Judgment resource (censer hits; more on cursed and branded foes); cursed = unholy kinds + bosses; Zeal haste | H S | Unit tests |
+| 11 skills (`inquisitor.rs`): Censer Strike (2.6-tile reach), Brand of Judgment, Zealotry, Chain Lash, Hook, Iron Halo, Censer Sweep, Binding Chains, Chain Links, Purification, Final Judgment | H S | Unit tests cover every active and passive |
+| Holy fire: white-gold burn from the censer, double on the cursed, ignores fire resistance, leaps from cursed corpses | H S | Unit test |
+| Art: sprite (v2) + 4 animations; the halo (spikes and an arching band) and darkened-gold armor painted on every frame by `tools/inquisitor_halo.py`; portrait built from the sprite (`tools/inquisitor_portrait.py`) | S | The user's design |
+| Bot: all four acts (`scripts/bot-hero.sh inquisitor`) | H | |
+
 ## Sets, gems and jewelers (2026-10-06)
 
 | Feature | Status | Notes |

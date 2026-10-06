@@ -58,7 +58,7 @@ pub fn curse_of(m: &Mob) -> f32 {
 // ------------------------------------------------------------------ holy fire
 
 /// Holy fire: a share of each censer blow burns on for a few seconds, twice as hard on the cursed.
-pub const HOLY_SHARE: f32 = 0.25;
+pub const HOLY_SHARE: f32 = 0.12;
 pub const HOLY_TIME: f32 = 3.0;
 /// When a cursed foe dies burning, the flame leaps this far to another foe.
 pub const HOLY_LEAP: f32 = 4.0;
@@ -85,7 +85,7 @@ fn up(r: u8) -> f32 {
 pub const CENSER_REACH: f32 = 2.6;
 pub fn censer_dmg(r: u8) -> (f32, f32) {
     let k = 1.0 + 0.16 * up(r);
-    (10.0 * k, 16.0 * k)
+    (9.0 * k, 14.0 * k)
 }
 pub fn brand_time(r: u8) -> f32 {
     10.0 + 0.6 * up(r)
