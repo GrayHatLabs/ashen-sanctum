@@ -382,7 +382,7 @@ impl Game {
 
     fn rend(&mut self, tx: f32, ty: f32, r: u8) {
         self.p.mana -= rend_rage(r);
-        self.bz_pose("attack", 0.45);
+        self.bz_pose("chop", 0.45);
         self.sfx.push(Sfx::Swing);
         let (px, py) = (self.p.x, self.p.y);
         let (lo, hi) = rend_dmg(r);
@@ -425,7 +425,7 @@ impl Game {
         };
         self.p.mana -= slam_rage(r);
         self.p.skills.cooldown[Skill::LeapSlam as usize] = slam_cd(r);
-        self.bz_pose("attack", 0.35);
+        self.bz_pose("chop", 0.35);
         for k in 0..16 {
             let t = k as f32 / 16.0;
             let (x, y) = (px + (lx - px) * t, py + (ly - py) * t);
