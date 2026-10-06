@@ -823,8 +823,10 @@ impl Game {
         self.banner_t = 3.0;
         self.waypoint = self.find_waypoint();
         self.wp_armed = true;
-        if self.quest.difficulty > 0 {
-            self.level_name = format!("{} ({})", self.level_name, story::DIFFICULTIES[self.quest.difficulty as usize]);
+        // Parked levels keep their name, so only tag it once.
+        let tag = format!(" ({})", story::DIFFICULTIES[self.quest.difficulty as usize]);
+        if self.quest.difficulty > 0 && !self.level_name.ends_with(&tag) {
+            self.level_name += &tag;
         }
         if !lv.id.overland() {
             self.shop_stale = true;
@@ -1190,7 +1192,8 @@ impl Game {
     pub fn bot_target(&self) -> Option<(f32, f32, f32, bool)> {
         self.mobs
             .iter()
-            .filter(|m| m.alive())
+            // Not your own allies (wolves, thralls, rats...).
+            .filter(|m| m.alive() && m.charm <= 0.0)
             .map(|m| (m.x, m.y, ((m.x - self.p.x).powi(2) + (m.y - self.p.y).powi(2)).sqrt()))
             .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap())
             .map(|(x, y, d)| (x, y, d, self.d.los(self.p.x, self.p.y, x, y)))
@@ -1200,7 +1203,7 @@ impl Game {
     pub fn bot_food(&self) -> Option<(f32, f32)> {
         self.pickups
             .iter()
-            .filter(|k| matches!(k.kind, Drop::Food(_) | Drop::Seal(_)))
+            .filter(|k| matches!(k.kind, Drop::Food(_) | Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_)))
             .map(|k| (k.x, k.y, (k.x - self.p.x).powi(2) + (k.y - self.p.y).powi(2)))
             .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap())
             .map(|(x, y, _)| (x, y))
@@ -1208,18 +1211,33 @@ impl Game {
 
     /// Where the bot should head next when nothing is in reach: deeper, or into the next dungeon.
     pub fn bot_portal(&self) -> Option<(f32, f32)> {
-        let want = |p: &&Portal| match p.kind {
-            PortalKind::Down => true,
-            PortalKind::Entrance(k) => k == self.bot_dungeon(),
-            PortalKind::TownPortal => true,
-            PortalKind::Up => self.mobs.iter().all(|m| !m.boss || !m.alive()) && self.portal_kind_exists_not(PortalKind::Down),
-            PortalKind::Pass(_) => false,
-        };
-        self.portals.iter().find(want).map(|p| (p.x, p.y))
+        let at = |kind: PortalKind| self.portals.iter().find(|p| p.kind == kind).map(|p| (p.x, p.y));
+        let target = self.bot_dungeon();
+        match self.level {
+            // Done here (its token is in hand, or it's the wrong dungeon): head back out.
+            LevelId::Dungeon(k, _) if k != target => at(PortalKind::TownPortal).or_else(|| at(PortalKind::Up)),
+            // Deeper, until the boss is dead; then out.
+            LevelId::Dungeon(..) => {
+                let boss_dead = self.mobs.iter().all(|m| !m.boss || !m.alive());
+                at(PortalKind::Down).or_else(|| if boss_dead { at(PortalKind::TownPortal).or_else(|| at(PortalKind::Up)) } else { None })
+            }
+            _ => at(PortalKind::Entrance(target)),
+        }
     }
 
-    fn portal_kind_exists_not(&self, k: PortalKind) -> bool {
-        !self.portals.iter().any(|p| p.kind == k)
+    /// A herald token (seal, rune, sigil, key) lying on this level.
+    pub fn bot_token(&self) -> Option<(f32, f32)> {
+        self.pickups.iter().find(|k| matches!(k.kind, Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_))).map(|k| (k.x, k.y))
+    }
+
+    /// The role of the NPC that talking now would address (for the bot).
+    pub fn nearest_npc_role(&self, r: f32) -> Option<Role> {
+        self.nearest_npc(r).map(|i| self.npcs[i].role)
+    }
+
+    /// Where this level's living boss is (the bot hunts it down on the last floor).
+    pub fn bot_boss(&self) -> Option<(f32, f32)> {
+        self.mobs.iter().find(|m| m.boss && m.alive()).map(|m| (m.x, m.y))
     }
 
     /// First dungeon of this act whose herald token the bot doesn't have yet (then the act's
@@ -1234,6 +1252,16 @@ impl Game {
         };
         let _ = SANCTUM;
         (0..3).find(|&k| !got[k]).map_or(a * 4 + 3, |k| a * 4 + k)
+    }
+
+    /// The quest log line for the act you're in.
+    pub fn quest_log(&self) -> String {
+        match self.level.act() {
+            3 => self.quest.log4(),
+            2 => self.quest.log3(),
+            1 => self.quest.log2(),
+            _ => self.quest.log(),
+        }
     }
 
     /// The act's story-giver, when they have news for the bot (Elder, Captain, Hunter, Tally).
@@ -1261,11 +1289,6 @@ impl Game {
     /// A living boss within `r` tiles (for the bot).
     pub fn boss_alive_near(&self, r: f32) -> bool {
         self.mobs.iter().any(|m| m.boss && m.alive() && (m.x - self.p.x).powi(2) + (m.y - self.p.y).powi(2) < r * r)
-    }
-
-    /// A seal is lying on the floor waiting to be picked up.
-    pub fn boss_dead_with_loot(&self) -> bool {
-        self.pickups.iter().any(|k| matches!(k.kind, Drop::Seal(_)))
     }
 
     /// Drops one of each food next to the player (staged snapshot only).
@@ -2804,13 +2827,22 @@ impl Game {
                 self.pickups.push(Pickup { x: x + k as f32 * 0.5 - 0.5, y: y + 0.6, kind: Drop::Gold(self.rng.range(40, 90)), t: 0.0 });
             }
             self.pickups.push(Pickup { x: x - 0.6, y: y - 0.4, kind: Drop::Health, t: 0.0 });
-            // A way home.
-            let (mut px, mut py) = (x + 1.5, y + 1.5);
-            if self.d.blocked(px, py, 0.4) {
-                px = x;
-                py = y + 1.2;
+            // A way home: beyond the boss as seen from you, so walking over to its token (and loot)
+            // never steps you into the portal first.
+            let (ax, ay) = (x - self.p.x, y - self.p.y);
+            let base = ay.atan2(ax);
+            let mut spot = (x, y + 2.5);
+            'find: for dist in [2.6f32, 2.0, 3.2] {
+                for k in [0.0f32, 0.6, -0.6, 1.2, -1.2, 1.8, -1.8] {
+                    let a = base + k;
+                    let (px, py) = (x + a.cos() * dist, y + a.sin() * dist);
+                    if !self.d.blocked(px, py, 0.45) && self.d.los(x, y, px, py) {
+                        spot = (px, py);
+                        break 'find;
+                    }
+                }
             }
-            self.portals.push(Portal { x: px, y: py, kind: PortalKind::TownPortal });
+            self.portals.push(Portal { x: spot.0, y: spot.1, kind: PortalKind::TownPortal });
             let label = crate::mobs::def(kind).label;
             self.say(format!("{label} IS SLAIN"));
             return;

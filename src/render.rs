@@ -1534,12 +1534,7 @@ impl Game {
 
         // Area name and quest log (top left).
         scr.text(&self.level_name, 6, 6, rgb(0xd8b878), Align::Left, 1);
-        let log = match self.level.act() {
-            3 => self.quest.log4(),
-            2 => self.quest.log3(),
-            1 => self.quest.log2(),
-            _ => self.quest.log(),
-        };
+        let log = self.quest_log();
         scr.text(&log, 6, 17, rgb(0x9a8a78), Align::Left, 1);
 
         // Boss bar (big, top centre) while a boss is fighting you; else the hovered monster.

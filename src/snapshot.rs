@@ -83,7 +83,9 @@ impl Bot {
         // The act's story-giver first, and again with all three herald tokens.
         if let Some(role) = g.bot_story_npc() {
             if let Some((ex, ey)) = g.bot_npc(role) {
-                if (ex - g.p.x).powi(2) + (ey - g.p.y).powi(2) < 2.0 {
+                // Step right up, so it's them (not a villager beside them) you talk to.
+                let d2 = (ex - g.p.x).powi(2) + (ey - g.p.y).powi(2);
+                if d2 < 2.0 && g.nearest_npc_role(1.8) == Some(role) {
                     inp.confirm = t % 10 == 0;
                 } else {
                     self.steer(g, t, (ex, ey), &mut inp);
@@ -91,7 +93,12 @@ impl Bot {
                 return inp;
             }
         }
-        if g.p.food < 40.0 || g.boss_dead_with_loot() {
+        if let Some(tk) = g.bot_token() {
+            // A boss's token first.
+            self.steer(g, t, tk, &mut inp);
+            return inp;
+        }
+        if g.p.food < 40.0 {
             if let Some(f) = g.bot_food() {
                 self.steer(g, t, f, &mut inp);
                 return inp;
@@ -125,6 +132,9 @@ impl Bot {
         }
         if let Some(p) = g.bot_portal() {
             self.steer(g, t, p, &mut inp);
+        } else if let Some(b) = g.bot_boss() {
+            // The last floor: go and find the boss.
+            self.steer(g, t, b, &mut inp);
         }
         inp
     }
@@ -154,18 +164,54 @@ pub fn run(dir: Option<&str>, tall: bool) -> i32 {
         std::fs::create_dir_all(d).ok();
     }
     let shots = [2u32, 400, 1200, 2400, 3600];
-    let total = if dir.is_some() { 3601 } else { 60 * 60 * 6 };
+    // ASHEN_MINUTES=40: a longer run (whole acts); ASHEN_GOD=1 keeps the bot alive so it reaches the bosses.
+    let minutes = std::env::var("ASHEN_MINUTES").ok().and_then(|m| m.parse::<u32>().ok()).unwrap_or(6);
+    let god = std::env::var("ASHEN_GOD").map_or(false, |v| v == "1");
+    let total = if dir.is_some() { 3601 } else { 60 * 60 * minutes };
     let t0 = std::time::Instant::now();
     let mut draw_time = std::time::Duration::ZERO;
     let mut draws = 0;
     let mut bot = Bot { path: vec![], goal: (0.0, 0.0), repath: 0 };
     let mut visited = std::collections::HashSet::new();
     let (mut next_action, mut action_shots) = (0u32, 0);
+    let mut last_bosses = 0;
+    let mut last_dialog = None;
     for t in 0..total {
         let inp = bot.act(&g, t);
         g.update(&inp);
         g.sfx.clear();
-        visited.insert(g.level);
+        if god && g.p.hp < g.p.max_hp * 0.5 {
+            g.p.hp = g.p.max_hp;
+        }
+        if dir.is_none() && minutes > 6 && g.stats.bosses != last_bosses {
+            last_bosses = g.stats.bosses;
+            let tokens = g.bot_token().map(|(x, y)| format!("{x:.1},{y:.1} walkable={} path={}", !g.d.blocked(x, y, 0.3), g.bot_path(x, y).is_some()));
+            println!("  [{:>3} min] boss down in {} at {:.1},{:.1} (token: {tokens:?}) quest={}", t / 3600, g.level_name, g.p.x, g.p.y, g.quest_log());
+        }
+        if visited.insert(g.level) && dir.is_none() && minutes > 6 {
+            println!("  [{:>3} min] entered {}  quest={}", t / 3600, g.level_name, g.quest_log());
+        }
+        let dname = g.dialog.as_ref().map(|d| (d.name, d.page, d.pages.len(), d.options.iter().map(|o| o.0.clone()).collect::<Vec<_>>()));
+        if dir.is_none() && std::env::var("ASHEN_TRACE").is_ok() && dname != last_dialog {
+            println!("    t={t} dialog {:?}", dname);
+            last_dialog = dname;
+        }
+        if dir.is_none() && std::env::var("ASHEN_TRACE").is_ok() && t % 600 == 0 {
+            println!(
+                "    t={t} {} at {:.1},{:.1} token={:?} dialog={:?} target={:?} hp={:.0} state={:?}",
+                g.level_name,
+                g.p.x,
+                g.p.y,
+                g.bot_token(),
+                g.dialog.as_ref().map(|d| d.name),
+                g.bot_target().map(|t| (t.0 as i32, t.1 as i32, t.2 as i32, t.3)),
+                g.p.hp,
+                g.state
+            );
+        }
+        if dir.is_none() && minutes > 6 && t > 0 && t % (3600 * 5) == 0 {
+            println!("  [{:>3} min] {} at {:.0},{:.0} clvl={} kills={} bosses={} quest={}", t / 3600, g.level_name, g.p.x, g.p.y, g.p.clvl, g.kills, g.stats.bosses, g.quest_log());
+        }
         if let Some(d) = dir {
             let action = g.fire_active() && t >= next_action && action_shots < 3;
             if action {
