@@ -929,6 +929,45 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         ui.sel = crate::inventory::Cell::Shop(2);
         save(&mut g, scr, "shop_gear");
         g.inv = None;
+        // Sets and gems: a set worn, socketed gear, loose gems, and the jeweler.
+        let si = items::SETS.iter().position(|d| d.name == "EMBERWEAVE").unwrap();
+        g.p.clvl = 20;
+        g.p.gear = items::Gear::default();
+        for (p, w) in [(0, 0), (1, 1), (2, 2)] {
+            g.p.gear.worn[w] = Some(items::set_item(si, p));
+        }
+        let mut boots = items::roll_base(items::base_by_key("iboots").unwrap(), 10, Rarity::Normal, &mut rng);
+        boots.sockets = 1;
+        boots.gems = vec![items::Gem { kind: 3, grade: 4 }];
+        g.p.gear.worn[4] = Some(boots);
+        let mut staff = items::roll_base(items::base_by_key("ember").unwrap(), 16, Rarity::Normal, &mut rng);
+        staff.sockets = 3;
+        staff.gems = vec![items::Gem { kind: 0, grade: 5 }, items::Gem { kind: 6, grade: 3 }];
+        g.p.gear.bag[0] = Some(staff);
+        for k in 0..7u8 {
+            g.p.gear.bag[2 + k as usize] = Some(items::gem_item(items::Gem { kind: k, grade: 1 + k % 5 }));
+        }
+        g.p.gear.bag[10] = Some(items::set_item(si, 3));
+        g.p.gear.bag[11] = Some(items::set_item(3, 0));
+        g.p.recalc();
+        g.open_inventory();
+        g.inv.as_mut().unwrap().sel = crate::inventory::Cell::Bag(10);
+        save(&mut g, scr, "inventory_set");
+        g.inv.as_mut().unwrap().sel = crate::inventory::Cell::Bag(0);
+        save(&mut g, scr, "inventory_sockets");
+        g.inv.as_mut().unwrap().sel = crate::inventory::Cell::Bag(2);
+        g.inv.as_mut().unwrap().holding = Some(2);
+        save(&mut g, scr, "inventory_gem");
+        g.inv = None;
+        g.debug_talk(crate::story::Role::Jeweler(0));
+        save(&mut g, scr, "jeweler_talk");
+        g.dialog = None;
+        g.open_inventory();
+        let ui = g.inv.as_mut().unwrap();
+        ui.jewel = true;
+        ui.sel = crate::inventory::Cell::Bag(0);
+        save(&mut g, scr, "jeweler_bench");
+        g.inv = None;
     }
     // HUD details: out of mana (EMBER), hungry, low stamina, food on the floor.
     let mut g = Game::new(7, h);

@@ -763,6 +763,7 @@ pub fn overworld(seed: u64) -> Level {
         Npc::new("FARMER", Role::Villager(1), "npc_villager", 61.5, 61.0, 7),
         Npc::new("VILLAGER", Role::Villager(2), "npc_villager", 49.5, 62.0, 2),
         Npc::new("FARMER", Role::Villager(3), "npc_villager", 64.0, 58.5, 5),
+        Npc::new("MASTER ODO", Role::Jeweler(0), "npc_jeweler0", 55.5, 59.5, 1),
     ];
 
     // ---- roads to each dungeon ----
@@ -973,6 +974,7 @@ pub fn frostmarch(seed: u64) -> Level {
         Npc::new("FISHERMAN", Role::Fisher(0), "npc_fisher", 53.5, 78.5, 1),
         Npc::new("FISHERMAN", Role::Fisher(1), "npc_fisher", 64.0, 76.5, 5),
         Npc::new("FISHERWIFE", Role::Fisher(2), "npc_fisher", 52.0, 71.5, 3),
+        Npc::new("INGRID STONEHAND", Role::Jeweler(1), "npc_jeweler1", 55.5, 74.5, 1),
     ];
 
     // ---- roads: to each ice dungeon, and south to the pass ----
@@ -1173,6 +1175,7 @@ pub fn mistwood(seed: u64) -> Level {
         Npc::new("PEASANT", Role::Peasant(0), "npc_peasant", 49.0, 62.0, 1),
         Npc::new("PEASANT", Role::Peasant(1), "npc_peasant", 58.5, 59.0, 5),
         Npc::new("PEASANT", Role::Peasant(2), "npc_peasant", 45.5, 54.0, 3),
+        Npc::new("SILAS GREAVE", Role::Jeweler(2), "npc_jeweler2", 55.0, 60.0, 1),
     ];
 
     // ---- roads ----
@@ -1374,6 +1377,7 @@ pub fn mechanus(seed: u64) -> Level {
         Npc::new("SERVANT", Role::Servant(0), "npc_servant", 52.0, 60.0, 1),
         Npc::new("SERVANT", Role::Servant(1), "npc_servant", 61.5, 57.0, 5),
         Npc::new("SERVANT", Role::Servant(2), "npc_servant", 49.5, 52.0, 3),
+        Npc::new("THE LAPIDARY", Role::Jeweler(3), "npc_jeweler3", 54.0, 58.5, 1),
     ];
 
     // ---- conveyor roads ----

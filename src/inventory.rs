@@ -34,6 +34,10 @@ pub struct InvUi {
     pub centres: Vec<(Cell, i32, i32)>,
     /// Trading with Gerta: her shelf shows under the bag.
     pub shop: bool,
+    /// At the jeweler's bench: using an item adds sockets or takes its gems out.
+    pub jewel: bool,
+    /// The bag cell of a gem you're about to set in something.
+    pub holding: Option<usize>,
 }
 
 /// Paper-doll grid position of each worn slot (column, row).
@@ -47,7 +51,7 @@ impl Game {
         } else {
             Cell::Worn(0)
         };
-        self.inv = Some(InvUi { sel, rects: vec![], centres: vec![], shop: false });
+        self.inv = Some(InvUi { sel, rects: vec![], centres: vec![], shop: false, jewel: false, holding: None });
         self.dialog = None;
     }
 
@@ -102,6 +106,76 @@ impl Game {
             }
             Err(why) if !why.is_empty() => self.say(why.into()),
             Err(_) => {}
+        }
+    }
+
+    /// Sets the held gem into the item in cell `c`.
+    fn set_gem(&mut self, gem: usize, c: Cell) {
+        let r = match c {
+            Cell::Bag(i) => self.p.gear.socket(gem, false, i),
+            Cell::Worn(w) => self.p.gear.socket(gem, true, w),
+            _ => Err("GEMS GO IN THINGS YOU CARRY OR WEAR".into()),
+        };
+        match r {
+            Ok(msg) => {
+                self.sfx.push(Sfx::Pickup);
+                self.say(msg);
+                self.p.recalc();
+                self.save_due = true;
+                let ui = self.inv.as_mut().unwrap();
+                ui.holding = None;
+                ui.sel = c;
+            }
+            Err(why) if !why.is_empty() => self.say(why),
+            Err(_) => {}
+        }
+    }
+
+    /// At the jeweler's bench: empty a socketed item, or cut sockets in a plain one.
+    fn jewel_use(&mut self, c: Cell) {
+        let (worn, i) = match c {
+            Cell::Bag(i) => (false, i),
+            Cell::Worn(w) => (true, w),
+            _ => return,
+        };
+        let Some(it) = self.sel_item(c).cloned() else { return };
+        if it.gem().is_some() {
+            return self.say("CHOOSE THE ITEM, NOT THE GEM".into());
+        }
+        if !it.gems.is_empty() {
+            let cost = items::unsocket_cost(&it);
+            if self.p.gold < cost {
+                return self.say(format!("TAKING THEM OUT COSTS {cost} GOLD"));
+            }
+            match self.p.gear.unsocket(worn, i) {
+                Ok(n) => {
+                    self.p.gold -= cost;
+                    self.sfx.push(Sfx::Pickup);
+                    self.say(format!("{n} GEM{} TAKEN OUT FOR {cost} GOLD", if n == 1 { "" } else { "S" }));
+                    self.p.recalc();
+                    self.save_due = true;
+                }
+                Err(why) => self.say(why),
+            }
+            return;
+        }
+        let max = items::max_sockets(it.slot());
+        if it.rarity != Rarity::Normal || it.sockets > 0 || max == 0 {
+            let why = if it.sockets > 0 { "IT HAS SOCKETS ALREADY" } else { "I ONLY CUT SOCKETS IN PLAIN (WHITE) GEAR" };
+            return self.say(why.into());
+        }
+        let cost = items::socket_cost(&it);
+        if self.p.gold < cost {
+            return self.say(format!("SOCKETS COST {cost} GOLD"));
+        }
+        let n = self.rng.range(1, max as i32 + 1) as u8;
+        let target = if worn { self.p.gear.worn[i].as_mut() } else { self.p.gear.bag[i].as_mut() };
+        if let Some(t) = target {
+            t.sockets = n;
+            self.p.gold -= cost;
+            self.sfx.push(Sfx::Pickup);
+            self.say(format!("CUT {n} SOCKET{} FOR {cost} GOLD", if n == 1 { "" } else { "S" }));
+            self.save_due = true;
         }
     }
 
@@ -187,8 +261,31 @@ impl Game {
             act = Some(InvAct::Close);
         }
         let sel = ui.sel;
+        let (jewel, holding) = (ui.jewel, ui.holding);
+        // A held gem goes into whatever you pick next.
+        if let (Some(g), Some(InvAct::Select(_) | InvAct::Use)) = (holding, act) {
+            let c = if let Some(InvAct::Select(c)) = act { c } else { sel };
+            if c == Cell::Bag(g) {
+                self.inv.as_mut().unwrap().holding = None;
+                self.inv.as_mut().unwrap().sel = c;
+            } else if matches!(c, Cell::Bag(_) | Cell::Worn(_)) && self.sel_item(c).is_some() {
+                self.set_gem(g, c);
+            } else {
+                self.inv.as_mut().unwrap().sel = c;
+            }
+            return;
+        }
+        if act.is_some() && !matches!(act, Some(InvAct::Select(_))) {
+            self.inv.as_mut().unwrap().holding = None;
+        }
         match act {
             Some(InvAct::Select(c)) => self.inv.as_mut().unwrap().sel = c,
+            Some(InvAct::Use) if jewel && matches!(sel, Cell::Bag(_) | Cell::Worn(_)) => self.jewel_use(sel),
+            Some(InvAct::Use) if matches!(sel, Cell::Bag(_)) && self.sel_item(sel).map_or(false, |it| it.gem().is_some()) => {
+                let Cell::Bag(i) = sel else { return };
+                self.inv.as_mut().unwrap().holding = Some(i);
+                self.say("PICK AN ITEM WITH A FREE SOCKET".into());
+            }
             Some(InvAct::Use) => {
                 let r = match sel {
                     Cell::Bag(i) => self.p.gear.equip(i, self.p.clvl),
@@ -262,7 +359,15 @@ impl Game {
         }
         let in_town = self.in_safe(self.p.x, self.p.y);
         let shop = ui.shop;
-        scr.text(if shop { "INVENTORY - TRADING WITH GERTA" } else { "INVENTORY" }, x0 + 10, y0 + 8, rgb(0xffd080), Align::Left, 1);
+        let (jewel, holding) = (ui.jewel, ui.holding);
+        let title = if shop {
+            "INVENTORY - TRADING WITH GERTA"
+        } else if jewel {
+            "INVENTORY - AT THE JEWELER'S BENCH"
+        } else {
+            "INVENTORY"
+        };
+        scr.text(title, x0 + 10, y0 + 8, rgb(0xffd080), Align::Left, 1);
         scr.text(&format!("GOLD {}", self.p.gold), x0 + 400, y0 + 8, rgb(0xe8c050), Align::Right, 1);
         let mut rects = vec![];
         let mut centres = vec![];
@@ -304,6 +409,12 @@ impl Game {
         }
         if b.get(Stat::Skills) > 0 {
             scr.text(&format!("+{} TO FIRE SKILLS", b.get(Stat::Skills)), dx0, sy, rgb(0x7090ff), Align::Left, 1);
+            sy += 10;
+        }
+        for (si, n) in gear.sets_worn() {
+            let d = &items::SETS[si];
+            scr.text(&format!("{} {n}/{}", d.name, d.pieces.len()), dx0, sy, rgb(items::rarity_col(Rarity::Set)), Align::Left, 1);
+            sy += 10;
         }
 
         // ---- the bag ----
@@ -319,11 +430,20 @@ impl Game {
                     scr.blend(cx + 1, cy + 1, CELL - 4, CELL - 4, rgb(0xa01010), 0.3);
                 }
             }
+            if holding == Some(i) {
+                // The gem in your hand pulses.
+                let a = 0.25 + 0.2 * ((self.tick as f32) * 0.2).sin();
+                scr.blend(cx + 1, cy + 1, CELL - 4, CELL - 4, rgb(0xfff0a0), a);
+            }
             rects.push((cx, cy, CELL - 2, CELL - 2, InvAct::Select(Cell::Bag(i))));
             centres.push((Cell::Bag(i), cx + CELL / 2, cy + CELL / 2));
         }
         let free = gear.free();
-        scr.text(&format!("{free} FREE"), bx0 + BAG_COLS as i32 * CELL - 2, by0 + 3 * CELL + 2, rgb(0x7a6a5a), Align::Right, 1);
+        match holding.and_then(|g| gear.bag[g].as_ref()) {
+            // Setting a gem: say so where the free count goes.
+            Some(g) => scr.text(&format!("SETTING {} - PICK AN ITEM", g.name), bx0, by0 + 3 * CELL + 2, rgb(0xfff0a0), Align::Left, 1),
+            None => scr.text(&format!("{free} FREE"), bx0 + BAG_COLS as i32 * CELL - 2, by0 + 3 * CELL + 2, rgb(0x7a6a5a), Align::Right, 1),
+        }
 
         // ---- tooltip: selected item, then what it would replace ----
         let (tx, mut ty) = (x0 + 410, y0 + 24);
@@ -338,7 +458,7 @@ impl Game {
                     ty += 10;
                 }
                 if let Cell::Bag(_) | Cell::Shop(_) = sel {
-                    if let Some(w) = gear.worn[gear.target(it)].as_ref() {
+                    if let Some(w) = gear.target(it).and_then(|t| gear.worn[t].as_ref()) {
                         ty += 6;
                         scr.text("YOU ARE WEARING:", tx, ty, rgb(0x7a6a5a), Align::Left, 1);
                         ty += 11;
@@ -377,7 +497,7 @@ impl Game {
             hy = sy0 + 2 * CELL + 4;
             scr.text("ENTER/A BUYS FROM GERTA. X SELLS YOURS.", bx0, hy, rgb(0x6a5a4a), Align::Left, 1);
             hy = 10_000;
-        } else if in_town {
+        } else if in_town && !jewel {
             scr.text("STASH", bx0, hy, rgb(0xd8b878), Align::Left, 1);
             scr.text("Y / E: BAG <-> STASH", bx0 + BAG_COLS as i32 * CELL - 2, hy, rgb(0x6a5a4a), Align::Right, 1);
             let sy0 = hy + 12;
@@ -394,9 +514,28 @@ impl Game {
             }
             hy = 10_000;
         }
+        if jewel {
+            let lines = [
+                "CHOOSE AN ITEM:".to_string(),
+                "WITH GEMS: I TAKE THEM OUT, UNHARMED.".to_string(),
+                "PLAIN WHITE GEAR: I CUT 1-3 SOCKETS IN IT.".to_string(),
+                match self.sel_item(sel) {
+                    Some(it) if !it.gems.is_empty() => format!("THIS: {} GOLD TO TAKE THE GEMS OUT", items::unsocket_cost(it)),
+                    Some(it) if it.rarity == Rarity::Normal && it.sockets == 0 && items::max_sockets(it.slot()) > 0 => {
+                        format!("THIS: {} GOLD FOR SOCKETS", items::socket_cost(it))
+                    }
+                    _ => String::new(),
+                },
+            ];
+            for (k, l) in lines.iter().enumerate() {
+                let col = if k == 3 { rgb(0xe8c050) } else { rgb(0x9a8a78) };
+                scr.text(l, bx0, hy + k as i32 * 10, col, Align::Left, 1);
+            }
+            hy = 10_000;
+        }
         let hints = [
-            "WALK OVER GEAR TO PICK IT UP.",
-            "BLUE: MAGIC  YELLOW: RARE  GOLD: UNIQUE",
+            "WALK OVER GEAR TO PICK IT UP. ENTER/A ON A GEM, THEN AN ITEM, SETS IT.",
+            "BLUE: MAGIC  YELLOW: RARE  GREEN: SET  GOLD: UNIQUE",
             if in_town { "X / RIGHT CLICK SELLS IT." } else { "X / RIGHT CLICK DROPS. SELL IN TOWN." },
         ];
         for h in hints {
@@ -411,7 +550,11 @@ impl Game {
         let by = y0 + ph - 22;
         let mut bx = x0 + 10;
         let has = self.sel_item(sel).is_some();
+        let is_gem = self.sel_item(sel).map_or(false, |it| it.gem().is_some());
         let use_label = match sel {
+            Cell::Bag(_) | Cell::Worn(_) if holding.is_some() => "SET GEM HERE (ENTER/A)",
+            Cell::Bag(_) | Cell::Worn(_) if jewel => "JEWELER (ENTER/A)",
+            Cell::Bag(_) if is_gem => "SET IN GEAR (ENTER/A)",
             Cell::Worn(_) => "TAKE OFF (ENTER/A)",
             Cell::Bag(_) => "WEAR (ENTER/A)",
             Cell::Shop(_) => "BUY (ENTER/A)",
@@ -419,7 +562,7 @@ impl Game {
         };
         let toss_label = if matches!(sel, Cell::Shop(_)) { "BUY (X)" } else if in_town { "SELL (X)" } else { "DROP (X)" };
         let mut buttons: Vec<(&str, InvAct, bool)> = vec![(use_label, InvAct::Use, has), (toss_label, InvAct::Toss, has)];
-        if in_town && !shop && !matches!(sel, Cell::Stash(_)) {
+        if in_town && !shop && !jewel && !matches!(sel, Cell::Stash(_)) {
             buttons.push(("STASH (Y/E)", InvAct::Store, has));
         }
         buttons.push(("CLOSE (I/START)", InvAct::Close, true));
@@ -441,6 +584,7 @@ fn cell_box(scr: &mut Screen, x: i32, y: i32, s: i32, selected: bool, it: Option
         Some(Rarity::Magic) => rgb(0x141a2e),
         Some(Rarity::Rare) => rgb(0x26240e),
         Some(Rarity::Unique) => rgb(0x2a1e0e),
+        Some(Rarity::Set) => rgb(0x0e2612),
         _ => rgb(0x161210),
     };
     scr.fill(x, y, s, s, bg);
@@ -463,8 +607,10 @@ fn tooltip(scr: &mut Screen, it: &Item, x: i32, mut y: i32, wrap_at: usize, clvl
             } else {
                 rgb(0x9a8a78)
             }
-        } else if line == it.base().name {
+        } else if line == it.base().name || line.starts_with("  ") {
             rgb(0x9a8a78)
+        } else if line.starts_with('(') || line.contains(" SET (") {
+            rgb(items::rarity_col(Rarity::Set))
         } else {
             rgb(0x8098ff)
         };
@@ -484,14 +630,52 @@ pub fn draw_icon(scr: &mut Screen, art: &Art, it: &Item, cx: i32, cy: i32, scale
         _ => None,
     };
     let fx = Fx { tint: tint.unwrap_or(BLACK), tint_a: if tint.is_some() { 0.12 } else { 0.0 }, ..Fx::default() };
+    // One icon per gem kind: better grades draw bigger.
+    let scale = it.gem().map_or(scale, |g| scale * (0.55 + g.grade as f32 * 0.1));
     if let Some(s) = art.item(it.base().icon) {
         let (w, h) = ((s.w as f32 * scale) as i32, (s.h as f32 * scale) as i32);
         // Icons are anchored at their feet: offset so they sit centred.
         scr.blit_scaled(s, cx, cy + h / 2, scale, fx);
         let _ = w;
+    } else if let Some(g) = it.gem() {
+        gem_icon(scr, g, cx, cy, scale);
+    } else {
+        fallback_icon(scr, it.slot(), cx, cy, scale, it.rarity);
+    }
+    // Sockets: a row of dots along the bottom, filled with their gems' colours.
+    let n = it.sockets as i32;
+    for k in 0..n {
+        let x = cx - (n - 1) * 3 + k * 6;
+        let y = cy + (9.0 * scale) as i32;
+        scr.disc(x, y, 2, rgb(0x080606));
+        match it.gems.get(k as usize) {
+            Some(g) => scr.disc(x, y, 1, rgb(items::gem_col(g.kind))),
+            None => scr.pset(x, y, rgb(0x5a4a3a)),
+        }
+    }
+}
+
+/// A cut gem: bigger and brighter the better its grade (a skull for skulls).
+fn gem_icon(scr: &mut Screen, g: items::Gem, cx: i32, cy: i32, scale: f32) {
+    let r = ((3.0 + g.grade as f32 * 1.2) * scale).round() as i32;
+    let col = items::gem_col(g.kind);
+    if g.kind == 6 {
+        scr.disc(cx, cy - 1, r, rgb(col));
+        scr.fill(cx - r / 2, cy + r - 2, r, r / 2 + 1, rgb(col));
+        scr.disc(cx - r / 3 - 1, cy - 1, (r / 4).max(1), rgb(0x100808));
+        scr.disc(cx + r / 3 + 1, cy - 1, (r / 4).max(1), rgb(0x100808));
         return;
     }
-    fallback_icon(scr, it.slot(), cx, cy, scale, it.rarity);
+    // A diamond shape with a lit upper facet.
+    for dy in -r..=r {
+        let w = r - dy.abs();
+        scr.fill(cx - w, cy + dy, w * 2 + 1, 1, rgb(col));
+    }
+    for dy in -r..0 {
+        let w = (r - dy.abs()) / 2;
+        scr.fill(cx - w - r / 3, cy + dy, w.max(1), 1, rgb(0xffffff));
+    }
+    scr.pset(cx + r / 3, cy + r / 3, rgb(0x101010));
 }
 
 fn fallback_icon(scr: &mut Screen, slot: Slot, cx: i32, cy: i32, scale: f32, rarity: Rarity) {
@@ -501,8 +685,10 @@ fn fallback_icon(scr: &mut Screen, slot: Slot, cx: i32, cy: i32, scale: f32, rar
         Rarity::Magic => rgb(0x5070ff),
         Rarity::Rare => rgb(0xf0e060),
         Rarity::Unique => rgb(0xffa030),
+        Rarity::Set => rgb(0x40d040),
     };
     match slot {
+        Slot::Gem => scr.disc(cx, cy, k(5), gem),
         Slot::Weapon => {
             for i in -k(9)..=k(9) {
                 scr.fill(cx + i, cy - i, 2, 2, rgb(0x6a4424));

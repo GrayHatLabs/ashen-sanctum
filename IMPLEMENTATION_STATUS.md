@@ -127,6 +127,15 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Title screen (painted background, logo, embers), character select (8 hero slots, portraits, delete with confirm), class select (3 cards, Inventor "coming soon"), naming (typed or random), options (music, controls) | H S | `menu.rs`; unit tests for the flow and hero files; test flags (--new, --act2, --vampire, --level) skip it |
 | One save per hero (`heroes/<slot>.txt`, `name=` line); old save.txt migrates; Esc saves and returns to the heroes | H | |
 
+## Sets, gems and jewelers (2026-10-06)
+
+| Feature | Status | Notes |
+|---|---|---|
+| Set items (green): 7 hero sets + 3 shared, bonuses at 2/3/4 pieces, half of set drops from your hero's set | H S | Unit test: bonuses grow with pieces, save/load |
+| Gems: 7 kinds x 5 grades, weapon/armor/jewelry bonuses; sockets on white/blue drops; gem drops (4%, bosses always) | H S | Unit tests: socket, combine, save; boss loot test |
+| Jeweler in each town: join gems, cut sockets in white gear, take gems out (gold) | H S | Unit test talks to all four, joins, cuts, sets, empties |
+| Art: jeweler sprites and gem icons generating; code-drawn stand-ins meanwhile | S | `tools/jeweler_art.py`, `tools/items_art.py` |
+
 ## The Druid class (2026-10-06)
 
 | Feature | Status | Notes |

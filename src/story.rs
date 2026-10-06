@@ -31,7 +31,12 @@ pub enum Role {
     /// Brother Piston: oils, mends and resets skills.
     Oiler,
     Servant(u8),
+    /// The jeweler in each town (by act): joins gems, adds and empties sockets.
+    Jeweler(u8),
 }
+
+/// Jeweler names by act.
+pub const JEWELERS: [&str; 4] = ["MASTER ODO", "INGRID STONEHAND", "SILAS GREAVE", "THE LAPIDARY"];
 
 
 pub struct Npc {
@@ -209,6 +214,10 @@ pub enum Act {
     Shop,
     /// After the Ash King: start the next difficulty.
     NextDifficulty,
+    /// The jeweler joins every three alike gems in your bag.
+    Combine,
+    /// The jeweler's bench: opens the inventory to add sockets or take gems out.
+    Jewel,
 }
 
 pub struct Dialog {
@@ -494,6 +503,21 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
                 "THE WOLVES HERE ARE NOT WOLVES. THEY WALK ON TWO LEGS WHEN THE MOON IS UP.",
             ];
             Dialog::new("PEASANT", &[lines[k as usize % 3]])
+        }
+        Role::Jeweler(k) => {
+            let greet = [
+                "ODO'S GEMS, CUT AND SET. BRING ME THREE ALIKE AND I'LL MAKE YOU ONE WORTH HAVING.",
+                "STONES FROM UNDER THE ICE ARE CLEAR AS WATER. I CAN SET THEM, JOIN THEM, OR PRISE THEM LOOSE AGAIN.",
+                "THE DEAD WERE BURIED WITH THEIR JEWELS. SOMEONE MAY AS WELL WEAR THEM. I CUT, I SET, I DON'T ASK.",
+                "FACETS ARE ONLY ANGLES. ANGLES I UNDERSTAND. THREE STONES IN, ONE BETTER STONE OUT.",
+            ];
+            let mut d = Dialog::new(JEWELERS[k as usize % 4], &[greet[k as usize % 4]]);
+            d.options = vec![
+                ("JOIN MY GEMS (3 ALIKE MAKE 1 BETTER)".into(), Act::Combine),
+                ("SOCKETS: ADD THEM, OR TAKE GEMS OUT".into(), Act::Jewel),
+                ("LEAVE".into(), Act::Close),
+            ];
+            d
         }
         Role::Trader => {
             let mut d = Dialog::new("OLD SIGURD", &["FURS, FOOD, AND STEEL THAT DOESN'T SHATTER IN THE COLD. SOUTHERN GOLD SPENDS THE SAME UP HERE."]);

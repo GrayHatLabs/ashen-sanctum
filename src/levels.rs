@@ -289,7 +289,7 @@ fn portal_kind(s: &str) -> Option<PortalKind> {
 }
 
 /// NPC kinds: file name, role, display name, art.
-const NPCS: [(&str, Role, &str, &str); 26] = [
+const NPCS: [(&str, Role, &str, &str); 30] = [
     ("elder", Role::Elder, "ELDER MAREN", "npc_elder"),
     ("merchant", Role::Merchant, "GERTA", "npc_merchant"),
     ("healer", Role::Healer, "BROTHER ALDRIC", "npc_healer"),
@@ -316,6 +316,10 @@ const NPCS: [(&str, Role, &str, &str); 26] = [
     ("servant0", Role::Servant(0), "SERVANT", "npc_servant"),
     ("servant1", Role::Servant(1), "SERVANT", "npc_servant"),
     ("servant2", Role::Servant(2), "SERVANT", "npc_servant"),
+    ("jeweler0", Role::Jeweler(0), "MASTER ODO", "npc_jeweler0"),
+    ("jeweler1", Role::Jeweler(1), "INGRID STONEHAND", "npc_jeweler1"),
+    ("jeweler2", Role::Jeweler(2), "SILAS GREAVE", "npc_jeweler2"),
+    ("jeweler3", Role::Jeweler(3), "THE LAPIDARY", "npc_jeweler3"),
 ];
 
 fn item_name(d: &Drop) -> Option<String> {

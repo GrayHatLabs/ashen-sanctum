@@ -41,6 +41,8 @@ const STARVE_DPS: f32 = 1.2;
 pub const FOODS: [(&str, f32, f32); 3] = [("APPLE", 20.0, 0.0), ("BREAD", 35.0, 0.0), ("ROAST", 60.0, 10.0)];
 /// Chance a normal monster drops a piece of equipment.
 pub const ITEM_DROP: f32 = 0.1;
+/// Chance a common monster drops a gem.
+pub const GEM_DROP: f32 = 0.04;
 /// Talking range to people in town.
 const TALK_RANGE: f32 = 1.8;
 
@@ -392,6 +394,8 @@ impl Player {
                 name: "ARCHIVE KEY".into(),
                 stats: vec![],
                 req: 1,
+                sockets: 0,
+                gems: vec![],
             };
             let slot = crate::items::WORN.iter().position(|s| *s == crate::items::Slot::Amulet).unwrap();
             self.gear.worn[slot] = Some(amulet);
@@ -410,6 +414,8 @@ impl Player {
                 name: "WOLF-FUR HIDES".into(),
                 stats: vec![(crate::items::Stat::Armor, 8), (crate::items::Stat::Life, 10)],
                 req: 1,
+                sockets: 0,
+                gems: vec![],
             };
             let slot = crate::items::WORN.iter().position(|s| *s == crate::items::Slot::Armor).unwrap();
             self.gear.worn[slot] = Some(armor);
@@ -428,6 +434,8 @@ impl Player {
                 name: "NORTHERN LEATHERS".into(),
                 stats: vec![(crate::items::Stat::Armor, 12)],
                 req: 1,
+                sockets: 0,
+                gems: vec![],
             };
             let slot = crate::items::WORN.iter().position(|s| *s == crate::items::Slot::Armor).unwrap();
             self.gear.worn[slot] = Some(armor);
@@ -445,6 +453,8 @@ impl Player {
                 name: "BRASS RING".into(),
                 stats: vec![],
                 req: 1,
+                sockets: 0,
+                gems: vec![],
             };
             self.gear.worn[6] = Some(ring);
             self.recalc();
@@ -459,6 +469,8 @@ impl Player {
                 name: "AMULET".into(),
                 stats: vec![],
                 req: 1,
+                sockets: 0,
+                gems: vec![],
             };
             self.gear.worn[8] = Some(amulet);
             self.recalc();
@@ -471,6 +483,8 @@ impl Player {
             name: "GNARLED STAFF".into(),
             stats: vec![(crate::items::Stat::Fire, 5)],
             req: 1,
+            sockets: 0,
+            gems: vec![],
         };
         self.gear.worn[0] = Some(staff);
         self.recalc();
@@ -1703,6 +1717,11 @@ impl Game {
                 self.dialog = None;
                 self.next_difficulty();
             }
+            Some(Act::Combine) => self.combine_gems(),
+            Some(Act::Jewel) => {
+                self.open_inventory();
+                self.inv.as_mut().unwrap().jewel = true;
+            }
             Some(Act::Shop) => {
                 if self.shop_stale || self.shop_stock.is_empty() {
                     self.restock();
@@ -1724,6 +1743,30 @@ impl Game {
             }
             None => {}
         }
+    }
+
+    /// The jeweler joins every three alike gems you carry, while your gold lasts.
+    fn combine_gems(&mut self) {
+        let (mut made, mut spent, mut short) = (vec![], 0, false);
+        while let Some(up) = self.p.gear.next_combine() {
+            let cost = crate::items::combine_cost(up);
+            if self.p.gold < cost {
+                short = true;
+                break;
+            }
+            self.p.gold -= cost;
+            spent += cost;
+            self.p.gear.combine_one();
+            made.push(up);
+        }
+        if made.is_empty() {
+            self.say(if short { "NOT ENOUGH GOLD".into() } else { "YOU NEED THREE GEMS OF ONE KIND AND GRADE".into() });
+            return;
+        }
+        self.sfx.push(Sfx::Pickup);
+        let last = crate::items::gem_name(*made.last().unwrap());
+        self.say(if made.len() == 1 { format!("MADE A {last} FOR {spent} GOLD") } else { format!("MADE {} GEMS FOR {spent} GOLD", made.len()) });
+        self.save_due = true;
     }
 
     fn advance_quest(&mut self, stage: u8) {
@@ -2821,6 +2864,28 @@ impl Game {
             for _ in 0..n {
                 if self.rng.chance(chance) {
                     drops.push(items::drop(ilvl + boost as u8, mf, boost, &mut self.rng));
+                }
+            }
+        }
+        // Gems: now and then from anyone, always from a boss.
+        let gem_chance = if boss {
+            1.0
+        } else {
+            match rank {
+                Rank::Normal | Rank::Minion => GEM_DROP,
+                Rank::Champion => 0.15,
+                Rank::Elite => 0.3,
+            }
+        };
+        if self.rng.chance(gem_chance) {
+            drops.push(items::gem_item(items::roll_gem(ilvl, &mut self.rng)));
+        }
+        // Half of all set drops are from your own hero's set.
+        let hero = self.p.skills.class.name();
+        for it in drops.iter_mut() {
+            if it.rarity == items::Rarity::Set && self.rng.chance(0.5) {
+                if let Some(mine) = items::hero_set_piece(hero, ilvl, &mut self.rng) {
+                    *it = mine;
                 }
             }
         }
@@ -4604,7 +4669,7 @@ mod tests {
             drops += g.pickups.iter().filter(|k| matches!(k.kind, Drop::Item(_))).count();
         }
         assert!((20..70).contains(&drops), "{drops} drops in 400 kills");
-        // Bosses drop their unique and two magic-or-better items.
+        // Bosses drop their unique and two magic-or-better items...
         g.pickups.clear();
         let m = Mob::new(Kind::BoneWarden, g.p.x + 3.0, g.p.y, 1.0, &mut g.rng);
         g.mobs.push(m);
@@ -4612,9 +4677,11 @@ mod tests {
         g.mobs[i].boss = true;
         g.kill(i);
         let loot: Vec<_> = g.pickups.iter().filter_map(|k| if let Drop::Item(it) = &k.kind { Some(it.clone()) } else { None }).collect();
-        assert_eq!(loot.len(), 3);
+        // ...and a gem.
+        assert_eq!(loot.len(), 4);
         assert!(loot.iter().any(|it| it.name == "MARROWGRIP"));
-        assert!(loot.iter().all(|it| it.rarity >= Rarity::Magic));
+        assert_eq!(loot.iter().filter(|it| it.gem().is_some()).count(), 1);
+        assert!(loot.iter().filter(|it| it.gem().is_none()).all(|it| it.rarity >= Rarity::Magic));
         // Walking over gear picks it up; a full bag leaves it on the floor.
         g.pickups.clear();
         g.state = State::Playing;
@@ -4673,6 +4740,69 @@ mod tests {
             g.update(&Input::default());
         }
         assert!(g.p.hp < hp, "standing in the burst hurts");
+    }
+
+    #[test]
+    fn every_town_has_a_jeweler_who_joins_cuts_and_sets_gems() {
+        use crate::inventory::Cell;
+        use crate::items::{gem_item, Gem, Rarity};
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        for (k, id) in [LevelId::Overworld, LevelId::Frostmarch, LevelId::Mistwood, LevelId::Mechanus].into_iter().enumerate() {
+            g.debug_goto(id);
+            let n = g.npcs.iter().find(|n| n.role == Role::Jeweler(k as u8)).expect("a jeweler in town");
+            assert!(!g.d.blocked(n.x, n.y, 0.3), "the jeweler stands on open ground in act {}", k + 1);
+            assert!(g.in_safe(n.x, n.y));
+        }
+        g.debug_goto(LevelId::Overworld);
+        g.p.gold = 1000;
+        g.p.gear = crate::items::Gear::default();
+        for _ in 0..3 {
+            g.p.gear.add(gem_item(Gem { kind: 0, grade: 1 })).unwrap();
+        }
+        let mut staff = crate::items::roll_base(crate::items::base_by_key("gnarled").unwrap(), 3, Rarity::Normal, &mut g.rng);
+        staff.sockets = 0;
+        g.p.gear.bag[5] = Some(staff);
+        let pick = |g: &mut Game, a: Act| {
+            assert!(g.debug_talk(Role::Jeweler(0)));
+            let k = g.dialog.as_ref().unwrap().options.iter().position(|o| o.1 == a).unwrap();
+            g.dialog.as_mut().unwrap().sel = k;
+            g.update(&Input { confirm: true, ..Input::default() });
+            g.update(&Input::default());
+        };
+        // Three chipped rubies make a flawed one, for a fee.
+        pick(&mut g, Act::Combine);
+        assert_eq!(g.p.gold, 1000 - crate::items::combine_cost(Gem { kind: 0, grade: 2 }));
+        let gi = g.p.gear.bag.iter().position(|c| c.as_ref().and_then(|i| i.gem()) == Some(Gem { kind: 0, grade: 2 })).expect("a flawed ruby");
+        g.dialog = None;
+        // The bench cuts sockets in the plain staff.
+        pick(&mut g, Act::Jewel);
+        assert!(g.inv.as_ref().map_or(false, |u| u.jewel));
+        g.inv.as_mut().unwrap().sel = Cell::Bag(5);
+        g.update(&Input { confirm: true, ..Input::default() });
+        g.update(&Input::default());
+        let s = g.p.gear.bag[5].as_ref().unwrap().sockets;
+        assert!((1..=3).contains(&s), "sockets cut: {s}");
+        g.inv = None;
+        // Pick up the gem, then the staff: the gem goes in.
+        g.open_inventory();
+        g.inv.as_mut().unwrap().sel = Cell::Bag(gi);
+        g.update(&Input { confirm: true, ..Input::default() });
+        g.update(&Input::default());
+        assert_eq!(g.inv.as_ref().unwrap().holding, Some(gi));
+        g.inv.as_mut().unwrap().sel = Cell::Bag(5);
+        g.update(&Input { confirm: true, ..Input::default() });
+        g.update(&Input::default());
+        assert!(g.p.gear.bag[gi].is_none());
+        assert_eq!(g.p.gear.bag[5].as_ref().unwrap().gems, vec![Gem { kind: 0, grade: 2 }]);
+        // And the jeweler takes it back out.
+        g.inv = None;
+        let gold = g.p.gold;
+        pick(&mut g, Act::Jewel);
+        g.inv.as_mut().unwrap().sel = Cell::Bag(5);
+        g.update(&Input { confirm: true, ..Input::default() });
+        assert!(g.p.gear.bag[5].as_ref().unwrap().gems.is_empty());
+        assert_eq!(g.p.gold, gold - 50);
+        assert!(g.p.gear.bag.iter().flatten().any(|i| i.gem() == Some(Gem { kind: 0, grade: 2 })));
     }
 
     #[test]

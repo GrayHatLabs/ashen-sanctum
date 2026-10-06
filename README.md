@@ -174,6 +174,13 @@ take back their Seals, unseal the Sanctum and end the Ash King.
     the item twice). X or right click drops an item, or sells it in Hollowmere.
   - In Hollowmere the inventory also shows your **stash** (30 slots, saved): Y / E moves an item
     between your bag and the stash.
+  - **Set items** (green): one set per hero and three shared sets, 3-4 pieces each. Wearing more
+    pieces of a set adds bonuses. Half of the set items you find are from your own hero's set.
+  - **Gems** (D2 style): ruby, sapphire, topaz, emerald, amethyst, diamond and skull, from chipped to
+    perfect. A gem gives something different in a weapon, armor or jewelry. Some white and blue gear
+    has sockets: choose a gem (Enter / A), then the item.
+  - A **jeweler** in every town joins three alike gems into a better one, cuts sockets in plain
+    white gear, and takes gems back out unharmed, all for gold. See [docs/ITEMS_SETS_GEMS.md](docs/ITEMS_SETS_GEMS.md).
 - **Monsters**: zombies are slow and hit hard, skeletons are fast and fragile, wolves hunt in fast
   packs, goblins panic and flee when one of their own dies, and skeleton archers keep their distance.
   **Champion packs** (blue names, tinted blue) are tougher, with one modifier; **elites** (gold

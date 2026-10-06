@@ -13,6 +13,8 @@ pub enum Slot {
     Belt,
     Ring,
     Amulet,
+    /// Gems go in sockets, never on your body.
+    Gem,
 }
 
 /// Worn slots, in paper-doll order (two rings).
@@ -34,6 +36,7 @@ pub fn slot_name(s: Slot) -> &'static str {
         Slot::Belt => "BELT",
         Slot::Ring => "RING",
         Slot::Amulet => "AMULET",
+        Slot::Gem => "GEM",
     }
 }
 
@@ -43,6 +46,8 @@ pub enum Rarity {
     Magic,
     Rare,
     Unique,
+    /// Part of a set (green): more bonuses the more pieces you wear.
+    Set,
 }
 
 /// Name colour per rarity (D2: white, blue, yellow, gold).
@@ -52,6 +57,7 @@ pub fn rarity_col(r: Rarity) -> u32 {
         Rarity::Magic => 0x7090ff,
         Rarity::Rare => 0xf0e060,
         Rarity::Unique => 0xc89850,
+        Rarity::Set => 0x40d040,
     }
 }
 
@@ -198,6 +204,14 @@ pub static BASES: &[Base] = &[
     b("ring", "RING", Slot::Ring, "icon_ring", 1, None),
     b("amulet", "AMULET", Slot::Amulet, "icon_amulet", 1, None),
     Base { key: "crown", name: "CROWN", slot: Slot::Helm, icon: "icon_helm_crown", lvl: 99, implicit: Some((Stat::Armor, 16, 16)), unique_only: true },
+    // Gems (never rolled as gear; see `gem_item`).
+    Base { key: "gem_ruby", name: "RUBY", slot: Slot::Gem, icon: "icon_gem_ruby", lvl: 99, implicit: None, unique_only: true },
+    Base { key: "gem_sapphire", name: "SAPPHIRE", slot: Slot::Gem, icon: "icon_gem_sapphire", lvl: 99, implicit: None, unique_only: true },
+    Base { key: "gem_topaz", name: "TOPAZ", slot: Slot::Gem, icon: "icon_gem_topaz", lvl: 99, implicit: None, unique_only: true },
+    Base { key: "gem_emerald", name: "EMERALD", slot: Slot::Gem, icon: "icon_gem_emerald", lvl: 99, implicit: None, unique_only: true },
+    Base { key: "gem_amethyst", name: "AMETHYST", slot: Slot::Gem, icon: "icon_gem_amethyst", lvl: 99, implicit: None, unique_only: true },
+    Base { key: "gem_diamond", name: "DIAMOND", slot: Slot::Gem, icon: "icon_gem_diamond", lvl: 99, implicit: None, unique_only: true },
+    Base { key: "gem_skull", name: "SKULL", slot: Slot::Gem, icon: "icon_gem_skull", lvl: 99, implicit: None, unique_only: true },
 ];
 
 pub fn base_by_key(k: &str) -> Option<usize> {
@@ -254,6 +268,7 @@ fn rare_noun(s: Slot) -> &'static [&'static str] {
         Belt => &["COIL", "CORD", "LOCK", "CLASP"],
         Ring => &["BAND", "LOOP", "COIL", "EYE"],
         Amulet => &["HEART", "CHARM", "EYE", "TOKEN"],
+        Gem => &["STONE"],
     }
 }
 
@@ -268,6 +283,282 @@ pub struct Item {
     pub stats: Vec<(Stat, i32)>,
     /// Character level needed to wear it.
     pub req: u32,
+    /// Open and filled sockets (D2 style: gems go in, and give a bonus by the kind of item).
+    pub sockets: u8,
+    pub gems: Vec<Gem>,
+}
+
+// ------------------------------------------------------------------ gems
+
+/// A gem: one of seven kinds, graded chipped (1) to perfect (5).
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct Gem {
+    pub kind: u8,
+    pub grade: u8,
+}
+
+pub const GEM_KINDS: [&str; 7] = ["RUBY", "SAPPHIRE", "TOPAZ", "EMERALD", "AMETHYST", "DIAMOND", "SKULL"];
+const GEM_KEYS: [&str; 7] = ["gem_ruby", "gem_sapphire", "gem_topaz", "gem_emerald", "gem_amethyst", "gem_diamond", "gem_skull"];
+pub const GEM_GRADES: [&str; 5] = ["CHIPPED", "FLAWED", "", "FLAWLESS", "PERFECT"];
+pub const TOP_GRADE: u8 = 5;
+
+pub fn gem_col(kind: u8) -> u32 {
+    [0xe02030, 0x3060f0, 0xf0c020, 0x20c050, 0xa040e0, 0xf0f0ff, 0xd8d0b8][kind as usize % 7]
+}
+
+pub fn gem_name(g: Gem) -> String {
+    let k = GEM_KINDS[g.kind as usize % 7];
+    match GEM_GRADES[(g.grade.clamp(1, TOP_GRADE) - 1) as usize] {
+        "" => k.to_string(),
+        q => format!("{q} {k}"),
+    }
+}
+
+/// Where a gem sits decides what it gives: 0 weapon, 1 armor (helm, body, gloves, boots, belt), 2 jewelry.
+fn gem_group(s: Slot) -> usize {
+    match s {
+        Weapon => 0,
+        Ring | Amulet => 2,
+        _ => 1,
+    }
+}
+
+/// (stat, value per grade) for each kind in a weapon / armor / jewelry.
+type GemLine = &'static [(Stat, [i32; 5])];
+static GEM_TABLE: [[GemLine; 3]; 7] = [
+    // Ruby: damage, life, life after kills.
+    [&[(Stat::Fire, [4, 6, 9, 12, 16])], &[(Stat::Life, [6, 10, 15, 22, 30])], &[(Stat::LifeOnKill, [1, 1, 2, 3, 4])]],
+    // Sapphire: mana.
+    [&[(Stat::ManaOnKill, [1, 1, 2, 3, 4])], &[(Stat::Mana, [6, 10, 15, 22, 30])], &[(Stat::ManaRegen, [5, 8, 12, 16, 20])]],
+    // Topaz: treasure.
+    [&[(Stat::Gold, [8, 12, 18, 25, 35])], &[(Stat::Magic, [5, 8, 12, 18, 24])], &[(Stat::Gold, [10, 15, 22, 30, 40])]],
+    // Emerald: speed.
+    [&[(Stat::Cast, [3, 4, 6, 8, 10])], &[(Stat::Stamina, [8, 12, 18, 25, 35])], &[(Stat::Move, [2, 3, 5, 7, 9])]],
+    // Amethyst: toughness.
+    [&[(Stat::Life, [5, 8, 12, 16, 20])], &[(Stat::Armor, [3, 5, 8, 12, 16])], &[(Stat::Hunger, [8, 12, 18, 25, 30])]],
+    // Diamond: a little of everything.
+    [&[(Stat::ManaRegen, [5, 8, 12, 16, 20])], &[(Stat::Armor, [2, 3, 5, 7, 10]), (Stat::Life, [2, 3, 5, 7, 10])], &[(Stat::Magic, [3, 5, 8, 11, 15])]],
+    // Skull: life and mana together.
+    [
+        &[(Stat::LifeOnKill, [1, 1, 1, 2, 2]), (Stat::ManaOnKill, [1, 1, 1, 2, 2])],
+        &[(Stat::LifeRegen, [1, 1, 1, 2, 2]), (Stat::ManaRegen, [3, 5, 7, 10, 12])],
+        &[(Stat::Life, [3, 5, 8, 11, 15]), (Stat::Mana, [3, 5, 8, 11, 15])],
+    ],
+];
+
+/// What a gem gives set in an item of this slot.
+pub fn gem_stats(g: Gem, slot: Slot) -> Vec<(Stat, i32)> {
+    let gi = (g.grade.clamp(1, TOP_GRADE) - 1) as usize;
+    GEM_TABLE[g.kind as usize % 7][gem_group(slot)].iter().map(|(s, v)| (*s, v[gi])).collect()
+}
+
+/// A loose gem, as a bag item.
+pub fn gem_item(g: Gem) -> Item {
+    let base = base_by_key(GEM_KEYS[g.kind as usize % 7]).expect("gem base");
+    Item { base, rarity: Rarity::Normal, ilvl: g.grade, name: gem_name(g), stats: vec![], req: 1, sockets: 0, gems: vec![] }
+}
+
+/// A gem dropped by a monster of this item level: better gems deeper in.
+pub fn roll_gem(ilvl: u8, rng: &mut Rng) -> Gem {
+    let mut grade = 1 + ilvl / 9;
+    if rng.chance(0.25) {
+        grade += 1;
+    }
+    Gem { kind: rng.range(0, 7) as u8, grade: grade.clamp(1, TOP_GRADE - 1) }
+}
+
+/// What a jeweler charges to make this gem from three of the grade below.
+pub fn combine_cost(up: Gem) -> i32 {
+    [0, 30, 80, 200, 500][(up.grade.clamp(1, TOP_GRADE) - 1) as usize]
+}
+
+/// What a jeweler charges to cut sockets in a plain item.
+pub fn socket_cost(it: &Item) -> i32 {
+    60 + it.ilvl as i32 * 15
+}
+
+/// What a jeweler charges to prise the gems out of an item, unharmed.
+pub fn unsocket_cost(it: &Item) -> i32 {
+    it.gems.iter().map(|g| g.grade as i32 * 25).sum()
+}
+
+/// Most sockets an item of this slot can have.
+pub fn max_sockets(s: Slot) -> u8 {
+    match s {
+        Weapon | Armor => 3,
+        Helm => 2,
+        Gem => 0,
+        _ => 1,
+    }
+}
+
+// ------------------------------------------------------------------ sets
+
+pub struct SetPiece {
+    pub name: &'static str,
+    pub base: &'static str,
+    pub stats: &'static [(Stat, i32)],
+}
+
+pub struct SetDef {
+    pub name: &'static str,
+    /// The hero it was made for (None: a shared set). Anyone may wear it.
+    pub hero: Option<&'static str>,
+    pub req: u32,
+    pub pieces: &'static [SetPiece],
+    /// Bonuses for wearing at least this many pieces.
+    pub bonus: &'static [(u8, &'static [(Stat, i32)])],
+}
+
+const fn sp(name: &'static str, base: &'static str, stats: &'static [(Stat, i32)]) -> SetPiece {
+    SetPiece { name, base, stats }
+}
+
+pub static SETS: &[SetDef] = &[
+    SetDef {
+        name: "EMBERWEAVE",
+        hero: Some("SORCERESS"),
+        req: 12,
+        pieces: &[
+            sp("EMBERWEAVE SPIRE", "runed", &[(Stat::Fire, 20), (Stat::Mana, 20)]),
+            sp("EMBERWEAVE CIRCLET", "circlet", &[(Stat::Armor, 6), (Stat::ManaRegen, 25)]),
+            sp("EMBERWEAVE ROBE", "robe", &[(Stat::Armor, 12), (Stat::Life, 20)]),
+            sp("EMBERWEAVE SASH", "sash", &[(Stat::Armor, 3), (Stat::Cast, 10)]),
+        ],
+        bonus: &[(2, &[(Stat::Fire, 15)]), (3, &[(Stat::Cast, 15), (Stat::Mana, 30)]), (4, &[(Stat::Skills, 1), (Stat::Fire, 25)])],
+    },
+    SetDef {
+        name: "NIGHTBLOOD",
+        hero: Some("VAMPIRE"),
+        req: 14,
+        pieces: &[
+            sp("NIGHTBLOOD COWL", "hood", &[(Stat::Armor, 6), (Stat::LifeOnKill, 3)]),
+            sp("NIGHTBLOOD SHROUD", "leather", &[(Stat::Armor, 16), (Stat::Life, 25)]),
+            sp("NIGHTBLOOD TALONS", "gauntlets", &[(Stat::Armor, 6), (Stat::Fire, 12)]),
+            sp("NIGHTBLOOD SIGNET", "ring", &[(Stat::LifeOnKill, 3), (Stat::ManaOnKill, 2)]),
+        ],
+        bonus: &[(2, &[(Stat::LifeOnKill, 4)]), (3, &[(Stat::Life, 40)]), (4, &[(Stat::Skills, 1), (Stat::LifeRegen, 4)])],
+    },
+    SetDef {
+        name: "BRASSWORK",
+        hero: Some("INVENTOR"),
+        req: 14,
+        pieces: &[
+            sp("BRASSWORK GOGGLES", "horned", &[(Stat::Armor, 12), (Stat::Magic, 15)]),
+            sp("BRASSWORK GRIPS", "gauntlets", &[(Stat::Armor, 6), (Stat::Cast, 10)]),
+            sp("BRASSWORK TREADS", "iboots", &[(Stat::Armor, 6), (Stat::Move, 12)]),
+            sp("BRASSWORK MAINSPRING", "amulet", &[(Stat::Mana, 30), (Stat::ManaRegen, 20)]),
+        ],
+        bonus: &[(2, &[(Stat::Cast, 10)]), (3, &[(Stat::Fire, 25), (Stat::Gold, 30)]), (4, &[(Stat::Skills, 1), (Stat::Mana, 40)])],
+    },
+    SetDef {
+        name: "OATHSWORN",
+        hero: Some("VALKYRIE"),
+        req: 16,
+        pieces: &[
+            sp("OATHSWORN WINGHELM", "horned", &[(Stat::Armor, 14), (Stat::Life, 20)]),
+            sp("OATHSWORN MAIL", "chain", &[(Stat::Armor, 28), (Stat::LifeRegen, 3)]),
+            sp("OATHSWORN GREAVES", "iboots", &[(Stat::Armor, 8), (Stat::Stamina, 40)]),
+        ],
+        bonus: &[(2, &[(Stat::Armor, 25), (Stat::Life, 30)]), (3, &[(Stat::Skills, 1), (Stat::Fire, 30)])],
+    },
+    SetDef {
+        name: "BLOODHOWL",
+        hero: Some("BERSERKER"),
+        req: 16,
+        pieces: &[
+            sp("BLOODHOWL MASK", "horned", &[(Stat::Armor, 12), (Stat::LifeOnKill, 4)]),
+            sp("BLOODHOWL HIDE", "leather", &[(Stat::Armor, 18), (Stat::Life, 35)]),
+            sp("BLOODHOWL FISTS", "gauntlets", &[(Stat::Armor, 6), (Stat::Fire, 18)]),
+        ],
+        bonus: &[(2, &[(Stat::LifeOnKill, 6), (Stat::Move, 10)]), (3, &[(Stat::Skills, 1), (Stat::Life, 50)])],
+    },
+    SetDef {
+        name: "GRAVESONG",
+        hero: Some("REAPER"),
+        req: 20,
+        pieces: &[
+            sp("GRAVESONG VEIL", "circlet", &[(Stat::Armor, 8), (Stat::ManaOnKill, 3)]),
+            sp("GRAVESONG GOWN", "robe", &[(Stat::Armor, 14), (Stat::Mana, 35)]),
+            sp("GRAVESONG BAND", "ring", &[(Stat::LifeOnKill, 3), (Stat::Fire, 12)]),
+            sp("GRAVESONG LOCKET", "amulet", &[(Stat::Life, 30), (Stat::ManaRegen, 25)]),
+        ],
+        bonus: &[(2, &[(Stat::ManaOnKill, 4)]), (3, &[(Stat::Fire, 25), (Stat::Cast, 10)]), (4, &[(Stat::Skills, 1), (Stat::Life, 50)])],
+    },
+    SetDef {
+        name: "THORNMOTHER",
+        hero: Some("DRUID"),
+        req: 20,
+        pieces: &[
+            sp("THORNMOTHER CROWN", "circlet", &[(Stat::Armor, 8), (Stat::LifeRegen, 3)]),
+            sp("THORNMOTHER BARK", "leather", &[(Stat::Armor, 18), (Stat::Life, 30)]),
+            sp("THORNMOTHER ROOTS", "cboots", &[(Stat::Armor, 4), (Stat::Move, 12)]),
+            sp("THORNMOTHER VINE", "sash", &[(Stat::Armor, 3), (Stat::Hunger, 35)]),
+        ],
+        bonus: &[(2, &[(Stat::LifeRegen, 3)]), (3, &[(Stat::Mana, 40), (Stat::Fire, 20)]), (4, &[(Stat::Skills, 1), (Stat::Life, 40)])],
+    },
+    // ---- shared sets ----
+    SetDef {
+        name: "WANDERER'S",
+        hero: None,
+        req: 4,
+        pieces: &[
+            sp("WANDERER'S SANDALS", "cboots", &[(Stat::Armor, 3), (Stat::Move, 10)]),
+            sp("WANDERER'S CORD", "sash", &[(Stat::Armor, 2), (Stat::Hunger, 25)]),
+            sp("WANDERER'S MITTS", "cgloves", &[(Stat::Armor, 3), (Stat::Gold, 20)]),
+        ],
+        bonus: &[(2, &[(Stat::Stamina, 40)]), (3, &[(Stat::Life, 20), (Stat::Magic, 20)])],
+    },
+    SetDef {
+        name: "GILDED HAND",
+        hero: None,
+        req: 12,
+        pieces: &[
+            sp("GILDED HAND RING", "ring", &[(Stat::Gold, 30), (Stat::Mana, 15)]),
+            sp("GILDED HAND GLOVES", "gauntlets", &[(Stat::Armor, 6), (Stat::Magic, 15)]),
+            sp("GILDED HAND CHAIN", "amulet", &[(Stat::Gold, 30), (Stat::Life, 20)]),
+        ],
+        bonus: &[(2, &[(Stat::Magic, 25)]), (3, &[(Stat::Gold, 60), (Stat::Magic, 25)])],
+    },
+    SetDef {
+        name: "ASHEN REGALIA",
+        hero: None,
+        req: 30,
+        pieces: &[
+            sp("ASHEN REGALIA SCEPTER", "ember", &[(Stat::Fire, 40), (Stat::Cast, 15)]),
+            sp("ASHEN REGALIA HELM", "horned", &[(Stat::Armor, 16), (Stat::Life, 40)]),
+            sp("ASHEN REGALIA MAIL", "chain", &[(Stat::Armor, 34), (Stat::Mana, 40)]),
+            sp("ASHEN REGALIA TORC", "amulet", &[(Stat::Skills, 1), (Stat::LifeOnKill, 6)]),
+        ],
+        bonus: &[(2, &[(Stat::Life, 50)]), (3, &[(Stat::Fire, 40), (Stat::LifeRegen, 5)]), (4, &[(Stat::Skills, 2), (Stat::Magic, 40)])],
+    },
+];
+
+pub fn set_item(set: usize, piece: usize) -> Item {
+    let d = &SETS[set];
+    let p = &d.pieces[piece];
+    let base = base_by_key(p.base).expect("set base");
+    let ilvl = (d.req as u8).saturating_add(2);
+    let mut stats = vec![];
+    if let Some((s, lo, hi)) = BASES[base].implicit {
+        stats.push((s, (lo + hi) / 2));
+    }
+    stats.extend_from_slice(p.stats);
+    Item { base, rarity: Rarity::Set, ilvl, name: p.name.to_string(), stats, req: d.req, sockets: 0, gems: vec![] }
+}
+
+/// A piece of the set made for this hero that can drop at this item level.
+pub fn hero_set_piece(hero: &str, ilvl: u8, rng: &mut Rng) -> Option<Item> {
+    let si = SETS.iter().position(|d| d.hero == Some(hero) && d.req <= ilvl as u32 + 3)?;
+    Some(set_item(si, rng.range(0, SETS[si].pieces.len() as i32) as usize))
+}
+
+/// The set an item belongs to (by name).
+pub fn set_of(it: &Item) -> Option<usize> {
+    if it.rarity != Rarity::Set {
+        return None;
+    }
+    SETS.iter().position(|d| d.pieces.iter().any(|p| p.name == it.name))
 }
 
 impl Item {
@@ -280,8 +571,22 @@ impl Item {
     pub fn col(&self) -> u32 {
         rarity_col(self.rarity)
     }
+    /// A stat's total, gems included.
     pub fn stat(&self, s: Stat) -> i32 {
-        self.stats.iter().filter(|(t, _)| *t == s).map(|(_, v)| *v).sum()
+        self.all_stats().iter().filter(|(t, _)| *t == s).map(|(_, v)| *v).sum()
+    }
+    /// Its own stats plus whatever its gems give.
+    pub fn all_stats(&self) -> Vec<(Stat, i32)> {
+        let mut v = self.stats.clone();
+        for g in &self.gems {
+            v.extend(gem_stats(*g, self.slot()));
+        }
+        v
+    }
+    /// The gem this item is, if it's a loose gem.
+    pub fn gem(&self) -> Option<Gem> {
+        let k = GEM_KEYS.iter().position(|k| *k == self.base().key)?;
+        Some(Gem { kind: k as u8, grade: self.ilvl.clamp(1, TOP_GRADE) })
     }
     /// What Gerta charges for it.
     pub fn cost(&self) -> i32 {
@@ -290,17 +595,32 @@ impl Item {
 
     /// What Gerta pays for it.
     pub fn price(&self) -> i32 {
+        if let Some(g) = self.gem() {
+            return [10, 25, 60, 140, 320][(g.grade - 1) as usize];
+        }
         let mult = match self.rarity {
             Rarity::Normal => 1,
             Rarity::Magic => 3,
             Rarity::Rare => 6,
+            Rarity::Set => 10,
             Rarity::Unique => 12,
         };
-        (4 + self.ilvl as i32 * 2) * mult
+        (4 + self.ilvl as i32 * 2) * mult + self.gems.iter().map(|g| gem_item(*g).price()).sum::<i32>()
     }
     /// Tooltip lines (after the name).
     pub fn lines(&self) -> Vec<String> {
         let mut v = vec![];
+        if let Some(g) = self.gem() {
+            for (slot, what) in [(Weapon, "WEAPON"), (Armor, "ARMOR"), (Ring, "JEWELRY")] {
+                let st: Vec<String> = gem_stats(g, slot).iter().map(|(s, n)| stat_text(*s, *n)).collect();
+                v.push(format!("{what}: {}", st.join(", ")));
+            }
+            v.push("SET IT IN AN ITEM WITH A FREE SOCKET.".into());
+            if g.grade < TOP_GRADE {
+                v.push("A JEWELER JOINS THREE INTO ONE BETTER GEM.".into());
+            }
+            return v;
+        }
         if self.rarity != Rarity::Normal || self.name != self.base().name {
             v.push(self.base().name.to_string());
         }
@@ -308,6 +628,23 @@ impl Item {
             let n = self.stat(s);
             if n != 0 {
                 v.push(stat_text(s, n));
+            }
+        }
+        if self.sockets > 0 {
+            v.push(format!("SOCKETED ({}/{})", self.gems.len(), self.sockets));
+            for g in &self.gems {
+                v.push(format!("  {}", gem_name(*g)));
+            }
+        }
+        if let Some(si) = set_of(self) {
+            let d = &SETS[si];
+            v.push(format!("{} SET ({} PIECES)", d.name, d.pieces.len()));
+            if let Some(h) = d.hero {
+                v.push(format!("  MADE FOR THE {h}"));
+            }
+            for (n, b) in d.bonus {
+                let st: Vec<String> = b.iter().map(|(s, x)| stat_text(*s, *x)).collect();
+                v.push(format!("({n}) {}", st.join(", ")));
             }
         }
         if self.req > 1 {
@@ -361,7 +698,7 @@ pub fn roll_base(base: usize, ilvl: u8, rarity: Rarity, rng: &mut Rng) -> Item {
         stats.push((s, rng.range(lo, hi + 1)));
     }
     let (np, ns) = match rarity {
-        Rarity::Normal | Rarity::Unique => (0, 0),
+        Rarity::Normal | Rarity::Unique | Rarity::Set => (0, 0),
         Rarity::Magic => {
             let r = rng.f();
             if r < 0.4 {
@@ -399,7 +736,7 @@ pub fn roll_base(base: usize, ilvl: u8, rarity: Rarity, rng: &mut Rng) -> Item {
         }
     }
     let name = match rarity {
-        Rarity::Normal | Rarity::Unique => bd.name.to_string(),
+        Rarity::Normal | Rarity::Unique | Rarity::Set => bd.name.to_string(),
         Rarity::Magic => {
             let mut n = String::new();
             if let Some(p) = pre_name {
@@ -422,7 +759,14 @@ pub fn roll_base(base: usize, ilvl: u8, rarity: Rarity, rng: &mut Rng) -> Item {
         Rarity::Normal => bd.lvl as u32,
         _ => (ilvl as u32).saturating_sub(2).max(bd.lvl as u32).max(1),
     };
-    Item { base, rarity, ilvl, name, stats, req }
+    // White and blue gear sometimes drops with sockets.
+    let max = max_sockets(bd.slot);
+    let sockets = match rarity {
+        Rarity::Normal if max > 0 && rng.chance(0.2) => rng.range(1, max as i32 + 1) as u8,
+        Rarity::Magic if max > 0 && rng.chance(0.08) => rng.range(1, max.min(2) as i32 + 1) as u8,
+        _ => 0,
+    };
+    Item { base, rarity, ilvl, name, stats, req, sockets, gems: vec![] }
 }
 
 /// Rarity of a monster drop. `mf` is your magic-find %; `boost` is 1 for bosses.
@@ -432,6 +776,8 @@ pub fn roll_rarity(mf: i32, boost: bool, rng: &mut Rng) -> Rarity {
     let r = rng.f();
     if r < 0.006 * k * (1.0 + mf / 250.0) {
         Rarity::Unique
+    } else if r < 0.016 * k * (1.0 + mf / 200.0) {
+        Rarity::Set
     } else if r < 0.07 * k * (1.0 + mf / 150.0) {
         Rarity::Rare
     } else if r < 0.36 * k * (1.0 + mf / 100.0) {
@@ -481,7 +827,7 @@ pub static UNIQUES: &[UniqueDef] = &[
 pub fn unique(i: usize) -> Item {
     let u = &UNIQUES[i];
     let base = base_by_key(u.base).expect("unique base");
-    Item { base, rarity: Rarity::Unique, ilvl: u.req as u8 + 2, name: u.name.to_string(), stats: u.stats.to_vec(), req: u.req }
+    Item { base, rarity: Rarity::Unique, ilvl: u.req as u8 + 2, name: u.name.to_string(), stats: u.stats.to_vec(), req: u.req, sockets: 0, gems: vec![] }
 }
 
 pub fn boss_unique(boss: &str) -> Option<Item> {
@@ -497,6 +843,16 @@ pub fn drop(ilvl: u8, mf: i32, boost: bool, rng: &mut Rng) -> Item {
                 roll(ilvl, Rarity::Rare, rng)
             } else {
                 unique(ok[rng.range(0, ok.len() as i32) as usize])
+            }
+        }
+        Rarity::Set => {
+            let ok: Vec<(usize, usize)> =
+                (0..SETS.len()).filter(|&i| SETS[i].req <= ilvl as u32 + 3).flat_map(|i| (0..SETS[i].pieces.len()).map(move |p| (i, p))).collect();
+            if ok.is_empty() {
+                roll(ilvl, Rarity::Rare, rng)
+            } else {
+                let (i, p) = ok[rng.range(0, ok.len() as i32) as usize];
+                set_item(i, p)
             }
         }
         r => roll(ilvl, r, rng),
@@ -522,11 +878,110 @@ impl Gear {
     pub fn bonus(&self) -> Bonus {
         let mut b = Bonus::default();
         for it in self.worn.iter().flatten() {
-            for &(s, v) in &it.stats {
+            for (s, v) in it.all_stats() {
                 b.0[s as usize] += v;
             }
         }
+        for (si, n) in self.sets_worn() {
+            for (need, bonus) in SETS[si].bonus {
+                if n >= *need as usize {
+                    for &(s, v) in *bonus {
+                        b.0[s as usize] += v;
+                    }
+                }
+            }
+        }
         b
+    }
+
+    /// Sets you wear pieces of: (set, how many different pieces).
+    pub fn sets_worn(&self) -> Vec<(usize, usize)> {
+        let mut out: Vec<(usize, usize)> = vec![];
+        let mut names: Vec<&str> = vec![];
+        for it in self.worn.iter().flatten() {
+            let Some(si) = set_of(it) else { continue };
+            if names.contains(&it.name.as_str()) {
+                continue;
+            }
+            names.push(&it.name);
+            match out.iter_mut().find(|o| o.0 == si) {
+                Some(o) => o.1 += 1,
+                None => out.push((si, 1)),
+            }
+        }
+        out
+    }
+
+    fn cell_mut(&mut self, worn: bool, i: usize) -> Option<&mut Item> {
+        if worn {
+            self.worn.get_mut(i)?.as_mut()
+        } else {
+            self.bag.get_mut(i)?.as_mut()
+        }
+    }
+
+    /// Sets the gem in bag cell `gem` into an item (worn or in the bag).
+    pub fn socket(&mut self, gem: usize, worn: bool, i: usize) -> Result<String, String> {
+        let g = self.bag.get(gem).and_then(|c| c.as_ref()).and_then(Item::gem).ok_or_else(|| "THAT IS NOT A GEM".to_string())?;
+        if !worn && i == gem {
+            return Err(String::new());
+        }
+        let it = self.cell_mut(worn, i).ok_or_else(String::new)?;
+        if it.gem().is_some() {
+            return Err("GEMS GO IN GEAR, NOT IN GEMS".into());
+        }
+        if it.gems.len() >= it.sockets as usize {
+            return Err(if it.sockets == 0 { "IT HAS NO SOCKETS. A JEWELER CAN ADD SOME".into() } else { "NO FREE SOCKET".into() });
+        }
+        it.gems.push(g);
+        let name = it.name.clone();
+        self.bag[gem] = None;
+        Ok(format!("{} SET IN {name}", gem_name(g)))
+    }
+
+    /// Takes every gem out of an item and puts them in the bag.
+    pub fn unsocket(&mut self, worn: bool, i: usize) -> Result<usize, String> {
+        let n = self.cell_mut(worn, i).map_or(0, |it| it.gems.len());
+        if n == 0 {
+            return Err("NO GEMS TO TAKE OUT".into());
+        }
+        if self.free() < n {
+            return Err("YOUR BAG IS FULL".into());
+        }
+        let gems = std::mem::take(&mut self.cell_mut(worn, i).unwrap().gems);
+        for g in gems {
+            let _ = self.add(gem_item(g));
+        }
+        Ok(n)
+    }
+
+    /// The gem `combine_one` would make next (three alike, lowest grade first).
+    pub fn next_combine(&self) -> Option<Gem> {
+        let mut best: Option<Gem> = None;
+        for kind in 0..7u8 {
+            for grade in 1..TOP_GRADE {
+                let g = Gem { kind, grade };
+                if self.bag.iter().flatten().filter(|it| it.gem() == Some(g)).count() >= 3 && best.map_or(true, |b| grade < b.grade) {
+                    best = Some(g);
+                }
+            }
+        }
+        best.map(|g| Gem { kind: g.kind, grade: g.grade + 1 })
+    }
+
+    /// Joins three gems of one kind and grade into one of the next grade.
+    pub fn combine_one(&mut self) -> Option<Gem> {
+        let up = self.next_combine()?;
+        let g = Gem { kind: up.kind, grade: up.grade - 1 };
+        let mut left = 3;
+        for c in self.bag.iter_mut() {
+            if left > 0 && c.as_ref().and_then(Item::gem) == Some(g) {
+                *c = None;
+                left -= 1;
+            }
+        }
+        let _ = self.add(gem_item(up));
+        Some(up)
     }
 
     /// Puts an item in the first free bag cell. Gives it back when the bag is full.
@@ -544,26 +999,33 @@ impl Gear {
         self.bag.iter().filter(|c| c.is_none()).count()
     }
 
-    /// The worn slot an item would go to (an empty ring slot first).
-    pub fn target(&self, it: &Item) -> usize {
+    /// The worn slot an item would go to (an empty ring slot first); None for gems.
+    pub fn target(&self, it: &Item) -> Option<usize> {
         let s = it.slot();
         let mut slots = (0..WORN.len()).filter(|&i| WORN[i] == s);
-        let first = slots.next().unwrap();
-        match slots.next() {
+        let first = slots.next()?;
+        Some(match slots.next() {
             Some(second) if self.worn[first].is_some() && self.worn[second].is_none() => second,
             _ => first,
-        }
+        })
     }
 
     /// Wears the item in bag cell `i`, swapping whatever was worn into its place.
     pub fn equip(&mut self, i: usize, clvl: u32) -> Result<(), String> {
         let Some(it) = self.bag[i].take() else { return Err(String::new()) };
+        if it.slot() == Slot::Gem {
+            self.bag[i] = Some(it);
+            return Err("GEMS GO IN SOCKETS".into());
+        }
         if it.req > clvl {
             let why = format!("NEEDS CHAR LEVEL {}", it.req);
             self.bag[i] = Some(it);
             return Err(why);
         }
-        let t = self.target(&it);
+        let Some(t) = self.target(&it) else {
+            self.bag[i] = Some(it);
+            return Err("GEMS GO IN SOCKETS".into());
+        };
         self.bag[i] = self.worn[t].take();
         self.worn[t] = Some(it);
         Ok(())
@@ -585,7 +1047,8 @@ impl Gear {
         let mut s = String::new();
         let enc = |it: &Item| {
             let st: Vec<String> = it.stats.iter().map(|(k, v)| format!("{}:{v}", stat_key(*k))).collect();
-            format!("{}|{}|{}|{}|{}|{}", BASES[it.base].key, it.rarity as u8, it.ilvl, it.req, it.name, st.join(","))
+            let gems: Vec<String> = it.gems.iter().map(|g| format!("{}.{}", g.kind, g.grade)).collect();
+            format!("{}|{}|{}|{}|{}|{}|{};{}", BASES[it.base].key, it.rarity as u8, it.ilvl, it.req, it.name, st.join(","), it.sockets, gems.join(","))
         };
         for (i, it) in self.worn.iter().enumerate() {
             if let Some(it) = it {
@@ -613,6 +1076,7 @@ impl Gear {
                 0 => Rarity::Normal,
                 1 => Rarity::Magic,
                 2 => Rarity::Rare,
+                4 => Rarity::Set,
                 _ => Rarity::Unique,
             };
             let mut stats = vec![];
@@ -621,7 +1085,15 @@ impl Gear {
                 let s = STATS.iter().copied().find(|s| stat_key(*s) == k)?;
                 stats.push((s, n.parse().ok()?));
             }
-            Some(Item { base: base_by_key(f[0])?, rarity, ilvl: f.get(2)?.parse().ok()?, req: f.get(3)?.parse().ok()?, name: f.get(4)?.to_string(), stats })
+            let (mut sockets, mut gems) = (0, vec![]);
+            if let Some((n, gs)) = f.get(6).and_then(|x| x.split_once(';')) {
+                sockets = n.parse().unwrap_or(0);
+                for g in gs.split(',').filter(|p| !p.is_empty()) {
+                    let (k, q) = g.split_once('.')?;
+                    gems.push(Gem { kind: k.parse::<u8>().ok()?.min(6), grade: q.parse::<u8>().ok()?.clamp(1, TOP_GRADE) });
+                }
+            }
+            Some(Item { base: base_by_key(f[0])?, rarity, ilvl: f.get(2)?.parse().ok()?, req: f.get(3)?.parse().ok()?, name: f.get(4)?.to_string(), stats, sockets, gems })
         };
         for line in text.lines() {
             let Some((k, v)) = line.split_once('=') else { continue };
@@ -722,6 +1194,60 @@ mod tests {
         assert_eq!(h.bag, g.bag);
         assert_eq!(h.stash, g.stash);
         assert_eq!(h.bonus(), g.bonus());
+    }
+
+    #[test]
+    fn gems_socket_combine_and_save() {
+        let mut g = Gear::default();
+        let mut rng = Rng::new(4);
+        let mut staff = roll_base(base_by_key("runed").unwrap(), 10, Rarity::Normal, &mut rng);
+        staff.sockets = 2;
+        let fire = staff.stat(Stat::Fire);
+        g.add(staff).unwrap();
+        for _ in 0..3 {
+            g.add(gem_item(Gem { kind: 0, grade: 1 })).unwrap();
+        }
+        assert!(g.equip(1, 30).is_err(), "gems can't be worn");
+        // Three chipped rubies make a flawed one.
+        assert_eq!(g.combine_one(), Some(Gem { kind: 0, grade: 2 }));
+        assert_eq!(g.combine_one(), None);
+        let gi = g.bag.iter().position(|c| c.as_ref().map_or(false, |i| i.gem().is_some())).unwrap();
+        g.socket(gi, false, 0).unwrap();
+        let s = g.bag[0].as_ref().unwrap();
+        assert_eq!(s.stat(Stat::Fire), fire + 6, "a flawed ruby in a weapon: +6% damage");
+        assert_eq!(g.free(), BAG - 1);
+        g.equip(0, 30).unwrap();
+        assert_eq!(g.bonus().get(Stat::Fire), fire + 6);
+        let h = Gear::load_text(&g.save_text());
+        assert_eq!(h.worn, g.worn);
+        // Taking it out gives the gem back.
+        g.unsocket(true, 0).unwrap();
+        assert_eq!(g.bonus().get(Stat::Fire), fire);
+        assert!(g.bag.iter().flatten().any(|i| i.gem() == Some(Gem { kind: 0, grade: 2 })));
+    }
+
+    #[test]
+    fn set_bonuses_grow_with_pieces() {
+        let mut g = Gear::default();
+        let si = SETS.iter().position(|d| d.name == "WANDERER'S").unwrap();
+        g.add(set_item(si, 0)).unwrap();
+        g.equip(0, 10).unwrap();
+        let one = g.bonus();
+        assert_eq!(one.get(Stat::Stamina), 0);
+        g.add(set_item(si, 1)).unwrap();
+        g.equip(0, 10).unwrap();
+        assert_eq!(g.bonus().get(Stat::Stamina), 40, "two pieces: the first bonus");
+        g.add(set_item(si, 2)).unwrap();
+        g.equip(0, 10).unwrap();
+        assert_eq!(g.sets_worn(), vec![(si, 3)]);
+        assert_eq!(g.bonus().get(Stat::Magic), 20);
+        let h = Gear::load_text(&g.save_text());
+        assert_eq!(h.bonus(), g.bonus());
+        for d in SETS {
+            for p in d.pieces {
+                assert!(base_by_key(p.base).is_some(), "{}", p.name);
+            }
+        }
     }
 
     #[test]

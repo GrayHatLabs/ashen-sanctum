@@ -357,6 +357,11 @@ impl Art {
             "ice_wraith" => ("boss_hex", 0.6, 0xa0d8ff, 0.55),
             "npc_captain" => ("npc_guard", 1.0, 0xc8b070, 0.3),
             "npc_trader" => ("npc_merchant", 1.05, 0x6a4a30, 0.4),
+            // ---- jewelers (stand-ins until their art) ----
+            "npc_jeweler0" => ("npc_merchant", 0.95, 0x7040a0, 0.45),
+            "npc_jeweler1" => ("npc_trader", 1.0, 0x4080c0, 0.45),
+            "npc_jeweler2" => ("npc_widow", 1.0, 0x30a060, 0.45),
+            "npc_jeweler3" => ("npc_vesper", 1.0, 0xc0a040, 0.45),
             "npc_seer" => ("npc_elder", 1.0, 0x9090a0, 0.4),
             "npc_fisher" => ("npc_villager", 1.0, 0x506878, 0.4),
             "boss_giant" => ("boss_bone", 1.25, 0x6090c0, 0.5),
