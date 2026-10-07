@@ -551,9 +551,11 @@ impl Menu {
 /// many heroes there are. Returns the clickable cards (x, y, w, h, class index), the centre card last.
 pub(crate) fn draw_carousel(scr: &mut Screen, art: &Art, w: i32, h: i32, sel: usize, t: f32) -> Vec<(i32, i32, i32, i32, usize)> {
     let n = CLASSES.len();
-    let top = 32;
-    // The centre card: portrait-shaped, as big as the screen allows.
-    let ph_c = (h - 70).min(((w as f32 * 0.3) / 0.66) as i32);
+    // The centre card: portrait-shaped, as big as the screen allows (bigger on the handheld's taller
+    // 4:3 screen), centred in the space under the title.
+    let frac = if h > 400 { 0.38 } else { 0.3 };
+    let ph_c = (h - 70).min(((w as f32 * frac) / 0.66) as i32);
+    let top = ((h - ph_c) / 2 - 12).max(32);
     let pw_c = (ph_c as f32 * 0.66) as i32;
     const SCALE: [f32; 3] = [1.0, 0.7, 0.48];
     let size = |d: usize| ((pw_c as f32 * SCALE[d]) as i32, (ph_c as f32 * SCALE[d]) as i32);

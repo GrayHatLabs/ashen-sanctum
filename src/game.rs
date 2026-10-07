@@ -888,7 +888,7 @@ impl Game {
     /// Gerta's stock: mostly magic gear around your level, now and then a rare.
     pub(crate) fn restock(&mut self) {
         use crate::items::{self, Rarity, SHOP};
-        let ilvl = (self.p.clvl as u8 + 1).clamp(2, 30);
+        let ilvl = (self.p.clvl as u8 + 1).clamp(2, 50);
         self.shop_stock = (0..SHOP)
             .map(|k| {
                 if k >= 12 {

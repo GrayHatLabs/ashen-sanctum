@@ -1087,10 +1087,11 @@ impl Game {
         if self.dark_t > 0.0 || self.theme == crate::world::Theme::Trench {
             for m in self.mobs.iter().filter(|m| m.alive() && matches!(m.kind, crate::mobs::Kind::Angler | crate::mobs::Kind::Anglerlurk)) {
                 let (sx, sy) = to_scr(m.x, m.y);
-                let up = if m.kind == crate::mobs::Kind::Angler { 70 } else { 44 };
+                // The lure: over the matriarch's head; out in front of the lurker's face (it faces right or left).
+                let (up, ahead) = if m.kind == crate::mobs::Kind::Angler { (70, 0) } else { (34, if m.dir >= 4 { -16 } else { 16 }) };
                 let pulse = 0.6 + 0.4 * (self.tick as f32 * 0.12 + m.x).sin();
-                scr.glow(sx + scr.shake.0, sy - up + scr.shake.1, 18.0, rgb(0x60f0e0), 0.9 * pulse);
-                scr.disc(sx + scr.shake.0, sy - up + scr.shake.1, 2, rgb(0xe0fffa));
+                scr.glow(sx + ahead + scr.shake.0, sy - up + scr.shake.1, 18.0, rgb(0x60f0e0), 0.9 * pulse);
+                scr.disc(sx + ahead + scr.shake.0, sy - up + scr.shake.1, 2, rgb(0xe0fffa));
             }
         }
         // Weather: Mechanus's drifting steam and rising brass sparks.
@@ -1535,11 +1536,23 @@ impl Game {
             _ if m.moving => CharFrame::Loop("walk", m.dir, m.anim_t),
             _ => CharFrame::Loop("idle", m.dir, 0.0),
         };
-        let crow = m.kind == crate::mobs::Kind::ClockCrow;
+        use crate::mobs::Kind;
+        let crow = m.kind == Kind::ClockCrow;
+        // Fliers drawn above their shadow, bobbing: crows with each wingbeat, the wheels of eyes and the
+        // thunderbird (single images) slowly, so they never look frozen.
+        let lift = match m.kind {
+            Kind::ClockCrow => 16,
+            Kind::Ophanim => 14,
+            Kind::OphanPrime => 20,
+            Kind::Thunderbird => 22,
+            // The anglerlurk (a single image too) drifts just off the sand.
+            Kind::Anglerlurk => 3,
+            _ => 0,
+        };
         let shadow = if m.boss { 20 } else if crow { 6 } else { 10 };
-        blend_ellipse(scr, sx, sy, shadow, shadow * 2 / 5, BLACK, if crow { 0.3 } else { 0.45 });
-        // Crows fly: drawn above their shadow, bobbing with each wingbeat.
-        let sy = if crow { sy - 16 - ((self.tick as f32 * 0.25 + i as f32 * 1.3).sin() * 3.0) as i32 } else { sy };
+        blend_ellipse(scr, sx, sy, shadow, shadow * 2 / 5, BLACK, if lift > 0 { 0.3 } else { 0.45 });
+        let (speed, amp) = if crow { (0.25, 3.0) } else { (0.08, 4.0) };
+        let sy = if lift > 0 { sy - lift - ((self.tick as f32 * speed + i as f32 * 1.3).sin() * amp) as i32 } else { sy };
         if m.flash > 0.0 {
             fx.tint = WHITE;
             fx.tint_a = 0.7;

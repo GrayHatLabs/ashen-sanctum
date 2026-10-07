@@ -656,7 +656,7 @@ impl Item {
 
 /// Item level for a monster in an area of this tier.
 pub fn ilvl_for(tier: f32) -> u8 {
-    (tier * 4.5).round().clamp(1.0, 30.0) as u8
+    (tier * 4.5).round().clamp(1.0, 50.0) as u8
 }
 
 fn roll_affix(a: &Affix, ilvl: u8, rng: &mut Rng) -> (i32, &'static str) {

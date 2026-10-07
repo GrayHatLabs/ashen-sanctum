@@ -244,7 +244,8 @@ impl Art {
         let deck_floor = exact("wreck_deck").unwrap_or_else(|| grade(&stone[0], (0x4a3020, 0.55, 0.8)));
         let temple_floor = exact("sanctum_floor").unwrap_or_else(|| grade(&stone[0], (0x8ab0b0, 0.35, 0.85)));
         let temple_wall = exact("sanctum_wall").unwrap_or_else(|| grade(&wall, (0x4a7a78, 0.4, 0.8)));
-        let coral_wall = exact("coral_wall").unwrap_or_else(|| grade(&wall, (0x5a3a60, 0.45, 0.8)));
+        // The reef walls came out a loud purple: pulled toward dark sea-grey, a hint of violet left (2026-10-07).
+        let coral_wall = exact("coral_wall").map(|s| grade(&s, (0x2e3e4a, 0.55, 0.85))).unwrap_or_else(|| grade(&wall, (0x3a3a50, 0.45, 0.8)));
         // Act 6: marble, storm stone and the burnt sanctum (stand-ins graded from the stone set).
         let marble_floor: Vec<Sprite> = ["cloud_marble1", "cloud_marble2"].iter().filter_map(|n| exact(n)).collect();
         let marble_floor = if marble_floor.is_empty() { stone.iter().map(|s| grade(s, (0xe8e0d0, 0.5, 1.1))).collect() } else { marble_floor };
