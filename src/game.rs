@@ -2046,7 +2046,7 @@ impl Game {
                 return;
             }
         }
-        let on_hud = inp.mouse.map_or(false, |(_, my)| my >= self.view_h - HUD_H);
+        let on_hud = inp.mouse.map_or(false, |(mx, my)| my >= self.view_h - HUD_H || crate::render::on_hud_orb(crate::gfx::SW, self.view_h, mx, my));
 
         // ---- talking (town) ----
         if let (Some(i), true) = (self.hover_npc, p_lmb) {

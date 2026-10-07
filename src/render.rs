@@ -1401,18 +1401,38 @@ impl Game {
     fn draw_hud(&self, scr: &mut Screen) -> (Vec<(i32, i32, i32, i32)>, (i32, i32, i32, i32)) {
         let (w, h) = (scr.w, self.view_h);
         let top = h - HUD_H;
-        for y in top..h {
-            let k = (y - top) as f32 / HUD_H as f32;
-            scr.fill(0, y, w, 1, mix(rgb(0x2a2520), rgb(0x141210), k));
+        // The HUD doesn't shake with the world.
+        let shake = std::mem::replace(&mut scr.shake, (0, 0));
+        // The carved panel (OpenAI art, tools/oai_hud.py + hud_pack.py), else the plain code-drawn bar.
+        if let Some(s) = self.art.item("hud_panel") {
+            scr.blit(s, w / 2 - s.w / 2 + s.ax, h - s.h + s.ay, Fx::default());
+        } else {
+            for y in top..h {
+                let k = (y - top) as f32 / HUD_H as f32;
+                scr.fill(0, y, w, 1, mix(rgb(0x2a2520), rgb(0x141210), k));
+            }
+            scr.fill(0, top, w, 1, rgb(0x5a4a38));
+            scr.fill(0, top + 1, w, 1, rgb(0x0a0806));
+            for k in 0..HUD_SOCKETS {
+                let x = HUD_SOCKET0 + k * HUD_MODULE;
+                scr.fill(x - 8, top + 2, 6, HUD_H - 2, rgb(0x3a3028));
+            }
         }
-        scr.fill(0, top, w, 1, rgb(0x5a4a38));
-        scr.fill(0, top + 1, w, 1, rgb(0x0a0806));
-        // Experience bar along the top of the panel.
+        // Experience: a thin gold line along the bottom band, under the sockets.
         let xp = (self.p.xp / xp_to_next(self.p.clvl)).clamp(0.0, 1.0);
-        scr.fill(70, top + 2, ((w - 140) as f32 * xp) as i32, 1, rgb(0xc8a040));
-        // Globes.
-        let gy = h - 28;
-        globe(scr, 34, gy, 26, self.p.hp / self.p.max_hp, rgb(0xb01818), rgb(0xff6050));
+        let (xx, xw) = (HUD_SOCKET0, HUD_MODULE * HUD_SOCKETS - 8);
+        scr.fill(xx - 1, h - 5, xw + 2, 4, rgb(0x0a0806));
+        scr.fill(xx, h - 4, (xw as f32 * xp) as i32, 2, rgb(0xc8a040));
+        scr.fill(xx, h - 4, (xw as f32 * xp) as i32, 1, rgb(0xffe080));
+        // Globes, in their housings (the angel holds life, the gargoyle the other).
+        let (lx, gy) = (HUD_ORB_L.2, h - HUD_ORB_L.1 + HUD_ORB_DROP + HUD_ORB_L.3);
+        let (rx, ry) = (w - HUD_ORB_R.0 + HUD_ORB_R.2, h - HUD_ORB_R.1 + HUD_ORB_DROP + HUD_ORB_R.3);
+        let t = self.tick as f32 / 60.0;
+        let r = HUD_ORB_R_PX;
+        globe(scr, lx, gy, r, self.p.hp / self.p.max_hp, rgb(0xb01818), rgb(0xff6050), t);
+        // The right globe: the class's resource, drawn below at (rx, ry).
+        let (w, gy) = (rx + 34, ry);
+        let globe = |scr: &mut Screen, _x: i32, gy: i32, _r: i32, frac: f32, dark: u32, hi: u32| globe(scr, rx, gy, r, frac, dark, hi, t + 1.7);
         if self.is_inventor() {
             // Heat: an orange gauge that fills as she fires (it's her mana, upside down).
             let heat = self.heat();
@@ -1437,12 +1457,18 @@ impl Game {
         } else {
             globe(scr, w - 34, gy, 26, self.p.mana / self.p.max_mana, rgb(0x1830b0), rgb(0x6090ff));
         }
-        scr.text(&format!("{}/{}", self.p.hp.ceil() as i32, self.p.max_hp as i32), 34, gy - 4, WHITE, Align::Center, 1);
+        // The housings over the globes.
+        for (name, x, y) in [("hud_orb_l", 0, h - HUD_ORB_L.1 + HUD_ORB_DROP), ("hud_orb_r", scr.w - HUD_ORB_R.0, h - HUD_ORB_R.1 + HUD_ORB_DROP)] {
+            if let Some(s) = self.art.item(name) {
+                scr.blit(s, x + s.ax, y + s.ay, Fx::default());
+            }
+        }
+        scr.text(&format!("{}/{}", self.p.hp.ceil() as i32, self.p.max_hp as i32), lx, gy - 4, WHITE, Align::Center, 1);
         if self.is_inventor() {
             let label = if self.p.overheat > 0.0 { "HOT!".to_string() } else { format!("{}%", (self.heat() * 100.0).round() as i32) };
             scr.text(&label, w - 34, gy - 4, WHITE, Align::Center, 1);
             let vent = if self.p.vent_cd > 0.0 { format!("VENT {:.0}S", self.p.vent_cd.ceil()) } else { "VENT: E/Y".into() };
-            scr.text(&vent, w - 34, gy - 36, rgb(0xd8b080), Align::Center, 1);
+            scr.text(&vent, w - 34, gy - 54, rgb(0xd8b080), Align::Center, 1);
         } else if self.is_druid() {
             scr.text(&format!("{}/{}", self.p.mana.floor() as i32, self.p.max_mana as i32), w - 34, gy - 4, WHITE, Align::Center, 1);
             // Decay (left, sickly yellow-green) ... Bloom (right, fresh green), with a marker.
@@ -1459,11 +1485,11 @@ impl Game {
             } else {
                 "BALANCE"
             };
-            scr.text(label, w - 34, gy - 36, rgb(0xa0d870), Align::Center, 1);
+            scr.text(label, w - 34, gy - 54, rgb(0xa0d870), Align::Center, 1);
         } else if self.is_reaper() {
             let souls = (self.p.mana / crate::reaper::SOUL).floor() as i32;
             scr.text(&format!("{souls}"), w - 34, gy - 4, WHITE, Align::Center, 1);
-            scr.text("SOULS", w - 34, gy - 36, rgb(0xa0d8ff), Align::Center, 1);
+            scr.text("SOULS", w - 34, gy - 54, rgb(0xa0d8ff), Align::Center, 1);
             // The scythe's seven runes.
             let blaze = self.p.runes >= crate::reaper::RUNES;
             for k in 0..crate::reaper::RUNES as i32 {
@@ -1481,22 +1507,24 @@ impl Game {
             } else {
                 "RAGE"
             };
-            scr.text(label, w - 34, gy - 36, rgb(0xe08060), Align::Center, 1);
+            scr.text(label, w - 34, gy - 54, rgb(0xe08060), Align::Center, 1);
         } else if self.is_inquisitor() {
             scr.text(&format!("{}", self.p.mana.floor() as i32), w - 34, gy - 4, WHITE, Align::Center, 1);
-            scr.text(if self.p.judge_t > 0.0 { "JUDGMENT!" } else { "JUDGMENT" }, w - 34, gy - 36, rgb(0xe8b060), Align::Center, 1);
+            scr.text(if self.p.judge_t > 0.0 { "JUDGMENT!" } else { "JUDGMENT" }, w - 34, gy - 54, rgb(0xe8b060), Align::Center, 1);
         } else if self.is_valkyrie() {
             scr.text(&format!("{}", self.p.mana.floor() as i32), w - 34, gy - 4, WHITE, Align::Center, 1);
-            scr.text(if self.blazing() { "VALOR!" } else { "VALOR" }, w - 34, gy - 36, rgb(0xa0d8ff), Align::Center, 1);
+            scr.text(if self.blazing() { "VALOR!" } else { "VALOR" }, w - 34, gy - 54, rgb(0xa0d8ff), Align::Center, 1);
         } else {
             scr.text(&format!("{}/{}", self.p.mana.floor() as i32, self.p.max_mana as i32), w - 34, gy - 4, WHITE, Align::Center, 1);
         }
         // Skill slots: primary (left click / A) and secondary (right click / X), like D2.
-        let ix = w / 2 - 12;
-        let iy = top + 8;
+        let w = scr.w;
+        let iy = top + 12;
+        let sock = |k: i32| HUD_SOCKET0 + k * HUD_MODULE;
+        let ix = sock(2) + 38;
         let mut skill_rects = vec![];
         for (k, s) in [self.p.skills.primary, self.p.skills.secondary].into_iter().enumerate() {
-            let sx = ix - 24 + k as i32 * 32;
+            let sx = ix - 10 + k as i32 * 32;
             scr.fill(sx - 2, iy - 2, 28, 28, rgb(0x5a4a38));
             scr.blit(&crate::sprites::skill_icon(s), sx, iy, Fx::default());
             let r = self.p.skills.rank(s);
@@ -1523,18 +1551,18 @@ impl Game {
                 crate::skills::Class::Inquisitor => ("CENSER", rgb(0xe8b060)),
                 crate::skills::Class::Sorceress => ("EMBER", rgb(0xff9050)),
             };
-            scr.text(label, ix + 4, iy + 28, col, Align::Center, 1);
+            scr.text(label, ix + 18, top + 39, col, Align::Center, 1);
         }
         // Unspent skill points: a pulsing button (opens the tree, like D2's level-up button).
         if self.p.skills.points > 0 {
-            let bx = ix - 46;
+            let bx = sock(2) + 4;
             let pulse = (self.tick / 15) % 2 == 0;
             scr.fill(bx, iy + 2, 18, 18, if pulse { rgb(0xd8a048) } else { rgb(0x8a6020) });
             scr.text("+", bx + 6, iy + 7, BLACK, Align::Left, 1);
             skill_rects.push((bx, iy + 2, 18, 18));
         }
         // Run / walk button (D2 style).
-        let rx = ix + 40;
+        let rx = sock(3) + 14;
         let _ = FIREBALL_COST;
         scr.fill(rx - 2, iy - 2, 28, 28, rgb(0x5a4a38));
         let lit = self.p.running && !self.p.winded;
@@ -1548,20 +1576,20 @@ impl Game {
         };
         scr.text(if self.p.running { "RUN" } else { "WALK" }, rx + 12, iy + 8, col, Align::Center, 1);
         let label = if self.p.winded { "TIRED" } else { "R/B" };
-        scr.text(label, rx + 12, iy + 28, if self.p.winded { col } else { rgb(0x908070) }, Align::Center, 1);
+        scr.text(label, rx + 12, top + 39, if self.p.winded { col } else { rgb(0x908070) }, Align::Center, 1);
         // Bag button (inventory).
         let gx = rx + 32;
         scr.fill(gx - 2, iy - 2, 28, 28, rgb(0x5a4a38));
         scr.fill(gx, iy, 24, 24, rgb(0x1a1410));
         scr.text("BAG", gx + 12, iy + 8, rgb(0xd8c090), Align::Center, 1);
-        scr.text("I/ST", gx + 12, iy + 28, rgb(0x908070), Align::Center, 1);
+        scr.text("I/ST", gx + 12, top + 39, rgb(0x908070), Align::Center, 1);
         let bag = (gx - 2, iy - 2, 28, 28);
         // Stamina and food bars.
-        let (bar_x, bar_w) = (156, 100);
+        let (bar_x, bar_w) = (sock(1) + 4, HUD_MODULE - 17);
         let st = self.p.stamina / MAX_STAMINA;
         let st_col = if self.p.winded { rgb(0xa03020) } else { rgb(0xd8b020) };
-        scr.text("STAMINA", bar_x, top + 7, rgb(0xb0a090), Align::Left, 1);
-        bar(scr, bar_x, top + 17, bar_w, st, st_col);
+        scr.text("STAMINA", bar_x, top + 4, rgb(0xb0a090), Align::Left, 1);
+        bar(scr, bar_x, top + 14, bar_w, st, st_col);
         let fd = self.p.food / MAX_FOOD;
         let starving = self.p.food <= 0.0;
         let vampire = self.p.skills.class == crate::skills::Class::Vampire;
@@ -1585,25 +1613,28 @@ impl Game {
             _ => "FOOD",
         };
         let fcol = if starving && (self.tick / 20) % 2 == 0 { rgb(0xff5030) } else { rgb(0xb0a090) };
-        scr.text(flabel, bar_x, top + 27, fcol, Align::Left, 1);
-        bar(scr, bar_x, top + 37, bar_w, fd, fd_col);
+        let flabel = flabel.replace("BLOODTHIRSTY", "THIRST").replace(" - ", " ");
+        scr.text(&flabel, bar_x, top + 23, fcol, Align::Left, 1);
+        bar(scr, bar_x, top + 33, bar_w, fd, fd_col);
         // Potions.
-        let bx = 70;
-        potion(scr, bx, top + 12, rgb(0xc02020));
-        scr.text(&format!("X{}", self.p.hp_pots), bx + 14, top + 16, WHITE, Align::Left, 1);
-        scr.text("Q", bx + 2, top + 32, rgb(0x908070), Align::Left, 1);
-        potion(scr, bx + 44, top + 12, rgb(0x2040c0));
-        scr.text(&format!("X{}", self.p.mp_pots), bx + 58, top + 16, WHITE, Align::Left, 1);
-        scr.text("E", bx + 46, top + 32, rgb(0x908070), Align::Left, 1);
-        scr.text(&format!("GOLD {}", self.p.gold), w - 80, top + 8, rgb(0xe8c050), Align::Right, 1);
-        scr.text(&format!("CHAR LEVEL {}", self.p.clvl), w - 80, top + 20, rgb(0xd8c090), Align::Right, 1);
+        let bx = sock(0) + 8;
+        potion(scr, bx, top + 14, rgb(0xc02020));
+        scr.text(&format!("X{}", self.p.hp_pots), bx + 14, top + 18, WHITE, Align::Left, 1);
+        scr.text("Q", bx + 2, top + 34, rgb(0x908070), Align::Left, 1);
+        potion(scr, bx + 42, top + 14, rgb(0x2040c0));
+        scr.text(&format!("X{}", self.p.mp_pots), bx + 56, top + 18, WHITE, Align::Left, 1);
+        scr.text("E", bx + 44, top + 34, rgb(0x908070), Align::Left, 1);
+        // Gold, level and the act's relics: the top right corner, across from the area name.
+        scr.text(&format!("GOLD {}", self.p.gold), w - 6, 6, rgb(0xe8c050), Align::Right, 1);
+        scr.text(&format!("CHAR LEVEL {}", self.p.clvl), w - 6, 17, rgb(0xd8c090), Align::Right, 1);
         let (relic, col) = match self.level.act() {
             3 => (format!("KEYS {}/3", self.quest.key_count()), rgb(0xe0b040)),
             2 => (format!("SIGILS {}/3", self.quest.sigil_count()), rgb(0x60f080)),
             1 => (format!("RUNES {}/3", self.quest.rune_count()), rgb(0x90d0ff)),
             _ => (format!("SEALS {}/3", self.quest.seal_count()), rgb(0xc8a0ff)),
         };
-        scr.text(&relic, w - 80, top + 32, col, Align::Right, 1);
+        scr.text(&relic, w - 6, 28, col, Align::Right, 1);
+        scr.shake = shake;
 
         // Area name and quest log (top left).
         scr.text(&self.level_name, 6, 6, rgb(0xd8b878), Align::Left, 1);
@@ -1833,26 +1864,80 @@ pub(crate) fn blend_ellipse(scr: &mut Screen, cx: i32, cy: i32, rx: i32, ry: i32
     }
 }
 
-fn globe(scr: &mut Screen, cx: i32, cy: i32, r: i32, frac: f32, col: u32, hi: u32) {
-    let level = cy + r - (2.0 * r as f32 * frac.clamp(0.0, 1.0)) as i32;
-    scr.disc(cx, cy, r + 2, rgb(0x5a4a38));
-    scr.disc(cx, cy, r + 1, BLACK);
+// The bottom HUD's art layout (tools/hud_pack.py in the art repo writes the matching images):
+// the housings' (width, height, globe centre x, globe centre y), how far their pedestals run off the screen,
+// the globes' radius, and the panel's sockets (one strap + recess each).
+const HUD_ORB_L: (i32, i32, i32, i32) = (126, 126, 72, 45);
+const HUD_ORB_R: (i32, i32, i32, i32) = (121, 121, 48, 43);
+const HUD_ORB_DROP: i32 = 16;
+const HUD_ORB_R_PX: i32 = 24;
+pub(crate) const HUD_SOCKET0: i32 = 132;
+pub(crate) const HUD_MODULE: i32 = 97;
+const HUD_SOCKETS: i32 = 4;
+
+/// The housings rise above the panel: true if (x, y) is on one (clicks there aren't walking orders).
+pub(crate) fn on_hud_orb(w: i32, h: i32, x: i32, y: i32) -> bool {
+    let (lx, ly) = (HUD_ORB_L.2, h - HUD_ORB_L.1 + HUD_ORB_DROP + HUD_ORB_L.3);
+    let (rx, ry) = (w - HUD_ORB_R.0 + HUD_ORB_R.2, h - HUD_ORB_R.1 + HUD_ORB_DROP + HUD_ORB_R.3);
+    let r = HUD_ORB_R_PX + 14;
+    (x - lx).pow(2) + (y - ly).pow(2) < r * r || (x - rx).pow(2) + (y - ry).pow(2) < r * r
+}
+
+/// A life or mana globe: a glass sphere of swirling liquid, the surface rippling, bubbles rising, a glint on the glass.
+fn globe(scr: &mut Screen, cx: i32, cy: i32, r: i32, frac: f32, col: u32, hi: u32, t: f32) {
+    let frac = frac.clamp(0.0, 1.0);
+    let level = cy as f32 + r as f32 - 2.0 * r as f32 * frac;
+    let rf = r as f32;
+    // A few bubbles rising through the liquid.
+    let bubbles: Vec<(i32, i32)> = (0..6)
+        .map(|i| {
+            let fi = i as f32;
+            let bx = ((fi * 7.3).sin() * 0.6 * rf + (t * 2.0 + fi).sin() * 1.5) as i32;
+            let by = r - ((t * (6.0 + fi * 1.3) + fi * 9.0) % (2.0 * rf)) as i32;
+            (bx, by)
+        })
+        .collect();
     for y in -r..=r {
         for x in -r..=r {
-            if x * x + y * y > r * r {
+            let d2 = x * x + y * y;
+            if d2 > r * r {
                 continue;
             }
-            let (px, py) = (cx + x, cy + y);
-            let c = if py >= level {
-                let shade = 1.0 - ((x + r / 3) as f32).hypot((y + r / 3) as f32) / (r as f32 * 1.6);
-                mix(mix(col, BLACK, 0.5), hi, shade.clamp(0.0, 1.0) * 0.6)
+            let (fx, fy) = (x as f32, y as f32);
+            let d = (d2 as f32).sqrt() / rf;
+            // The surface ripples (still when empty or full).
+            let wave = if frac > 0.02 && frac < 0.98 { (fx * 0.32 + t * 3.1).sin() * 1.1 + (fx * 0.71 - t * 2.3).sin() * 0.5 } else { 0.0 };
+            let surf = level + wave;
+            let py = cy as f32 + fy;
+            let mut c = if py >= surf {
+                // Liquid: lit from the upper left, with slow swirling bands.
+                let shade = (1.0 - (fx + rf / 3.0).hypot(fy + rf / 3.0) / (rf * 1.6)).clamp(0.0, 1.0);
+                let swirl = ((fx * 0.22 + fy * 0.16 + t * 1.3 + (fy * 0.21 - t * 0.9).sin() * 2.2).sin() * 0.5 + 0.5).powi(3);
+                let mut c = mix(mix(col, BLACK, 0.55), hi, shade * 0.6 + swirl * 0.22);
+                if py < surf + 1.5 {
+                    c = mix(c, hi, 0.55); // the bright surface line
+                }
+                if bubbles.iter().any(|&(bx, by)| bx == x && by == y && (by as f32 + cy as f32) > surf + 2.0) {
+                    c = mix(c, rgb(0xffffff), 0.55);
+                }
+                c
             } else {
-                rgb(0x0c0a0a)
+                // Empty glass: near black, a faint tint of the colour.
+                mix(rgb(0x0a0809), col, 0.06 + (1.0 - d) * 0.05)
             };
-            scr.pset(px, py, c);
+            // Shadow in the glass's rim.
+            if d > 0.86 {
+                c = mix(c, BLACK, (d - 0.86) * 3.5);
+            }
+            // The glint: a curved highlight on the upper left of the glass.
+            let ang = fy.atan2(fx);
+            if d > 0.62 && d < 0.78 && ang > -2.65 && ang < -1.75 {
+                c = mix(c, rgb(0xffffff), 0.35);
+            }
+            scr.pset(cx + x, cy + y, c);
         }
     }
-    scr.disc(cx - r / 3, cy - r / 2, 3, mix(rgb(0xffffff), col, 0.5));
+    scr.disc(cx - r / 3, cy - r / 2, 1, mix(rgb(0xffffff), hi, 0.3));
 }
 
 fn potion(scr: &mut Screen, x: i32, y: i32, col: u32) {

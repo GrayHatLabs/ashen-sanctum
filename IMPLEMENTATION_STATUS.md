@@ -138,6 +138,14 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Fixes found by the long runs: a boss's town portal could land between you and its token (now placed beyond the boss); area names repeated (NIGHTMARE) on every re-entry | H | |
 | Law zones (3 overland, 2 per dungeon): BLADE (only close blows), ARROW (only blows from 4+ tiles), STILLNESS (only foes not moving); forbidden blows do 10% (grey numbers); lure foes out to fight freely | H S | Unit test covers all three laws and leaving the zone |
 
+## HUD art (2026-10-06)
+
+| Feature | Status | Notes |
+|---|---|---|
+| Carved stone-and-iron bottom panel with a skull crest; the angel holds the life globe, the gargoyle the class resource (OpenAI art, `tools/oai_hud.py` + `hud_pack.py`) | S | Code-drawn fallback if the art is missing |
+| Animated globes: swirling liquid, rippling surface, rising bubbles, glass glint | S | |
+| Re-laid out into the panel's 4 sockets: potions, stamina/food, skills, run/bag; XP line along the bottom; gold/level/relics moved to the top right | S | Clicks on the housings don't walk |
+
 ## Breakables (2026-10-06)
 
 | Feature | Status | Notes |
