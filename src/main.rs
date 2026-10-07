@@ -112,10 +112,24 @@ fn main() -> Result<(), String> {
         let dir = if args[i] == "--snapshot" { Some(dir.unwrap_or("snapshots")) } else { None };
         std::process::exit(snapshot::run(dir, tall));
     }
-    let view_h = if tall { gfx::SH_TALL } else { gfx::SH_WIDE };
-
     let sdl = sdl2::init()?;
     let video = sdl.video()?;
+    // Handhelds: fit the screen's shape. 4:3 screens (RG35XX: 640x480) get the tall view; 16:9 ones
+    // (AYN Odin 2: 1920x1080, Odin 2 Mini: 1280x720) the wide one, which scales up a whole 3x / 2x.
+    let forced = args.iter().any(|a| a == "--tall" || a == "--wide");
+    let tall = if handheld && !forced {
+        match video.desktop_display_mode(0) {
+            Ok(m) if m.w > 0 && m.h > 0 => {
+                let (w, h) = (m.w.max(m.h), m.w.min(m.h));
+                println!("display {}x{}", m.w, m.h);
+                (w as f32 / h as f32) < 1.55
+            }
+            _ => tall,
+        }
+    } else {
+        tall
+    };
+    let view_h = if tall { gfx::SH_TALL } else { gfx::SH_WIDE };
     let controllers = sdl.game_controller().ok();
     let audio_sys = sdl.audio().ok();
     sdl2::hint::set("SDL_RENDER_SCALE_QUALITY", "0");

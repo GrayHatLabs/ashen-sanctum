@@ -18,7 +18,7 @@ XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
 controlfolder=""
 for d in /opt/system/Tools/PortMaster /opt/tools/PortMaster "$XDG_DATA_HOME/PortMaster" \
          /userdata/system/.local/share/PortMaster /userdata/roms/ports/PortMaster \
-         /mnt/mmc/MUOS/PortMaster /roms/ports/PortMaster; do
+         /mnt/mmc/MUOS/PortMaster /roms/ports/PortMaster /storage/roms/ports/PortMaster; do
   if [ -f "$d/control.txt" ]; then
     controlfolder="$d"
     break
