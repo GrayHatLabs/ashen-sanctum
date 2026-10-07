@@ -106,6 +106,19 @@ pub enum Skill {
     FinalJudgment,
 }
 
+/// Each hero's damage, evened out by the balance benchmark (scripts/balance-bench.sh, 2026-10-07): the
+/// vampire, valkyrie and berserker hit noticeably softer than the rest across Acts 3-6, the sorceress a
+/// little harder. (The vampire stays below the rest: her bites heal her.)
+pub fn class_damage(c: Class) -> f32 {
+    match c {
+        Class::Vampire => 1.55,
+        Class::Valkyrie => 1.3,
+        Class::Berserker => 1.35,
+        Class::Sorceress => 0.9,
+        _ => 1.0,
+    }
+}
+
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
 pub enum Class {
     Sorceress,
@@ -1157,8 +1170,9 @@ impl Game {
 
     /// Meteors landing, hydras shooting, Ash Phoenix ticking down (and its final burst).
     pub(crate) fn update_big_fire(&mut self) {
+        let cd_rate = if self.has_power(crate::items::P_PHOENIX_ASH) { 1.3 } else { 1.0 };
         for c in self.p.skills.cooldown.iter_mut() {
-            *c = (*c - DT).max(0.0);
+            *c = (*c - DT * cd_rate).max(0.0);
         }
         // Meteors.
         let mut landed = vec![];
@@ -1507,7 +1521,41 @@ impl Game {
             1.0
         };
         let shell = if kind == crate::mobs::Kind::Shellguard && self.mobs[i].stun <= 0.0 && self.mobs[i].frozen <= 0.0 && self.mobs[i].slow_t <= 0.0 { 0.5 } else { 1.0 };
-        let dmg = dmg * self.taken(kind) * law * ranks * shell;
+        // Embers and ancient powers.
+        let boss_now = self.mobs[i].boss;
+        let mut power = self.ember_damage();
+        if boss_now && self.has_power(crate::items::P_GIANTSLAYER) {
+            power *= 1.4;
+        }
+        if self.p.hp < self.p.max_hp / 3.0 && self.has_power(crate::items::P_LONG_NIGHT) {
+            power *= 1.5;
+        }
+        let dmg = dmg * self.taken(kind) * law * ranks * shell * class_damage(self.p.skills.class) * power;
+        if self.has_power(crate::items::P_BLOODTHIRST) {
+            self.p.hp = (self.p.hp + dmg * 0.04).min(self.p.max_hp);
+        }
+        // Stormcaller: one blow in six arcs to the nearest other foe for half.
+        if show && self.has_power(crate::items::P_STORMCALLER) && self.rng.chance(1.0 / 6.0) {
+            let (mx, my) = (self.mobs[i].x, self.mobs[i].y);
+            let other = (0..self.mobs.len())
+                .filter(|&j| j != i && self.mobs[j].alive() && self.mobs[j].charm <= 0.0 && !crate::breakables::is_prop(self.mobs[j].kind))
+                .min_by(|&a, &b| {
+                    let da = (self.mobs[a].x - mx).powi(2) + (self.mobs[a].y - my).powi(2);
+                    let db = (self.mobs[b].x - mx).powi(2) + (self.mobs[b].y - my).powi(2);
+                    da.partial_cmp(&db).unwrap()
+                })
+                .filter(|&j| (self.mobs[j].x - mx).powi(2) + (self.mobs[j].y - my).powi(2) < 25.0);
+            if let Some(j) = other {
+                let d = dmg * 0.5;
+                self.mobs[j].hp -= d;
+                self.mobs[j].flash = 0.12;
+                let (jx, jy) = (self.mobs[j].x, self.mobs[j].y);
+                self.floater(jx, jy, format!("{}", d.round() as i32), crate::gfx::rgb(0x90c0ff));
+                if self.mobs[j].hp <= 0.0 && self.mobs[j].alive() {
+                    self.kill(j);
+                }
+            }
+        }
         self.drain(kind, dmg, 1.0);
         let m = &mut self.mobs[i];
         let (mx, my, boss, r) = (m.x, m.y, m.boss, m.r);

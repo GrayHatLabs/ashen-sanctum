@@ -246,9 +246,10 @@ impl Game {
         }
         let mut m = crate::mobs::Mob::new(kind, x, y, self.tier.max(1.0), &mut self.rng);
         let tough = self.growth_mult() * (1.0 + 0.1 * self.p.skills.rank(Skill::GreenDoctor) as f32);
-        m.max_hp *= tough * (1.0 + 0.05 * self.p.clvl as f32);
+        let colossi = if self.has_power(crate::items::P_COLOSSI) { 1.5 } else { 1.0 };
+        m.max_hp *= tough * (1.0 + 0.05 * self.p.clvl as f32) * colossi;
         m.hp = m.max_hp;
-        let k = self.fire_power().sqrt() * self.growth_mult();
+        let k = self.fire_power().sqrt() * self.growth_mult() * colossi;
         m.dmg = (m.dmg.0 * k, m.dmg.1 * k);
         m.charm = if t > 0.0 { t } else { 1.0e9 };
         m.thrall = t > 0.0;

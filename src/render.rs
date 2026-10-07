@@ -1870,6 +1870,8 @@ impl Game {
         }
         scr.shake = shake;
 
+        // An Ash Rift's bar, clock and modifiers.
+        crate::endgame::draw_rift_hud(self, scr);
         // Area name and quest log (top left).
         scr.text(&self.level_name, 6, 6, rgb(0xd8b878), Align::Left, 1);
         let log = self.quest_log();

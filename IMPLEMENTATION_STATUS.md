@@ -138,6 +138,17 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Fixes found by the long runs: a boss's town portal could land between you and its token (now placed beyond the boss); area names repeated (NIGHTMARE) on every re-entry | H | |
 | Law zones (3 overland, 2 per dungeon): BLADE (only close blows), ARROW (only blows from 4+ tiles), STILLNESS (only foes not moving); forbidden blows do 10% (grey numbers); lure foes out to fight freely | H S | Unit test covers all three laws and leaving the zone |
 
+## Balance pass and endgame (2026-10-07)
+
+| Feature | Status | Notes |
+|---|---|---|
+| Balance tools: `scripts/balance-runs.sh` (12-minute bot runs, all heroes x acts), `scripts/balance-bench.sh` (dummy DPS + a fixed pack per act) | S | |
+| Balance: act-start power matches real play; monsters from Act 4 on scale with tier; bosses' life by act (`world::boss_life`); per-class damage (`skills::class_damage`); Sky Pirate / Inquisitor damage taken; ophanim volleys | H S | Before/after numbers in dist/balance_*.txt and bench_*.txt (not in git) |
+| The Rekindling: a brazier in every town rebuilds a finished act's dungeons; bosses return without their relics or ending again | H S | Unit test |
+| Ash Rifts: the Riftwarden (after Solanthos), endless tiers, 8 modifiers, the rift bar and a guardian, 10-minute timer unlocking the next tier, rewards | H S | Unit test |
+| Ancient items: a rarity above Unique, unique stats x1.25-1.5 + one of 16 ancient powers (8 for anyone, 1 per hero) | H S | Unit test (Firestorm, save) |
+| Embers of mastery: levels past 50 give Embers for 4 capped tracks (damage, life, fortune, speed) | H S | Unit test |
+
 ## Acts 5 and 6, polish, Android (2026-10-07)
 
 | Feature | Status | Notes |

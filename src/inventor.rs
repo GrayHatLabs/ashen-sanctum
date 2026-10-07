@@ -230,7 +230,7 @@ impl Game {
 
     /// After every inventor cast: hitting the top of the gauge locks her guns.
     pub(crate) fn check_overheat(&mut self) {
-        if self.p.mana <= 0.5 && self.p.overheat <= 0.0 {
+        if self.p.mana <= 0.5 && self.p.overheat <= 0.0 && !self.has_power(crate::items::P_BOILER) {
             self.p.mana = 0.0;
             self.p.overheat = OVERHEAT_LOCK;
             self.say("OVERHEATED!".into());

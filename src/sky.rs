@@ -23,7 +23,7 @@ pub const FALL_COST: f32 = 0.15;
 impl Game {
     /// Does the wind blow here?
     pub fn windy(&self) -> bool {
-        self.level == LevelId::Heavens || self.theme == Theme::Spire
+        self.level == LevelId::Heavens || self.theme == Theme::Spire || self.rift_has(crate::endgame::RiftMod::Gale)
     }
 
     /// Is (x, y) open sky?
@@ -33,7 +33,7 @@ impl Game {
 
     pub(crate) fn update_sky(&mut self) {
         self.sky_tricks();
-        if !self.theme.sky() {
+        if !self.theme.sky() && !self.windy() {
             self.wind_gust = 0.0;
             self.wind_warn = 0.0;
             return;

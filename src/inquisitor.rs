@@ -552,6 +552,19 @@ impl Game {
             if p >= 1.0 && !self.whips[k].cracked {
                 // The crack: a white-gold burst at the tip.
                 self.whips[k].cracked = true;
+                // Chained Judgment (ancient power): the crack leaps to the nearest foe the whip missed.
+                if self.has_power(crate::items::P_CHAINED) {
+                    let hit = self.whips[k].hit.clone();
+                    let (lo, hi, pw) = (self.whips[k].lo, self.whips[k].hi, self.whips[k].power);
+                    let next = self
+                        .foes_where(|m| (m.x - tx).powi(2) + (m.y - ty).powi(2) < 16.0)
+                        .into_iter()
+                        .find(|j| !hit.contains(j));
+                    if let Some(j) = next {
+                        let dmg = self.rng.rf(lo, hi) * pw * WHIP_TIP_BONUS;
+                        self.inq_hit(j, dmg, 0.2, None, true);
+                    }
+                }
                 self.sfx.push(Sfx::Hit);
                 self.shake = self.shake.max(if overhead { 0.3 } else { 0.12 });
                 self.lights.push(Light { x: tx, y: ty, r: if overhead { 80.0 } else { 50.0 }, s: 0.8, life: 0.2, max: 0.2 });

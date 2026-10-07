@@ -62,7 +62,9 @@ impl Game {
     pub fn light_scale(&self) -> f32 {
         let blind = 1.0 - 0.55 * (self.blind_t / 3.5).min(1.0);
         let dark = if self.dark_t > 0.0 { 0.35 } else { 1.0 };
-        blind.min(dark)
+        // An Eclipse rift.
+        let eclipse = if self.rift_has(crate::endgame::RiftMod::Eclipse) { 0.55 } else { 1.0 };
+        blind.min(dark).min(eclipse)
     }
 
     pub(crate) fn update_deep(&mut self) {

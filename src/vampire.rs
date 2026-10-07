@@ -261,7 +261,8 @@ impl Game {
         }
         let sk = &self.p.skills;
         let steal = thirst_steal(sk.rank(Skill::Thirst)) + 0.01 * sk.rank(Skill::NightMastery) as f32;
-        self.p.hp = (self.p.hp + dealt * steal * mult).min(self.p.max_hp);
+        let lord = if self.has_power(crate::items::P_BLOODLORD) { 2.0 } else { 1.0 };
+        self.p.hp = (self.p.hp + dealt * steal * mult * lord).min(self.p.max_hp);
         self.feed(dealt * BLOOD_PER_DAMAGE * mult);
     }
 

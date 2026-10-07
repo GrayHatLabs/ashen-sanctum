@@ -23,6 +23,8 @@ pub enum LevelId {
     Heavens,
     /// (dungeon index into DUNGEONS, floor from 0)
     Dungeon(usize, usize),
+    /// An Ash Rift of this tier (endgame.rs).
+    Rift(u16),
 }
 
 impl LevelId {
@@ -41,6 +43,8 @@ impl LevelId {
             LevelId::Deep => 4,
             LevelId::Heavens => 5,
             LevelId::Dungeon(k, _) => DUNGEONS[k].act,
+            // The rifts open from Windward Anchorage, and lead back there.
+            LevelId::Rift(_) => 5,
         }
     }
 
@@ -749,6 +753,7 @@ pub fn generate(id: LevelId, seed: u64) -> Level {
         LevelId::Mechanus => mechanus(seed),
         LevelId::Deep => deep(seed),
         LevelId::Heavens => heavens(seed),
+        LevelId::Rift(t) => rift(t, seed),
         LevelId::Dungeon(k, f) => dungeon_floor(k, f, seed),
     }
 }
@@ -795,12 +800,14 @@ pub fn add_elites(lv: &mut Level, seed: u64) {
         LevelId::Mechanus => 0x1111,
         LevelId::Deep => 0x1211,
         LevelId::Heavens => 0x1311,
+        LevelId::Rift(t) => 0x1411 + t as u64,
         LevelId::Dungeon(k, f) => 0x0e12 + k as u64 * 16 + f as u64,
     };
     let mut rng = Rng::new(seed ^ salt.wrapping_mul(0x9e37_79b9));
     let (champs, elites) = match lv.id {
         LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep | LevelId::Heavens => (5, 3),
         LevelId::Dungeon(_, f) => (1 + (f > 0) as usize, 1),
+        LevelId::Rift(t) => (2 + t as usize / 4, 1 + t as usize / 8),
     };
     let mut order: Vec<usize> = (0..lv.mobs.len()).filter(|&i| !lv.mobs[i].boss).collect();
     for i in (1..order.len()).rev() {
@@ -2243,6 +2250,48 @@ pub fn deep(seed: u64) -> Level {
     lv
 }
 
+/// An Ash Rift (endgame.rs): one big floor in any act's look, its monsters drawn from two or three acts
+/// mixed together, and a way home at the start. Its guardian comes when you've slain enough.
+pub fn rift(tier: u16, seed: u64) -> Level {
+    let mut rng = Rng::new(seed ^ 0xA5_4121F7 ^ tier as u64 * 0x9E37);
+    let d = Dungeon::generate(&mut rng, 80, 80);
+    let look = &DUNGEONS[rng.range(0, DUNGEONS.len() as i32) as usize];
+    let area = crate::endgame::rift_area_tier(tier);
+    let mut lv = Level::new(LevelId::Rift(tier), format!("ASH RIFT - TIER {tier}"), look.theme, area, d);
+    let rooms: Vec<Room> = lv.d.rooms.clone();
+    let (sx, sy) = rooms[0].center();
+    lv.start = (sx as f32 + 1.5, sy as f32 + 0.5);
+    lv.portals.push(Portal { x: sx as f32 + 0.5, y: sy as f32 + 0.5, kind: PortalKind::TownPortal });
+    let mut pool: Vec<Kind> = vec![];
+    for _ in 0..3 {
+        let def = &DUNGEONS[rng.range(0, DUNGEONS.len() as i32) as usize];
+        pool.extend(def.monsters.iter().copied());
+    }
+    for r in rooms.iter().skip(1) {
+        let n = rng.range(3, 6) + (tier as i32 / 4).min(4);
+        let main = pool[rng.range(0, pool.len() as i32) as usize];
+        for _ in 0..n {
+            for _try in 0..20 {
+                let x = rng.range(r.x + 1, r.x + r.w - 1) as f32 + 0.5;
+                let y = rng.range(r.y + 1, r.y + r.h - 1) as f32 + 0.5;
+                if lv.d.blocked(x, y, 0.35) || lv.mobs.iter().any(|m| (m.x - x).abs() + (m.y - y).abs() < 1.0) {
+                    continue;
+                }
+                let kind = if rng.chance(0.35) { pool[rng.range(0, pool.len() as i32) as usize] } else { main };
+                lv.mobs.push(Mob::new(kind, x, y, area, &mut rng));
+                break;
+            }
+        }
+    }
+    lv
+}
+
+/// Bosses past Act 1 fell in seconds (balance pass 2026-10-07, scripts/balance-bench.sh): more life by
+/// act, so a herald lasts ~8 s and an act's last boss ~20-30 s at that act's power.
+pub fn boss_life(act: usize) -> f32 {
+    [1.0, 2.5, 3.0, 3.5, 4.0, 4.5][act.min(5)]
+}
+
 /// One floor of a dungeon: stairs up in the first room, stairs down (or the boss)
 /// in the last, monster packs in between.
 pub fn dungeon_floor(k: usize, floor: usize, seed: u64) -> Level {
@@ -2262,6 +2311,8 @@ pub fn dungeon_floor(k: usize, floor: usize, seed: u64) -> Level {
     let (ex, ey) = end.center();
     if last {
         let mut boss = Mob::new(def.boss, ex as f32 + 0.5, ey as f32 + 0.5, tier * 0.5 + 0.5, &mut rng);
+        boss.max_hp *= boss_life(def.act);
+        boss.hp = boss.max_hp;
         boss.home = (-1000.0, -2000.0); // bosses don't wander home
         lv.mobs.push(boss);
     } else {

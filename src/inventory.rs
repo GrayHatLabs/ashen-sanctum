@@ -627,6 +627,7 @@ fn tooltip(scr: &mut Screen, it: &Item, x: i32, mut y: i32, wrap_at: usize, clvl
 pub fn draw_icon(scr: &mut Screen, art: &Art, it: &Item, cx: i32, cy: i32, scale: f32) {
     let tint = match it.rarity {
         Rarity::Unique => Some(rgb(0xffb040)),
+        Rarity::Ancient => Some(rgb(0xff5a20)),
         _ => None,
     };
     let fx = Fx { tint: tint.unwrap_or(BLACK), tint_a: if tint.is_some() { 0.12 } else { 0.0 }, ..Fx::default() };
@@ -686,6 +687,7 @@ fn fallback_icon(scr: &mut Screen, slot: Slot, cx: i32, cy: i32, scale: f32, rar
         Rarity::Rare => rgb(0xf0e060),
         Rarity::Unique => rgb(0xffa030),
         Rarity::Set => rgb(0x40d040),
+        Rarity::Ancient => rgb(0xff5a20),
     };
     match slot {
         Slot::Gem => scr.disc(cx, cy, k(5), gem),

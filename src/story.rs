@@ -49,6 +49,10 @@ pub enum Role {
     Deckhand(u8),
     /// The jeweler in each town (by act): joins gems, adds and empties sockets.
     Jeweler(u8),
+    /// The Rekindling brazier in each town (by act): brings the act's bosses back (endgame.rs).
+    Brazier(u8),
+    /// The Riftwarden in Windward Anchorage: opens the Ash Rifts, and spends Embers (endgame.rs).
+    Riftwarden,
 }
 
 /// Jeweler names by act.
@@ -114,6 +118,15 @@ pub struct Quest {
 pub const DIFFICULTIES: [&str; 3] = ["NORMAL", "NIGHTMARE", "HELL"];
 
 impl Quest {
+    /// An act's story stage (0-3) and herald tokens, by act index.
+    pub fn stage_of(&self, act: usize) -> u8 {
+        [self.stage, self.stage2, self.stage3, self.stage4, self.stage5, self.stage6][act.min(5)]
+    }
+
+    pub fn tokens_of(&self, act: usize) -> [bool; 3] {
+        [self.seals, self.runes, self.sigils, self.keys, self.pearls, self.shards][act.min(5)]
+    }
+
     pub fn seal_count(&self) -> usize {
         self.seals.iter().filter(|s| **s).count()
     }
@@ -292,6 +305,12 @@ pub enum Act {
     Combine,
     /// The jeweler's bench: opens the inventory to add sockets or take gems out.
     Jewel,
+    /// The brazier: rebuild this act's dungeons and bring its bosses back.
+    Rekindle(u8),
+    /// The Riftwarden: open an Ash Rift of this tier.
+    OpenRift(u16),
+    /// The Riftwarden: put an Ember into this track (0 damage, 1 life, 2 fortune, 3 speed).
+    Ember(u8),
 }
 
 pub struct Dialog {
@@ -309,7 +328,7 @@ pub struct Dialog {
 }
 
 impl Dialog {
-    fn new(name: &'static str, pages: &[&str]) -> Self {
+    pub(crate) fn new(name: &'static str, pages: &[&str]) -> Self {
         let pages: Vec<String> = pages.iter().map(|s| s.to_string()).collect();
         let mut d = Dialog { name, pages, page: 0, options: vec![], sel: 0, advance_to: None, heals: false, last_options: vec![] };
         d.refresh_options();
@@ -332,6 +351,8 @@ impl Dialog {
 /// What an NPC says, given the story so far.
 pub fn talk(role: Role, q: &Quest) -> Dialog {
     match role {
+        // The brazier and the Riftwarden speak through endgame.rs (they need the hero's endgame state).
+        Role::Brazier(_) | Role::Riftwarden => Dialog::new("", &["..."]),
         Role::Elder => match q.stage {
             0 => {
                 let mut d = Dialog::new(

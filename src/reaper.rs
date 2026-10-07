@@ -243,7 +243,7 @@ impl Game {
     }
 
     pub(crate) fn soul_cap(&self) -> f32 {
-        (10.0 + archivist_cap(self.p.skills.rank(Skill::PatientArchivist))) * SOUL
+        (10.0 + archivist_cap(self.p.skills.rank(Skill::PatientArchivist)) + if self.has_power(crate::items::P_HARVEST) { 5.0 } else { 0.0 }) * SOUL
     }
 
     /// A foe died at (x, y): if she's near, its soul rises toward her lantern.

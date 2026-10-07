@@ -501,8 +501,11 @@ pub struct Mob {
 impl Mob {
     pub fn new(kind: Kind, x: f32, y: f32, tier: f32, rng: &mut Rng) -> Self {
         let d = def(kind);
-        let hp = d.hp * tier;
-        let k = tier.powf(0.8);
+        // Past Act 3 (tier 6) heroes' power outgrows a straight line (balance pass 2026-10-07,
+        // scripts/balance-bench.sh): monsters get that much tougher again, and a little harder-hitting.
+        let late = (tier / 6.0).max(1.0);
+        let hp = d.hp * tier * late;
+        let k = tier.powf(0.8) * late.powf(0.6);
         Mob {
             kind,
             x,
@@ -1068,8 +1071,10 @@ impl Game {
                             Kind::Marshal => shots.push((m.x, m.y, ux * 6.5, uy * 6.5, dmg, ShotKind::Gear)),
                             Kind::Jelly => shots.push((m.x, m.y, ux * 8.0, uy * 8.0, dmg, ShotKind::Spark)),
                             Kind::Ophanim => {
+                                // Three quick beams, one blow's worth between them (they were 1.5x, and a pack of
+                                // five shredded ranged heroes: balance pass 2026-10-07).
                                 for k in 0..3 {
-                                    shots.push((m.x, m.y, ux * (10.0 + k as f32), uy * (10.0 + k as f32), dmg * 0.5, ShotKind::Light));
+                                    shots.push((m.x, m.y, ux * (10.0 + k as f32), uy * (10.0 + k as f32), dmg * 0.34, ShotKind::Light));
                                 }
                             }
                             Kind::StormDrake | Kind::Thunderbird => {
@@ -1176,6 +1181,11 @@ impl Game {
             self.hurt_by(dmg, Some(src));
             if def(self.mobs[i].kind).chills {
                 self.chill(1.4);
+            }
+            // A Vampiric rift: monsters heal on every blow they land.
+            if self.rift_has(crate::endgame::RiftMod::Vampiric) {
+                let m = &mut self.mobs[i];
+                m.hp = (m.hp + dmg * 2.0).min(m.max_hp);
             }
             if src == Kind::Harpy {
                 let (hx, hy) = (self.mobs[i].x, self.mobs[i].y);

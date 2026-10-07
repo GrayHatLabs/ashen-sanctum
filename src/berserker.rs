@@ -603,7 +603,7 @@ impl Game {
             return;
         }
         self.p.fight_t = (self.p.fight_t - DT).max(0.0);
-        if self.p.fight_t <= 0.0 && self.p.berserk_t <= 0.0 {
+        if self.p.fight_t <= 0.0 && self.p.berserk_t <= 0.0 && !self.has_power(crate::items::P_UNDYING) {
             let decay = RAGE_DECAY / (1.0 + self.p.bonus.frac(crate::items::Stat::ManaRegen, 200));
             self.p.mana = (self.p.mana - decay * DT).max(0.0);
         }

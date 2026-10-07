@@ -140,6 +140,88 @@ impl Bot {
     }
 }
 
+/// The balance benchmark: in the first dungeon of the act, (1) 20 s against a dummy that never fights back
+/// (damage per second), then (2) a pack of eight of that act's monsters at full strength (time to clear,
+/// damage taken, deaths). The bot fights both, the same way it plays.
+fn bench(g: &mut Game) {
+    use crate::mobs::{Kind, Mob, MobState};
+    let act = g.level.act();
+    let k = act * 4;
+    let def = &crate::world::DUNGEONS[k];
+    g.debug_goto(LevelId::Dungeon(k, 0));
+    g.banner_t = 0.0;
+    let mut bot = Bot { path: vec![], goal: (0.0, 0.0), repath: 0 };
+    // A clear spot with room around it.
+    let (px, py) = (g.p.x, g.p.y);
+    let open = |g: &Game, x: f32, y: f32| !g.d.blocked(x, y, 0.5);
+    let spot = |g: &Game, r: f32, n: usize| -> Vec<(f32, f32)> {
+        (0..n).map(|i| {
+            let a = i as f32 / n as f32 * std::f32::consts::TAU;
+            (1..=8).map(|s| (px + a.cos() * r * s as f32 / 8.0, py + a.sin() * r * s as f32 / 8.0)).filter(|&(x, y)| open(g, x, y)).last().unwrap_or((px + 1.0, py))
+        }).collect()
+    };
+    // (1) the dummy
+    g.mobs.clear();
+    let d = spot(g, 3.0, 1)[0];
+    let mut m = Mob::new(Kind::Sentinel, d.0, d.1, def.tier, &mut g.rng);
+    m.max_hp = 1e9;
+    m.hp = 1e9;
+    m.dmg = (0.0, 0.0);
+    m.speed = 0.0;
+    m.state = MobState::Chase;
+    // A boss can't be charmed onto your side (the vampire's Mesmerize would make it unhittable).
+    m.boss = true;
+    g.mobs.push(m);
+    let god = g.p.max_hp;
+    for t in 0..1200 {
+        let inp = bot.act(g, t);
+        g.update(&inp);
+        g.sfx.clear();
+        g.p.hp = god;
+    }
+    let dealt = 1e9 - g.mobs.iter().find(|m| m.kind == Kind::Sentinel && m.max_hp > 1e8).map_or(1e9, |m| m.hp);
+    let charmed = g.mobs.iter().any(|m| m.kind == Kind::Sentinel && m.charm > 0.0);
+    let (casts, hits) = (g.stats.casts, g.stats.hits);
+    let dps = dealt / 20.0;
+    // (2) the pack
+    (g.p.x, g.p.y) = (px, py);
+    g.p.hp = g.p.max_hp;
+    g.p.mana = g.p.max_mana;
+    g.mobs.clear();
+    g.shots.clear();
+    g.hazards.clear();
+    let deaths0 = g.stats.deaths;
+    let taken0 = g.stats.damage_taken;
+    for (i, &(x, y)) in spot(g, 5.0, 8).iter().enumerate() {
+        let kind = def.monsters[i % def.monsters.len()];
+        let mut m = Mob::new(kind, x, y, def.tier, &mut g.rng);
+        m.state = MobState::Chase;
+        g.mobs.push(m);
+    }
+    let mut cleared = None;
+    for t in 0..3600 {
+        let inp = bot.act(g, t);
+        g.update(&inp);
+        g.sfx.clear();
+        if g.mobs.iter().all(|m| !m.alive() || m.charm > 0.0) {
+            cleared = Some(t as f32 / 60.0);
+            break;
+        }
+    }
+    println!(
+        "bench act{} {:<10} clvl={} life={} dps={:.0} pack_clear={} pack_taken={:.0} pack_deaths={} dummy_casts={casts} dummy_hits={hits}{}",
+        act + 1,
+        g.p.skills.class.key(),
+        g.p.clvl,
+        g.p.max_hp as i32,
+        dps,
+        cleared.map_or("60+".to_string(), |s| format!("{s:.1}s")),
+        g.stats.damage_taken - taken0,
+        g.stats.deaths - deaths0,
+        if charmed { " (dummy charmed)" } else { "" }
+    );
+}
+
 pub fn run(dir: Option<&str>, tall: bool) -> i32 {
     let h = if tall { SH_TALL } else { SH_WIDE };
     let mut g = Game::new(7, h);
@@ -159,6 +241,11 @@ pub fn run(dir: Option<&str>, tall: bool) -> i32 {
         g.p.skills = skills;
         g.p.skills.points = points;
     }
+    // ASHEN_BENCH=1 (scripts/balance-bench.sh): a fixed fight instead of a run, so heroes compare fairly.
+    if std::env::var("ASHEN_BENCH").is_ok() {
+        bench(&mut g);
+        return 0;
+    }
     let mut scr = Screen::new(h);
     if let Some(d) = dir {
         std::fs::create_dir_all(d).ok();
@@ -175,6 +262,7 @@ pub fn run(dir: Option<&str>, tall: bool) -> i32 {
     let mut visited = std::collections::HashSet::new();
     let (mut next_action, mut action_shots) = (0u32, 0);
     let mut last_bosses = 0;
+    let mut last_deaths = 0;
     let mut last_dialog = None;
     for t in 0..total {
         let inp = bot.act(&g, t);
@@ -182,6 +270,23 @@ pub fn run(dir: Option<&str>, tall: bool) -> i32 {
         g.sfx.clear();
         if god && g.p.hp < g.p.max_hp * 0.5 {
             g.p.hp = g.p.max_hp;
+        }
+        // ASHEN_DEATHS=1: what was around the hero each time it died (balance hunting).
+        let dead_now = matches!(g.state, crate::game::State::Dead(_));
+        if std::env::var("ASHEN_DEATHS").is_ok() && dead_now && last_deaths == 0 {
+            last_deaths = 1;
+            let mut near: Vec<String> = g
+                .mobs
+                .iter()
+                .filter(|m| m.alive() && m.charm <= 0.0 && (m.x - g.p.x).powi(2) + (m.y - g.p.y).powi(2) < 100.0)
+                .map(|m| format!("{:?}", m.kind))
+                .collect();
+            near.sort();
+            let shots: Vec<String> = g.shots.iter().map(|s| format!("{:?}", s.kind)).collect();
+            println!("  death {} at t={}s in {} at {:.0},{:.0}: near {:?} shots={:?} hazards={} heat={:.2} fell={}", g.stats.deaths, t / 60, g.level_name, g.p.x, g.p.y, near, shots, g.hazards.len(), g.heat(), g.stats.kills_fell);
+        }
+        if !dead_now {
+            last_deaths = 0;
         }
         if dir.is_none() && minutes > 6 && g.stats.bosses != last_bosses {
             last_bosses = g.stats.bosses;
@@ -962,6 +1067,45 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             g.floaters.clear();
             save(&mut g, scr, "port_screenshot");
         }
+    }
+    // The endgame: the brazier and the Riftwarden in Windward Anchorage, and an Ash Rift with its guardian.
+    {
+        let mut g = Game::new(7, h);
+        g.act_start(5);
+        g.quest.stage6 = 3;
+        g.debug_goto(LevelId::Heavens);
+        (g.p.x, g.p.y) = g.start;
+        g.banner_t = 0.0;
+        g.message = None;
+        idle(&mut g, 30);
+        save(&mut g, scr, "endgame_town");
+        if let Some(i) = g.npcs.iter().position(|n| n.role == Role::Riftwarden) {
+            g.dialog = g.endgame_dialog(Role::Riftwarden);
+            if let Some(d) = g.dialog.as_mut() {
+                d.page = d.pages.len() - 1;
+                d.refresh_options();
+            }
+            let _ = i;
+            save(&mut g, scr, "endgame_riftwarden");
+            g.dialog = None;
+        }
+        g.p.ember_points = 3;
+        g.p.base_hp += 4000.0;
+        g.p.recalc();
+        g.p.hp = g.p.max_hp;
+        g.open_rift(6);
+        g.banner_t = 0.0;
+        if let Some((x, y)) = g.bot_target().map(|t| (t.0, t.1)) {
+            g.debug_place_near(x, y, 4.0);
+        }
+        idle(&mut g, 60);
+        save(&mut g, scr, "endgame_rift");
+        let need = g.rift.as_ref().map_or(0.0, |r| r.needed);
+        for _ in 0..(need as usize + 1) {
+            g.rift_kill(crate::mobs::Rank::Normal, false);
+        }
+        idle(&mut g, 90);
+        save(&mut g, scr, "endgame_guardian");
     }
     // Act 6: Windward Anchorage, the Skyreach in a gust, the heralds of the sky and Solanthos.
     {

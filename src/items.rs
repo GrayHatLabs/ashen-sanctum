@@ -48,6 +48,8 @@ pub enum Rarity {
     Unique,
     /// Part of a set (green): more bonuses the more pieces you wear.
     Set,
+    /// Ancient (endgame.rs): a unique's stats rolled stronger, plus an ancient power. Very rare.
+    Ancient,
 }
 
 /// Name colour per rarity (D2: white, blue, yellow, gold).
@@ -58,6 +60,7 @@ pub fn rarity_col(r: Rarity) -> u32 {
         Rarity::Rare => 0xf0e060,
         Rarity::Unique => 0xc89850,
         Rarity::Set => 0x40d040,
+        Rarity::Ancient => 0xff5a20,
     }
 }
 
@@ -89,9 +92,11 @@ pub enum Stat {
     Magic,
     LifeOnKill,
     ManaOnKill,
+    /// Ancient powers (bit flags, see POWERS): OR-ed together, not added.
+    Power,
 }
 
-pub const STATS: [Stat; 15] = [
+pub const STATS: [Stat; 16] = [
     Stat::Skills,
     Stat::Fire,
     Stat::Life,
@@ -107,6 +112,7 @@ pub const STATS: [Stat; 15] = [
     Stat::ManaOnKill,
     Stat::Gold,
     Stat::Magic,
+    Stat::Power,
 ];
 
 pub fn stat_key(s: Stat) -> &'static str {
@@ -126,6 +132,7 @@ pub fn stat_key(s: Stat) -> &'static str {
         Stat::Magic => "magic",
         Stat::LifeOnKill => "lifekill",
         Stat::ManaOnKill => "manakill",
+        Stat::Power => "power",
     }
 }
 
@@ -147,7 +154,68 @@ pub fn stat_text(s: Stat, v: i32) -> String {
         Stat::Magic => format!("+{v}% BETTER CHANCE OF MAGIC ITEMS"),
         Stat::LifeOnKill => format!("+{v} LIFE AFTER EACH KILL"),
         Stat::ManaOnKill => format!("+{v} MANA AFTER EACH KILL"),
+        Stat::Power => (0..POWERS.len())
+            .filter(|i| v & (1 << i) != 0)
+            .map(|i| format!("ANCIENT POWER - {}: {}", POWERS[i].0, POWERS[i].1))
+            .collect::<Vec<_>>()
+            .join(" / "),
     }
+}
+
+/// Ancient powers: (name, what it does, the hero it's for, or None for anyone). Bit i of Stat::Power.
+pub const POWERS: [(&str, &str, Option<crate::skills::Class>); 16] = [
+    ("EMBERSTORM", "SLAIN FOES BURST, SCORCHING THOSE AROUND THEM", None),
+    ("BLOODTHIRST", "4% OF YOUR DAMAGE HEALS YOU", None),
+    ("ASHWALKER", "+20% FASTER RUN/WALK", None),
+    ("GIANTSLAYER", "+40% DAMAGE TO BOSSES", None),
+    ("THE LONG NIGHT", "+50% DAMAGE BELOW A THIRD OF YOUR LIFE", None),
+    ("SECOND WIND", "ONCE A MINUTE A KILLING BLOW LEAVES YOU AT HALF LIFE", None),
+    ("STORMCALLER", "SOME BLOWS ARC TO A NEARBY FOE", None),
+    ("PHOENIX ASH", "COOLDOWNS RECOVER 30% FASTER", None),
+    ("FIRESTORM", "YOUR FIREBALLS SPLIT IN THREE", Some(crate::skills::Class::Sorceress)),
+    ("BLOODLORD", "YOUR DRAINS HEAL TWICE AS MUCH", Some(crate::skills::Class::Vampire)),
+    ("ENDLESS BOILER", "YOUR GUNS NEVER LOCK FROM OVERHEATING", Some(crate::skills::Class::Inventor)),
+    ("VALHALLA'S CALL", "VALOR FILLS TWICE AS FAST", Some(crate::skills::Class::Valkyrie)),
+    ("UNDYING RAGE", "RAGE NEVER FADES", Some(crate::skills::Class::Berserker)),
+    ("SOUL HARVEST", "CARRY FIVE MORE SOULS", Some(crate::skills::Class::Reaper)),
+    ("COLOSSI", "YOUR CREATURES HAVE HALF AGAIN AS MUCH LIFE AND DAMAGE", Some(crate::skills::Class::Druid)),
+    ("CHAINED JUDGMENT", "THE WHIP'S CRACK STRIKES A SECOND FOE", Some(crate::skills::Class::Inquisitor)),
+];
+
+pub const P_EMBERSTORM: usize = 0;
+pub const P_BLOODTHIRST: usize = 1;
+pub const P_ASHWALKER: usize = 2;
+pub const P_GIANTSLAYER: usize = 3;
+pub const P_LONG_NIGHT: usize = 4;
+pub const P_SECOND_WIND: usize = 5;
+pub const P_STORMCALLER: usize = 6;
+pub const P_PHOENIX_ASH: usize = 7;
+pub const P_FIRESTORM: usize = 8;
+pub const P_BLOODLORD: usize = 9;
+pub const P_BOILER: usize = 10;
+pub const P_VALHALLA: usize = 11;
+pub const P_UNDYING: usize = 12;
+pub const P_HARVEST: usize = 13;
+pub const P_COLOSSI: usize = 14;
+pub const P_CHAINED: usize = 15;
+
+/// An ancient item for this hero: one of the uniques, its stats 25-50% stronger, plus an ancient power (one
+/// anyone can use, or the hero's own).
+pub fn roll_ancient(class: crate::skills::Class, rng: &mut Rng) -> Option<Item> {
+    let i = rng.range(0, UNIQUES.len() as i32) as usize;
+    let mut it = unique(i);
+    let k = rng.rf(1.25, 1.5);
+    for (s, v) in it.stats.iter_mut() {
+        if *s != Stat::Skills {
+            *v = ((*v as f32) * k).round() as i32;
+        }
+    }
+    let ok: Vec<usize> = (0..POWERS.len()).filter(|&p| POWERS[p].2.map_or(true, |c| c == class)).collect();
+    let p = ok[rng.range(0, ok.len() as i32) as usize];
+    it.stats.push((Stat::Power, 1 << p));
+    it.rarity = Rarity::Ancient;
+    it.name = format!("ANCIENT {}", it.name);
+    Some(it)
 }
 
 /// Totals of every stat on your worn gear.
@@ -604,6 +672,7 @@ impl Item {
             Rarity::Rare => 6,
             Rarity::Set => 10,
             Rarity::Unique => 12,
+            Rarity::Ancient => 25,
         };
         (4 + self.ilvl as i32 * 2) * mult + self.gems.iter().map(|g| gem_item(*g).price()).sum::<i32>()
     }
@@ -698,7 +767,7 @@ pub fn roll_base(base: usize, ilvl: u8, rarity: Rarity, rng: &mut Rng) -> Item {
         stats.push((s, rng.range(lo, hi + 1)));
     }
     let (np, ns) = match rarity {
-        Rarity::Normal | Rarity::Unique | Rarity::Set => (0, 0),
+        Rarity::Normal | Rarity::Unique | Rarity::Set | Rarity::Ancient => (0, 0),
         Rarity::Magic => {
             let r = rng.f();
             if r < 0.4 {
@@ -736,7 +805,7 @@ pub fn roll_base(base: usize, ilvl: u8, rarity: Rarity, rng: &mut Rng) -> Item {
         }
     }
     let name = match rarity {
-        Rarity::Normal | Rarity::Unique | Rarity::Set => bd.name.to_string(),
+        Rarity::Normal | Rarity::Unique | Rarity::Set | Rarity::Ancient => bd.name.to_string(),
         Rarity::Magic => {
             let mut n = String::new();
             if let Some(p) = pre_name {
@@ -889,7 +958,11 @@ impl Gear {
         let mut b = Bonus::default();
         for it in self.worn.iter().flatten() {
             for (s, v) in it.all_stats() {
-                b.0[s as usize] += v;
+                if s == Stat::Power {
+                    b.0[s as usize] |= v;
+                } else {
+                    b.0[s as usize] += v;
+                }
             }
         }
         for (si, n) in self.sets_worn() {
@@ -1087,6 +1160,7 @@ impl Gear {
                 1 => Rarity::Magic,
                 2 => Rarity::Rare,
                 4 => Rarity::Set,
+                5 => Rarity::Ancient,
                 _ => Rarity::Unique,
             };
             let mut stats = vec![];

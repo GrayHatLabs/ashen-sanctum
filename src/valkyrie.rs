@@ -299,6 +299,7 @@ impl Game {
     }
 
     pub(crate) fn gain_valor(&mut self, v: f32) {
+        let v = if self.has_power(crate::items::P_VALHALLA) { v * 2.0 } else { v };
         let was = self.blazing();
         self.p.mana = (self.p.mana + v).min(self.p.max_mana);
         self.p.fight_t = FIGHT_TIME;

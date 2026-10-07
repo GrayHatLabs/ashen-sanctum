@@ -102,6 +102,7 @@ pub fn file_name(id: LevelId) -> String {
         LevelId::Deep => "deep".into(),
         LevelId::Heavens => "heavens".into(),
         LevelId::Dungeon(k, f) => format!("{}_floor{}", DUNGEON_SLUGS[k], f + 1),
+        LevelId::Rift(t) => format!("rift{t}"),
     }
 }
 
@@ -114,6 +115,7 @@ pub fn id_string(id: LevelId) -> String {
         LevelId::Deep => "deep".into(),
         LevelId::Heavens => "heavens".into(),
         LevelId::Dungeon(k, f) => format!("dungeon:{k}:{f}"),
+        LevelId::Rift(t) => format!("rift:{t}"),
     }
 }
 
@@ -135,6 +137,9 @@ pub fn parse_id(s: &str) -> Option<LevelId> {
     }
     if s == "heavens" {
         return Some(LevelId::Heavens);
+    }
+    if let Some(t) = s.strip_prefix("rift:") {
+        return t.parse().ok().map(LevelId::Rift);
     }
     let mut it = s.strip_prefix("dungeon:")?.split(':');
     let k: usize = it.next()?.parse().ok()?;
@@ -584,6 +589,8 @@ pub fn from_file(f: &LevelFile, seed: u64) -> Result<Level, String> {
                 let mut mob = Mob::new(kind, m.x, m.y, tier, &mut rng);
                 if boss {
                     mob.home = (-1000.0, -2000.0);
+                    mob.max_hp *= world::boss_life(id.act());
+                    mob.hp = mob.max_hp;
                 }
                 lv.mobs.push(mob);
             }

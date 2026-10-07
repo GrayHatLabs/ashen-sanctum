@@ -203,6 +203,13 @@ pub struct Light {
 }
 
 pub struct Player {
+    /// Endgame (endgame.rs): how often each act has been rekindled, the deepest Ash Rift cleared in time,
+    /// rifts opened, and Embers of mastery (four tracks, and points to spend).
+    pub rekindles: [u32; 6],
+    pub rift_best: u16,
+    pub rift_runs: u32,
+    pub embers: [u8; 4],
+    pub ember_points: u32,
     pub x: f32,
     pub y: f32,
     pub hp: f32,
@@ -312,6 +319,11 @@ pub struct Player {
 impl Player {
     fn new() -> Self {
         Player {
+            rekindles: [0; 6],
+            rift_best: 0,
+            rift_runs: 0,
+            embers: [0; 4],
+            ember_points: 0,
             x: 0.0,
             y: 0.0,
             hp: 70.0,
@@ -504,7 +516,7 @@ impl Player {
     pub fn recalc(&mut self) {
         use crate::items::Stat;
         self.bonus = self.gear.bonus();
-        self.max_hp = self.base_hp + self.bonus.get(Stat::Life) as f32;
+        self.max_hp = (self.base_hp + self.bonus.get(Stat::Life) as f32) * (1.0 + 0.02 * self.embers[1] as f32);
         self.max_mana = self.base_mana + self.bonus.get(Stat::Mana) as f32;
         self.hp = self.hp.min(self.max_hp);
         self.mana = self.mana.min(self.max_mana);
@@ -568,9 +580,9 @@ pub struct Game {
     pub(crate) safe: Option<(f32, f32, f32, f32)>,
     pub(crate) start: (f32, f32),
     /// The overworld's wake-up spot (town square), remembered while you're in a dungeon.
-    town_start: (f32, f32),
-    parked: HashMap<LevelId, Level>,
-    world_seed: u64,
+    pub(crate) town_start: (f32, f32),
+    pub(crate) parked: HashMap<LevelId, Level>,
+    pub(crate) world_seed: u64,
     // ---- transient effects ----
     pub(crate) balls: Vec<Fireball>,
     pub(crate) novas: Vec<crate::skills::Nova>,
@@ -639,6 +651,9 @@ pub struct Game {
     pub(crate) wind_warn: f32,
     pub(crate) wind_gust: f32,
     pub(crate) last_safe: (f32, f32),
+    /// The Ash Rift in progress (endgame.rs), and when Second Wind last saved you.
+    pub(crate) rift: Option<crate::endgame::RiftRun>,
+    pub(crate) second_wind_t: f32,
     pub(crate) binds: Vec<crate::inquisitor::BindFx>,
     /// The blow being dealt to you comes from something cursed (her Iron Halo).
     pub(crate) hurt_cursed: bool,
@@ -758,6 +773,8 @@ impl Game {
             wind_warn: 0.0,
             wind_gust: 0.0,
             last_safe: (0.0, 0.0),
+            rift: None,
+            second_wind_t: 0.0,
             binds: vec![],
             hurt_cursed: false,
             clocks: vec![],
@@ -840,6 +857,7 @@ impl Game {
         if lv.id.overland() {
             self.town_start = lv.start;
         }
+        self.add_endgame_npcs();
         self.balls.clear();
         self.novas.clear();
         self.fire_walls.clear();
@@ -914,6 +932,7 @@ impl Game {
         let base = match self.level {
             LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep | LevelId::Heavens => (self.town_start.0 + 3.0, self.town_start.1 + 2.0),
             LevelId::Dungeon(..) => self.portals.iter().find(|p| p.kind == PortalKind::Up).map(|p| (p.x + 2.0, p.y + 1.0)).unwrap_or(self.start),
+            LevelId::Rift(_) => self.start,
         };
         let clear = |x: f32, y: f32| {
             !self.d.blocked(x, y, 0.6)
@@ -946,12 +965,17 @@ impl Game {
             LevelId::Deep => "BRINEHOLLOW".into(),
             LevelId::Heavens => "WINDWARD ANCHORAGE".into(),
             LevelId::Dungeon(k, f) => format!("{} - LEVEL {}", DUNGEONS_LIST[k].name, f + 1),
+            LevelId::Rift(t) => format!("ASH RIFT - TIER {t}"),
         }
     }
 
     /// Touching a waypoint activates it; stepping onto it opens the travel menu.
     fn check_waypoint(&mut self) {
         let (wx, wy) = self.waypoint;
+        // A rift is a one-off: its waypoint doesn't join your travel list.
+        if self.in_rift() {
+            return;
+        }
         let d2 = (self.p.x - wx).powi(2) + (self.p.y - wy).powi(2);
         if d2 > 1.6 {
             self.wp_armed = true;
@@ -1055,7 +1079,8 @@ impl Game {
         p.xp = 0.0;
         p.base_hp = 70.0 + 8.0 * (clvl - 1) as f32 + 15.0 * relics as f32;
         p.base_mana = 50.0 + 4.0 * (clvl - 1) as f32 + 10.0 * relics as f32;
-        p.power = 1.07f32.powi(clvl as i32 - 1) * 1.12f32.powi(relics);
+        // The same growth as playing there: 7% a level to 20, 3% after (level_up), and the relics' boosts.
+        p.power = (2..=clvl).map(|l| if l <= 20 { 1.07f32 } else { 1.03 }).product::<f32>() * 1.12f32.powi(relics);
         p.skills = crate::skills::Skills::new(p.skills.class);
         p.skills.points = clvl + relics as u32;
         p.gold = 3000 * act as i32;
@@ -1206,7 +1231,7 @@ impl Game {
         self.parked.insert(cur.id, cur);
         let lv = match self.parked.remove(&id) {
             Some(lv) => lv,
-            None => world::build_at(id, self.world_seed, self.quest.difficulty),
+            None => world::build_at(id, self.level_seed(id), self.quest.difficulty),
         };
         self.swap_in(lv);
         self.stats.levels_entered += 1;
@@ -1329,6 +1354,15 @@ impl Game {
 
     /// The quest log line for the act you're in.
     pub fn quest_log(&self) -> String {
+        if let Some((_, _, _, guardian, done)) = self.rift_hud() {
+            return if done {
+                "THE RIFT IS CLEARED. TAKE THE WAY HOME AT ITS START".into()
+            } else if guardian {
+                "SLAY THE RIFT GUARDIAN".into()
+            } else {
+                "SLAY THE RIFT'S MONSTERS TO CALL ITS GUARDIAN".into()
+            };
+        }
         match self.level.act() {
             5 => self.quest.log6(),
             4 => self.quest.log5(),
@@ -1603,6 +1637,8 @@ impl Game {
         self.update_hazards();
         self.update_deep();
         self.update_sky();
+        self.update_rift();
+        self.second_wind_t = (self.second_wind_t - DT).max(0.0);
         self.update_clockwork();
         self.update_balls();
         self.update_novas();
@@ -1825,7 +1861,7 @@ impl Game {
 
     pub(crate) fn open_dialog(&mut self, i: usize) {
         let role = self.npcs[i].role;
-        let mut d = story::talk(role, &self.quest);
+        let mut d = self.endgame_dialog(role).unwrap_or_else(|| story::talk(role, &self.quest));
         if d.heals {
             // Aldric can also make you forget your skills, for a price.
             let price = 50 * self.p.clvl as i32;
@@ -1896,6 +1932,26 @@ impl Game {
                 self.next_difficulty();
             }
             Some(Act::Combine) => self.combine_gems(),
+            Some(Act::Rekindle(a)) => {
+                self.dialog = None;
+                self.rekindle(a as usize);
+            }
+            Some(Act::OpenRift(t)) => {
+                self.dialog = None;
+                self.open_rift(t);
+            }
+            Some(Act::Ember(k)) => {
+                self.spend_ember(k);
+                // Talk again: the Riftwarden's list shows the new counts.
+                if let Some(d) = self.endgame_dialog(Role::Riftwarden) {
+                    let mut d = d;
+                    d.page = d.pages.len() - 1;
+                    d.refresh_options();
+                    self.dialog = Some(d);
+                } else {
+                    self.dialog = None;
+                }
+            }
             Some(Act::Jewel) => {
                 self.open_inventory();
                 self.inv.as_mut().unwrap().jewel = true;
@@ -2346,7 +2402,7 @@ impl Game {
         }
         let base = if run { RUN_SPEED } else { WALK_SPEED };
         let base = if self.p.phoenix_t > 0.0 || self.p.embrace_t > 0.0 { base * 1.4 } else if self.p.suit_t > 0.0 { base * 1.2 } else { base };
-        let base = base * (1.0 + gear.frac(crate::items::Stat::Move, 50));
+        let base = base * (1.0 + gear.frac(crate::items::Stat::Move, 50)) * self.ember_speed() * if self.has_power(crate::items::P_ASHWALKER) { 1.2 } else { 1.0 };
         let base = if self.p.chill > 0.0 { base * 0.6 } else { base };
         let base = if self.flooded(self.p.x, self.p.y) { base * crate::tides::WADE } else { base };
         let speed = if casting { base * 0.25 } else { base };
@@ -2404,7 +2460,7 @@ impl Game {
                     self.floater(px, py, "MANA POTION".into(), rgb(0x6090ff));
                 }
                 Drop::Gold(n) => {
-                    let n = (n as f32 * (1.0 + self.p.bonus.frac(crate::items::Stat::Gold, 300))).round() as i32;
+                    let n = (n as f32 * (1.0 + self.p.bonus.frac(crate::items::Stat::Gold, 300) + self.ember_fortune() as f32 / 100.0)).round() as i32;
                     self.p.gold += n;
                     self.floater(px, py, format!("{n} GOLD"), rgb(0xe8c050));
                 }
@@ -2610,6 +2666,14 @@ impl Game {
         let (lo, hi) = if vampire { crate::vampire::lance_dmg(fb_rank) } else { crate::skills::fireball_dmg(fb_rank) };
         let dmg = if ember { self.rng.rf(3.0, 5.0) } else { self.rng.rf(lo, hi) } * power;
         self.balls.push(Fireball { x, y, vx: ux * speed, vy: uy * speed, life, dmg, ember });
+        // Firestorm (the sorceress's ancient power): two more, fanned out.
+        if !ember && !vampire && self.has_power(crate::items::P_FIRESTORM) {
+            for a in [-0.26f32, 0.26] {
+                let (c, s) = (a.cos(), a.sin());
+                let (vx, vy) = (ux * c - uy * s, ux * s + uy * c);
+                self.balls.push(Fireball { x, y, vx: vx * speed, vy: vy * speed, life, dmg: dmg * 0.6, ember });
+            }
+        }
         if ember {
             self.stats.embers += 1;
         } else {
@@ -2681,6 +2745,16 @@ impl Game {
         self.hurt_cursed = false;
     }
 
+    /// Does the hero wear an ancient item with this power (items::POWERS)?
+    pub fn has_power(&self, p: usize) -> bool {
+        self.p.bonus.get(crate::items::Stat::Power) & (1 << p) != 0
+    }
+
+    #[cfg(test)]
+    pub(crate) fn debug_gain_xp(&mut self, xp: f32) {
+        self.gain_xp(xp);
+    }
+
     pub(crate) fn hurt_player(&mut self, dmg: f32) {
         if matches!(self.state, State::Dead(_)) {
             return;
@@ -2689,6 +2763,23 @@ impl Game {
         let dmg = if self.p.mist > 0.0 { 0.0 } else { self.p.armored(dmg) };
         // The steam suit takes half.
         let dmg = if self.p.suit_t > 0.0 { dmg * 0.5 } else { dmg };
+        // A Fragile rift: a quarter more.
+        let dmg = if self.rift_has(crate::endgame::RiftMod::Fragile) { dmg * 1.25 } else { dmg };
+        // Second Wind (ancient power): once a minute a killing blow leaves you at half life.
+        if dmg >= self.p.hp && self.has_power(crate::items::P_SECOND_WIND) && self.second_wind_t <= 0.0 {
+            self.second_wind_t = 60.0;
+            self.p.hp = self.p.max_hp * 0.5;
+            let (x, y) = (self.p.x, self.p.y);
+            self.floater(x, y, "SECOND WIND!".into(), rgb(0xff8a30));
+            return;
+        }
+        // The balance pass (2026-10-07): the Sky Pirate's plating and the Inquisitor's iron and faith take
+        // the edge off; both dealt plenty but died far more than the rest late on.
+        let dmg = dmg * match self.p.skills.class {
+            crate::skills::Class::Inventor => 0.8,
+            crate::skills::Class::Inquisitor => 0.85,
+            _ => 1.0,
+        };
         // The valkyrie: Northborn shrugs off part of it, the warhorse takes half while it charges,
         // and every blow she takes stokes her Valor.
         // The berserker: Iron Hide below half life, and every blow stokes her rage.
@@ -3002,11 +3093,31 @@ impl Game {
                 }
             }
         }
+        // The Ash Rifts: the bar fills, and a guardian's fall clears the rift.
+        let rank = self.mobs[i].rank;
+        self.rift_kill(rank, boss);
+        if boss && self.in_rift() {
+            self.rift_cleared(x, y);
+        }
+        // Emberstorm (ancient power): the slain burst, scorching those around them.
+        if self.has_power(crate::items::P_EMBERSTORM) {
+            let blast = self.mobs[i].max_hp * 0.25;
+            let near: Vec<usize> = (0..self.mobs.len()).filter(|&j| j != i && self.mobs[j].alive() && self.mobs[j].charm <= 0.0 && (self.mobs[j].x - x).powi(2) + (self.mobs[j].y - y).powi(2) < 6.25).collect();
+            for _ in 0..8 {
+                self.spray_at(x, y, PKind::Fire, 30.0);
+            }
+            for j in near {
+                self.hit_mob(j, blast, 1.0, 0.0, None, true);
+            }
+        }
         if boss {
             self.stats.bosses += 1;
             self.save_due = true;
             self.shake = 1.0;
             self.lights.push(Light { x, y, r: 260.0, s: 1.5, life: 1.2, max: 1.2 });
+            // A rekindled boss (or a rift guardian) gives its loot again, but not its relic or the ending.
+            let story = !self.boss_story_done(kind) && !self.in_rift();
+            if story {
             match kind {
                 Kind::BoneWarden => self.pickups.push(Pickup { x, y, kind: Drop::Seal(0), t: 0.0 }),
                 Kind::PlagueWarden => self.pickups.push(Pickup { x, y, kind: Drop::Seal(1), t: 0.0 }),
@@ -3057,6 +3168,7 @@ impl Game {
                     self.dialog = None;
                 }
                 _ => {}
+            }
             }
             for k in 0..3 {
                 self.pickups.push(Pickup { x: x + k as f32 * 0.5 - 0.5, y: y + 0.6, kind: Drop::Gold(self.rng.range(40, 90)), t: 0.0 });
@@ -3125,7 +3237,7 @@ impl Game {
         use crate::mobs::Rank;
         use crate::items;
         let ilvl = items::ilvl_for(self.tier) + if boss { 3 } else { 0 };
-        let mf = self.p.bonus.get(items::Stat::Magic);
+        let mf = self.p.bonus.get(items::Stat::Magic) + self.ember_fortune();
         let mut drops = vec![];
         if boss {
             let key = match kind {
@@ -3221,6 +3333,7 @@ impl Game {
             self.p.recalc();
             // Damage grows fast early and slower past level 20 (so Nightmare and Hell still bite).
             self.p.power *= if self.p.clvl <= 20 { 1.07 } else { 1.03 };
+            self.ember_level_up();
             self.p.hp = self.p.max_hp;
             self.p.mana = self.p.max_mana;
             self.level_up_t = 2.5;
@@ -3778,7 +3891,8 @@ mod tests {
         let hp = g.mobs[1].hp;
         g.hit_mob(1, 10.0, 0.0, 0.0, None, false);
         let walled = hp - g.mobs[1].hp;
-        assert!((walled - 7.0).abs() < 0.01, "shield wall: {walled}");
+        let k = crate::skills::class_damage(g.p.skills.class);
+        assert!((walled - 7.0 * k).abs() < 0.01, "shield wall: {walled}");
         // ...and with the marshal dead, they're broken and take more.
         g.mobs[0].hp = 0.0;
         g.kill(0);
@@ -3786,7 +3900,7 @@ mod tests {
         assert!(!g.mobs[1].drilled && g.mobs[1].broken > 0.0);
         let hp = g.mobs[1].hp;
         g.hit_mob(1, 10.0, 0.0, 0.0, None, false);
-        assert!((hp - g.mobs[1].hp - 13.0).abs() < 0.01);
+        assert!((hp - g.mobs[1].hp - 13.0 * k).abs() < 0.01);
     }
 
     #[test]

@@ -32,6 +32,7 @@ mod sprites;
 mod story;
 mod tides;
 mod sky;
+mod endgame;
 mod world;
 
 use game::{Game, Input};
