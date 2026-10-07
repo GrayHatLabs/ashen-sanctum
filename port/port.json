@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "name": "ashensanctum.zip",
+  "items": [
+    "AshenSanctum.sh",
+    "ashensanctum"
+  ],
+  "items_opt": [],
+  "attr": {
+    "title": "Ashen Sanctum",
+    "porter": [
+      "GrayHatLabs"
+    ],
+    "desc": "An isometric action RPG in the spirit of Diablo II. Eight heroes, five acts from the burning Ashlands to the drowned deep, sets, gems, uniques and Nightmare and Hell difficulties.",
+    "inst": "Ready to run. Copy AshenSanctum.sh and the ashensanctum folder into your ports folder.",
+    "genres": [
+      "rpg",
+      "action"
+    ],
+    "image": {
+      "screenshot": "screenshot.png",
+      "cover": "cover.png"
+    },
+    "rtr": true,
+    "exp": false,
+    "runtime": null,
+    "reqs": [],
+    "arch": [
+      "aarch64"
+    ]
+  }
+}

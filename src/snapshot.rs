@@ -433,6 +433,18 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             println!("staged {name}");
         };
         shot(&mut m, scr, "menu_title");
+        // The PortMaster cover (port/cover.png): the title screen with the handheld's controls along the bottom.
+        {
+            let (w, hh) = (scr.w, scr.px.len() as i32 / scr.w);
+            scr.blend(0, hh - 64, w, 64, crate::gfx::BLACK, 0.95);
+            scr.fill(0, hh - 64, w, 1, crate::gfx::rgb(0x8a6a38));
+            let col = crate::gfx::rgb(0xd8c090);
+            scr.text("STICK / D-PAD: MOVE   A / X: SKILLS   B: RUN", w / 2, hh - 54, col, crate::gfx::Align::Center, 1);
+            scr.text("L1 / Y: POTIONS   R1: CYCLE SKILL   START: BAG   SELECT: MAP", w / 2, hh - 40, col, crate::gfx::Align::Center, 1);
+            scr.text("PRESS START", w / 2, hh - 22, crate::gfx::rgb(0xff8040), crate::gfx::Align::Center, 1);
+            write_bmp(&format!("{d}/port_cover.bmp"), scr).expect("write snapshot");
+            println!("staged port_cover");
+        }
         m.stage = Stage::Heroes;
         m.sel = 1;
         shot(&mut m, scr, "menu_heroes");
@@ -914,6 +926,41 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
                 g.sfx.clear();
             }
             save(&mut g, scr, "vardak_bat");
+        }
+    }
+    // The PortMaster screenshot (port/screenshot.png): a level 42 Inquisitor lashing into a pack on the Sunken Reach.
+    {
+        use crate::skills::{Class, Skill};
+        let mut g = Game::new(7, h);
+        g.set_class(Class::Inquisitor);
+        g.act_start(4);
+        g.p.skills.primary = Skill::CenserStrike;
+        g.p.skills.secondary = Skill::ChainLash;
+        g.banner_t = 0.0;
+        g.message = None;
+        idle(&mut g, 30);
+        // A pack: the monster with the most others close around it.
+        let pack = (0..g.mobs.len())
+            .filter(|&i| g.mobs[i].alive() && !crate::breakables::is_prop(g.mobs[i].kind))
+            .max_by_key(|&i| g.mobs.iter().filter(|m| m.alive() && (m.x - g.mobs[i].x).powi(2) + (m.y - g.mobs[i].y).powi(2) < 9.0).count())
+            .map(|i| (g.mobs[i].x, g.mobs[i].y));
+        if let Some((x, y)) = pack {
+            g.debug_place_near(x, y, 4.0);
+            g.p.base_hp += 4000.0;
+            g.p.recalc();
+            g.p.hp = g.p.max_hp * 0.8;
+            idle(&mut g, 30);
+            for k in 0..3 {
+                let t = g.bot_target().map(|t| (t.0, t.1)).unwrap_or((x, y));
+                g.p.cast_cd = 0.0;
+                g.p.mana = g.p.max_mana * 0.6;
+                g.cast_skill(if k == 1 { Skill::ChainLash } else { Skill::CenserStrike }, t.0, t.1);
+                idle(&mut g, if k == 2 { 17 } else { 30 });
+            }
+            g.message = None;
+            g.pickups.clear();
+            g.floaters.clear();
+            save(&mut g, scr, "port_screenshot");
         }
     }
     // Act 5: Brinehollow, the Sunken Reach at low and high tide, the heralds and the Leviathan.

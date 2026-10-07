@@ -340,9 +340,11 @@ impl Menu {
         self.rects.clear();
         // The painted background, scaled to cover the screen, darkened.
         scr.fill(0, 0, w, h, rgb(0x08060a));
-        if let Some(bg) = art.item("title_bg") {
+        // The handheld's 4:3 screen has its own cut of the painting.
+        let tall = h > 400;
+        if let Some(bg) = if tall { art.item("title_bg_tall").or_else(|| art.item("title_bg")) } else { art.item("title_bg") } {
             let s = (w as f32 / bg.w as f32).max(h as f32 / bg.h as f32);
-            let dim = if self.stage == Stage::Title { 0.25 } else { 0.6 };
+            let dim = if self.stage == Stage::Title { 0.08 } else { 0.6 };
             let (dw, dh) = ((bg.w as f32 * s) as i32, (bg.h as f32 * s) as i32);
             scr.blit_scaled(bg, w / 2 - dw / 2 + (bg.ax as f32 * s) as i32, h / 2 - dh / 2 + (bg.ay as f32 * s) as i32, s, Fx { tint: BLACK, tint_a: dim, ..Fx::default() });
         }
@@ -356,7 +358,7 @@ impl Menu {
             scr.glow(x, y, 3.0 + h1 * 2.0, c, 0.6);
         }
         match self.stage {
-            Stage::Title => self.draw_title(scr, w, h),
+            Stage::Title => self.draw_title(scr, art, w, h),
             Stage::Heroes | Stage::Delete(_) => self.draw_heroes(scr, art, w, h),
             Stage::Create => self.draw_create(scr, art, w, h),
             Stage::Name => self.draw_name(scr, art, w, h),
@@ -366,6 +368,20 @@ impl Menu {
             let c = mix(BLACK, rgb(0xffd080), t.min(1.0));
             scr.text(m, w / 2, h - 34, c, Align::Center, 1);
         }
+    }
+
+    /// The painted logo (tools/oai_title.py), centred with its top at `y`; false if there is no art.
+    fn logo_art(&self, scr: &mut Screen, art: &Art, w: i32, y: i32, scale: f32) -> bool {
+        let Some(l) = art.item("title_logo") else { return false };
+        let pulse = (self.t * 1.3).sin() * 0.15 + 0.85;
+        let (lw, lh) = ((l.w as f32 * scale) as i32, (l.h as f32 * scale) as i32);
+        scr.glow(w / 2, y + lh / 2, lw as f32 * 0.55, rgb(0xa02008), 0.45 * pulse);
+        if scale == 1.0 {
+            scr.blit(l, w / 2 - l.w / 2 + l.ax, y + l.ay, Fx::default());
+        } else {
+            scr.blit_scaled(l, w / 2 - lw / 2 + (l.ax as f32 * scale) as i32, y + (l.ay as f32 * scale) as i32, scale, Fx::default());
+        }
+        true
     }
 
     fn logo(&self, scr: &mut Screen, w: i32, y: i32, sc: i32) {
@@ -394,16 +410,19 @@ impl Menu {
         self.rects.push((x, y, wdt, 18, k));
     }
 
-    fn draw_title(&mut self, scr: &mut Screen, w: i32, h: i32) {
-        // Dark bands behind the logo and the menu so they read over the painting.
-        for k in 0..60 {
-            let a = 0.7 * (1.0 - (k as f32 - 30.0).abs() / 30.0);
-            scr.blend(0, h / 4 - 40 + k, w, 1, BLACK, a);
+    fn draw_title(&mut self, scr: &mut Screen, art: &Art, w: i32, h: i32) {
+        let tall = h > 400;
+        // The painted logo over the sky; the old lettering if the art is missing.
+        let drawn = self.logo_art(scr, art, w, if tall { 22 } else { 6 }, if tall { 1.0 } else { 0.72 });
+        if !drawn {
+            for k in 0..60 {
+                let a = 0.7 * (1.0 - (k as f32 - 30.0).abs() / 30.0);
+                scr.blend(0, h / 4 - 40 + k, w, 1, BLACK, a);
+            }
+            self.logo(scr, w, h / 4 - 20, 4);
         }
-        scr.blend(w / 2 - 110, h / 2, 220, 92, BLACK, 0.45);
-        self.logo(scr, w, h / 4 - 20, 4);
-        scr.text("A TALE OF ASH AND ICE", w / 2, h / 4 + 22, rgb(0xc8a070), Align::Center, 1);
-        let y0 = h / 2 + 10;
+        scr.blend(w / 2 - 110, h / 2 + if tall { 40 } else { 10 }, 220, 92, BLACK, 0.5);
+        let y0 = h / 2 + if tall { 50 } else { 20 };
         for (k, label) in ["PLAY", "OPTIONS", "QUIT"].iter().enumerate() {
             self.button(scr, label, w / 2, y0 + k as i32 * 26, 150, k, true);
         }

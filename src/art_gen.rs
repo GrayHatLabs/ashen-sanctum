@@ -151,6 +151,8 @@ pub static ITEMS: &[ItemDef] = &[
     ItemDef { name: "portrait_druid", data: include_bytes!("../assets/art/item_portrait_druid.bin") },
     ItemDef { name: "portrait_inquisitor", data: include_bytes!("../assets/art/item_portrait_inquisitor.bin") },
     ItemDef { name: "title_bg", data: include_bytes!("../assets/art/item_title_bg.bin") },
+    ItemDef { name: "title_bg_tall", data: include_bytes!("../assets/art/item_title_bg_tall.bin") },
+    ItemDef { name: "title_logo", data: include_bytes!("../assets/art/item_title_logo.bin") },
     ItemDef { name: "hud_panel", data: include_bytes!("../assets/art/item_hud_panel.bin") },
     ItemDef { name: "hud_orb_l", data: include_bytes!("../assets/art/item_hud_orb_l.bin") },
     ItemDef { name: "hud_orb_r", data: include_bytes!("../assets/art/item_hud_orb_r.bin") },

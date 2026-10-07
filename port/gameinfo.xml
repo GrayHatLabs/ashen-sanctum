@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<gameList>
+  <game>
+    <path>./AshenSanctum.sh</path>
+    <name>Ashen Sanctum</name>
+    <desc>An isometric action RPG in the spirit of Diablo II. Eight heroes, five acts from the burning Ashlands to the drowned deep, sets, gems, uniques and Nightmare and Hell difficulties.</desc>
+    <releasedate>20261007T000000</releasedate>
+    <developer>GrayHatLabs</developer>
+    <publisher>GrayHatLabs</publisher>
+    <genre>Action RPG</genre>
+    <players>1</players>
+    <image>./ashensanctum/cover.png</image>
+    <thumbnail>./ashensanctum/screenshot.png</thumbnail>
+  </game>
+</gameList>
