@@ -26,6 +26,10 @@ impl Game {
         let sh = if self.shake > 0.0 { ((self.tick as f32 * 1.7).sin() * self.shake * 4.0) as i32 } else { 0 };
         scr.shake = (sh, (sh as f32 * 0.5) as i32);
         scr.clear(BLACK);
+        // The Skyreach: the islands float over a sunset sea of cloud (the open sky between them).
+        if self.theme == crate::world::Theme::Heavens {
+            self.draw_cloud_sea(scr);
+        }
         let (px, py) = (self.p.x, self.p.y);
         let to_scr = |x: f32, y: f32| -> (i32, i32) {
             let (sx, sy) = iso::to_screen(x - px, y - py);
@@ -868,6 +872,13 @@ impl Game {
                     scr.disc(sx + scr.shake.0, sy - 22 + scr.shake.1, 3, rgb(0x80e8ff));
                     scr.pset(sx + scr.shake.0, sy - 23 + scr.shake.1, rgb(0xffffff));
                 }
+                ShotKind::Light => {
+                    let l = (s.vx * s.vx + s.vy * s.vy).sqrt().max(0.01);
+                    let (ex, ey) = iso::to_screen(s.vx / l * 0.5, s.vy / l * 0.5);
+                    let (ax, ay) = (sx + scr.shake.0, sy - 22 + scr.shake.1);
+                    scr.glow(ax, ay, 14.0, rgb(0xffe8a0), 0.9);
+                    line(scr, ax - ex as i32, ay - ey as i32, ax + ex as i32, ay + ey as i32, rgb(0xfff8e0));
+                }
                 ShotKind::Arrow => {}
             }
         }
@@ -1009,6 +1020,39 @@ impl Game {
         }
         scr.shake = (0, 0);
 
+        // Weather: the heavens' ash drifting upward, and the wind's streaks (warning, then the gust).
+        if self.theme.sky() {
+            let (cx, cy) = iso::to_screen(self.p.x, self.p.y);
+            let t = self.tick as f32 / 60.0;
+            let hh = view_h - crate::game::HUD_H;
+            for i in 0..34 {
+                let h1 = ((i as u32).wrapping_mul(2654435761) >> 8) as f32 / 16_777_216.0;
+                let h2 = ((i as u32).wrapping_mul(40503).wrapping_add(71) % 1000) as f32 / 1000.0;
+                let x = (h1 * scr.w as f32 * 3.0 - cx * 0.95 + (t * 0.6 + h2 * 9.0).sin() * 5.0).rem_euclid(scr.w as f32) as i32;
+                let y = (h2 * hh as f32 * 3.0 - cy * 0.95 - t * (8.0 + h1 * 8.0)).rem_euclid(hh as f32) as i32;
+                scr.pset(x, y, if i % 4 == 0 { rgb(0xffd8a0) } else { rgb(0x9a8a80) });
+            }
+            if self.wind_warn > 0.0 || self.wind_gust > 0.0 {
+                let (wx, wy) = self.wind_dir;
+                let (sx, sy) = iso::to_screen(wx, wy);
+                let l = (sx * sx + sy * sy).sqrt().max(0.01);
+                let (ux, uy) = (sx / l, sy / l);
+                let strength = if self.wind_gust > 0.0 { 1.0 } else { 0.45 };
+                let n = if self.wind_gust > 0.0 { 26 } else { 12 };
+                for i in 0..n {
+                    let h1 = ((i as u32).wrapping_mul(2246822519) >> 8) as f32 / 16_777_216.0;
+                    let h2 = ((i as u32).wrapping_mul(97).wrapping_add(13) % 1000) as f32 / 1000.0;
+                    let run = (t * 260.0 * strength + h1 * 900.0) % 900.0;
+                    let x0 = (h2 * scr.w as f32 - ux * 300.0 + ux * run).rem_euclid(scr.w as f32);
+                    let y0 = (h1 * hh as f32 - uy * 300.0 + uy * run).rem_euclid(hh as f32);
+                    let len = 10.0 + 14.0 * strength;
+                    for k in 0..len as i32 {
+                        let (x, y) = ((x0 + ux * k as f32) as i32, (y0 + uy * k as f32) as i32);
+                        scr.blend(x, y, 1, 1, rgb(0xf0f0ff), 0.35 * strength);
+                    }
+                }
+            }
+        }
         // Weather: the deep's rising bubbles and drifting sea snow, and the lure in the dark.
         if self.theme.drowned() {
             let (cx, cy) = iso::to_screen(self.p.x, self.p.y);
@@ -1031,6 +1075,13 @@ impl Game {
                 scr.blend(x - r, y - r, r * 2, r * 2, rgb(0x60c0d0), 0.25);
                 scr.pset(x - r / 2, y - r / 2, rgb(0xd0f8ff));
             }
+        }
+        // Solanthos always smoulders: in his dark, his cracks still glow.
+        for m in self.mobs.iter().filter(|m| m.alive() && m.kind == crate::mobs::Kind::Solanthos) {
+            let (sx, sy) = to_scr(m.x, m.y);
+            let pulse = 0.6 + 0.4 * (self.tick as f32 * 0.09).sin();
+            scr.glow(sx + scr.shake.0, sy - 40 + scr.shake.1, 46.0, rgb(0xff7020), 0.55 * pulse);
+            scr.glow(sx + scr.shake.0, sy - 80 + scr.shake.1, 20.0, rgb(0xffd060), 0.7 * pulse);
         }
         // In the Angler's dark, only lures shine.
         if self.dark_t > 0.0 || self.theme == crate::world::Theme::Trench {
@@ -1158,6 +1209,7 @@ impl Game {
                 || (n.role == Role::Hunter && self.quest.hunter_has_news())
                 || (n.role == Role::Tally && self.quest.tally_has_news())
                 || (n.role == Role::Ysolde && self.quest.ysolde_has_news())
+                || (n.role == Role::Seraphine && self.quest.seraphine_has_news())
             {
                 let bob = (((self.tick as f32) * 0.12).sin() * 2.0) as i32;
                 scr.text("!", sx - 2, sy - 66 + bob, rgb(0xffd040), Align::Center, 2);
@@ -1531,6 +1583,31 @@ impl Game {
     }
 
     /// Draws the HUD; returns the clickable skill button rectangles.
+    /// The Skyreach's backdrop: a sunset gradient over banks of cloud, drifting slowly with the camera.
+    fn draw_cloud_sea(&self, scr: &mut Screen) {
+        let (w, h) = (scr.w, self.view_h);
+        for y in 0..h {
+            let k = y as f32 / h as f32;
+            let c = if k < 0.5 { mix(rgb(0x3a2850), rgb(0xd07850), k * 2.0) } else { mix(rgb(0xd07850), rgb(0xf0c890), (k - 0.5) * 2.0) };
+            scr.fill(0, y, w, 1, c);
+        }
+        // Cloud banks: soft ellipses in three layers, the near ones moving more with the camera.
+        let (cx, cy) = crate::iso::to_screen(self.p.x, self.p.y);
+        let t = self.tick as f32 / 60.0;
+        for (layer, (par, col, a, n)) in [(0.15f32, rgb(0x8a6878), 0.5f32, 9), (0.3, rgb(0xe8b0a0), 0.45, 11), (0.5, rgb(0xfff0e0), 0.5, 13)].into_iter().enumerate() {
+            for i in 0..n {
+                let h1 = ((i as u32 + layer as u32 * 31).wrapping_mul(2654435761) >> 8) as f32 / 16_777_216.0;
+                let h2 = ((i as u32 + layer as u32 * 17).wrapping_mul(40503).wrapping_add(97) % 1000) as f32 / 1000.0;
+                let span = w as f32 + 200.0;
+                let x = (h1 * span * 3.0 - cx * par + t * (3.0 + layer as f32 * 2.0)).rem_euclid(span) as i32 - 100;
+                let y = (h2 * (h as f32 + 80.0) * 2.0 - cy * par).rem_euclid(h as f32 + 80.0) as i32 - 40;
+                let rw = 40 + (h1 * 50.0) as i32 + layer as i32 * 10;
+                blend_ellipse(scr, x, y, rw, rw / 3, col, a);
+                blend_ellipse(scr, x + rw / 3, y - rw / 8, rw * 2 / 3, rw / 4, col, a * 0.8);
+            }
+        }
+    }
+
     fn draw_hud(&self, scr: &mut Screen) -> (Vec<(i32, i32, i32, i32)>, (i32, i32, i32, i32)) {
         let (w, h) = (scr.w, self.view_h);
         let top = h - HUD_H;
@@ -1761,6 +1838,7 @@ impl Game {
         scr.text(&format!("GOLD {}", self.p.gold), w - 6, 6, rgb(0xe8c050), Align::Right, 1);
         scr.text(&format!("CHAR LEVEL {}", self.p.clvl), w - 6, 17, rgb(0xd8c090), Align::Right, 1);
         let (relic, col) = match self.level.act() {
+            5 => (format!("SHARDS {}/3", self.quest.shard_count()), rgb(0xffe080)),
             4 => (format!("PEARLS {}/3", self.quest.pearl_count()), rgb(0x80e8e0)),
             3 => (format!("KEYS {}/3", self.quest.key_count()), rgb(0xe0b040)),
             2 => (format!("SIGILS {}/3", self.quest.sigil_count()), rgb(0x60f080)),
@@ -1882,7 +1960,9 @@ impl Game {
             }
             State::Victory(t) => {
                 scr.blend(0, 0, w, top, BLACK, (t * 0.3).min(0.7));
-                let epilogue = if self.quest.stage5 >= 3 {
+                let epilogue = if self.quest.stage6 >= 3 {
+                    story::EPILOGUE6
+                } else if self.quest.stage5 >= 3 {
                     story::EPILOGUE5
                 } else if self.quest.stage4 >= 3 {
                     story::EPILOGUE4
@@ -2161,6 +2241,17 @@ fn draw_pickup(scr: &mut Screen, k: &Pickup, sx: i32, sy: i32, tick: u32, art: &
                     scr.disc(sx, y, 4, tint);
                 }
             }
+        }
+        &Drop::Shard(i) => {
+            let tint = [rgb(0xfff0c0), rgb(0xc0a0ff), rgb(0xffe080)][i];
+            let y = sy - 10 - pop + bob;
+            scr.glow(sx, y, 26.0, rgb(0xffc040), 0.9);
+            // A shard of sunlight: a bright diamond.
+            for k in 0..6 {
+                scr.fill(sx - (5 - k), y - 6 + k, (5 - k) * 2 + 1, 1, tint);
+                scr.fill(sx - (5 - k), y + 6 - k, (5 - k) * 2 + 1, 1, tint);
+            }
+            scr.pset(sx - 1, y - 2, rgb(0xffffff));
         }
         &Drop::Pearl(i) => {
             let tint = [rgb(0xd0e8f0), rgb(0xf0d8f0), rgb(0x80f0e0)][i];

@@ -19,6 +19,8 @@ pub enum LevelId {
     Mechanus,
     /// Act 5's overland: the Sunken Reach and Brinehollow, on the floor of the black sea.
     Deep,
+    /// Act 6's overland: the Skyreach and Windward Anchorage, islands above the clouds.
+    Heavens,
     /// (dungeon index into DUNGEONS, floor from 0)
     Dungeon(usize, usize),
 }
@@ -26,7 +28,7 @@ pub enum LevelId {
 impl LevelId {
     /// An open-air map with a town (one per act).
     pub fn overland(self) -> bool {
-        matches!(self, LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep)
+        matches!(self, LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep | LevelId::Heavens)
     }
 
     /// 0 for Act 1 ... 4 for Act 5.
@@ -37,6 +39,7 @@ impl LevelId {
             LevelId::Mistwood => 2,
             LevelId::Mechanus => 3,
             LevelId::Deep => 4,
+            LevelId::Heavens => 5,
             LevelId::Dungeon(k, _) => DUNGEONS[k].act,
         }
     }
@@ -48,7 +51,8 @@ impl LevelId {
             1 => LevelId::Frostmarch,
             2 => LevelId::Mistwood,
             3 => LevelId::Mechanus,
-            _ => LevelId::Deep,
+            4 => LevelId::Deep,
+            _ => LevelId::Heavens,
         }
     }
 }
@@ -84,10 +88,16 @@ pub enum Theme {
     Reef,
     Trench,
     Drowned,
+    /// Act 6 overland: marble islands over the clouds.
+    Heavens,
+    Seraph,
+    Spire,
+    Wheel,
+    Zenith,
 }
 
 impl Theme {
-    pub const ALL: [Theme; 25] = [
+    pub const ALL: [Theme; 30] = [
         Theme::Overworld,
         Theme::Crypt,
         Theme::Warrens,
@@ -113,11 +123,16 @@ impl Theme {
         Theme::Reef,
         Theme::Trench,
         Theme::Drowned,
+        Theme::Heavens,
+        Theme::Seraph,
+        Theme::Spire,
+        Theme::Wheel,
+        Theme::Zenith,
     ];
 
     /// Open-air (grass or snow ground, palisade walls).
     pub fn open(self) -> bool {
-        matches!(self, Theme::Overworld | Theme::Tundra | Theme::Mistwood | Theme::Mechanus | Theme::Deep)
+        matches!(self, Theme::Overworld | Theme::Tundra | Theme::Mistwood | Theme::Mechanus | Theme::Deep | Theme::Heavens)
     }
 
     /// Act 4 themes (drifting steam and brass sparks).
@@ -128,6 +143,11 @@ impl Theme {
     /// Act 5 themes (rising bubbles and drifting sea snow).
     pub fn drowned(self) -> bool {
         matches!(self, Theme::Deep | Theme::Wreck | Theme::Reef | Theme::Trench | Theme::Drowned)
+    }
+
+    /// Act 6 themes (ash drifting upward, sunbeams).
+    pub fn sky(self) -> bool {
+        matches!(self, Theme::Heavens | Theme::Seraph | Theme::Spire | Theme::Wheel | Theme::Zenith)
     }
 
     /// Act 3 themes (fog and drifting wisp motes).
@@ -169,6 +189,12 @@ impl Theme {
             Theme::Reef => (260.0, 0.14),
             Theme::Trench => (190.0, 0.04),
             Theme::Drowned => (250.0, 0.12),
+            // The heavens: bright, warm sunset light; the storm tower and the burnt sanctum darker.
+            Theme::Heavens => (420.0, 0.62),
+            Theme::Seraph => (280.0, 0.2),
+            Theme::Spire => (240.0, 0.12),
+            Theme::Wheel => (300.0, 0.22),
+            Theme::Zenith => (240.0, 0.1),
             _ => (250.0, 0.10),
         }
     }
@@ -187,7 +213,7 @@ pub struct DungeonDef {
     pub act: usize,
 }
 
-pub const DUNGEONS: [DungeonDef; 20] = [
+pub const DUNGEONS: [DungeonDef; 24] = [
     DungeonDef {
         name: "THE BONE CRYPT",
         floors: 2,
@@ -389,6 +415,47 @@ pub const DUNGEONS: [DungeonDef; 20] = [
         entrance: (54, 14),
         act: 4,
     },
+    // ---- Act 6: the Shattered Heavens (docs/ACT5_ACT6_PLAN.md) ----
+    DungeonDef {
+        name: "THE BROKEN CHOIR",
+        floors: 2,
+        theme: Theme::Seraph,
+        boss: Kind::Vael,
+        monsters: &[Kind::FallenSeraph, Kind::Zealot, Kind::Sentinel],
+        tier: 12.2,
+        entrance: (20, 84),
+        act: 5,
+    },
+    DungeonDef {
+        name: "THE STORM SPIRE",
+        floors: 2,
+        theme: Theme::Spire,
+        boss: Kind::Tempest,
+        monsters: &[Kind::StormDrake, Kind::Harpy, Kind::Ophanim],
+        tier: 12.6,
+        entrance: (92, 86),
+        act: 5,
+    },
+    DungeonDef {
+        name: "THE WHEEL OF EYES",
+        floors: 3,
+        theme: Theme::Wheel,
+        boss: Kind::OphanPrime,
+        monsters: &[Kind::Ophanim, Kind::FallenSeraph, Kind::Zealot, Kind::Sentinel],
+        tier: 13.0,
+        entrance: (90, 24),
+        act: 5,
+    },
+    DungeonDef {
+        name: "THE TRUE SANCTUM",
+        floors: 3,
+        theme: Theme::Zenith,
+        boss: Kind::Solanthos,
+        monsters: &[Kind::FallenSeraph, Kind::Zealot, Kind::Sentinel, Kind::StormDrake, Kind::Ophanim],
+        tier: 13.6,
+        entrance: (54, 14),
+        act: 5,
+    },
 ];
 
 /// The Ashen Sanctum (needs all three seals).
@@ -401,6 +468,8 @@ pub const CASTLE: usize = 11;
 pub const HEART: usize = 15;
 /// The Drowned Sanctum (needs the three Leviathan pearls).
 pub const ABYSS: usize = 19;
+/// The True Sanctum, Solanthos's (needs the three sun-shards).
+pub const ZENITH: usize = 23;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum PortalKind {
@@ -413,6 +482,8 @@ pub enum PortalKind {
     TownPortal,
     /// The mountain pass between the acts (to this act).
     Pass(usize),
+    /// An airship dock: it flies you to the other dock with the same number on this map.
+    Dock(u8),
 }
 
 pub struct Portal {
@@ -481,6 +552,17 @@ pub enum PropKind {
     AnchorRock,
     /// The diving bell between Mechanus and the Drowned Deep.
     DivingBell,
+    // ---- Act 6 ----
+    AngelStatue,
+    HaloArch,
+    SkyLamp,
+    CloudTree,
+    MarbleRuin,
+    SkyHouse1,
+    SkyHouse2,
+    AirshipDock,
+    /// The stair of light between the Drowned Deep and the Heavens.
+    LightStair,
 }
 
 impl PropKind {
@@ -515,7 +597,11 @@ impl PropKind {
             PropKind::Entrance(16) => "ent_wreck",
             PropKind::Entrance(17) => "ent_cathedral",
             PropKind::Entrance(18) => "ent_trench",
-            PropKind::Entrance(_) => "ent_drowned",
+            PropKind::Entrance(19) => "ent_drowned",
+            PropKind::Entrance(20) => "ent_brokenchoir",
+            PropKind::Entrance(21) => "ent_spire",
+            PropKind::Entrance(22) => "ent_wheel",
+            PropKind::Entrance(_) => "ent_zenith",
             PropKind::StairsDown => "stairs_down",
             PropKind::StairsUp => "stairs_up",
             PropKind::SnowPine => "tree_snowpine",
@@ -555,6 +641,15 @@ impl PropKind {
             PropKind::ShellLamp => "shell_lamp",
             PropKind::AnchorRock => "anchor_rock",
             PropKind::DivingBell => "diving_bell",
+            PropKind::AngelStatue => "angel_statue",
+            PropKind::HaloArch => "halo_arch",
+            PropKind::SkyLamp => "sky_lamp",
+            PropKind::CloudTree => "cloud_tree",
+            PropKind::MarbleRuin => "marble_ruin",
+            PropKind::SkyHouse1 => "sky_house1",
+            PropKind::SkyHouse2 => "sky_house2",
+            PropKind::AirshipDock => "airship_dock",
+            PropKind::LightStair => "light_stair",
         }
     }
 
@@ -653,6 +748,7 @@ pub fn generate(id: LevelId, seed: u64) -> Level {
         LevelId::Mistwood => mistwood(seed),
         LevelId::Mechanus => mechanus(seed),
         LevelId::Deep => deep(seed),
+        LevelId::Heavens => heavens(seed),
         LevelId::Dungeon(k, f) => dungeon_floor(k, f, seed),
     }
 }
@@ -698,11 +794,12 @@ pub fn add_elites(lv: &mut Level, seed: u64) {
         LevelId::Mistwood => 0x1011,
         LevelId::Mechanus => 0x1111,
         LevelId::Deep => 0x1211,
+        LevelId::Heavens => 0x1311,
         LevelId::Dungeon(k, f) => 0x0e12 + k as u64 * 16 + f as u64,
     };
     let mut rng = Rng::new(seed ^ salt.wrapping_mul(0x9e37_79b9));
     let (champs, elites) = match lv.id {
-        LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep => (5, 3),
+        LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep | LevelId::Heavens => (5, 3),
         LevelId::Dungeon(_, f) => (1 + (f > 0) as usize, 1),
     };
     let mut order: Vec<usize> = (0..lv.mobs.len()).filter(|&i| !lv.mobs[i].boss).collect();
@@ -754,6 +851,11 @@ pub const PASS_GEARS: (i32, i32) = (8, 56);
 /// where it comes up on the Sunken Reach.
 pub const LIFT_GEARS: (i32, i32) = (100, 56);
 pub const LIFT_DEEP: (i32, i32) = (8, 56);
+/// The stair of light on the Sunken Reach (once the Leviathan is dead), and where it comes out in the Heavens.
+pub const STAIR_DEEP: (i32, i32) = (100, 56);
+pub const STAIR_SKY: (i32, i32) = (10, 56);
+/// Windward Anchorage: the sky-harbour town.
+pub const ANCHORAGE: (i32, i32, i32, i32) = (44, 46, 64, 64);
 /// Brinehollow: the stilt town on the sea floor.
 pub const BRINEHOLLOW: (i32, i32, i32, i32) = (44, 46, 64, 64);
 /// The Last Escapement: the refuge town on Mechanus.
@@ -1650,6 +1752,260 @@ pub fn mechanus(seed: u64) -> Level {
     lv
 }
 
+/// Windward Anchorage's square.
+pub fn anchorage_center() -> (f32, f32) {
+    (54.5, 55.5)
+}
+
+/// The far island (reached only by airship) and the two docks that join it to the town's island.
+pub const DOCK_TOWN: (i32, i32) = (66, 72);
+pub const FAR_ISLE: (i32, i32) = (96, 56);
+pub const DOCK_FAR: (i32, i32) = (92, 60);
+
+/// Builds Act 6's overland: the Skyreach, islands of marble and pale grass above an endless sea of
+/// cloud (the void). Windward Anchorage stands on the great central island; chain bridges run out to
+/// the four sky dungeons and the stair of light, and an airship flies to a far island. The edges are
+/// real: whatever is knocked or blown off falls (sky.rs).
+pub fn heavens(seed: u64) -> Level {
+    let mut rng = Rng::new(seed ^ 0x5C1E_A7E5);
+    let (w, h) = (WORLD_W, WORLD_H);
+    let mut d = Dungeon::blank(w, h, Tile::Void);
+    for v in d.var.iter_mut() {
+        *v = rng.range(0, 100) as u8;
+    }
+    let mut lv = Level::new(LevelId::Heavens, "THE SKYREACH".into(), Theme::Heavens, 12.0, Dungeon::blank(1, 1, Tile::Void));
+    let prop = |lv: &mut Level, d: &mut Dungeon, kind: PropKind, x0: i32, y0: i32, fw: i32, fh: i32| {
+        for y in y0..y0 + fh {
+            for x in x0..x0 + fw {
+                d.set(x, y, Tile::Prop);
+            }
+        }
+        lv.props.push(Prop::on(kind, x0, y0, fw, fh));
+    };
+    // ---- the islands: noisy discs of floor (ground 0 marble, ground 1 pale grass) ----
+    let edge = Noise::new(&mut rng, 12, 5.0);
+    let grass = Noise::new(&mut rng, 14, 7.0);
+    let mut isles: Vec<(i32, i32, f32)> = vec![(54, 55, 17.0), STAIR_SKY_ISLE, FAR_ISLE_R];
+    for def in DUNGEONS.iter().filter(|d| d.act == 5) {
+        isles.push((def.entrance.0, def.entrance.1 - 1, 9.0));
+    }
+    // A few wild islands for the packs.
+    for &(x, y) in &[(30, 30), (78, 34), (32, 66), (74, 92), (50, 92)] {
+        isles.push((x, y, rng.rf(6.0, 8.5)));
+    }
+    for &(cx, cy, r) in &isles {
+        for y in (cy as f32 - r - 4.0) as i32..=(cy as f32 + r + 4.0) as i32 {
+            for x in (cx as f32 - r - 4.0) as i32..=(cx as f32 + r + 4.0) as i32 {
+                if x < 2 || y < 2 || x >= w - 2 || y >= h - 2 {
+                    continue;
+                }
+                let dist = ((x - cx) as f32).hypot((y - cy) as f32);
+                if dist < r - 2.0 + edge.at(x as f32, y as f32) * 4.0 {
+                    d.set(x, y, Tile::Floor);
+                    d.set_ground(x, y, if grass.at(x as f32, y as f32) > 0.55 { 1 } else { 0 });
+                }
+            }
+        }
+    }
+    // ---- chain bridges (ground 2) from the town island to the others, straight and two wide ----
+    let mut keep = vec![false; (w * h) as usize];
+    let bridge = |d: &mut Dungeon, keep: &mut Vec<bool>, (ax, ay): (i32, i32), (bx, by): (i32, i32)| {
+        let n = ((bx - ax).abs().max((by - ay).abs()) * 2).max(1);
+        for k in 0..=n {
+            let t = k as f32 / n as f32;
+            let (x, y) = ((ax as f32 + (bx - ax) as f32 * t) as i32, (ay as f32 + (by - ay) as f32 * t) as i32);
+            for (ox, oy) in [(0, 0), (1, 0), (0, 1), (1, 1)] {
+                d.set(x + ox, y + oy, Tile::Floor);
+                d.set_ground(x + ox, y + oy, 2);
+                if (0..w).contains(&(x + ox)) && (0..h).contains(&(y + oy)) {
+                    keep[((y + oy) * w + x + ox) as usize] = true;
+                }
+            }
+        }
+    };
+    let hub = (55, 55);
+    for &(cx, cy, _) in isles.iter().skip(1) {
+        if (cx, cy) == (FAR_ISLE.0, FAR_ISLE.1) {
+            continue; // the far island: by airship only
+        }
+        bridge(&mut d, &mut keep, hub, (cx, cy));
+    }
+    // ---- Windward Anchorage ----
+    let (tx0, ty0, tx1, ty1) = ANCHORAGE;
+    let (mx, my) = ((tx0 + tx1) / 2, (ty0 + ty1) / 2);
+    for y in ty0..=ty1 {
+        for x in tx0..=tx1 {
+            d.set(x, y, Tile::Floor);
+            d.set_ground(x, y, 0);
+            let edge = x == tx0 || x == tx1 || y == ty0 || y == ty1;
+            let gate = (y == ty0 || y == ty1) && (mx - 1..=mx + 2).contains(&x) || (x == tx0 || x == tx1) && (my - 1..=my + 2).contains(&y);
+            if edge && !gate {
+                d.set(x, y, Tile::Wall);
+            }
+        }
+    }
+    for x in tx0..=tx1 {
+        for y in my..=my + 1 {
+            d.set_ground(x, y, 2);
+        }
+    }
+    for y in ty0..=ty1 {
+        for x in mx..=mx + 1 {
+            d.set_ground(x, y, 2);
+        }
+    }
+    prop(&mut lv, &mut d, PropKind::SkyHouse1, 46, 48, 4, 4);
+    prop(&mut lv, &mut d, PropKind::SkyHouse2, 58, 48, 4, 4);
+    prop(&mut lv, &mut d, PropKind::SkyHouse1, 46, 59, 4, 3);
+    prop(&mut lv, &mut d, PropKind::HaloArch, 59, 59, 2, 2);
+    prop(&mut lv, &mut d, PropKind::SkyLamp, 52, 53, 1, 1);
+    prop(&mut lv, &mut d, PropKind::SkyLamp, 57, 58, 1, 1);
+    lv.safe = Some((tx0 as f32 - 1.0, ty0 as f32 - 1.0, tx1 as f32 + 2.0, ty1 as f32 + 2.0));
+    lv.npcs = vec![
+        Npc::new("SERAPHINE", Role::Seraphine, "npc_seraphine", 55.5, 56.8, 6),
+        Npc::new("QUARTERMASTER BRAM", Role::Bram, "npc_bram", 58.0, 55.8, 0),
+        Npc::new("SISTER AUREL", Role::Aurel, "npc_aurel", 50.5, 55.5, 2),
+        Npc::new("DECKHAND", Role::Deckhand(0), "npc_deckhand", 52.0, 60.0, 1),
+        Npc::new("DECKHAND", Role::Deckhand(1), "npc_deckhand", 61.5, 57.0, 5),
+        Npc::new("DECKHAND", Role::Deckhand(2), "npc_deckhand", 49.5, 52.0, 3),
+        Npc::new("THE GILDER", Role::Jeweler(5), "npc_jeweler5", 54.0, 58.5, 1),
+    ];
+    // Clear around the town so nothing grows across its gates.
+    for y in ty0 - 3..=ty1 + 3 {
+        for x in tx0 - 3..=tx1 + 3 {
+            keep[(y * w + x) as usize] = true;
+        }
+    }
+    // ---- dungeon doors, the stair down, the airship docks ----
+    let clear = |keep: &mut Vec<bool>, x: i32, y: i32, r: i32| {
+        for yy in y - r..=y + r {
+            for xx in x - r..=x + r {
+                if xx >= 0 && yy >= 0 && xx < w && yy < h {
+                    keep[(yy * w + xx) as usize] = true;
+                }
+            }
+        }
+    };
+    for (k, def) in DUNGEONS.iter().enumerate().filter(|(_, d)| d.act == 5) {
+        let (ex, ey) = def.entrance;
+        clear(&mut keep, ex, ey, 4);
+        let (fw, fh) = if k == ZENITH { (4, 3) } else { (3, 3) };
+        for y in ey - 3..=ey + 1 {
+            for x in ex - 3..=ex + 3 {
+                d.set(x, y, Tile::Floor);
+            }
+        }
+        prop(&mut lv, &mut d, PropKind::Entrance(k), ex - fw / 2, ey - 3, fw, fh);
+        lv.portals.push(Portal { x: ex as f32 + 0.5, y: ey as f32 + 0.5, kind: PortalKind::Entrance(k) });
+    }
+    let (px, py) = STAIR_SKY;
+    clear(&mut keep, px, py, 4);
+    prop(&mut lv, &mut d, PropKind::LightStair, px - 1, py - 3, 2, 2);
+    lv.portals.push(Portal { x: px as f32 + 0.5, y: py as f32 + 0.5, kind: PortalKind::Pass(4) });
+    bridge(&mut d, &mut keep, (mx, ty1 + 1), (DOCK_TOWN.0, DOCK_TOWN.1));
+    for (dx, dy) in [DOCK_TOWN, DOCK_FAR] {
+        for y in dy - 3..=dy + 2 {
+            for x in dx - 2..=dx + 2 {
+                d.set(x, y, Tile::Floor);
+            }
+        }
+        clear(&mut keep, dx, dy, 3);
+        prop(&mut lv, &mut d, PropKind::AirshipDock, dx - 1, dy - 3, 3, 2);
+        lv.portals.push(Portal { x: dx as f32 + 0.5, y: dy as f32 + 0.5, kind: PortalKind::Dock(0) });
+    }
+
+    // ---- ruins, statues, trees and lamps ----
+    let ruins = Noise::new(&mut rng, 16, 8.0);
+    for y in 0..h {
+        for x in 0..w {
+            if d.get(x, y) != Tile::Floor || keep[(y * w + x) as usize] || d.ground_at(x, y) == 2 {
+                continue;
+            }
+            // Not right on an edge: keep a walkable rim.
+            if (-1..=1).any(|dy| (-1..=1).any(|dx| d.get(x + dx, y + dy) == Tile::Void)) {
+                continue;
+            }
+            let f = ruins.at(x as f32, y as f32);
+            let r = rng.f();
+            if f > 0.62 && r < 0.22 || r < 0.006 {
+                let kind = match rng.range(0, 10) {
+                    0..=3 => PropKind::CloudTree,
+                    4..=6 => PropKind::MarbleRuin,
+                    7..=8 => PropKind::SkyLamp,
+                    _ => PropKind::AngelStatue,
+                };
+                prop(&mut lv, &mut d, kind, x, y, 1, 1);
+            }
+        }
+    }
+
+    // ---- roaming packs (none in town, on bridges or by the doors), and food ----
+    let (cx, cy) = anchorage_center();
+    let mut packs = 0;
+    for _ in 0..1500 {
+        if packs >= 26 {
+            break;
+        }
+        let x = rng.range(4, w - 4) as f32 + 0.5;
+        let y = rng.range(4, h - 4) as f32 + 0.5;
+        let far = ((x - cx).powi(2) + (y - cy).powi(2)).sqrt();
+        if far < 19.0
+            || d.blocked(x, y, 0.4)
+            || d.ground_at(x as i32, y as i32) == 2
+            || DUNGEONS.iter().filter(|d| d.act == 5).any(|def| (def.entrance.0 as f32 - x).abs() + (def.entrance.1 as f32 - y).abs() < 6.0)
+            || ((x - px as f32).abs() < 6.0 && (y - py as f32).abs() < 6.0)
+            || [DOCK_TOWN, DOCK_FAR].iter().any(|&(dx, dy)| (x - dx as f32).abs() < 5.0 && (y - dy as f32).abs() < 5.0)
+        {
+            continue;
+        }
+        let tier = if far < 34.0 { 12.0 } else { 12.4 };
+        let far_isle = ((x - FAR_ISLE.0 as f32).powi(2) + (y - FAR_ISLE.1 as f32).powi(2)).sqrt() < 10.0;
+        let kinds: &[Kind] = if far_isle {
+            &[Kind::Thunderbird, Kind::Sentinel]
+        } else if far < 34.0 {
+            &[Kind::FallenSeraph, Kind::Harpy, Kind::Zealot, Kind::Ophanim]
+        } else {
+            &[Kind::FallenSeraph, Kind::Harpy, Kind::Zealot, Kind::Ophanim, Kind::StormDrake, Kind::Sentinel]
+        };
+        let kind = kinds[rng.range(0, kinds.len() as i32) as usize];
+        let n = match kind {
+            Kind::Sentinel | Kind::Thunderbird => rng.range(1, 3),
+            Kind::Harpy => rng.range(4, 7),
+            Kind::Zealot => rng.range(2, 4),
+            _ => rng.range(3, 5),
+        };
+        for _ in 0..n {
+            for _try in 0..10 {
+                let (mx, my) = (x + rng.rf(-2.0, 2.0), y + rng.rf(-2.0, 2.0));
+                if !d.blocked(mx, my, 0.35) && d.ground_at(mx as i32, my as i32) != 2 {
+                    lv.mobs.push(Mob::new(kind, mx, my, tier, &mut rng));
+                    break;
+                }
+            }
+        }
+        packs += 1;
+    }
+    let mut food = 0;
+    for _ in 0..600 {
+        if food >= 10 {
+            break;
+        }
+        let x = rng.range(4, w - 4) as f32 + 0.5;
+        let y = rng.range(4, h - 4) as f32 + 0.5;
+        if ((x - cx).powi(2) + (y - cy).powi(2)).sqrt() > 16.0 && !d.blocked(x, y, 0.3) {
+            lv.pickups.push(Pickup { x, y, kind: Drop::Food(if rng.chance(0.5) { 1 } else { 2 }), t: 1.0 });
+            food += 1;
+        }
+    }
+    lv.explored = vec![false; (w * h) as usize];
+    lv.d = d;
+    lv.start = anchorage_center();
+    lv
+}
+
+const STAIR_SKY_ISLE: (i32, i32, f32) = (12, 56, 8.0);
+const FAR_ISLE_R: (i32, i32, f32) = (96, 56, 9.0);
+
 /// Brinehollow's square.
 pub fn brinehollow_center() -> (f32, f32) {
     (54.5, 55.5)
@@ -1777,6 +2133,12 @@ pub fn deep(seed: u64) -> Level {
     clear(&mut keep, px, py, 4);
     prop(&mut lv, &mut d, PropKind::DivingBell, px - 1, py - 3, 3, 2);
     lv.portals.push(Portal { x: px as f32 + 0.5, y: py as f32 + 0.5, kind: PortalKind::Pass(3) });
+    // The stair of light up to the Heavens (once the Leviathan is dead).
+    let (sx, sy) = STAIR_DEEP;
+    road(&mut d, &mut keep, (tx1 + 1, my), (sx, sy), 9.0);
+    clear(&mut keep, sx, sy, 4);
+    prop(&mut lv, &mut d, PropKind::LightStair, sx - 1, sy - 3, 2, 2);
+    lv.portals.push(Portal { x: sx as f32 + 0.5, y: sy as f32 + 0.5, kind: PortalKind::Pass(5) });
 
     // ---- the reef wall: a ragged rim of coral, and a few coral heads (never across a road) ----
     let rim = Noise::new(&mut rng, 12, 6.0);
@@ -1835,6 +2197,7 @@ pub fn deep(seed: u64) -> Level {
             || d.blocked(x, y, 0.4)
             || DUNGEONS.iter().filter(|d| d.act == 4).any(|def| (def.entrance.0 as f32 - x).abs() + (def.entrance.1 as f32 - y).abs() < 6.0)
             || ((x - px as f32).abs() < 7.0 && (y - py as f32).abs() < 7.0)
+            || ((x - sx as f32).abs() < 7.0 && (y - sy as f32).abs() < 7.0)
         {
             continue;
         }
@@ -1943,6 +2306,45 @@ pub fn dungeon_floor(k: usize, floor: usize, seed: u64) -> Level {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_skyreach_bridges_anchorage_to_every_sky_dungeon_and_the_stair() {
+        let lv = heavens(7);
+        let (cx, cy) = anchorage_center();
+        let mut kinds = vec![];
+        for p in &lv.portals {
+            assert!(lv.d.walkable(p.x as i32, p.y as i32), "portal {:?} blocked", p.kind);
+            // The far island's dock is reached by airship only.
+            let far_dock = p.kind == PortalKind::Dock(0) && (p.x as i32, p.y as i32) == DOCK_FAR;
+            if !far_dock {
+                assert!(lv.d.path((cx as i32, cy as i32), (p.x as i32, p.y as i32), 100_000).is_some(), "no bridge to {:?}", p.kind);
+            }
+            kinds.push(p.kind);
+        }
+        for k in 20..24 {
+            assert!(kinds.contains(&PortalKind::Entrance(k)));
+        }
+        assert!(kinds.contains(&PortalKind::Pass(4)));
+        assert_eq!(kinds.iter().filter(|k| **k == PortalKind::Dock(0)).count(), 2, "two airship docks");
+        // The far island is off the bridges: walking there is impossible.
+        let (fx, fy) = FAR_ISLE;
+        let far = (fy - 3..=fy + 3).flat_map(|y| (fx - 3..=fx + 3).map(move |x| (x, y))).find(|&(x, y)| lv.d.walkable(x, y) && lv.d.get(x, y) != Tile::Prop);
+        if let Some((x, y)) = far {
+            assert!(lv.d.path((cx as i32, cy as i32), (x, y), 100_000).is_none(), "the far island is by airship only");
+        }
+        for n in &lv.npcs {
+            assert!(lv.d.walkable(n.x as i32, n.y as i32), "{} stands in a wall", n.name);
+        }
+        assert!(lv.mobs.len() > 40, "{} monsters", lv.mobs.len());
+        assert!((0..lv.d.h).flat_map(|y| (0..lv.d.w).map(move |x| (x, y))).filter(|&(x, y)| lv.d.get(x, y) == Tile::Void).count() > 3000, "there's plenty of sky");
+        let (x0, y0, x1, y1) = lv.safe.unwrap();
+        assert!(lv.mobs.iter().all(|m| !(m.x > x0 && m.x < x1 && m.y > y0 && m.y < y1)), "monsters spawned in town");
+        // The deep has the stair up.
+        let deep = deep(7);
+        let stair = deep.portal(PortalKind::Pass(5)).expect("the stair of light");
+        let (bx, by) = brinehollow_center();
+        assert!(deep.d.path((bx as i32, by as i32), (stair.x as i32, stair.y as i32), 100_000).is_some());
+    }
 
     #[test]
     fn the_sunken_reach_connects_brinehollow_to_every_drowned_dungeon_and_the_bell() {

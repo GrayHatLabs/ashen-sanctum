@@ -36,9 +36,15 @@ pub enum Track {
     Abyss,
     /// Brinehollow: a sea shanty on a squeezebox and a creaking hull.
     Brine,
+    /// Act 6: the Skyreach (a soaring choir over the wind).
+    Sky,
+    /// Act 6: the sky dungeons (storm drums, a burning organ).
+    Storm,
+    /// Windward Anchorage: a bright harbour waltz on fiddle and bells.
+    Harbor,
 }
 
-pub const TRACKS: [Track; 16] = [
+pub const TRACKS: [Track; 19] = [
     Track::Town,
     Track::Wilds,
     Track::Dungeon,
@@ -55,6 +61,9 @@ pub const TRACKS: [Track; 16] = [
     Track::Tide,
     Track::Abyss,
     Track::Brine,
+    Track::Sky,
+    Track::Storm,
+    Track::Harbor,
 ];
 
 fn hz(midi: f32) -> f32 {
@@ -276,6 +285,9 @@ pub fn render(track: Track) -> Vec<f32> {
         Track::Tide => 131,
         Track::Abyss => 137,
         Track::Brine => 139,
+        Track::Sky => 149,
+        Track::Storm => 151,
+        Track::Harbor => 157,
     });
     match track {
         Track::Town => town(&mut rng),
@@ -294,7 +306,88 @@ pub fn render(track: Track) -> Vec<f32> {
         Track::Tide => tide(&mut rng),
         Track::Abyss => abyss(&mut rng),
         Track::Brine => brine(&mut rng),
+        Track::Sky => sky(&mut rng),
+        Track::Storm => storm(&mut rng),
+        Track::Harbor => harbor(&mut rng),
     }
+}
+
+/// The Skyreach: a slow, soaring choir of pads in D major over the wind, with high bells like sunlight.
+fn sky(rng: &mut Rng) -> Vec<f32> {
+    let secs = 52.0;
+    let mut b = Buf::new(secs);
+    b.wind(0.09, rng);
+    b.drone(38.0, 0.04);
+    let chords = [(50.0, 54.0, 57.0), (47.0, 50.0, 54.0), (43.0, 47.0, 50.0), (45.0, 49.0, 52.0)];
+    for (k, &(a, c, e)) in chords.iter().enumerate() {
+        b.pad(k as f32 * 13.0, 12.5, &[a, c, e, a + 12.0, c + 12.0], 0.09, 1200.0);
+    }
+    let bells = [86.0, 88.0, 90.0, 85.0, 83.0, 81.0, 86.0, 93.0];
+    for (k, m) in bells.iter().enumerate() {
+        let t = 1.0 + k as f32 * 6.3 + rng.rf(0.0, 1.2);
+        b.bell(t, *m, 0.05);
+        b.bell(t + 0.3, m - 5.0, 0.03);
+    }
+    b.finish(0.6, 0.6)
+}
+
+/// The sky dungeons: storm drums rolling under a burning organ in E minor, thunder now and then.
+fn storm(rng: &mut Rng) -> Vec<f32> {
+    let secs = 48.0;
+    let mut b = Buf::new(secs);
+    b.drone(28.0, 0.07);
+    b.wind(0.06, rng);
+    let chords = [(40.0, 43.0, 47.0), (36.0, 40.0, 43.0), (38.0, 42.0, 45.0), (35.0, 39.0, 42.0)];
+    for (k, &(a, c, e)) in chords.iter().enumerate() {
+        b.pad(k as f32 * 12.0, 11.5, &[a, c, e, a + 12.0], 0.11, 600.0);
+    }
+    let mut t = 0.3;
+    let mut k = 0;
+    while t < secs {
+        // A rolling tom pattern.
+        b.drum(t, 0.25, 48.0, rng);
+        b.drum(t + 0.2, 0.12, 60.0, rng);
+        if k % 4 == 3 {
+            b.drum(t + 0.4, 0.18, 52.0, rng);
+            b.drum(t + 0.55, 0.14, 56.0, rng);
+        }
+        t += 0.8;
+        k += 1;
+    }
+    // Thunder: very low long plucks.
+    for k in 0..4 {
+        b.pluck(5.0 + k as f32 * 11.0 + rng.rf(0.0, 2.0), 26.0, 0.3, 0.15, 0.9992, rng);
+    }
+    b.finish(0.6, 0.62)
+}
+
+/// Windward Anchorage: a bright 3/4 harbour waltz in G, a fiddle-like pluck over bells and a soft pad.
+fn harbor(rng: &mut Rng) -> Vec<f32> {
+    let bpm = 104.0;
+    let beat = 60.0 / bpm;
+    let bars = 16;
+    let mut b = Buf::new(bars as f32 * 3.0 * beat);
+    let chords: [(f32, [f32; 3]); 4] = [(55.0, [0.0, 4.0, 7.0]), (52.0, [0.0, 3.0, 7.0]), (48.0, [0.0, 4.0, 7.0]), (50.0, [0.0, 4.0, 7.0])];
+    let tune = [[79.0, 83.0, 86.0], [84.0, 83.0, 79.0], [76.0, 79.0, 84.0], [81.0, 78.0, 74.0]];
+    for bar in 0..bars {
+        let (root, iv) = chords[bar % 4];
+        let t0 = bar as f32 * 3.0 * beat + 0.05;
+        b.pluck(t0, root - 12.0, 0.24, 0.4, 0.996, rng);
+        for k in 1..3 {
+            for (q, i) in iv.iter().enumerate().skip(1) {
+                b.pluck(t0 + k as f32 * beat + q as f32 * 0.01, root + i, 0.07, 0.6, 0.995, rng);
+            }
+        }
+        b.pad(t0, 3.0 * beat, &[root - 12.0, root + iv[1] - 12.0, root + iv[2] - 12.0], 0.05, 900.0);
+        let up = if bar >= 8 { 0.0 } else { -12.0 };
+        for (k, m) in tune[bar % 4].iter().enumerate() {
+            b.pluck(t0 + k as f32 * beat + 0.01, m + up, 0.1, 0.85, 0.994, rng);
+        }
+        if bar % 4 == 0 {
+            b.bell(t0, root + 24.0, 0.04);
+        }
+    }
+    b.finish(0.5, 0.6)
 }
 
 /// Brinehollow: a slow sea shanty in D dorian, a squeezebox-like pad, a stamping beat and a creaking hull.

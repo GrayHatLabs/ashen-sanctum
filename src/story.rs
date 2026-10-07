@@ -39,12 +39,20 @@ pub enum Role {
     /// Brother Coral, the tide-priest: heals and resets skills.
     Coral,
     Diver(u8),
+    // ---- Windward Anchorage (Act 6) ----
+    /// Seraphine, a deserter angel with clipped wings: the Act 6 story.
+    Seraphine,
+    /// Quartermaster Bram, an old sky-pirate: sells like Gerta.
+    Bram,
+    /// Sister Aurel: heals and resets skills.
+    Aurel,
+    Deckhand(u8),
     /// The jeweler in each town (by act): joins gems, adds and empties sockets.
     Jeweler(u8),
 }
 
 /// Jeweler names by act.
-pub const JEWELERS: [&str; 5] = ["MASTER ODO", "INGRID STONEHAND", "SILAS GREAVE", "THE LAPIDARY", "THE PEARL-SETTER"];
+pub const JEWELERS: [&str; 6] = ["MASTER ODO", "INGRID STONEHAND", "SILAS GREAVE", "THE LAPIDARY", "THE PEARL-SETTER", "THE GILDER"];
 
 
 pub struct Npc {
@@ -96,6 +104,11 @@ pub struct Quest {
     pub stage5: u8,
     /// Leviathan pearls from Admiral Dregmoor, Mother Nacre and the Angler Matriarch.
     pub pearls: [bool; 3],
+    /// Act 6: 0 = haven't met Seraphine, 1 = hunting the heralds of the sky, 2 = the True Sanctum is
+    /// open, 3 = Solanthos is ended.
+    pub stage6: u8,
+    /// Sun-shards from Vael, the Tempest Drake and the Ophan Prime.
+    pub shards: [bool; 3],
 }
 
 pub const DIFFICULTIES: [&str; 3] = ["NORMAL", "NIGHTMARE", "HELL"];
@@ -157,14 +170,38 @@ impl Quest {
             1 if self.pearl_count() < 3 => format!("SLAY THE THREE HERALDS OF THE DEEP  ({}/3 PEARLS)", self.pearl_count()),
             1 => "BRING THE PEARLS TO CAPTAIN YSOLDE".into(),
             2 => "DESCEND INTO THE DROWNED SANCTUM. SLAY THE LEVIATHAN".into(),
-            _ if self.difficulty < 2 => "THE LEVIATHAN IS DEAD. YSOLDE WANTS A WORD".into(),
-            _ => "THE SEA IS QUIET. THE WORLD IS YOURS AGAIN".into(),
+            _ => "THE LEVIATHAN IS DEAD. CLIMB THE STAIR OF LIGHT EAST OF BRINEHOLLOW".into(),
         }
     }
 
     /// Does Captain Ysolde have news (a marker over her head)?
     pub fn ysolde_has_news(&self) -> bool {
-        self.stage5 == 0 || (self.stage5 == 1 && self.pearl_count() == 3) || (self.stage5 == 3 && self.difficulty < 2)
+        self.stage5 == 0 || (self.stage5 == 1 && self.pearl_count() == 3)
+    }
+
+    pub fn shard_count(&self) -> usize {
+        self.shards.iter().filter(|s| **s).count()
+    }
+
+    /// Act 6 is open (the Leviathan is dead).
+    pub fn skies_open(&self) -> bool {
+        self.stage5 >= 3
+    }
+
+    pub fn log6(&self) -> String {
+        match self.stage6 {
+            0 => "FIND SERAPHINE IN WINDWARD ANCHORAGE".into(),
+            1 if self.shard_count() < 3 => format!("SLAY THE THREE HERALDS OF THE SKY  ({}/3 SHARDS)", self.shard_count()),
+            1 => "BRING THE SUN-SHARDS TO SERAPHINE".into(),
+            2 => "ENTER THE TRUE SANCTUM. END SOLANTHOS".into(),
+            _ if self.difficulty < 2 => "THE SUN IS OUT. SERAPHINE WANTS A WORD".into(),
+            _ => "THE ASH HAS STOPPED FALLING. THE WORLD IS YOURS AGAIN".into(),
+        }
+    }
+
+    /// Does Seraphine have news (a marker over her head)?
+    pub fn seraphine_has_news(&self) -> bool {
+        self.stage6 == 0 || (self.stage6 == 1 && self.shard_count() == 3) || (self.stage6 == 3 && self.difficulty < 2)
     }
 
     pub fn log4(&self) -> String {
@@ -518,21 +555,88 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
                 Dialog::new("CAPTAIN YSOLDE MARROW", &[&line])
             }
             2 => Dialog::new("CAPTAIN YSOLDE MARROW", &["THE SANCTUM IS NORTH. MIND THE COILS. EVERYTHING DOWN THERE IS PART OF IT."]),
+            _ => Dialog::new(
+                "CAPTAIN YSOLDE MARROW",
+                &[
+                    "THE LEVIATHAN IS DEAD AND THE SEA IS DRAINING. THERE'S LIGHT COMING DOWN FROM ABOVE. REAL LIGHT. I'D FORGOTTEN THE COLOUR.",
+                    "AND LOOK EAST. A STAIR OF LIGHT, CLIMBING OUT OF THE WATER AND UP PAST WHERE THE SURFACE USED TO BE. UP TO WHERE THE ASH COMES FROM.",
+                    "WHATEVER'S BURNING UP THERE HAS BEEN BURNING FOR AN AGE. GO AND PUT IT OUT.",
+                ],
+            ),
+        },
+        Role::Seraphine => match q.stage6 {
+            0 => {
+                let mut d = Dialog::new(
+                    "SERAPHINE",
+                    &[
+                        "YOU CLIMBED THE STAIR. NO ONE HAS DONE THAT SINCE THE FALL. WELCOME TO WINDWARD ANCHORAGE. I AM SERAPHINE. I WAS A SERAPH, ONCE, BEFORE I CUT MY OWN WINGS.",
+                        "LOOK UP. THAT DARK THING THAT FILLS HALF THE SKY IS SOLANTHOS. HE WAS THE SUN. HE FELL, AND HE HAS BEEN BURNING DOWN EVER SINCE. EVERY FLAKE OF ASH IN YOUR WORLD IS HIM.",
+                        "HE HIDES IN THE TRUE SANCTUM, SEALED WITH THREE SHARDS OF HIS OWN LIGHT. MY OLD COMMANDER VAEL HOLDS ONE IN THE BROKEN CHOIR, SOUTHWEST. THE TEMPEST DRAKE COILS ROUND ANOTHER ATOP THE STORM SPIRE, SOUTHEAST. THE OPHAN PRIME WATCHES THE LAST IN THE WHEEL OF EYES, NORTHEAST.",
+                        "MIND THE WIND, AND MIND THE EDGES. A GUST CAN TAKE YOU OFF AN ISLAND. IT CAN TAKE THEM OFF TOO.",
+                    ],
+                );
+                d.advance_to = Some(51);
+                d
+            }
+            1 if q.shard_count() == 3 => {
+                let mut d = Dialog::new(
+                    "SERAPHINE",
+                    &[
+                        "THREE SUN-SHARDS. THEY'RE STILL WARM. THEY REMEMBER WHAT HE WAS.",
+                        "I'VE SET THEM IN THE GATE. THE TRUE SANCTUM IS OPEN, NORTH OF HERE. END HIM. NOT FOR VENGEANCE. FOR MERCY.",
+                    ],
+                );
+                d.advance_to = Some(52);
+                d
+            }
+            1 => {
+                let line = format!(
+                    "THE HERALDS OF THE SKY STILL STAND, AND YOU HOLD {} OF 3 SHARDS. BRAM SELLS WHAT THE AIRSHIPS BRING. SISTER AUREL WILL MEND YOU.",
+                    q.shard_count()
+                );
+                Dialog::new("SERAPHINE", &[&line])
+            }
+            2 => Dialog::new("SERAPHINE", &["THE TRUE SANCTUM IS NORTH. WHEN THE LIGHT GOES OUT, DON'T STOP MOVING."]),
             _ if q.difficulty < 2 => {
                 let next = DIFFICULTIES[q.difficulty as usize + 1];
                 let mut d = Dialog::new(
-                    "CAPTAIN YSOLDE MARROW",
+                    "SERAPHINE",
                     &[
-                        "THE LEVIATHAN IS DEAD AND THE SEA IS DRAINING. THERE'S LIGHT COMING DOWN FROM ABOVE. REAL LIGHT. I'D FORGOTTEN THE COLOUR.",
-                        "BUT THE SEA REMEMBERS. ASH, ICE, BLOOD, BRASS AND BRINE... IT ALL COMES BACK, AND HARDER.",
+                        "IT'S OVER. NO MORE ASH FALLS. FOR THE FIRST TIME SINCE I CAN REMEMBER, THE SKY IS ONLY SKY.",
+                        "BUT A SUN DOESN'T STAY OUT FOREVER. ASH, ICE, BLOOD, BRASS, BRINE AND FIRE... THEY WILL ALL KINDLE AGAIN, HOTTER.",
                         "IF YOU WOULD FACE THEM ONCE MORE, THE WORLD WILL BE HARDER, BUT ITS TREASURES RICHER. YOU KEEP ALL YOU HAVE LEARNED AND CARRY.",
                     ],
                 );
                 d.last_options = vec![(format!("BEGIN {next}"), Act::NextDifficulty), ("NOT YET".into(), Act::Close)];
                 d
             }
-            _ => Dialog::new("CAPTAIN YSOLDE MARROW", &["EVEN HELL'S SEA RAN DRY BEFORE YOU DID. GO ON. THE SURFACE IS YOURS."]),
+            _ => Dialog::new("SERAPHINE", &["EVEN HELL'S SUN WENT OUT BEFORE YOU DID. REST NOW. YOU'VE EARNED THE QUIET."]),
         },
+        Role::Bram => {
+            let mut d = Dialog::new("QUARTERMASTER BRAM", &["EVERYTHING HERE CAME UP ON AN AIRSHIP. POTIONS, BISCUIT, AND GEAR OFF THE ONES WHO FELL. TAKE A LOOK."]);
+            d.options = vec![
+                (format!("HEALING POTION  {} GOLD", Ware::HealthPotion.price()), Act::Buy(Ware::HealthPotion)),
+                (format!("MANA POTION  {} GOLD", Ware::ManaPotion.price()), Act::Buy(Ware::ManaPotion)),
+                (format!("LOAF OF BREAD  {} GOLD", Ware::Bread.price()), Act::Buy(Ware::Bread)),
+                (format!("ROAST  {} GOLD", Ware::Roast.price()), Act::Buy(Ware::Roast)),
+                ("SHOW ME YOUR GEAR (AND BUY MINE)".into(), Act::Shop),
+                ("LEAVE".into(), Act::Close),
+            ];
+            d
+        }
+        Role::Aurel => {
+            let mut d = Dialog::new("SISTER AUREL", &["THE SUN WAS KIND, ONCE. LET A LITTLE OF WHAT WAS KIND IN IT MEND YOU."]);
+            d.heals = true;
+            d
+        }
+        Role::Deckhand(k) => {
+            let lines = [
+                "WHEN THE STREAKS COME, PLANT YOUR FEET AND FACE INTO IT. OR GET OFF THE EDGE. ONE OR THE OTHER.",
+                "THE HARPIES DON'T WANT TO KILL YOU. THEY WANT TO KNOCK YOU OFF. SAME THING, UP HERE.",
+                "THE ZEALOTS HEAL ANYTHING NEAR THEM. KILL THE ONE IN WHITE FIRST.",
+            ];
+            Dialog::new("DECKHAND", &[lines[k as usize % 3]])
+        }
         Role::Nessa => {
             let mut d = Dialog::new("NESSA THE PEARL-DIVER", &["WHATEVER THE DIVERS BRING UP, I SELL. POTIONS IN SEALED SHELLS, SMOKED FISH, AND GEAR FROM THE WRECKS."]);
             d.options = vec![
@@ -615,8 +719,9 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
                 "THE DEAD WERE BURIED WITH THEIR JEWELS. SOMEONE MAY AS WELL WEAR THEM. I CUT, I SET, I DON'T ASK.",
                 "FACETS ARE ONLY ANGLES. ANGLES I UNDERSTAND. THREE STONES IN, ONE BETTER STONE OUT.",
                 "PEARLS, GEMS, THE EYES OF FISH THAT SHOULDN'T HAVE EYES. I SET ANYTHING THAT SHINES.",
+                "SUNLIGHT HARDENS INTO GOLD UP HERE, IF YOU WAIT LONG ENOUGH. I'VE BEEN WAITING A LONG TIME.",
             ];
-            let mut d = Dialog::new(JEWELERS[k as usize % 5], &[greet[k as usize % 5]]);
+            let mut d = Dialog::new(JEWELERS[k as usize % 6], &[greet[k as usize % 6]]);
             d.options = vec![
                 ("JOIN MY GEMS (3 ALIKE MAKE 1 BETTER)".into(), Act::Combine),
                 ("SOCKETS: ADD THEM, OR TAKE GEMS OUT".into(), Act::Jewel),
@@ -707,6 +812,13 @@ pub const EPILOGUE5: [&str; 4] = [
     "THE LEVIATHAN SINKS INTO THE DARK, AND THE BLACK SEA BEGINS TO DRAIN.",
     "IN BRINEHOLLOW THE DIVERS WATCH LIGHT FALL THROUGH THE WATER FOR THE FIRST TIME IN AN AGE. CAPTAIN MARROW TAKES OFF HER EYEPATCH TO SEE IT BETTER.",
     "WHERE THE SANCTUM STOOD, A STAIR OF LIGHT CLIMBS UP AND UP, PAST THE CLOUDS, TO WHERE THE ASH HAS ALWAYS COME FROM.",
+    "SOMETHING VAST AND DARK HANGS IN THE SKY ABOVE IT, STILL SMOULDERING...",
+];
+
+pub const EPILOGUE6: [&str; 4] = [
+    "SOLANTHOS GUTTERS LIKE A CANDLE, AND GOES OUT. THE LAST OF HIS ASH DRIFTS DOWN THROUGH CLEAN AIR.",
+    "SERAPHINE STANDS AT THE EDGE OF THE ANCHORAGE AND WATCHES A NEW SUN RISE BEHIND THE CLOUDS. SMALL, AND YOUNG, AND KIND.",
+    "IN HOLLOWMERE, KALDHOLM, MOURNHOLD, THE ESCAPEMENT AND BRINEHOLLOW, PEOPLE LOOK UP. FOR THE FIRST TIME IN AN AGE, NOTHING IS FALLING.",
     "THANK YOU FOR PLAYING ASHEN SANCTUM.",
 ];
 

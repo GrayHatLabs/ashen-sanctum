@@ -1529,6 +1529,13 @@ impl Game {
             move_circle(&self.d, &mut nx, &mut ny, kx / kl * dist, ky / kl * dist, r);
             m.x = nx;
             m.y = ny;
+            // In the sky, a blow toward an edge sends it over (sky.rs).
+            if self.theme.sky() && self.mobs[i].hp > 0.0 {
+                (self.mobs[i].x, self.mobs[i].y) = (mx, my);
+                if !self.knocked_off(i, (kx0, ky0), dist) {
+                    (self.mobs[i].x, self.mobs[i].y) = (nx, ny);
+                }
+            }
         }
         self.focus = Some(i);
         self.focus_t = 3.0;

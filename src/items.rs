@@ -826,6 +826,11 @@ pub static UNIQUES: &[UniqueDef] = &[
     UniqueDef { name: "THE NACRE CROWN", base: "circlet", req: 41, stats: &[(Stat::Skills, 2), (Stat::Mana, 100), (Stat::Cast, 25), (Stat::Magic, 30)], boss: Some("nacre") },
     UniqueDef { name: "THE ANGLER'S LURE", base: "amulet", req: 42, stats: &[(Stat::Skills, 1), (Stat::Magic, 80), (Stat::LifeOnKill, 10), (Stat::Move, 15)], boss: Some("angler") },
     UniqueDef { name: "THE LEVIATHAN'S EYE", base: "ring", req: 44, stats: &[(Stat::Skills, 3), (Stat::Life, 100), (Stat::Fire, 50), (Stat::ManaOnKill, 10)], boss: Some("leviathan") },
+    // ---- Act 6 ----
+    UniqueDef { name: "VAEL'S BROKEN HALO", base: "circlet", req: 48, stats: &[(Stat::Skills, 2), (Stat::Life, 110), (Stat::Armor, 50), (Stat::LifeOnKill, 12)], boss: Some("vael") },
+    UniqueDef { name: "THE STORM'S EYE", base: "ring", req: 49, stats: &[(Stat::Skills, 2), (Stat::Cast, 30), (Stat::Move, 15), (Stat::Mana, 90)], boss: Some("tempest") },
+    UniqueDef { name: "THE THOUSAND-EYED WHEEL", base: "amulet", req: 50, stats: &[(Stat::Skills, 2), (Stat::Magic, 100), (Stat::ManaOnKill, 12), (Stat::Life, 80)], boss: Some("ophan") },
+    UniqueDef { name: "THE LAST EMBER OF THE SUN", base: "amulet", req: 52, stats: &[(Stat::Skills, 4), (Stat::Fire, 80), (Stat::Cast, 30), (Stat::LifeOnKill, 16)], boss: Some("solanthos") },
     UniqueDef { name: "SKALD'S STRIDE", base: "iboots", req: 16, stats: &[(Stat::Armor, 12), (Stat::Move, 25), (Stat::Stamina, 40), (Stat::Gold, 40)], boss: None },
 ];
 

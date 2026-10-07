@@ -73,6 +73,25 @@ pub enum Kind {
     Nacre,
     Angler,
     Leviathan,
+    // ---- Act 6: the Shattered Heavens (sky.rs has their tricks) ----
+    /// Broken-winged angels: they dive at you.
+    FallenSeraph,
+    /// Wheels of eyes: fast beams of light.
+    Ophanim,
+    /// Small storm drakes: forked lightning.
+    StormDrake,
+    /// Ash harpies: their talons knock you back (mind the edges).
+    Harpy,
+    /// Stone angels that wake as you pass: slow, very tough, ground slams.
+    Sentinel,
+    /// Sun-zealots: they heal the monsters around them.
+    Zealot,
+    /// Rare thunderbirds: they call lightning down on you.
+    Thunderbird,
+    Vael,
+    Tempest,
+    OphanPrime,
+    Solanthos,
     /// The valkyrie's spectral warriors (always on her side).
     Einherjar,
     /// The berserker's dire wolf (always on her side).
@@ -298,6 +317,38 @@ pub fn def(k: Kind) -> Def {
             reach: 1.6,
             boss: true,
             ..d("boss_angler", "THE ANGLER MATRIARCH", 1000.0, 2.0, (26.0, 38.0), 0.5, 1.5, 2600.0)
+        },
+        Kind::FallenSeraph => d("fallen_seraph", "FALLEN SERAPH", 80.0, 2.8, (15.0, 21.0), 0.45, 1.2, 46.0),
+        Kind::Ophanim => Def { r: 0.36, ranged: true, ..d("ophanim", "OPHANIM", 60.0, 2.0, (11.0, 15.0), 0.5, 1.9, 44.0) },
+        Kind::StormDrake => Def { r: 0.4, ranged: true, ..d("storm_drake", "STORM DRAKE", 90.0, 2.6, (12.0, 17.0), 0.5, 2.0, 50.0) },
+        Kind::Harpy => Def { r: 0.3, ..d("ash_harpy", "ASH HARPY", 46.0, 4.2, (9.0, 13.0), 0.3, 0.9, 30.0) },
+        Kind::Sentinel => Def { r: 0.55, reach: 1.3, ..d("gilded_sentinel", "GILDED SENTINEL", 260.0, 1.3, (24.0, 34.0), 0.8, 2.0, 90.0) },
+        Kind::Zealot => Def { ranged: true, ..d("sun_zealot", "SUN-ZEALOT", 64.0, 2.2, (11.0, 15.0), 0.55, 2.0, 44.0) },
+        Kind::Thunderbird => Def { r: 0.5, ranged: true, ..d("thunderbird", "THUNDERBIRD", 200.0, 3.0, (16.0, 24.0), 0.5, 1.8, 120.0) },
+        Kind::Vael => Def {
+            r: 0.6,
+            reach: 1.6,
+            boss: true,
+            ..d("boss_vael", "SERAPH-COMMANDER VAEL", 1100.0, 2.2, (28.0, 38.0), 0.55, 1.5, 3200.0)
+        },
+        Kind::Tempest => Def {
+            r: 0.8,
+            reach: 1.8,
+            boss: true,
+            ranged: true,
+            ..d("boss_tempest", "THE TEMPEST DRAKE", 1200.0, 1.8, (22.0, 30.0), 0.6, 1.8, 3400.0)
+        },
+        Kind::OphanPrime => Def {
+            r: 0.8,
+            boss: true,
+            ranged: true,
+            ..d("boss_ophan", "THE OPHAN PRIME", 1150.0, 1.2, (18.0, 26.0), 0.6, 1.9, 3600.0)
+        },
+        Kind::Solanthos => Def {
+            r: 0.7,
+            reach: 1.8,
+            boss: true,
+            ..d("boss_solanthos", "SOLANTHOS, THE BURNT-OUT SUN", 3200.0, 1.8, (34.0, 48.0), 0.6, 1.6, 14000.0)
         },
         Kind::Leviathan => Def {
             r: 0.9,
@@ -593,6 +644,8 @@ pub enum ShotKind {
     Cannon,
     /// The Leviathan's pressure beam.
     Tide,
+    /// Spears and beams of light (seraphs, the ophanim, Vael, Solanthos).
+    Light,
 }
 
 pub struct Shot {
@@ -1014,6 +1067,30 @@ impl Game {
                             }
                             Kind::Marshal => shots.push((m.x, m.y, ux * 6.5, uy * 6.5, dmg, ShotKind::Gear)),
                             Kind::Jelly => shots.push((m.x, m.y, ux * 8.0, uy * 8.0, dmg, ShotKind::Spark)),
+                            Kind::Ophanim => {
+                                for k in 0..3 {
+                                    shots.push((m.x, m.y, ux * (10.0 + k as f32), uy * (10.0 + k as f32), dmg * 0.5, ShotKind::Light));
+                                }
+                            }
+                            Kind::StormDrake | Kind::Thunderbird => {
+                                for k in [-1.0f32, 0.0, 1.0] {
+                                    let a = uy.atan2(ux) + k * 0.2;
+                                    shots.push((m.x, m.y, a.cos() * 9.0, a.sin() * 9.0, dmg * 0.7, ShotKind::Spark));
+                                }
+                            }
+                            Kind::Zealot => shots.push((m.x, m.y, ux * 7.0, uy * 7.0, dmg, ShotKind::Ash)),
+                            Kind::Tempest => {
+                                let n = if m.enraged { 7 } else { 5 };
+                                for k in 0..n {
+                                    let a = uy.atan2(ux) + (k as f32 - (n - 1) as f32 * 0.5) * 0.18;
+                                    shots.push((m.x, m.y, a.cos() * 9.5, a.sin() * 9.5, dmg, ShotKind::Spark));
+                                }
+                            }
+                            Kind::OphanPrime => {
+                                for k in 0..4 {
+                                    shots.push((m.x, m.y, ux * (9.0 + k as f32 * 1.2), uy * (9.0 + k as f32 * 1.2), dmg * 0.5, ShotKind::Light));
+                                }
+                            }
                             Kind::Siren => shots.push((m.x, m.y, ux * 6.5, uy * 6.5, dmg, ShotKind::Song)),
                             Kind::InkHorror => shots.push((m.x, m.y, ux * 6.0, uy * 6.0, dmg, ShotKind::Ink)),
                             Kind::Nacre => {
@@ -1099,6 +1176,10 @@ impl Game {
             self.hurt_by(dmg, Some(src));
             if def(self.mobs[i].kind).chills {
                 self.chill(1.4);
+            }
+            if src == Kind::Harpy {
+                let (hx, hy) = (self.mobs[i].x, self.mobs[i].y);
+                self.shove_player((hx, hy), 1.3);
             }
             let dealt = (before - self.p.hp).max(0.0);
             let mods = self.mobs[i].mods;
@@ -1664,6 +1745,134 @@ fn boss_specials(
             }
             if m.enraged && summons < 4 && rng.chance(DT / 8.0) {
                 around(rng, 2, Kind::Anglerlurk, m.tier, spawns);
+            }
+        }
+        Kind::Vael => {
+            // Volleys of light-spears, a diving charge, and the fallen of his host.
+            if m.special <= 0.0 && (2.5..11.0).contains(&dist) {
+                m.special = if m.enraged { 2.6 } else { 3.6 };
+                let base = (py - m.y).atan2(px - m.x);
+                for k in -2..=2 {
+                    let a = base + k as f32 * 0.16;
+                    shots.push((m.x, m.y, a.cos() * 10.0, a.sin() * 10.0, 13.0 * m.tier.powf(0.8), ShotKind::Light));
+                }
+                texts.push((m.x, m.y, "KNEEL!"));
+            }
+            if m.special2 <= 0.0 && (3.0..9.0).contains(&dist) {
+                m.special2 = if m.enraged { 4.0 } else { 6.0 };
+                m.rush = 0.7;
+                texts.push((m.x, m.y, "FROM ON HIGH!"));
+                if summons < 5 {
+                    around(rng, 2, Kind::FallenSeraph, m.tier, spawns);
+                }
+            }
+        }
+        Kind::Tempest => {
+            // Storm rings around you, and the gale of its wings (cue 5).
+            if m.special <= 0.0 && dist < 11.0 {
+                m.special = if m.enraged { 3.4 } else { 4.6 };
+                for k in 0..10 {
+                    let a = k as f32 / 10.0 * std::f32::consts::TAU;
+                    hazards.push(Hazard { x: px + a.cos() * 2.2, y: py + a.sin() * 2.2, r: 0.8, warn: 0.9, live: 0.0, dps: 0.0, burst: 20.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Quake });
+                }
+                texts.push((m.x, m.y, "THE STORM RINGS!"));
+            }
+            if m.special2 <= 0.0 && dist < 12.0 {
+                m.special2 = if m.enraged { 6.0 } else { 8.0 };
+                m.cue = 5;
+                texts.push((m.x, m.y, "GALE!"));
+            }
+        }
+        Kind::OphanPrime => {
+            // Turning beams: a ring of light that turns a little each time; more eyes open as it weakens.
+            if m.special <= 0.0 && dist < 13.0 {
+                let frac = m.hp / m.max_hp;
+                m.special = if frac < 0.33 { 1.2 } else if frac < 0.66 { 1.7 } else { 2.3 };
+                m.form = m.form.wrapping_add(1);
+                let turn = m.form as f32 * 0.21;
+                let n = if frac < 0.33 { 16 } else { 12 };
+                for k in 0..n {
+                    let a = turn + k as f32 / n as f32 * std::f32::consts::TAU;
+                    shots.push((m.x, m.y, a.cos() * 7.0, a.sin() * 7.0, 11.0 * m.tier.powf(0.8), ShotKind::Light));
+                }
+            }
+            if m.special2 <= 0.0 {
+                m.special2 = 12.0;
+                if summons < 4 {
+                    around(rng, 2, Kind::Ophanim, m.tier, spawns);
+                    texts.push((m.x, m.y, "ITS EYES OPEN..."));
+                }
+            }
+        }
+        Kind::Solanthos => {
+            let frac = m.hp / m.max_hp;
+            if frac < 0.66 && m.form == 0 {
+                m.form = 1;
+                m.invuln = 1.5;
+                m.cue = 4;
+                texts.push((m.x, m.y, "THE LIGHT GOES OUT..."));
+            }
+            if frac < 0.33 && m.form == 1 {
+                m.form = 2;
+                m.invuln = 1.5;
+                texts.push((m.x, m.y, "ECLIPSE!"));
+            }
+            match m.form {
+                0 => {
+                    // Radiant: solar flares, and stars falling where you stand.
+                    if m.special <= 0.0 && dist < 13.0 {
+                        m.special = if m.enraged { 2.4 } else { 3.2 };
+                        let base = (py - m.y).atan2(px - m.x);
+                        for k in -3..=3 {
+                            let a = base + k as f32 * 0.14;
+                            shots.push((m.x, m.y, a.cos() * 8.0, a.sin() * 8.0, 14.0 * m.tier.powf(0.8), ShotKind::Ash));
+                        }
+                    }
+                    if m.special2 <= 0.0 && dist < 14.0 {
+                        m.special2 = if m.enraged { 3.0 } else { 4.0 };
+                        for k in 0..3 {
+                            let a = rng.f() * std::f32::consts::TAU;
+                            let r = if k == 0 { 0.0 } else { rng.rf(1.2, 2.6) };
+                            hazards.push(Hazard { x: px + a.cos() * r, y: py + a.sin() * r, r: 1.0, warn: 1.0, live: 0.0, dps: 0.0, burst: 24.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Nova });
+                        }
+                        texts.push((m.x, m.y, "FALL, STARS!"));
+                    }
+                }
+                1 => {
+                    // Ash: in the dark, ember-wraiths rise, and ash burns underfoot.
+                    if m.special <= 0.0 && dist < 13.0 {
+                        m.special = if m.enraged { 3.0 } else { 4.0 };
+                        hazards.push(Hazard { x: px, y: py, r: 1.6, warn: 0.9, live: 4.0, dps: 10.0 * m.tier, burst: 0.0, t: 0.0, fired: false, kind: HazardKind::Slag });
+                    }
+                    if m.special2 <= 0.0 {
+                        m.special2 = 9.0;
+                        m.cue = 4;
+                        if summons < 6 {
+                            around(rng, 4, Kind::Wisp, m.tier, spawns);
+                            texts.push((m.x, m.y, "RISE, MY EMBERS!"));
+                        }
+                    }
+                }
+                _ => {
+                    // Eclipse: turning beams, and the floor breaking away all around.
+                    if m.special <= 0.0 && dist < 14.0 {
+                        m.special = if m.enraged { 1.4 } else { 1.9 };
+                        m.anim_t += 0.37;
+                        let turn = m.anim_t * 0.6;
+                        for k in 0..10 {
+                            let a = turn + k as f32 / 10.0 * std::f32::consts::TAU;
+                            shots.push((m.x, m.y, a.cos() * 7.5, a.sin() * 7.5, 13.0 * m.tier.powf(0.8), ShotKind::Light));
+                        }
+                    }
+                    if m.special2 <= 0.0 {
+                        m.special2 = if m.enraged { 2.4 } else { 3.2 };
+                        for _ in 0..6 {
+                            let a = rng.f() * std::f32::consts::TAU;
+                            let r = rng.rf(0.0, 4.5);
+                            hazards.push(Hazard { x: px + a.cos() * r, y: py + a.sin() * r, r: 0.9, warn: 1.1, live: 0.0, dps: 0.0, burst: 20.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Quake });
+                        }
+                    }
+                }
             }
         }
         Kind::Leviathan => {

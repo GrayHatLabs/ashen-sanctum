@@ -121,6 +121,10 @@ pub struct Art {
     sea_sand: Vec<Sprite>,
     flats: Sprite,
     deck: Sprite,
+    /// Act 6 overland ground: cloud marble, pale sky grass, chain bridges.
+    marble: Vec<Sprite>,
+    sky_grass: Sprite,
+    bridge: Sprite,
     /// Item and prop sprites (anchored at the bottom centre, where they sit on the floor).
     items: Vec<(&'static str, Sprite)>,
     /// Code-drawn props for any prop sprite that hasn't been generated.
@@ -151,6 +155,11 @@ fn theme_grade(t: Theme) -> (u32, f32, f32) {
         Theme::Reef => (0x3a2a48, 0.25, 0.9),
         Theme::Trench => (0x081820, 0.5, 0.7),
         Theme::Drowned => (0x103038, 0.35, 0.85),
+        Theme::Heavens => (0, 0.0, 1.0),
+        Theme::Seraph => (0x3a3020, 0.25, 0.9),
+        Theme::Spire => (0x201838, 0.4, 0.8),
+        Theme::Wheel => (0x4a3a10, 0.3, 0.9),
+        Theme::Zenith => (0x2a1008, 0.4, 0.8),
     }
 }
 
@@ -236,6 +245,13 @@ impl Art {
         let temple_floor = exact("sanctum_floor").unwrap_or_else(|| grade(&stone[0], (0x8ab0b0, 0.35, 0.85)));
         let temple_wall = exact("sanctum_wall").unwrap_or_else(|| grade(&wall, (0x4a7a78, 0.4, 0.8)));
         let coral_wall = exact("coral_wall").unwrap_or_else(|| grade(&wall, (0x5a3a60, 0.45, 0.8)));
+        // Act 6: marble, storm stone and the burnt sanctum (stand-ins graded from the stone set).
+        let marble_floor: Vec<Sprite> = ["cloud_marble1", "cloud_marble2"].iter().filter_map(|n| exact(n)).collect();
+        let marble_floor = if marble_floor.is_empty() { stone.iter().map(|s| grade(s, (0xe8e0d0, 0.5, 1.1))).collect() } else { marble_floor };
+        let choir_floor = exact("choir_floor").unwrap_or_else(|| grade(&stone[0], (0x3a3020, 0.45, 0.85)));
+        let zenith_floor = exact("zenith_floor").unwrap_or_else(|| grade(&stone[0], (0x201008, 0.6, 0.75)));
+        let marble_wall = exact("marble_wall").unwrap_or_else(|| grade(&wall, (0xe0d8c8, 0.5, 1.1)));
+        let storm_wall = exact("storm_wall").unwrap_or_else(|| grade(&wall, (0x30204a, 0.5, 0.8)));
         let mut floors = vec![];
         let mut walls = vec![];
         for t in Theme::ALL {
@@ -249,6 +265,10 @@ impl Art {
                 Theme::Wreck => std::iter::once(&deck_floor).chain(std::iter::once(&deck_floor)).chain(sand_floor.iter().take(1)).map(|s| grade(s, theme_grade(t))).collect(),
                 Theme::Reef => std::iter::once(&coral_floor).chain(sand_floor.iter()).map(|s| grade(s, theme_grade(t))).collect(),
                 Theme::Trench => sand_floor.iter().map(|s| grade(s, theme_grade(t))).collect(),
+                Theme::Seraph => std::iter::once(&choir_floor).chain(marble_floor.iter()).map(|s| grade(s, theme_grade(t))).collect(),
+                Theme::Spire => marble_floor.iter().map(|s| grade(s, theme_grade(t))).collect(),
+                Theme::Wheel => marble_floor.iter().chain(std::iter::once(&choir_floor)).map(|s| grade(s, theme_grade(t))).collect(),
+                Theme::Zenith => std::iter::once(&zenith_floor).chain(std::iter::once(&zenith_floor)).chain(marble_floor.iter().take(1)).map(|s| grade(s, theme_grade(t))).collect(),
                 Theme::Drowned => std::iter::once(&temple_floor).chain(std::iter::once(&temple_floor)).chain(std::iter::once(&coral_floor)).map(|s| grade(s, theme_grade(t))).collect(),
                 _ => stone.iter().map(|s| grade(s, theme_grade(t))).collect(),
             };
@@ -263,6 +283,9 @@ impl Art {
                 Theme::Trench => grade(&coral_wall, theme_grade(t)),
                 Theme::Wreck => grade(&wall, (0x3a2818, 0.5, 0.75)),
                 Theme::Drowned => temple_wall.clone(),
+                Theme::Heavens | Theme::Seraph | Theme::Wheel => grade(&marble_wall, theme_grade(t)),
+                Theme::Spire => storm_wall.clone(),
+                Theme::Zenith => grade(&storm_wall, (0x401008, 0.5, 0.75)),
                 Theme::Foundry | Theme::Choir | Theme::Archive | Theme::Clock => grade(&brass_wall, theme_grade(t)),
                 Theme::IceCaves | Theme::Rime | Theme::Glacier => grade(&ice_wall, theme_grade(t)),
                 _ => grade(&wall, theme_grade(t)),
@@ -292,6 +315,10 @@ impl Art {
         // The flats: the same sand, darker and wetter.
         let flats = grade(&sea_sand[0], (0x0a2a34, 0.45, 0.75));
         let deck = exact("wreck_deck").unwrap_or_else(|| sprites::fallback_ground(8, 0x3a2818, 0x5a4028));
+        let marble: Vec<Sprite> = ["cloud_marble1", "cloud_marble1", "cloud_marble2"].iter().filter_map(|n| exact(n)).collect();
+        let marble = if marble.is_empty() { (0..2).map(|v| sprites::fallback_ground(v, 0xc8c0b0, 0xe8e0d0)).collect() } else { marble };
+        let sky_grass = exact("sky_grass").unwrap_or_else(|| sprites::fallback_ground(9, 0xa09058, 0xc8b878));
+        let bridge = exact("chain_bridge").unwrap_or_else(|| sprites::fallback_ground(10, 0x5a4028, 0x7a5a38));
         let items: Vec<(&'static str, Sprite)> = ITEMS
             .iter()
             .map(|d| {
@@ -303,7 +330,7 @@ impl Art {
             .collect();
         let fallback_props = sprites::PROP_NAMES.iter().filter(|n| !items.iter().any(|i| i.0 == **n)).map(|n| (*n, sprites::fallback_prop(n))).collect();
         let missing = sprites::fallback_prop("rock1");
-        Art { chars, floors, walls, grass, dirt, road, snow, lake, snow_road, mist_earth, moss, mist_road, brass, verdigris, conveyor, sea_sand, flats, deck, items, fallback_props, missing }
+        Art { chars, floors, walls, grass, dirt, road, snow, lake, snow_road, mist_earth, moss, mist_road, brass, verdigris, conveyor, sea_sand, flats, deck, marble, sky_grass, bridge, items, fallback_props, missing }
     }
 
     pub fn floor(&self, theme: Theme, ground: u8, var: usize) -> &Sprite {
@@ -319,6 +346,13 @@ impl Art {
                 1 => &self.lake,
                 2 => &self.snow_road,
                 _ => &self.snow[var % self.snow.len()],
+            };
+        }
+        if theme == Theme::Heavens {
+            return match ground {
+                1 => &self.sky_grass,
+                2 => &self.bridge,
+                _ => &self.marble[var % self.marble.len()],
             };
         }
         if theme == Theme::Deep {
@@ -403,6 +437,7 @@ impl Art {
             "npc_jeweler2" => ("npc_widow", 1.0, 0x30a060, 0.45),
             "npc_jeweler3" => ("npc_vesper", 1.0, 0xc0a040, 0.45),
             "npc_jeweler4" => ("npc_merchant", 1.0, 0x60c0c0, 0.45),
+            "npc_jeweler5" => ("npc_merchant", 1.0, 0xe0c060, 0.45),
             "npc_seer" => ("npc_elder", 1.0, 0x9090a0, 0.4),
             "npc_fisher" => ("npc_villager", 1.0, 0x506878, 0.4),
             "boss_giant" => ("boss_bone", 1.25, 0x6090c0, 0.5),
@@ -474,6 +509,22 @@ impl Art {
             "boss_nacre" => ("boss_witch", 1.1, 0xd0e8f0, 0.5),
             "boss_angler" => ("yeti", 1.4, 0x102838, 0.7),
             "boss_leviathan" => ("boss_dragon", 1.3, 0x105060, 0.6),
+            // ---- Act 6 stand-ins (until the PixelLab art is approved) ----
+            "fallen_seraph" => ("raider", 1.05, 0xe8e0c0, 0.5),
+            "ophanim" => ("boss_hex", 0.5, 0xffd060, 0.65),
+            "storm_drake" => ("frost_wolf", 1.3, 0x5030a0, 0.6),
+            "ash_harpy" => ("banshee", 0.95, 0x808080, 0.6),
+            "gilded_sentinel" => ("boss_giant", 0.85, 0xe0d8c0, 0.6),
+            "sun_zealot" => ("cultist", 1.0, 0xf0d890, 0.55),
+            "thunderbird" => ("boss_dragon", 0.5, 0x304080, 0.6),
+            "npc_seraphine" => ("npc_guard", 1.0, 0xe8e0d0, 0.45),
+            "npc_bram" => ("npc_merchant", 1.0, 0x30508a, 0.45),
+            "npc_aurel" => ("npc_healer", 1.0, 0xf0e8c0, 0.5),
+            "npc_deckhand" => ("npc_villager", 1.0, 0x8a6a40, 0.45),
+            "boss_vael" => ("boss_ashking", 1.0, 0x302818, 0.5),
+            "boss_tempest" => ("boss_dragon", 1.2, 0x402080, 0.6),
+            "boss_ophan" => ("boss_hex", 1.4, 0xffd060, 0.6),
+            "boss_solanthos" => ("boss_ashking", 1.25, 0x201008, 0.55),
             "vampire" => ("mage", 1.0, 0x501060, 0.5),
             "inventor" => ("mage", 1.0, 0x704820, 0.5),
             "steam_suit" => ("boss_giant", 0.7, 0xb08840, 0.5),

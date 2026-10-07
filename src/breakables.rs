@@ -18,14 +18,17 @@ pub fn label(k: Kind, act: u8) -> &'static str {
         (Kind::Crate, 2) => "COFFIN",
         (Kind::Crate, 3) => "BRASS CRATE",
         (Kind::Crate, 4) => "BARNACLED CRATE",
+        (Kind::Crate, 5) => "GILDED CHEST",
         (Kind::Crate, _) => "CRATE",
         (Kind::Barrel, 2) => "ROTTEN BARREL",
         (Kind::Barrel, 3) => "OIL DRUM",
         (Kind::Barrel, 4) => "SEALED AMPHORA",
+        (Kind::Barrel, 5) => "SUNLIT BARREL",
         (Kind::Barrel, _) => "BARREL",
         (Kind::Urn, 2) => "BONE URN",
         (Kind::Urn, 3) => "CLOCKWORK BOX",
         (Kind::Urn, 4) => "GIANT CLAM",
+        (Kind::Urn, 5) => "MARBLE URN",
         _ => "URN",
     }
 }
@@ -98,7 +101,7 @@ fn pick_kind(rng: &mut Rng) -> Kind {
 /// dungeon entrance outdoors. Never in town, on portals or right at the start. Same places for the same seed.
 pub fn place(lv: &mut Level, seed: u64) {
     let mut rng = Rng::new(seed ^ 0xb4ea_cab1e ^ format!("{:?}", lv.id).bytes().fold(7u64, |a, b| a.wrapping_mul(31).wrapping_add(b as u64)));
-    let act = lv.id.act().min(4) as u8;
+    let act = lv.id.act().min(5) as u8;
     let mut spots: Vec<(f32, f32)> = vec![];
     let free = |lv: &Level, spots: &[(f32, f32)], x: f32, y: f32| {
         !lv.d.blocked(x, y, 0.4)
@@ -178,6 +181,7 @@ impl Game {
             2 => (PKind::Bone, rgb(0x2a2018)),
             3 => (PKind::Fire, rgb(0x4a3a20)),
             4 => (PKind::Frost, rgb(0x2a4a50)),
+            5 => (PKind::Holy, rgb(0xb0a888)),
             _ => (PKind::Bone, rgb(0x4a3018)),
         };
         for k in 0..16 {
@@ -241,6 +245,7 @@ impl Game {
                     1 => (0x3a4450, 0x6a7a88, 0xdaeaf4),
                     3 => (0x4a3418, 0xa07830, 0xd0a850),
                     4 => (0x1a2a2a, 0x3a5a50, 0x8ab0a0),
+                    5 => (0x8a7a50, 0xe8e0d0, 0xffe080),
                     _ => (0x3a2410, 0x7a5530, 0xa07848),
                 };
                 scr.fill(sx - 7, sy - 12, 14, 12, c(dark));
@@ -259,6 +264,7 @@ impl Game {
                     2 => (0x3a3a24, 0x5a4a30),
                     3 => (0x2a2a30, 0xb08840),
                     4 => (0x8a6a50, 0x3a5a50),
+                    5 => (0xe8e0d0, 0xd0a840),
                     _ => (0x6a4424, 0x3a3030),
                 };
                 for yy in 0..14 {
@@ -281,6 +287,7 @@ impl Game {
                     1 => 0x9ab8d0,
                     2 => 0xd8d0b0,
                     4 => 0xd8e8e0,
+                    5 => 0xf0ece0,
                     _ => 0xa05a30,
                 };
                 scr.disc(sx, sy - 6, 5, c(body));

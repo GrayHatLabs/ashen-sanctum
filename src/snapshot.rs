@@ -963,6 +963,49 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             save(&mut g, scr, "port_screenshot");
         }
     }
+    // Act 6: Windward Anchorage, the Skyreach in a gust, the heralds of the sky and Solanthos.
+    {
+        let mut g = Game::new(7, h);
+        g.quest.stage = 3;
+        g.quest.stage2 = 3;
+        g.quest.stage3 = 3;
+        g.quest.stage4 = 3;
+        g.quest.stage5 = 3;
+        g.debug_goto(LevelId::Heavens);
+        (g.p.x, g.p.y) = g.start;
+        g.banner_t = 0.0;
+        idle(&mut g, 60);
+        save(&mut g, scr, "act6_town");
+        g.debug_talk(Role::Seraphine);
+        save(&mut g, scr, "act6_dialog");
+        g.dialog = None;
+        g.p.base_hp = 9999.0;
+        g.p.recalc();
+        g.p.hp = 9999.0;
+        if let Some((x, y)) = g.bot_target().map(|t| (t.0, t.1)) {
+            g.debug_place_near(x, y, 4.0);
+            idle(&mut g, 40);
+            save(&mut g, scr, "act6_wilds");
+            g.wind_t = 0.0;
+            g.wind_warn = 0.0;
+            g.wind_gust = 2.0;
+            idle(&mut g, 20);
+            save(&mut g, scr, "act6_gust");
+        }
+        for (k, name) in [(20, "act6_vael"), (21, "act6_tempest"), (22, "act6_ophan"), (crate::world::ZENITH, "act6_solanthos")] {
+            g.debug_goto(LevelId::Dungeon(k, crate::world::DUNGEONS[k].floors - 1));
+            if let Some(i) = g.mobs.iter().position(|m| m.boss) {
+                let (bx, by) = (g.mobs[i].x, g.mobs[i].y);
+                g.debug_place_near(bx, by, 4.5);
+                g.p.hp = 9999.0;
+                if name == "act6_solanthos" {
+                    g.mobs[i].hp = g.mobs[i].max_hp * 0.6;
+                }
+                idle(&mut g, 150);
+                save(&mut g, scr, name);
+            }
+        }
+    }
     // Act 5: Brinehollow, the Sunken Reach at low and high tide, the heralds and the Leviathan.
     {
         use crate::mobs::Kind;

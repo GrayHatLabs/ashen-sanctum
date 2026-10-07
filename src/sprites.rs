@@ -159,7 +159,7 @@ pub fn fallback_ground(v: i32, base: u32, hi: u32) -> Sprite {
 }
 
 /// Props that have code-drawn stand-ins.
-pub const PROP_NAMES: [&str; 69] = [
+pub const PROP_NAMES: [&str; 82] = [
     "tree_oak", "tree_pine", "tree_dead", "rock1", "bush1", "house1", "house2", "tent1", "campfire", "well", "ent_crypt",
     "ent_warrens", "ent_catacombs", "ent_sanctum", "stairs_down", "stairs_up", "tree_snowpine", "tree_snowdead", "rock_snow",
     "ice_crystal", "longhouse1", "longhouse2", "stall_furs", "ent_mines", "ent_caves", "ent_temple", "ent_glacier", "pass_gate",
@@ -169,6 +169,8 @@ pub const PROP_NAMES: [&str; 69] = [
     "ent_foundry", "ent_choir", "ent_archive", "ent_clock", "gear_gate",
     "kelp1", "coral1", "coral2", "wreck_hull", "whale_bones", "stilt_house1", "stilt_house2", "shell_lamp", "anchor_rock",
     "diving_bell", "ent_wreck", "ent_cathedral", "ent_trench", "ent_drowned",
+    "angel_statue", "halo_arch", "sky_lamp", "cloud_tree", "marble_ruin", "sky_house1", "sky_house2", "airship_dock",
+    "light_stair", "ent_brokenchoir", "ent_spire", "ent_wheel", "ent_zenith",
 ];
 
 /// Simple stand-in shapes for props (anchored at the bottom centre).
@@ -213,6 +215,15 @@ pub fn fallback_prop(name: &str) -> Sprite {
         "ent_cathedral" => return frost("ent_crypt", 0xe0b0c0, 0.5),
         "ent_trench" => return frost("ent_crypt", 0x081820, 0.6),
         "ent_drowned" => return frost("ent_crypt", 0x40a0a0, 0.5),
+        "angel_statue" | "marble_ruin" => return frost("rock1", 0xe8e0d0, 0.6),
+        "halo_arch" | "light_stair" => return frost("ent_crypt", 0xffd060, 0.6),
+        "sky_lamp" => return frost("well", 0xf0e0b0, 0.6),
+        "cloud_tree" => return frost("tree_oak", 0xe0c070, 0.5),
+        "sky_house1" | "sky_house2" => return frost("house1", 0xe8e0d0, 0.45),
+        "airship_dock" => return frost("tent1", 0x6a4a28, 0.5),
+        "ent_brokenchoir" | "ent_wheel" => return frost("ent_crypt", 0xe8d8a0, 0.5),
+        "ent_spire" => return frost("ent_crypt", 0x5030a0, 0.5),
+        "ent_zenith" => return frost("ent_crypt", 0x301008, 0.5),
         "tree_snowdead" => return frost("tree_dead", 0xe8f0f8, 0.4),
         "rock_snow" => return frost("rock1", 0xf0f4ff, 0.4),
         "longhouse1" | "longhouse2" => return frost("house1", 0xe8f0ff, 0.25),
