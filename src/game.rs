@@ -8,7 +8,7 @@ use crate::iso;
 use crate::mobs::{Hazard, Kind, Mob, MobState, Shot};
 use crate::rng::Rng;
 use crate::story::{self, Act, Dialog, Npc, Quest, Role, Ware};
-use crate::world::{self, Level, LevelId, Portal, PortalKind, Prop, Theme, CASTLE, GLACIER, HEART, SANCTUM};
+use crate::world::{self, Level, LevelId, Portal, PortalKind, Prop, Theme, ABYSS, CASTLE, GLACIER, HEART, SANCTUM};
 #[cfg(test)]
 use crate::world::DUNGEONS;
 use crate::world::DUNGEONS as DUNGEONS_LIST;
@@ -170,6 +170,8 @@ pub enum Drop {
     Sigil(usize),
     /// A herald of Mechanus's winding key (0 Forgemother, 1 Cantor, 2 Archivist).
     Key(usize),
+    /// A Leviathan pearl from a herald of the deep (0 Dregmoor, 1 Nacre, 2 the Angler Matriarch).
+    Pearl(usize),
     /// Equipment.
     Item(Box<crate::items::Item>),
 }
@@ -619,6 +621,13 @@ pub struct Game {
     pub(crate) whips: Vec<crate::inquisitor::Whip>,
     pub(crate) whip_combo: u8,
     pub(crate) whip_combo_t: f32,
+    /// Act 5 (tides.rs): the tide's clock and depth, ink in your eyes, the Angler's dark, and a pull
+    /// toward a point (x, y, time left).
+    pub(crate) tide_t: f32,
+    pub(crate) tide: f32,
+    pub(crate) blind_t: f32,
+    pub(crate) dark_t: f32,
+    pub(crate) pull: (f32, f32, f32),
     pub(crate) binds: Vec<crate::inquisitor::BindFx>,
     /// The blow being dealt to you comes from something cursed (her Iron Halo).
     pub(crate) hurt_cursed: bool,
@@ -728,6 +737,11 @@ impl Game {
             whips: vec![],
             whip_combo: 0,
             whip_combo_t: 0.0,
+            tide_t: 0.0,
+            tide: 0.0,
+            blind_t: 0.0,
+            dark_t: 0.0,
+            pull: (0.0, 0.0, 0.0),
             binds: vec![],
             hurt_cursed: false,
             clocks: vec![],
@@ -882,7 +896,7 @@ impl Game {
     /// Where this level's waypoint stands: beside the town square, or near a floor's way in.
     fn find_waypoint(&self) -> (f32, f32) {
         let base = match self.level {
-            LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus => (self.town_start.0 + 3.0, self.town_start.1 + 2.0),
+            LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep => (self.town_start.0 + 3.0, self.town_start.1 + 2.0),
             LevelId::Dungeon(..) => self.portals.iter().find(|p| p.kind == PortalKind::Up).map(|p| (p.x + 2.0, p.y + 1.0)).unwrap_or(self.start),
         };
         let clear = |x: f32, y: f32| {
@@ -913,6 +927,7 @@ impl Game {
             LevelId::Frostmarch => "KALDHOLM".into(),
             LevelId::Mistwood => "MOURNHOLD".into(),
             LevelId::Mechanus => "THE LAST ESCAPEMENT".into(),
+            LevelId::Deep => "BRINEHOLLOW".into(),
             LevelId::Dungeon(k, f) => format!("{} - LEVEL {}", DUNGEONS_LIST[k].name, f + 1),
         }
     }
@@ -1014,8 +1029,8 @@ impl Game {
     /// earlier acts were done (level 18 / 26 / 34, their relics' power, gear and gold to match).
     pub fn act_start(&mut self, act: usize) {
         use crate::items::{self, Rarity, WORN};
-        let act = act.clamp(1, 3);
-        let clvl = [1, 18, 26, 34][act];
+        let act = act.clamp(1, 4);
+        let clvl = [1, 18, 26, 34, 42][act];
         let relics = 3 * act as i32;
         let ilvl = (clvl - 2) as u8;
         let p = &mut self.p;
@@ -1055,8 +1070,10 @@ impl Game {
             runes: [done(1); 3],
             stage3: if done(2) { 3 } else { 0 },
             sigils: [done(2); 3],
-            stage4: 0,
-            keys: [false; 3],
+            stage4: if done(3) { 3 } else { 0 },
+            keys: [done(3); 3],
+            stage5: 0,
+            pearls: [false; 3],
         };
         self.waypoints = (0..=act).map(LevelId::land).collect();
         self.go_to(LevelId::land(act), None);
@@ -1076,7 +1093,7 @@ impl Game {
     /// Nightmare / Hell: the world is rebuilt harder, the quests start over, your hero carries on.
     pub(crate) fn next_difficulty(&mut self) {
         let d = (self.quest.difficulty + 1).min(2);
-        self.quest = Quest { stage: 1, seals: [false; 3], difficulty: d, stage2: 0, runes: [false; 3], stage3: 0, sigils: [false; 3], stage4: 0, keys: [false; 3] };
+        self.quest = Quest { stage: 1, seals: [false; 3], difficulty: d, stage2: 0, runes: [false; 3], stage3: 0, sigils: [false; 3], stage4: 0, keys: [false; 3], stage5: 0, pearls: [false; 3] };
         self.parked.clear();
         self.waypoints = vec![LevelId::Overworld];
         self.shop_stale = true;
@@ -1133,6 +1150,7 @@ impl Game {
                         }
                     }
                 }
+                c @ (3 | 4) => self.deep_cue(i, c),
                 _ => {}
             }
         }
@@ -1236,7 +1254,7 @@ impl Game {
     pub fn bot_food(&self) -> Option<(f32, f32)> {
         self.pickups
             .iter()
-            .filter(|k| matches!(k.kind, Drop::Food(_) | Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_)))
+            .filter(|k| matches!(k.kind, Drop::Food(_) | Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Pearl(_)))
             .map(|k| (k.x, k.y, (k.x - self.p.x).powi(2) + (k.y - self.p.y).powi(2)))
             .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap())
             .map(|(x, y, _)| (x, y))
@@ -1260,7 +1278,7 @@ impl Game {
 
     /// A herald token (seal, rune, sigil, key) lying on this level.
     pub fn bot_token(&self) -> Option<(f32, f32)> {
-        self.pickups.iter().find(|k| matches!(k.kind, Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_))).map(|k| (k.x, k.y))
+        self.pickups.iter().find(|k| matches!(k.kind, Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Pearl(_))).map(|k| (k.x, k.y))
     }
 
     /// The role of the NPC that talking now would address (for the bot).
@@ -1276,12 +1294,13 @@ impl Game {
     /// First dungeon of this act whose herald token the bot doesn't have yet (then the act's
     /// last dungeon). Each act has four dungeons in order: three heralds, then the final one.
     fn bot_dungeon(&self) -> usize {
-        let a = self.level.act().min(3);
+        let a = self.level.act().min(4);
         let got = match a {
             0 => self.quest.seals,
             1 => self.quest.runes,
             2 => self.quest.sigils,
-            _ => self.quest.keys,
+            3 => self.quest.keys,
+            _ => self.quest.pearls,
         };
         let _ = SANCTUM;
         (0..3).find(|&k| !got[k]).map_or(a * 4 + 3, |k| a * 4 + k)
@@ -1290,6 +1309,7 @@ impl Game {
     /// The quest log line for the act you're in.
     pub fn quest_log(&self) -> String {
         match self.level.act() {
+            4 => self.quest.log5(),
             3 => self.quest.log4(),
             2 => self.quest.log3(),
             1 => self.quest.log2(),
@@ -1305,6 +1325,7 @@ impl Game {
             LevelId::Frostmarch if q.captain_has_news() => Some(Role::Captain),
             LevelId::Mistwood if q.hunter_has_news() => Some(Role::Hunter),
             LevelId::Mechanus if q.tally_has_news() => Some(Role::Tally),
+            LevelId::Deep if q.ysolde_has_news() => Some(Role::Ysolde),
             _ => None,
         }
     }
@@ -1410,7 +1431,14 @@ impl Game {
             Track::Boss
         } else if self.in_safe(self.p.x, self.p.y) || matches!(self.state, State::Victory(_)) {
             // Each town has its own tune.
-            [Track::Town, Track::Hearth, Track::Vigil, Track::Refuge][self.level.act().min(3)]
+            [Track::Town, Track::Hearth, Track::Vigil, Track::Refuge, Track::Brine][self.level.act().min(4)]
+        } else if self.level.act() == 4 {
+            // The deep: a slow swell of whale-song outside, the pressure drone below.
+            if self.level.overland() {
+                Track::Tide
+            } else {
+                Track::Abyss
+            }
         } else if self.level.act() == 3 {
             // Mechanus: a ticking harpsichord outside, the engine's clangour in the works.
             if self.level.overland() {
@@ -1543,6 +1571,7 @@ impl Game {
         }
         self.update_shots();
         self.update_hazards();
+        self.update_deep();
         self.update_clockwork();
         self.update_balls();
         self.update_novas();
@@ -1645,6 +1674,12 @@ impl Game {
                     self.say(format!("THREE KEYHOLES IN A DOOR OF GEARS. ({n}/3 KEYS)"));
                     return;
                 }
+                if k == ABYSS && self.quest.stage5 < 2 {
+                    self.portal_cd = 2.0;
+                    let n = self.quest.pearl_count();
+                    self.say(format!("THREE HOLLOWS IN THE STONE, SHAPED FOR PEARLS. ({n}/3 PEARLS)"));
+                    return;
+                }
                 self.go_to(LevelId::Dungeon(k, 0), Some(here));
             }
             PortalKind::Pass(act) => {
@@ -1663,6 +1698,11 @@ impl Game {
                     self.say("A RING OF STILL BRASS GEARS IN THE ROCK. SOMETHING IN THE CASTLE HOLDS THEM.".into());
                     return;
                 }
+                if act == 4 && !self.quest.deep_open() {
+                    self.portal_cd = 2.0;
+                    self.say("AN OLD DIVING BELL. ITS CHAINS ARE LOCKED BY THE CLOCK'S OWN GEARS.".into());
+                    return;
+                }
                 self.go_to(LevelId::land(act), Some(here));
                 if act == 1 && here == LevelId::Overworld && !self.waypoints.contains(&LevelId::Frostmarch) {
                     self.say("THE FROSTMARCH. FIND KALDHOLM, BY THE FROZEN LAKE".into());
@@ -1672,6 +1712,9 @@ impl Game {
                 }
                 if act == 3 && !self.waypoints.contains(&LevelId::Mechanus) {
                     self.say("MECHANUS, THE CLOCKWORK DOMINION. FIND THE LAST ESCAPEMENT".into());
+                }
+                if act == 4 && !self.waypoints.contains(&LevelId::Deep) {
+                    self.say("THE DROWNED DEEP. FIND BRINEHOLLOW, THE TOWN ON STILTS".into());
                 }
             }
             PortalKind::Up => match here {
@@ -1709,7 +1752,7 @@ impl Game {
                 }
                 continue;
             }
-            if !matches!(n.role, Role::Villager(_) | Role::Fisher(_) | Role::Peasant(_) | Role::Servant(_)) {
+            if !matches!(n.role, Role::Villager(_) | Role::Fisher(_) | Role::Peasant(_) | Role::Servant(_) | Role::Diver(_)) {
                 continue;
             }
             n.wander.2 -= DT;
@@ -1859,6 +1902,20 @@ impl Game {
     }
 
     fn advance_quest(&mut self, stage: u8) {
+        // 41 and 42 are Act 5's stages 1 and 2 (Captain Ysolde).
+        if stage > 40 {
+            let s5 = stage - 40;
+            if s5 > self.quest.stage5 {
+                self.quest.stage5 = s5;
+                self.sfx.push(Sfx::Pickup);
+                match s5 {
+                    1 => self.say("NEW QUEST: SLAY THE THREE HERALDS OF THE DEEP".into()),
+                    2 => self.say("THE DROWNED SANCTUM IS OPEN".into()),
+                    _ => {}
+                }
+            }
+            return;
+        }
         // 31 and 32 are Act 4's stages 1 and 2 (Tally).
         if stage > 30 {
             let s4 = stage - 30;
@@ -2231,6 +2288,7 @@ impl Game {
         let base = if self.p.phoenix_t > 0.0 || self.p.embrace_t > 0.0 { base * 1.4 } else if self.p.suit_t > 0.0 { base * 1.2 } else { base };
         let base = base * (1.0 + gear.frac(crate::items::Stat::Move, 50));
         let base = if self.p.chill > 0.0 { base * 0.6 } else { base };
+        let base = if self.flooded(self.p.x, self.p.y) { base * crate::tides::WADE } else { base };
         let speed = if casting { base * 0.25 } else { base };
         if self.p.moving {
             if !casting {
@@ -2321,6 +2379,25 @@ impl Game {
                         self.say("ALL THREE KEYS. RETURN TO TALLY".into());
                     } else {
                         self.say(format!("THE KEY TURNS ITSELF IN YOUR HAND, AND YOU FEEL STRONGER ({n}/3)"));
+                    }
+                }
+                Drop::Pearl(i) => {
+                    self.quest.pearls[i] = true;
+                    self.p.skills.points += 1;
+                    self.p.base_hp += 28.0;
+                    self.p.base_mana += 18.0;
+                    self.p.recalc();
+                    self.p.power *= 1.1;
+                    self.p.hp = self.p.max_hp;
+                    self.p.mana = self.p.max_mana;
+                    self.sfx.push(Sfx::Descend);
+                    let name = ["ADMIRAL DREGMOOR", "MOTHER NACRE", "THE ANGLER MATRIARCH"][i];
+                    self.floater(px, py, format!("THE PEARL OF {name}"), rgb(0x80e8e0));
+                    let n = self.quest.pearl_count();
+                    if n == 3 {
+                        self.say("ALL THREE PEARLS. RETURN TO CAPTAIN YSOLDE".into());
+                    } else {
+                        self.say(format!("THE PEARL HUMS IN YOUR HAND, AND YOU FEEL STRONGER ({n}/3)"));
                     }
                 }
                 Drop::Sigil(i) => {
@@ -2884,6 +2961,14 @@ impl Game {
                     self.state = State::Victory(0.0);
                     self.dialog = None;
                 }
+                Kind::Dregmoor => self.pickups.push(Pickup { x, y, kind: Drop::Pearl(0), t: 0.0 }),
+                Kind::Nacre => self.pickups.push(Pickup { x, y, kind: Drop::Pearl(1), t: 0.0 }),
+                Kind::Angler => self.pickups.push(Pickup { x, y, kind: Drop::Pearl(2), t: 0.0 }),
+                Kind::Leviathan => {
+                    self.quest.stage5 = 3;
+                    self.state = State::Victory(0.0);
+                    self.dialog = None;
+                }
                 _ => {}
             }
             for k in 0..3 {
@@ -2972,6 +3057,10 @@ impl Game {
                 Kind::Cantor => "cantor",
                 Kind::Archivist => "archivist",
                 Kind::Clockmaker => "clockmaker",
+                Kind::Dregmoor => "dregmoor",
+                Kind::Nacre => "nacre",
+                Kind::Angler => "angler",
+                Kind::Leviathan => "leviathan",
                 _ => "ashking",
             };
             drops.extend(items::boss_unique(key));
@@ -3492,7 +3581,8 @@ mod tests {
         assert!(g.debug_kill_boss());
         assert!(matches!(g.state, State::Victory(_)));
         assert_eq!(g.quest.stage4, 3);
-        assert!(g.quest.tally_has_news(), "tally offers nightmare");
+        assert!(!g.quest.tally_has_news(), "nightmare waits for later acts");
+        assert!(g.quest.deep_open(), "the diving bell is free");
         // Saved in Mechanus, loaded in Mechanus.
         g.debug_goto(LevelId::Mechanus);
         let text = crate::save::to_text(&g);
@@ -3617,10 +3707,98 @@ mod tests {
     }
 
     #[test]
+    fn act_five_opens_after_the_clockmaker_and_can_be_finished() {
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        g.act_start(3);
+        assert_eq!(g.level, LevelId::Mechanus);
+        // The bell is locked until the Clockmaker stops.
+        walk_onto(&mut g, PortalKind::Pass(4));
+        assert_eq!(g.level, LevelId::Mechanus, "the bell's chains are locked");
+        g.quest.stage4 = 3;
+        g.quest.keys = [true; 3];
+        g.portal_cd = 0.0;
+        walk_onto(&mut g, PortalKind::Pass(4));
+        assert_eq!(g.level, LevelId::Deep);
+        assert!(g.quest.ysolde_has_news());
+        assert!(g.debug_talk(Role::Ysolde));
+        read_through(&mut g);
+        assert_eq!(g.quest.stage5, 1);
+        // The sanctum is sealed until the pearls are set.
+        g.portal_cd = 0.0;
+        walk_onto(&mut g, PortalKind::Entrance(ABYSS));
+        assert_eq!(g.level, LevelId::Deep, "the sanctum is sealed");
+        for (i, k) in (16..19).enumerate() {
+            g.debug_goto(LevelId::Dungeon(k, DUNGEONS[k].floors - 1));
+            assert!(g.debug_kill_boss());
+            g.debug_collect_all();
+            assert!(g.quest.pearls[i], "pearl {i}");
+        }
+        g.debug_goto(LevelId::Deep);
+        assert!(g.quest.ysolde_has_news());
+        assert!(g.debug_talk(Role::Ysolde));
+        read_through(&mut g);
+        assert_eq!(g.quest.stage5, 2);
+        g.portal_cd = 0.0;
+        walk_onto(&mut g, PortalKind::Entrance(ABYSS));
+        assert_eq!(g.level, LevelId::Dungeon(ABYSS, 0));
+        g.debug_goto(LevelId::Dungeon(ABYSS, DUNGEONS[ABYSS].floors - 1));
+        assert!(g.debug_kill_boss());
+        assert!(matches!(g.state, State::Victory(_)));
+        assert_eq!(g.quest.stage5, 3);
+        assert!(g.quest.ysolde_has_news(), "ysolde offers nightmare");
+        // Saved in the deep, loaded in the deep.
+        g.debug_goto(LevelId::Deep);
+        let text = crate::save::to_text(&g);
+        let mut h = Game::new(5, crate::gfx::SH_WIDE);
+        crate::save::apply(&mut h, &text);
+        assert_eq!(h.level, LevelId::Deep);
+        assert_eq!((h.quest.stage5, h.quest.pearl_count()), (3, 3));
+    }
+
+    #[test]
+    fn the_heralds_of_the_deep_fight_back() {
+        use crate::mobs::Kind;
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        g.act_start(4);
+        for k in [Kind::Dregmoor, Kind::Nacre, Kind::Angler, Kind::Leviathan] {
+            g.debug_goto(LevelId::Deep);
+            g.mobs.clear();
+            g.hazards.clear();
+            g.shots.clear();
+            g.p.hp = 1e9;
+            g.p.max_hp = 1e9;
+            let (px, py) = (g.p.x, g.p.y);
+            g.safe = None;
+            let mut m = crate::mobs::Mob::new(k, px + 4.0, py, 10.0, &mut g.rng);
+            m.state = crate::mobs::MobState::Chase;
+            if k == Kind::Leviathan {
+                m.hp = m.max_hp * 0.2;
+            }
+            g.mobs.push(m);
+            let mut acted = false;
+            for _ in 0..600 {
+                g.update(&Input::default());
+                if !g.hazards.is_empty() || !g.shots.is_empty() || g.mobs.len() > 1 || g.dark_t > 0.0 || g.pull.2 > 0.0 {
+                    acted = true;
+                    break;
+                }
+            }
+            assert!(acted, "{k:?} never used a special");
+        }
+    }
+
+    #[test]
     fn boiler_brutes_burst_when_they_fall() {
         let mut g = Game::new(5, crate::gfx::SH_WIDE);
         g.debug_goto(LevelId::Mechanus);
-        let i = g.mobs.iter().position(|m| m.kind == crate::mobs::Kind::BoilerBrute).expect("a brute");
+        let i = match g.mobs.iter().position(|m| m.kind == crate::mobs::Kind::BoilerBrute) {
+            Some(i) => i,
+            None => {
+                let m = crate::mobs::Mob::new(crate::mobs::Kind::BoilerBrute, g.p.x + 3.0, g.p.y, 7.5, &mut g.rng);
+                g.mobs.push(m);
+                g.mobs.len() - 1
+            }
+        };
         let before = g.hazards.len();
         g.mobs[i].hp = 0.0;
         g.kill(i);
@@ -5076,6 +5254,12 @@ mod tests {
         g.quest.keys = [true; 3];
         g.debug_goto(LevelId::Mechanus);
         assert!(g.debug_talk(Role::Tally));
+        assert!(!g.dialog.as_ref().unwrap().options.iter().any(|o| o.1 == Act::NextDifficulty), "not after act 4");
+        g.dialog = None;
+        g.quest.stage5 = 3;
+        g.quest.pearls = [true; 3];
+        g.debug_goto(LevelId::Deep);
+        assert!(g.debug_talk(Role::Ysolde));
         for _ in 0..3 {
             let d = g.dialog.as_ref().unwrap();
             if d.options.iter().any(|o| o.1 == Act::NextDifficulty) {
@@ -5090,6 +5274,7 @@ mod tests {
         assert_eq!(g.quest.difficulty, 1);
         assert_eq!((g.quest.stage, g.quest.seal_count(), g.quest.stage2, g.quest.rune_count()), (1, 0, 0, 0), "quests start over");
         assert_eq!((g.quest.stage3, g.quest.sigil_count(), g.quest.stage4, g.quest.key_count()), (0, 0, 0, 0));
+        assert_eq!((g.quest.stage5, g.quest.pearl_count()), (0, 0));
         assert!(g.p.gear.bag[0].is_some() && g.p.clvl == clvl, "you keep your hero");
         assert!(g.level_name.contains("NIGHTMARE"));
         let nm_hp: f32 = g.mobs.iter().map(|m| m.max_hp).sum();

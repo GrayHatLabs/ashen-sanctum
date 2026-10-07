@@ -54,6 +54,25 @@ pub enum Kind {
     Cantor,
     Archivist,
     Clockmaker,
+    // ---- Act 5: the Drowned Deep ----
+    /// Drowned sailors: their grip drags you (a chill).
+    Drowned,
+    /// Fish-folk spearmen: they lunge, and swim faster in the flood.
+    Merrow,
+    /// Hides behind its lure until you come close, then strikes.
+    Anglerlurk,
+    /// Floating jellyfish: shock bolts.
+    Jelly,
+    /// Crab knights behind a great claw: half damage unless stunned, frozen or slowed.
+    Shellguard,
+    /// Her song pulls you toward her.
+    Siren,
+    /// Its ink blinds you (your light shrinks).
+    InkHorror,
+    Dregmoor,
+    Nacre,
+    Angler,
+    Leviathan,
     /// The valkyrie's spectral warriors (always on her side).
     Einherjar,
     /// The berserker's dire wolf (always on her side).
@@ -254,6 +273,38 @@ pub fn def(k: Kind) -> Def {
             boss: true,
             ..d("boss_clockmaker", "THE CLOCKMAKER", 1800.0, 2.1, (26.0, 36.0), 0.6, 1.4, 6000.0)
         },
+        Kind::Drowned => Def { chills: true, ..d("drowned_sailor", "DROWNED SAILOR", 70.0, 1.5, (11.0, 16.0), 0.55, 1.5, 34.0) },
+        Kind::Merrow => d("merrow", "MERROW SPEARMAN", 58.0, 3.0, (12.0, 17.0), 0.4, 1.1, 36.0),
+        Kind::Anglerlurk => Def { r: 0.4, reach: 1.0, ..d("anglerlurk", "ANGLERLURK", 90.0, 2.4, (16.0, 24.0), 0.35, 1.4, 44.0) },
+        Kind::Jelly => Def { r: 0.28, ranged: true, ..d("jelly_drift", "JELLY DRIFT", 30.0, 1.6, (7.0, 10.0), 0.5, 1.8, 20.0) },
+        Kind::Shellguard => Def { r: 0.42, reach: 1.0, ..d("shellguard", "SHELLGUARD", 130.0, 1.5, (14.0, 20.0), 0.6, 1.6, 50.0) },
+        Kind::Siren => Def { ranged: true, ..d("siren", "SIREN", 55.0, 2.2, (10.0, 14.0), 0.55, 2.0, 40.0) },
+        Kind::InkHorror => Def { r: 0.4, ranged: true, ..d("ink_horror", "INK HORROR", 80.0, 1.8, (10.0, 15.0), 0.6, 2.2, 42.0) },
+        Kind::Dregmoor => Def {
+            r: 0.6,
+            reach: 1.6,
+            boss: true,
+            chills: true,
+            ..d("boss_dregmoor", "ADMIRAL DREGMOOR", 900.0, 1.6, (24.0, 34.0), 0.7, 1.6, 2200.0)
+        },
+        Kind::Nacre => Def {
+            r: 0.5,
+            boss: true,
+            ranged: true,
+            ..d("boss_nacre", "MOTHER NACRE, THE SIREN QUEEN", 820.0, 1.9, (16.0, 22.0), 0.6, 1.8, 2400.0)
+        },
+        Kind::Angler => Def {
+            r: 0.7,
+            reach: 1.6,
+            boss: true,
+            ..d("boss_angler", "THE ANGLER MATRIARCH", 1000.0, 2.0, (26.0, 38.0), 0.5, 1.5, 2600.0)
+        },
+        Kind::Leviathan => Def {
+            r: 0.9,
+            reach: 2.2,
+            boss: true,
+            ..d("boss_leviathan", "THE LEVIATHAN", 2600.0, 1.2, (30.0, 44.0), 0.7, 1.7, 9000.0)
+        },
     }
 }
 
@@ -378,6 +429,8 @@ pub struct Mob {
     pub form: u8,
     /// Charging (Sir Malgrave, spring-heeled jacks): moves much faster while this lasts.
     pub rush: f32,
+    /// Speed from the tide (tides.rs): sea kinds swim faster in the flood, land kinds wade.
+    pub tide: f32,
     /// A one-off order to the game (the Clockmaker: 1 = rewind the player; the Archivist:
     /// 2 = file the player away elsewhere). The game clears it.
     pub cue: u8,
@@ -450,6 +503,7 @@ impl Mob {
             invuln: 0.0,
             form: 0,
             rush: 0.0,
+            tide: 1.0,
             cue: 0,
             drilled: false,
             post: (0.0, 0.0),
@@ -531,6 +585,14 @@ pub enum ShotKind {
     Gear,
     /// Blue arcs from ordinals and the Archivist.
     Spark,
+    /// A siren's song: teal notes.
+    Song,
+    /// Ink: it blinds you for a moment.
+    Ink,
+    /// Admiral Dregmoor's cannonballs.
+    Cannon,
+    /// The Leviathan's pressure beam.
+    Tide,
 }
 
 pub struct Shot {
@@ -711,9 +773,14 @@ impl Game {
             let r = m.r;
             match m.state {
                 MobState::Idle => {
-                    let range = if m.boss { 10.0 } else { 8.5 };
+                    let range = if m.boss { 10.0 } else if m.kind == Kind::Anglerlurk { 3.5 } else { 8.5 };
                     if player_alive && !player_safe && dist < range && self.d.los(m.x, m.y, px, py) {
                         m.state = MobState::Chase;
+                        if m.kind == Kind::Anglerlurk {
+                            // Out from behind the lure.
+                            m.rush = 0.6;
+                            texts.push((m.x, m.y, "!"));
+                        }
                         aggro_at.push((m.x, m.y));
                         continue;
                     }
@@ -769,6 +836,18 @@ impl Game {
                     }
                     if m.kind == Kind::SpringJack && m.rush <= 0.0 && (2.5..7.0).contains(&dist) && rv < DT / 1.5 {
                         m.rush = 0.45;
+                    }
+                    if m.kind == Kind::Merrow && m.rush <= 0.0 && (2.0..5.5).contains(&dist) && rv < DT / 2.5 {
+                        m.rush = 0.35;
+                    }
+                    // A siren's song draws you in.
+                    if m.kind == Kind::Siren {
+                        m.special -= DT;
+                        if m.special <= 0.0 && (3.0..9.0).contains(&dist) && self.d.los(m.x, m.y, px, py) {
+                            m.special = 7.0 + rv * 3.0;
+                            m.cue = 3;
+                            texts.push((m.x, m.y, "~ COME... ~"));
+                        }
                     }
                     // Crows close in and circle you, pecking as they pass.
                     if m.kind == Kind::ClockCrow && dist < m.reach + 1.2 {
@@ -876,7 +955,7 @@ impl Game {
                         let a = (tick as f32 * 0.12 + i as f32 * 1.7).sin() * 0.9;
                         (ux, uy) = (ux * a.cos() - uy * a.sin(), ux * a.sin() + uy * a.cos());
                     }
-                    let speed = m.speed * if m.enraged { 1.25 } else { 1.0 } * if m.flee > 0.0 { 1.1 } else { 1.0 } * if m.rush > 0.0 { 3.2 } else { 1.0 } * if m.drilled { 1.3 } else { 1.0 } * (1.0 - 0.35 * m.frost) * if m.slow_t > 0.0 { 0.35 } else { 1.0 };
+                    let speed = m.speed * if m.enraged { 1.25 } else { 1.0 } * if m.flee > 0.0 { 1.1 } else { 1.0 } * if m.rush > 0.0 { 3.2 } else { 1.0 } * if m.drilled { 1.3 } else { 1.0 } * (1.0 - 0.35 * m.frost) * if m.slow_t > 0.0 { 0.35 } else { 1.0 } * m.tide;
                     let (mut x, mut y) = (m.x, m.y);
                     move_circle(&self.d, &mut x, &mut y, ux * speed * DT, uy * speed * DT, r);
                     m.x = x;
@@ -934,6 +1013,16 @@ impl Game {
                                 }
                             }
                             Kind::Marshal => shots.push((m.x, m.y, ux * 6.5, uy * 6.5, dmg, ShotKind::Gear)),
+                            Kind::Jelly => shots.push((m.x, m.y, ux * 8.0, uy * 8.0, dmg, ShotKind::Spark)),
+                            Kind::Siren => shots.push((m.x, m.y, ux * 6.5, uy * 6.5, dmg, ShotKind::Song)),
+                            Kind::InkHorror => shots.push((m.x, m.y, ux * 6.0, uy * 6.0, dmg, ShotKind::Ink)),
+                            Kind::Nacre => {
+                                let n = if m.enraged { 5 } else { 3 };
+                                for k in 0..n {
+                                    let a = uy.atan2(ux) + (k as f32 - (n - 1) as f32 * 0.5) * 0.26;
+                                    shots.push((m.x, m.y, a.cos() * 7.0, a.sin() * 7.0, dmg, ShotKind::Song));
+                                }
+                            }
                             Kind::Cantor => {
                                 // A ring of sound with a gap that turns: dodge into the gap.
                                 let gap = (tick as f32 * 0.02).rem_euclid(std::f32::consts::TAU);
@@ -1091,7 +1180,7 @@ impl Game {
                     s.life = 0.0;
                     break;
                 }
-                let size = if s.kind == ShotKind::Boulder { 0.4 } else { 0.12 };
+                let size = if matches!(s.kind, ShotKind::Boulder | ShotKind::Cannon) { 0.4 } else { 0.12 };
                 if (s.x - px).powi(2) + (s.y - py).powi(2) < (PLAYER_R + size).powi(2) {
                     hits.push((s.dmg, s.kind));
                     s.life = 0.0;
@@ -1110,6 +1199,11 @@ impl Game {
                 ShotKind::Boulder => {
                     self.chill(1.0);
                     self.shake = self.shake.max(0.6);
+                }
+                ShotKind::Cannon => self.shake = self.shake.max(0.5),
+                ShotKind::Ink => {
+                    self.blind_t = 3.5;
+                    self.floater(px, py, "BLINDED!".into(), rgb(0x9070c0));
                 }
                 _ => {}
             }
@@ -1512,6 +1606,138 @@ fn boss_specials(
                 m.special2 = 8.0;
                 m.cue = 1;
                 texts.push((m.x, m.y, "NO. AGAIN."));
+            }
+        }
+        Kind::Dregmoor => {
+            // Broadsides, the anchor hurled down a line at you, and his drowned crew.
+            if m.special <= 0.0 && (3.0..11.0).contains(&dist) {
+                m.special = if m.enraged { 3.0 } else { 4.2 };
+                let base = (py - m.y).atan2(px - m.x);
+                for k in -2..=2 {
+                    let a = base + k as f32 * 0.2;
+                    shots.push((m.x, m.y, a.cos() * 7.5, a.sin() * 7.5, 14.0 * m.tier.powf(0.8), ShotKind::Cannon));
+                }
+                texts.push((m.x, m.y, "FIRE THE BROADSIDE!"));
+            }
+            if m.special2 <= 0.0 && dist < 7.0 {
+                m.special2 = if m.enraged { 5.0 } else { 7.0 };
+                let (ux, uy) = ((px - m.x) / dist.max(0.01), (py - m.y) / dist.max(0.01));
+                for k in 1..=6 {
+                    let (x, y) = (m.x + ux * k as f32 * 1.1, m.y + uy * k as f32 * 1.1);
+                    hazards.push(Hazard { x, y, r: 0.85, warn: 0.6 + k as f32 * 0.08, live: 0.0, dps: 0.0, burst: 22.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Quake });
+                }
+                texts.push((m.x, m.y, "DROP ANCHOR!"));
+                if summons < 6 {
+                    around(rng, if m.enraged { 3 } else { 2 }, Kind::Drowned, m.tier, spawns);
+                }
+            }
+        }
+        Kind::Nacre => {
+            // Her song pulls you in, coral spears burst up around you, and her daughters answer.
+            if m.special <= 0.0 && (2.5..11.0).contains(&dist) {
+                m.special = if m.enraged { 5.0 } else { 7.0 };
+                m.cue = 3;
+                texts.push((m.x, m.y, "~ COME TO MOTHER ~"));
+            }
+            if m.special2 <= 0.0 && dist < 10.0 {
+                m.special2 = if m.enraged { 3.5 } else { 5.0 };
+                for k in 0..3 {
+                    let a = k as f32 / 3.0 * std::f32::consts::TAU + rng.f();
+                    hazards.push(Hazard { x: px + a.cos() * 1.3, y: py + a.sin() * 1.3, r: 0.9, warn: 0.8, live: 0.0, dps: 0.0, burst: 18.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Quake });
+                }
+                hazards.push(Hazard { x: px, y: py, r: 0.8, warn: 1.0, live: 0.0, dps: 0.0, burst: 18.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Quake });
+                if summons < 4 && rng.chance(0.5) {
+                    around(rng, 2, Kind::Siren, m.tier, spawns);
+                }
+            }
+        }
+        Kind::Angler => {
+            // She puts the lights out; only her lure shines. Then she lunges from the dark.
+            if m.special <= 0.0 && dist < 12.0 {
+                m.special = if m.enraged { 12.0 } else { 16.0 };
+                m.cue = 4;
+                texts.push((m.x, m.y, "THE LIGHTS GO OUT..."));
+            }
+            if m.special2 <= 0.0 && (2.5..9.0).contains(&dist) {
+                m.special2 = if m.enraged { 3.0 } else { 4.5 };
+                m.rush = 0.8;
+            }
+            if m.enraged && summons < 4 && rng.chance(DT / 8.0) {
+                around(rng, 2, Kind::Anglerlurk, m.tier, spawns);
+            }
+        }
+        Kind::Leviathan => {
+            let frac = m.hp / m.max_hp;
+            if frac < 0.66 && m.form == 0 {
+                m.form = 1;
+                m.invuln = 1.5;
+                texts.push((m.x, m.y, "THE TIDE RISES!"));
+            }
+            if frac < 0.33 && m.form == 1 {
+                m.form = 2;
+                m.invuln = 1.5;
+                m.speed *= 0.5;
+                texts.push((m.x, m.y, "THE LEVIATHAN RISES FROM THE DEEP!"));
+            }
+            match m.form {
+                0 => {
+                    // Its coils sweep the floor: three lines of slams rolling across you, one after another.
+                    if m.special <= 0.0 && dist < 12.0 {
+                        m.special = if m.enraged { 3.4 } else { 4.4 };
+                        let (ux, uy) = ((px - m.x) / dist.max(0.01), (py - m.y) / dist.max(0.01));
+                        for row in -1..=1 {
+                            for k in -4..=4 {
+                                let (x, y) = (px + ux * row as f32 * 1.8 + -uy * k as f32 * 1.0, py + uy * row as f32 * 1.8 + ux * k as f32 * 1.0);
+                                let warn = 0.8 + (row + 1) as f32 * 0.45;
+                                hazards.push(Hazard { x, y, r: 0.7, warn, live: 0.0, dps: 0.0, burst: 20.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Quake });
+                            }
+                        }
+                        texts.push((m.x, m.y, "THE COILS!"));
+                    }
+                }
+                1 => {
+                    // The tidal wave: a ring crashing in on you with one gap to dodge through, and the whirlpool's pull.
+                    if m.special <= 0.0 && dist < 14.0 {
+                        m.special = if m.enraged { 4.0 } else { 5.0 };
+                        let gap = rng.f() * std::f32::consts::TAU;
+                        for k in 0..14 {
+                            let a = k as f32 / 14.0 * std::f32::consts::TAU;
+                            let off = (a - gap).rem_euclid(std::f32::consts::TAU);
+                            if off < 0.9 {
+                                continue;
+                            }
+                            hazards.push(Hazard { x: px + a.cos() * 2.4, y: py + a.sin() * 2.4, r: 1.1, warn: 1.1, live: 0.0, dps: 0.0, burst: 24.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Quake });
+                        }
+                        hazards.push(Hazard { x: px, y: py, r: 1.2, warn: 1.1, live: 0.0, dps: 0.0, burst: 24.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Quake });
+                        texts.push((m.x, m.y, "TIDAL WAVE!"));
+                    }
+                    if m.special2 <= 0.0 {
+                        m.special2 = 9.0;
+                        m.cue = 3;
+                        if summons < 6 {
+                            around(rng, 3, Kind::Merrow, m.tier, spawns);
+                        }
+                    }
+                }
+                _ => {
+                    // The pressure beam: a jet of water sweeping toward you.
+                    if m.special <= 0.0 && dist < 14.0 {
+                        m.special = if m.enraged { 2.2 } else { 3.0 };
+                        let base = (py - m.y).atan2(px - m.x);
+                        for k in 0..9 {
+                            let a = base + (k as f32 - 4.0) * 0.06;
+                            let v = 7.0 + k as f32 * 0.6;
+                            shots.push((m.x, m.y, a.cos() * v, a.sin() * v, 12.0 * m.tier.powf(0.8), ShotKind::Tide));
+                        }
+                    }
+                    if m.special2 <= 0.0 {
+                        m.special2 = 7.0;
+                        m.cue = 3;
+                        if summons < 6 {
+                            around(rng, 2, Kind::InkHorror, m.tier, spawns);
+                        }
+                    }
+                }
             }
         }
         Kind::RimeWitch => {

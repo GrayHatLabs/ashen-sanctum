@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # The selftest bot in every act with every hero (crash hunting). Needs a release build.
-# Usage: scripts/bot-acts.sh [acts...]   (default: 1 2 3 4)
+# Usage: scripts/bot-acts.sh [acts...]   (default: 1 2 3 4 5)
 set -e
 cd "$(dirname "$0")/.."
 BIN="$HOME/.cache/ashensanctum-target/release/ashensanctum"
-ACTS="${*:-1 2 3 4}"
+ACTS="${*:-1 2 3 4 5}"
 for act in $ACTS; do
   for hero in sorceress vampire inventor valkyrie berserker reaper druid inquisitor; do
     printf 'act %s %-10s ' "$act" "$hero"

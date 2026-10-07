@@ -153,6 +153,7 @@ pub fn to_text(g: &Game) -> String {
     s += &format!("stage2={}\nrunes={}\n", q.stage2, bits(&q.runes));
     s += &format!("stage3={}\nsigils={}\n", q.stage3, bits(&q.sigils));
     s += &format!("stage4={}\nkeys={}\n", q.stage4, bits(&q.keys));
+    s += &format!("stage5={}\npearls={}\n", q.stage5, bits(&q.pearls));
     s += &format!("act={}\n", g.level.act());
     s += &p.skills.save_text();
     s += &format!("waypoints={}\n", g.waypoints.iter().map(|w| crate::levels::id_string(*w)).collect::<Vec<_>>().join(","));
@@ -202,7 +203,14 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
             g.quest.keys[i] = c == '1';
         }
     }
+    g.quest.stage5 = (num("stage5").unwrap_or(0.0) as u8).min(3);
+    if let Some(s) = get("pearls") {
+        for (i, c) in s.chars().take(3).enumerate() {
+            g.quest.pearls[i] = c == '1';
+        }
+    }
     let act = match num("act").unwrap_or(0.0) as usize {
+        4 if g.quest.deep_open() => 4,
         3 if g.quest.gears_open() => 3,
         2 if g.quest.mists_open() => 2,
         1 if g.quest.north_open() => 1,
@@ -233,7 +241,7 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
     }
     // You wake in the town of the act you saved in.
     if g.quest.difficulty > 0 || act > 0 {
-        g.rebuild_world(act.min(3));
+        g.rebuild_world(act.min(4));
     }
     g.p.recalc();
     g.p.hp = g.p.max_hp;

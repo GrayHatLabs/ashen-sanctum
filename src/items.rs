@@ -821,6 +821,11 @@ pub static UNIQUES: &[UniqueDef] = &[
     UniqueDef { name: "CANTOR'S HYMNAL", base: "circlet", req: 34, stats: &[(Stat::Skills, 2), (Stat::Mana, 80), (Stat::Cast, 20)], boss: Some("cantor") },
     UniqueDef { name: "THE ARCHIVIST'S INDEX", base: "amulet", req: 36, stats: &[(Stat::Skills, 1), (Stat::Magic, 60), (Stat::ManaOnKill, 8), (Stat::Life, 50)], boss: Some("archivist") },
     UniqueDef { name: "THE CLOCKMAKER'S HEART", base: "amulet", req: 38, stats: &[(Stat::Skills, 3), (Stat::Fire, 50), (Stat::Cast, 25), (Stat::LifeOnKill, 12)], boss: Some("clockmaker") },
+    // ---- Act 5 ----
+    UniqueDef { name: "DREGMOOR'S BICORNE", base: "circlet", req: 40, stats: &[(Stat::Armor, 40), (Stat::Life, 90), (Stat::Gold, 60), (Stat::LifeRegen, 8)], boss: Some("dregmoor") },
+    UniqueDef { name: "THE NACRE CROWN", base: "circlet", req: 41, stats: &[(Stat::Skills, 2), (Stat::Mana, 100), (Stat::Cast, 25), (Stat::Magic, 30)], boss: Some("nacre") },
+    UniqueDef { name: "THE ANGLER'S LURE", base: "amulet", req: 42, stats: &[(Stat::Skills, 1), (Stat::Magic, 80), (Stat::LifeOnKill, 10), (Stat::Move, 15)], boss: Some("angler") },
+    UniqueDef { name: "THE LEVIATHAN'S EYE", base: "ring", req: 44, stats: &[(Stat::Skills, 3), (Stat::Life, 100), (Stat::Fire, 50), (Stat::ManaOnKill, 10)], boss: Some("leviathan") },
     UniqueDef { name: "SKALD'S STRIDE", base: "iboots", req: 16, stats: &[(Stat::Armor, 12), (Stat::Move, 25), (Stat::Stamina, 40), (Stat::Gold, 40)], boss: None },
 ];
 

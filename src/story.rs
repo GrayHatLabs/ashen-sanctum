@@ -31,12 +31,20 @@ pub enum Role {
     /// Brother Piston: oils, mends and resets skills.
     Oiler,
     Servant(u8),
+    // ---- Brinehollow (Act 5) ----
+    /// Captain Ysolde Marrow, one-eyed salvager: the Act 5 story.
+    Ysolde,
+    /// Nessa the pearl-diver: sells like Gerta.
+    Nessa,
+    /// Brother Coral, the tide-priest: heals and resets skills.
+    Coral,
+    Diver(u8),
     /// The jeweler in each town (by act): joins gems, adds and empties sockets.
     Jeweler(u8),
 }
 
 /// Jeweler names by act.
-pub const JEWELERS: [&str; 4] = ["MASTER ODO", "INGRID STONEHAND", "SILAS GREAVE", "THE LAPIDARY"];
+pub const JEWELERS: [&str; 5] = ["MASTER ODO", "INGRID STONEHAND", "SILAS GREAVE", "THE LAPIDARY", "THE PEARL-SETTER"];
 
 
 pub struct Npc {
@@ -83,6 +91,11 @@ pub struct Quest {
     pub stage4: u8,
     /// Winding keys from the Forgemother, the Cantor and the Archivist.
     pub keys: [bool; 3],
+    /// Act 5: 0 = haven't met Captain Ysolde, 1 = hunting the heralds of the deep, 2 = the Drowned
+    /// Sanctum is open, 3 = the Leviathan is slain.
+    pub stage5: u8,
+    /// Leviathan pearls from Admiral Dregmoor, Mother Nacre and the Angler Matriarch.
+    pub pearls: [bool; 3],
 }
 
 pub const DIFFICULTIES: [&str; 3] = ["NORMAL", "NIGHTMARE", "HELL"];
@@ -129,20 +142,44 @@ impl Quest {
         self.stage3 >= 3
     }
 
+    pub fn pearl_count(&self) -> usize {
+        self.pearls.iter().filter(|s| **s).count()
+    }
+
+    /// Act 5 is open (the Clockmaker is stopped).
+    pub fn deep_open(&self) -> bool {
+        self.stage4 >= 3
+    }
+
+    pub fn log5(&self) -> String {
+        match self.stage5 {
+            0 => "FIND CAPTAIN YSOLDE IN BRINEHOLLOW".into(),
+            1 if self.pearl_count() < 3 => format!("SLAY THE THREE HERALDS OF THE DEEP  ({}/3 PEARLS)", self.pearl_count()),
+            1 => "BRING THE PEARLS TO CAPTAIN YSOLDE".into(),
+            2 => "DESCEND INTO THE DROWNED SANCTUM. SLAY THE LEVIATHAN".into(),
+            _ if self.difficulty < 2 => "THE LEVIATHAN IS DEAD. YSOLDE WANTS A WORD".into(),
+            _ => "THE SEA IS QUIET. THE WORLD IS YOURS AGAIN".into(),
+        }
+    }
+
+    /// Does Captain Ysolde have news (a marker over her head)?
+    pub fn ysolde_has_news(&self) -> bool {
+        self.stage5 == 0 || (self.stage5 == 1 && self.pearl_count() == 3) || (self.stage5 == 3 && self.difficulty < 2)
+    }
+
     pub fn log4(&self) -> String {
         match self.stage4 {
             0 => "FIND TALLY IN THE LAST ESCAPEMENT".into(),
             1 if self.key_count() < 3 => format!("SILENCE THE THREE HERALDS  ({}/3 KEYS)", self.key_count()),
             1 => "BRING THE WINDING KEYS TO TALLY".into(),
             2 => "ENTER THE HEART OF THE CLOCK. STOP THE CLOCKMAKER".into(),
-            _ if self.difficulty < 2 => "THE CLOCK HAS STOPPED. TALLY WANTS A WORD".into(),
-            _ => "THE CLOCK HAS STOPPED. THE WORLD IS YOURS AGAIN".into(),
+            _ => "THE CLOCK HAS STOPPED. TAKE THE DIVING BELL EAST OF THE ESCAPEMENT".into(),
         }
     }
 
     /// Does Tally have news (a marker over its head)?
     pub fn tally_has_news(&self) -> bool {
-        self.stage4 == 0 || (self.stage4 == 1 && self.key_count() == 3) || (self.stage4 == 3 && self.difficulty < 2)
+        self.stage4 == 0 || (self.stage4 == 1 && self.key_count() == 3)
     }
 
     /// Act 2 is open (the Ash King is dead).
@@ -439,21 +476,88 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
                 Dialog::new("TALLY", &[&line])
             }
             2 => Dialog::new("TALLY", &["THE HEART OF THE CLOCK IS NORTH. I CAN HEAR IT FROM HERE. TICK. TOCK."]),
+            _ => Dialog::new(
+                "TALLY",
+                &[
+                    "THE CLOCK HAS STOPPED. FOR THE FIRST TIME IN MY LIFE, NOTHING IS TICKING. IT IS SO QUIET.",
+                    "BUT HIS LEDGERS SAY HE WAS NOT WINDING THE WORLD FOR HIMSELF. FOUR AGES OF ASH HAVE FALLEN INTO THE BLACK SEA, AND SOMETHING DOWN THERE HAS BEEN EATING IT.",
+                    "WHEN HIS ENGINE FELL, IT BROKE THROUGH THE FLOOR OF MECHANUS INTO THE WATER. THE OLD DIVING BELL EAST OF THE ESCAPEMENT STILL WORKS. GO DOWN. I WILL KEEP THE LIGHTS ON.",
+                ],
+            ),
+        },
+        Role::Ysolde => match q.stage5 {
+            0 => {
+                let mut d = Dialog::new(
+                    "CAPTAIN YSOLDE MARROW",
+                    &[
+                        "A DRY ONE, FRESH OUT OF THE BELL. WELCOME TO BRINEHOLLOW, THE LAST AIR AT THE BOTTOM OF THE WORLD. I'M MARROW. I SALVAGE WHAT THE SEA LETS GO OF.",
+                        "THE ASH FROM UP TOP HAS BEEN FALLING INTO THIS SEA FOR AN AGE. SOMETHING OLD HAS BEEN EATING IT AND GROWING. THE OLD SAILORS CALLED IT THE LEVIATHAN. THEY'RE ALL DROWNED NOW. SOME OF THEM STILL WALK.",
+                        "ITS TEMPLE, THE DROWNED SANCTUM, IS SEALED WITH THREE PEARLS. ADMIRAL DREGMOOR KEEPS ONE IN THE WRECK OF THE SOVEREIGN, SOUTHWEST. MOTHER NACRE SINGS OVER ANOTHER IN THE CORAL CATHEDRAL, SOUTHEAST. THE ANGLER MATRIARCH SWALLOWED THE LAST, DOWN IN THE MIDNIGHT TRENCH.",
+                        "ONE MORE THING. WHEN YOU HEAR THE TIDE BELL, GET TO HIGH GROUND. THE FLATS FLOOD, AND THE FISH-FOLK LOVE A FLOOD.",
+                    ],
+                );
+                d.advance_to = Some(41);
+                d
+            }
+            1 if q.pearl_count() == 3 => {
+                let mut d = Dialog::new(
+                    "CAPTAIN YSOLDE MARROW",
+                    &[
+                        "THREE PEARLS, AND THEY'RE HUMMING. LISTEN TO THAT.",
+                        "I'VE SET THEM IN THE OLD GATE. THE DROWNED SANCTUM IS OPEN, NORTH OF TOWN. THE LEVIATHAN IS WAITING AT THE BOTTOM. BRING ME BACK ITS EYE.",
+                    ],
+                );
+                d.advance_to = Some(42);
+                d
+            }
+            1 => {
+                let line = format!(
+                    "STILL THREE HERALDS DOWN HERE AND YOU HOLD {} OF 3 PEARLS. NESSA SELLS WHAT THE DIVERS BRING UP. BROTHER CORAL WILL PATCH YOU.",
+                    q.pearl_count()
+                );
+                Dialog::new("CAPTAIN YSOLDE MARROW", &[&line])
+            }
+            2 => Dialog::new("CAPTAIN YSOLDE MARROW", &["THE SANCTUM IS NORTH. MIND THE COILS. EVERYTHING DOWN THERE IS PART OF IT."]),
             _ if q.difficulty < 2 => {
                 let next = DIFFICULTIES[q.difficulty as usize + 1];
                 let mut d = Dialog::new(
-                    "TALLY",
+                    "CAPTAIN YSOLDE MARROW",
                     &[
-                        "THE CLOCK HAS STOPPED. FOR THE FIRST TIME IN MY LIFE, NOTHING IS TICKING. IT IS SO QUIET.",
-                        "BUT TIME IS STUBBORN. SOMEWHERE A SPRING STILL HOLDS A LITTLE TENSION. THE ASH KING, THE WYRM, THE COUNT, THE CLOCKMAKER... THEY WILL ALL TURN AGAIN, AND HARDER.",
+                        "THE LEVIATHAN IS DEAD AND THE SEA IS DRAINING. THERE'S LIGHT COMING DOWN FROM ABOVE. REAL LIGHT. I'D FORGOTTEN THE COLOUR.",
+                        "BUT THE SEA REMEMBERS. ASH, ICE, BLOOD, BRASS AND BRINE... IT ALL COMES BACK, AND HARDER.",
                         "IF YOU WOULD FACE THEM ONCE MORE, THE WORLD WILL BE HARDER, BUT ITS TREASURES RICHER. YOU KEEP ALL YOU HAVE LEARNED AND CARRY.",
                     ],
                 );
                 d.last_options = vec![(format!("BEGIN {next}"), Act::NextDifficulty), ("NOT YET".into(), Act::Close)];
                 d
             }
-            _ => Dialog::new("TALLY", &["EVEN HELL RAN DOWN BEFORE YOU DID. ASH, ICE, BLOOD AND BRASS ARE ALL BROKEN. GO IN PEACE."]),
+            _ => Dialog::new("CAPTAIN YSOLDE MARROW", &["EVEN HELL'S SEA RAN DRY BEFORE YOU DID. GO ON. THE SURFACE IS YOURS."]),
         },
+        Role::Nessa => {
+            let mut d = Dialog::new("NESSA THE PEARL-DIVER", &["WHATEVER THE DIVERS BRING UP, I SELL. POTIONS IN SEALED SHELLS, SMOKED FISH, AND GEAR FROM THE WRECKS."]);
+            d.options = vec![
+                (format!("HEALING POTION  {} GOLD", Ware::HealthPotion.price()), Act::Buy(Ware::HealthPotion)),
+                (format!("MANA POTION  {} GOLD", Ware::ManaPotion.price()), Act::Buy(Ware::ManaPotion)),
+                (format!("LOAF OF BREAD  {} GOLD", Ware::Bread.price()), Act::Buy(Ware::Bread)),
+                (format!("ROAST  {} GOLD", Ware::Roast.price()), Act::Buy(Ware::Roast)),
+                ("SHOW ME YOUR GEAR (AND BUY MINE)".into(), Act::Shop),
+                ("LEAVE".into(), Act::Close),
+            ];
+            d
+        }
+        Role::Coral => {
+            let mut d = Dialog::new("BROTHER CORAL", &["THE TIDE TAKES AND THE TIDE GIVES BACK. LET IT GIVE YOU BACK, CHILD. BE STILL."]);
+            d.heals = true;
+            d
+        }
+        Role::Diver(k) => {
+            let lines = [
+                "THE LURE IS NOT A TREASURE. I KNOW IT GLOWS LIKE ONE. IT IS NOT A TREASURE.",
+                "IF A SIREN SINGS, DON'T WALK TOWARD HER. YOUR FEET WILL WANT TO. DON'T LET THEM.",
+                "THE CRABS HIDE BEHIND THAT CLAW. STUN THEM, FREEZE THEM, SLOW THEM, AND THE SHELL OPENS UP.",
+            ];
+            Dialog::new("DIVER", &[lines[k as usize % 3]])
+        }
         Role::Vesper => {
             let mut d = Dialog::new("MADAME VESPER", &["POTIONS IN BRASS VIALS, BREAD THAT ISN'T MADE OF GEARS, AND KIT THE AUTOMATONS DIDN'T NEED. TAKE A LOOK."]);
             d.options = vec![
@@ -510,8 +614,9 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
                 "STONES FROM UNDER THE ICE ARE CLEAR AS WATER. I CAN SET THEM, JOIN THEM, OR PRISE THEM LOOSE AGAIN.",
                 "THE DEAD WERE BURIED WITH THEIR JEWELS. SOMEONE MAY AS WELL WEAR THEM. I CUT, I SET, I DON'T ASK.",
                 "FACETS ARE ONLY ANGLES. ANGLES I UNDERSTAND. THREE STONES IN, ONE BETTER STONE OUT.",
+                "PEARLS, GEMS, THE EYES OF FISH THAT SHOULDN'T HAVE EYES. I SET ANYTHING THAT SHINES.",
             ];
-            let mut d = Dialog::new(JEWELERS[k as usize % 4], &[greet[k as usize % 4]]);
+            let mut d = Dialog::new(JEWELERS[k as usize % 5], &[greet[k as usize % 5]]);
             d.options = vec![
                 ("JOIN MY GEMS (3 ALIKE MAKE 1 BETTER)".into(), Act::Combine),
                 ("SOCKETS: ADD THEM, OR TAKE GEMS OUT".into(), Act::Jewel),
@@ -595,6 +700,13 @@ pub const EPILOGUE4: [&str; 4] = [
     "THE CLOCKMAKER'S HEART WINDS DOWN, AND STOPS.",
     "ACROSS MECHANUS THE GREAT GEARS SLOW AND FALL SILENT. IN THE LAST ESCAPEMENT THE SERVANTS LISTEN TO NOTHING AT ALL, AND LAUGH.",
     "ASH, ICE, BLOOD AND BRASS ARE BROKEN. NO ONE WINDS THE WORLD ANY MORE.",
+    "BUT HIS ENGINE FALLS THROUGH THE FLOOR OF THE WORLD, AND FAR BELOW, IN THE BLACK SEA, SOMETHING STIRS...",
+];
+
+pub const EPILOGUE5: [&str; 4] = [
+    "THE LEVIATHAN SINKS INTO THE DARK, AND THE BLACK SEA BEGINS TO DRAIN.",
+    "IN BRINEHOLLOW THE DIVERS WATCH LIGHT FALL THROUGH THE WATER FOR THE FIRST TIME IN AN AGE. CAPTAIN MARROW TAKES OFF HER EYEPATCH TO SEE IT BETTER.",
+    "WHERE THE SANCTUM STOOD, A STAIR OF LIGHT CLIMBS UP AND UP, PAST THE CLOUDS, TO WHERE THE ASH HAS ALWAYS COME FROM.",
     "THANK YOU FOR PLAYING ASHEN SANCTUM.",
 ];
 

@@ -30,9 +30,15 @@ pub enum Track {
     Vigil,
     /// The Last Escapement: a gentle music-box waltz, the one warm place in Mechanus.
     Refuge,
+    /// Act 5: the Sunken Reach (a slow swell, whale-song).
+    Tide,
+    /// Act 5: the drowned dungeons (the pressure of the deep).
+    Abyss,
+    /// Brinehollow: a sea shanty on a squeezebox and a creaking hull.
+    Brine,
 }
 
-pub const TRACKS: [Track; 13] = [
+pub const TRACKS: [Track; 16] = [
     Track::Town,
     Track::Wilds,
     Track::Dungeon,
@@ -46,6 +52,9 @@ pub const TRACKS: [Track; 13] = [
     Track::Hearth,
     Track::Vigil,
     Track::Refuge,
+    Track::Tide,
+    Track::Abyss,
+    Track::Brine,
 ];
 
 fn hz(midi: f32) -> f32 {
@@ -264,6 +273,9 @@ pub fn render(track: Track) -> Vec<f32> {
         Track::Hearth => 107,
         Track::Vigil => 113,
         Track::Refuge => 127,
+        Track::Tide => 131,
+        Track::Abyss => 137,
+        Track::Brine => 139,
     });
     match track {
         Track::Town => town(&mut rng),
@@ -279,7 +291,101 @@ pub fn render(track: Track) -> Vec<f32> {
         Track::Hearth => hearth(&mut rng),
         Track::Vigil => vigil(&mut rng),
         Track::Refuge => refuge(&mut rng),
+        Track::Tide => tide(&mut rng),
+        Track::Abyss => abyss(&mut rng),
+        Track::Brine => brine(&mut rng),
     }
+}
+
+/// Brinehollow: a slow sea shanty in D dorian, a squeezebox-like pad, a stamping beat and a creaking hull.
+fn brine(rng: &mut Rng) -> Vec<f32> {
+    let bpm = 84.0;
+    let beat = 60.0 / bpm;
+    let bars = 16;
+    let mut b = Buf::new(bars as f32 * 4.0 * beat);
+    let chords: [(f32, [f32; 3]); 4] = [(50.0, [0.0, 3.0, 7.0]), (48.0, [0.0, 4.0, 7.0]), (50.0, [0.0, 3.0, 7.0]), (45.0, [0.0, 3.0, 7.0])];
+    let tune = [
+        [74.0, 74.0, 77.0, 76.0],
+        [72.0, 72.0, 76.0, 74.0],
+        [74.0, 77.0, 79.0, 77.0],
+        [76.0, 72.0, 69.0, 69.0],
+    ];
+    for bar in 0..bars {
+        let (root, iv) = chords[bar % 4];
+        let t0 = bar as f32 * 4.0 * beat + 0.05;
+        // Stamp and clap.
+        b.drum(t0, 0.3, 50.0, rng);
+        b.drum(t0 + 2.0 * beat, 0.3, 50.0, rng);
+        b.drum(t0 + beat, 0.06, 900.0, rng);
+        b.drum(t0 + 3.0 * beat, 0.06, 900.0, rng);
+        // The squeezebox: a reedy pad that breathes in and out with the bar.
+        b.pad(t0, 4.0 * beat, &[root - 12.0, root + iv[1] - 12.0, root + iv[2] - 12.0, root], 0.09, 900.0);
+        b.pluck(t0, root - 24.0, 0.3, 0.4, 0.996, rng);
+        b.pluck(t0 + 2.0 * beat, root - 17.0, 0.22, 0.4, 0.996, rng);
+        // The tune, an octave lower on the second pass.
+        let down = if bar >= 8 { 12.0 } else { 0.0 };
+        for (k, m) in tune[bar % 4].iter().enumerate() {
+            b.pluck(t0 + k as f32 * beat + 0.01, m - down, 0.12, 0.7, 0.994, rng);
+        }
+        // The hull creaks now and then.
+        if bar % 4 == 1 {
+            b.pluck(t0 + 2.6 * beat, 33.0, 0.12, 0.15, 0.999, rng);
+        }
+    }
+    b.finish(0.5, 0.6)
+}
+
+/// The Sunken Reach: a slow swell of pads rising and falling like the tide, whale-song bells and bubbling plucks.
+fn tide(rng: &mut Rng) -> Vec<f32> {
+    let secs = 52.0;
+    let mut b = Buf::new(secs);
+    b.drone(26.0, 0.05);
+    b.wind(0.05, rng);
+    let chords = [(38.0, 45.0, 53.0), (36.0, 43.0, 52.0), (41.0, 48.0, 55.0), (40.0, 47.0, 55.0)];
+    for (k, &(a, c, e)) in chords.iter().enumerate() {
+        b.pad(k as f32 * 13.0, 12.5, &[a, c, e, e + 12.0], 0.09, 380.0);
+    }
+    // Whale-song: long low bells sliding down an interval.
+    for k in 0..6 {
+        let t = 2.0 + k as f32 * 8.5 + rng.rf(0.0, 1.5);
+        let m = [62.0, 60.0, 65.0, 57.0, 64.0, 60.0][k];
+        b.bell(t, m, 0.06);
+        b.bell(t + 0.8, m - 5.0, 0.045);
+    }
+    // Bubbles: quick high plucks rising.
+    for k in 0..14 {
+        let t = rng.rf(0.5, secs - 1.0);
+        for j in 0..3 {
+            b.pluck(t + j as f32 * 0.06, 84.0 + k as f32 % 5.0 + j as f32 * 2.0, 0.025, 0.9, 0.98, rng);
+        }
+    }
+    b.finish(0.6, 0.6)
+}
+
+/// The drowned dungeons: the pressure of the deep, a slow heartbeat, sonar pings and a choir of the drowned.
+fn abyss(rng: &mut Rng) -> Vec<f32> {
+    let secs = 48.0;
+    let mut b = Buf::new(secs);
+    b.drone(24.0, 0.08);
+    b.drone(31.0, 0.04);
+    for c in 0..4 {
+        let root = [36.0, 35.0, 33.0, 34.0][c];
+        b.pad(c as f32 * 12.0, 11.5, &[root, root + 3.0, root + 10.0], 0.08, 260.0);
+    }
+    // A slow heartbeat.
+    let mut t = 0.4;
+    while t < secs {
+        b.drum(t, 0.22, 38.0, rng);
+        b.drum(t + 0.28, 0.14, 40.0, rng);
+        t += 1.6;
+    }
+    // Pings in the dark.
+    for k in 0..7 {
+        let t = 3.0 + k as f32 * 6.4 + rng.rf(0.0, 1.0);
+        b.bell(t, 88.0, 0.05);
+        b.bell(t + 0.9, 88.0, 0.02);
+    }
+    b.finish(0.6, 0.6)
 }
 
 /// Kaldholm: a lilting 6/8 folk tune (D mixolydian) on plucked strings over a bagpipe-like

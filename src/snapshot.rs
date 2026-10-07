@@ -237,7 +237,7 @@ pub fn run(dir: Option<&str>, tall: bool) -> i32 {
         assert!(g.d.walkable(g.p.x.floor() as i32, g.p.y.floor() as i32), "player inside a wall at {:.2},{:.2} in {}", g.p.x, g.p.y, g.level_name);
     }
     println!(
-        "selftest ok: {} ticks in {:.2?}, avg draw {:.2?}, kills={} clvl={} seals={} quest={:?} acts2-4={}/{}/{} tokens={}/{}/{} levels visited={} stats={:?}",
+        "selftest ok: {} ticks in {:.2?}, avg draw {:.2?}, kills={} clvl={} seals={} quest={:?} acts2-5={}/{}/{}/{} tokens={}/{}/{}/{} levels visited={} stats={:?}",
         total,
         t0.elapsed(),
         draw_time / draws.max(1),
@@ -248,9 +248,11 @@ pub fn run(dir: Option<&str>, tall: bool) -> i32 {
         g.quest.stage2,
         g.quest.stage3,
         g.quest.stage4,
+        g.quest.stage5,
         g.quest.rune_count(),
         g.quest.sigil_count(),
         g.quest.key_count(),
+        g.quest.pearl_count(),
         visited.len(),
         g.stats
     );
@@ -913,6 +915,68 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             }
             save(&mut g, scr, "vardak_bat");
         }
+    }
+    // Act 5: Brinehollow, the Sunken Reach at low and high tide, the heralds and the Leviathan.
+    {
+        use crate::mobs::Kind;
+        let mut g = Game::new(7, h);
+        g.quest.stage = 3;
+        g.quest.stage2 = 3;
+        g.quest.stage3 = 3;
+        g.quest.stage4 = 3;
+        g.debug_goto(LevelId::Deep);
+        (g.p.x, g.p.y) = g.start;
+        g.banner_t = 0.0;
+        idle(&mut g, 60);
+        save(&mut g, scr, "act5_town");
+        g.debug_talk(Role::Ysolde);
+        save(&mut g, scr, "act5_dialog");
+        g.dialog = None;
+        g.p.base_hp = 9999.0;
+        g.p.recalc();
+        g.p.hp = 9999.0;
+        if let Some((x, y)) = g.bot_target().map(|t| (t.0, t.1)) {
+            g.debug_place_near(x, y, 4.0);
+            idle(&mut g, 40);
+            save(&mut g, scr, "act5_wilds");
+            // High tide, on the edge of the flats.
+            let (w, hh) = (g.d.w, g.d.h);
+            let (px, py) = (g.p.x as i32, g.p.y as i32);
+            let mut best: Option<(i32, i32, i32)> = None;
+            for y in 2..hh - 2 {
+                for x in 2..w - 2 {
+                    let n = (-2..=2).flat_map(|dy| (-2..=2).map(move |dx| (dx, dy))).filter(|&(dx, dy)| g.d.ground_at(x + dx, y + dy) == 1).count();
+                    if g.d.walkable(x, y) && g.d.ground_at(x, y) != 1 && n >= 10 {
+                        let d = (x - px).pow(2) + (y - py).pow(2);
+                        if best.map_or(true, |(bd, ..)| d < bd) {
+                            best = Some((d, x, y));
+                        }
+                    }
+                }
+            }
+            if let Some((_, x, y)) = best {
+                (g.p.x, g.p.y) = (x as f32 + 0.5, y as f32 + 0.5);
+            }
+            g.tide_t = crate::tides::TIDE_CALM + crate::tides::TIDE_WARN + 6.0;
+            idle(&mut g, 20);
+            save(&mut g, scr, "act5_high_tide");
+            g.tide_t = 0.0;
+        }
+        // Each herald and the Leviathan, a moment into the fight.
+        for (k, name) in [(16, "act5_dregmoor"), (17, "act5_nacre"), (18, "act5_angler"), (crate::world::ABYSS, "act5_leviathan")] {
+            g.debug_goto(LevelId::Dungeon(k, crate::world::DUNGEONS[k].floors - 1));
+            if let Some(i) = g.mobs.iter().position(|m| m.boss) {
+                let (bx, by) = (g.mobs[i].x, g.mobs[i].y);
+                g.debug_place_near(bx, by, 4.5);
+                g.p.hp = 9999.0;
+                if name == "act5_leviathan" {
+                    g.mobs[i].hp = g.mobs[i].max_hp * 0.5;
+                }
+                idle(&mut g, 150);
+                save(&mut g, scr, name);
+            }
+        }
+        let _ = Kind::Leviathan;
     }
     // Act 4: the Last Escapement, the Grinding Fields, and the Clockmaker's duel and engine.
     {

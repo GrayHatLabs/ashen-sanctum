@@ -18,7 +18,9 @@ impl Game {
         let (ox, oy) = self.cam_origin();
         if !self.light_ready {
             let (radius, ambient) = self.theme.light();
-            scr.build_base_light(ox as i32, oy as i32 - 14, radius, ambient);
+            // Ink in your eyes, or the Angler's dark (tides.rs), shrinks the light.
+            let k = self.light_scale();
+            scr.build_base_light(ox as i32, oy as i32 - 14, radius * k, ambient * k);
             self.light_ready = true;
         }
         let sh = if self.shake > 0.0 { ((self.tick as f32 * 1.7).sin() * self.shake * 4.0) as i32 } else { 0 };
@@ -61,8 +63,28 @@ impl Game {
                     continue;
                 }
                 let v = self.d.var[(ty * self.d.w + tx) as usize] as usize;
-                let f = self.art.floor(theme, self.d.ground_at(tx, ty), v);
+                let ground = self.d.ground_at(tx, ty);
+                let f = self.art.floor(theme, ground, v);
                 scr.blit(f, sx, sy, Fx::default());
+                // The tide over the flats: dark water rising, rippling with the swell.
+                if ground == 1 && self.tide > 0.0 && self.level == LevelId::Deep {
+                    let ripple = ((self.tick as f32 * 0.08 + tx as f32 * 0.7 + ty as f32 * 0.4).sin() * 0.5 + 0.5) * 0.12;
+                    let a = (self.tide * 0.72 + ripple * self.tide).min(0.85);
+                    for row in -8i32..=8 {
+                        let half = 16 - row.abs() * 2;
+                        scr.blend(sx - half + scr.shake.0, sy + row + scr.shake.1, half * 2, 1, rgb(0x1e6a84), a);
+                    }
+                    // Glints moving across the water.
+                    if self.tide > 0.5 {
+                        let k = (self.tick / 6) as i32 + tx * 3 + ty * 5;
+                        let ox = (k % 11) - 5;
+                        let oy = (k / 11 % 5) - 2;
+                        scr.fill(sx + ox - 2 + scr.shake.0, sy + oy + scr.shake.1, 4, 1, rgb(0x90e8f8));
+                        if v % 3 == 0 {
+                            scr.fill(sx - ox - 1 + scr.shake.0, sy - oy + 3 + scr.shake.1, 3, 1, rgb(0x60c0d8));
+                        }
+                    }
+                }
             }
         }
         // Scorch marks and blood.
@@ -823,6 +845,29 @@ impl Game {
                     scr.disc(sx + scr.shake.0, sy - 22 + scr.shake.1, 5, rgb(0x9ac8e8));
                     scr.disc(sx - 2 + scr.shake.0, sy - 24 + scr.shake.1, 2, rgb(0xe8f6ff));
                 }
+                ShotKind::Song => {
+                    let bob = ((self.tick as f32 * 0.4 + s.x * 5.0).sin() * 2.0) as i32;
+                    let (x, y) = (sx + scr.shake.0, sy - 20 + bob + scr.shake.1);
+                    scr.glow(x, y, 13.0, rgb(0x40e0d0), 0.8);
+                    // A note: a head and a stem.
+                    scr.disc(x, y + 2, 2, rgb(0xd0fff8));
+                    scr.fill(x + 2, y - 4, 1, 6, rgb(0xd0fff8));
+                    scr.pset(x + 3, y - 4, rgb(0xd0fff8));
+                }
+                ShotKind::Ink => {
+                    blend_ellipse(scr, sx + scr.shake.0, sy - 16 + scr.shake.1, 5, 4, rgb(0x100818), 0.85);
+                    scr.pset(sx + scr.shake.0 - 1, sy - 17 + scr.shake.1, rgb(0x8060c0));
+                }
+                ShotKind::Cannon => {
+                    scr.disc(sx + scr.shake.0, sy - 20 + scr.shake.1, 4, rgb(0x0c0c10));
+                    scr.disc(sx + scr.shake.0, sy - 20 + scr.shake.1, 3, rgb(0x3a3a44));
+                    scr.pset(sx - 1 + scr.shake.0, sy - 22 + scr.shake.1, rgb(0x9090a0));
+                }
+                ShotKind::Tide => {
+                    scr.glow(sx, sy - 22, 14.0, rgb(0x30c0e0), 0.9);
+                    scr.disc(sx + scr.shake.0, sy - 22 + scr.shake.1, 3, rgb(0x80e8ff));
+                    scr.pset(sx + scr.shake.0, sy - 23 + scr.shake.1, rgb(0xffffff));
+                }
                 ShotKind::Arrow => {}
             }
         }
@@ -964,6 +1009,39 @@ impl Game {
         }
         scr.shake = (0, 0);
 
+        // Weather: the deep's rising bubbles and drifting sea snow, and the lure in the dark.
+        if self.theme.drowned() {
+            let (cx, cy) = iso::to_screen(self.p.x, self.p.y);
+            let t = self.tick as f32 / 60.0;
+            let hh = view_h - crate::game::HUD_H;
+            for i in 0..40 {
+                // Sea snow: pale motes drifting down and sideways.
+                let h1 = ((i as u32).wrapping_mul(2654435761) >> 8) as f32 / 16_777_216.0;
+                let h2 = ((i as u32).wrapping_mul(40503).wrapping_add(331) % 1000) as f32 / 1000.0;
+                let x = (h1 * scr.w as f32 * 3.0 - cx * 0.95 + (t * 0.7 + h2 * 9.0).sin() * 6.0).rem_euclid(scr.w as f32) as i32;
+                let y = (h2 * hh as f32 * 3.0 - cy * 0.95 + t * (6.0 + h1 * 6.0)).rem_euclid(hh as f32) as i32;
+                scr.pset(x, y, if i % 3 == 0 { rgb(0xa8d8e0) } else { rgb(0x5a8a98) });
+            }
+            for i in 0..18 {
+                // Bubbles rising and wobbling.
+                let h1 = ((i as u32).wrapping_mul(2246822519) >> 8) as f32 / 16_777_216.0;
+                let x = (h1 * scr.w as f32 * 3.0 - cx + (t * 3.0 + h1 * 20.0).sin() * 3.0).rem_euclid(scr.w as f32) as i32;
+                let y = ((h1 * 13.0).fract() * hh as f32 * 3.0 - cy - t * (24.0 + h1 * 20.0)).rem_euclid(hh as f32) as i32;
+                let r = 1 + (i % 3) as i32;
+                scr.blend(x - r, y - r, r * 2, r * 2, rgb(0x60c0d0), 0.25);
+                scr.pset(x - r / 2, y - r / 2, rgb(0xd0f8ff));
+            }
+        }
+        // In the Angler's dark, only lures shine.
+        if self.dark_t > 0.0 || self.theme == crate::world::Theme::Trench {
+            for m in self.mobs.iter().filter(|m| m.alive() && matches!(m.kind, crate::mobs::Kind::Angler | crate::mobs::Kind::Anglerlurk)) {
+                let (sx, sy) = to_scr(m.x, m.y);
+                let up = if m.kind == crate::mobs::Kind::Angler { 70 } else { 44 };
+                let pulse = 0.6 + 0.4 * (self.tick as f32 * 0.12 + m.x).sin();
+                scr.glow(sx + scr.shake.0, sy - up + scr.shake.1, 18.0, rgb(0x60f0e0), 0.9 * pulse);
+                scr.disc(sx + scr.shake.0, sy - up + scr.shake.1, 2, rgb(0xe0fffa));
+            }
+        }
         // Weather: Mechanus's drifting steam and rising brass sparks.
         if self.theme.clockwork() {
             let (cx, cy) = iso::to_screen(self.p.x, self.p.y);
@@ -1079,6 +1157,7 @@ impl Game {
                 || (n.role == Role::Captain && self.quest.captain_has_news())
                 || (n.role == Role::Hunter && self.quest.hunter_has_news())
                 || (n.role == Role::Tally && self.quest.tally_has_news())
+                || (n.role == Role::Ysolde && self.quest.ysolde_has_news())
             {
                 let bob = (((self.tick as f32) * 0.12).sin() * 2.0) as i32;
                 scr.text("!", sx - 2, sy - 66 + bob, rgb(0xffd040), Align::Center, 2);
@@ -1682,12 +1761,22 @@ impl Game {
         scr.text(&format!("GOLD {}", self.p.gold), w - 6, 6, rgb(0xe8c050), Align::Right, 1);
         scr.text(&format!("CHAR LEVEL {}", self.p.clvl), w - 6, 17, rgb(0xd8c090), Align::Right, 1);
         let (relic, col) = match self.level.act() {
+            4 => (format!("PEARLS {}/3", self.quest.pearl_count()), rgb(0x80e8e0)),
             3 => (format!("KEYS {}/3", self.quest.key_count()), rgb(0xe0b040)),
             2 => (format!("SIGILS {}/3", self.quest.sigil_count()), rgb(0x60f080)),
             1 => (format!("RUNES {}/3", self.quest.rune_count()), rgb(0x90d0ff)),
             _ => (format!("SEALS {}/3", self.quest.seal_count()), rgb(0xc8a0ff)),
         };
         scr.text(&relic, w - 6, 28, col, Align::Right, 1);
+        // The tide gauge (the Sunken Reach).
+        if let Some((label, level)) = self.tide_gauge() {
+            let warn = label == "THE TIDE BELL!" && (self.tick / 15) % 2 == 0;
+            let col = if warn { rgb(0xffe080) } else { rgb(0x80d0e0) };
+            scr.text(label, w - 6, 39, col, Align::Right, 1);
+            let (bx, bw) = (w - 66, 60);
+            scr.fill(bx - 1, 49, bw + 2, 5, rgb(0x0a1418));
+            scr.fill(bx, 50, (bw as f32 * level) as i32, 3, rgb(0x2a90b0));
+        }
         scr.shake = shake;
 
         // Area name and quest log (top left).
@@ -1793,7 +1882,9 @@ impl Game {
             }
             State::Victory(t) => {
                 scr.blend(0, 0, w, top, BLACK, (t * 0.3).min(0.7));
-                let epilogue = if self.quest.stage4 >= 3 {
+                let epilogue = if self.quest.stage5 >= 3 {
+                    story::EPILOGUE5
+                } else if self.quest.stage4 >= 3 {
                     story::EPILOGUE4
                 } else if self.quest.stage3 >= 3 {
                     story::EPILOGUE3
@@ -2070,6 +2161,15 @@ fn draw_pickup(scr: &mut Screen, k: &Pickup, sx: i32, sy: i32, tick: u32, art: &
                     scr.disc(sx, y, 4, tint);
                 }
             }
+        }
+        &Drop::Pearl(i) => {
+            let tint = [rgb(0xd0e8f0), rgb(0xf0d8f0), rgb(0x80f0e0)][i];
+            let y = sy - 10 - pop + bob;
+            scr.glow(sx, y, 24.0, rgb(0x60e0e0), 0.8);
+            // A great pearl, catching the light.
+            scr.disc(sx, y, 5, rgb(0x203038));
+            scr.disc(sx, y, 4, tint);
+            scr.disc(sx - 1, y - 1, 1, rgb(0xffffff));
         }
         &Drop::Key(i) => {
             let tint = [rgb(0xff9040), rgb(0xe0c060), rgb(0x80b0ff)][i];

@@ -17,6 +17,8 @@ pub enum LevelId {
     Mistwood,
     /// Act 4's overland: the Grinding Fields of Mechanus and the Last Escapement.
     Mechanus,
+    /// Act 5's overland: the Sunken Reach and Brinehollow, on the floor of the black sea.
+    Deep,
     /// (dungeon index into DUNGEONS, floor from 0)
     Dungeon(usize, usize),
 }
@@ -24,16 +26,17 @@ pub enum LevelId {
 impl LevelId {
     /// An open-air map with a town (one per act).
     pub fn overland(self) -> bool {
-        matches!(self, LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus)
+        matches!(self, LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep)
     }
 
-    /// 0 for Act 1, 1 for Act 2, 2 for Act 3, 3 for Act 4.
+    /// 0 for Act 1 ... 4 for Act 5.
     pub fn act(self) -> usize {
         match self {
             LevelId::Overworld => 0,
             LevelId::Frostmarch => 1,
             LevelId::Mistwood => 2,
             LevelId::Mechanus => 3,
+            LevelId::Deep => 4,
             LevelId::Dungeon(k, _) => DUNGEONS[k].act,
         }
     }
@@ -44,7 +47,8 @@ impl LevelId {
             0 => LevelId::Overworld,
             1 => LevelId::Frostmarch,
             2 => LevelId::Mistwood,
-            _ => LevelId::Mechanus,
+            3 => LevelId::Mechanus,
+            _ => LevelId::Deep,
         }
     }
 }
@@ -74,10 +78,16 @@ pub enum Theme {
     Choir,
     Archive,
     Clock,
+    /// Act 5 overland: the sea floor under the bubble.
+    Deep,
+    Wreck,
+    Reef,
+    Trench,
+    Drowned,
 }
 
 impl Theme {
-    pub const ALL: [Theme; 20] = [
+    pub const ALL: [Theme; 25] = [
         Theme::Overworld,
         Theme::Crypt,
         Theme::Warrens,
@@ -98,16 +108,26 @@ impl Theme {
         Theme::Choir,
         Theme::Archive,
         Theme::Clock,
+        Theme::Deep,
+        Theme::Wreck,
+        Theme::Reef,
+        Theme::Trench,
+        Theme::Drowned,
     ];
 
     /// Open-air (grass or snow ground, palisade walls).
     pub fn open(self) -> bool {
-        matches!(self, Theme::Overworld | Theme::Tundra | Theme::Mistwood | Theme::Mechanus)
+        matches!(self, Theme::Overworld | Theme::Tundra | Theme::Mistwood | Theme::Mechanus | Theme::Deep)
     }
 
     /// Act 4 themes (drifting steam and brass sparks).
     pub fn clockwork(self) -> bool {
         matches!(self, Theme::Mechanus | Theme::Foundry | Theme::Choir | Theme::Archive | Theme::Clock)
+    }
+
+    /// Act 5 themes (rising bubbles and drifting sea snow).
+    pub fn drowned(self) -> bool {
+        matches!(self, Theme::Deep | Theme::Wreck | Theme::Reef | Theme::Trench | Theme::Drowned)
     }
 
     /// Act 3 themes (fog and drifting wisp motes).
@@ -143,6 +163,12 @@ impl Theme {
             Theme::Foundry => (260.0, 0.16),
             Theme::Clock => (260.0, 0.14),
             Theme::Choir | Theme::Archive => (240.0, 0.1),
+            // The deep: dim blue-green, lit by the sea's own glow; the trench is the darkest place in the game.
+            Theme::Deep => (320.0, 0.3),
+            Theme::Wreck => (240.0, 0.1),
+            Theme::Reef => (260.0, 0.14),
+            Theme::Trench => (190.0, 0.04),
+            Theme::Drowned => (250.0, 0.12),
             _ => (250.0, 0.10),
         }
     }
@@ -157,11 +183,11 @@ pub struct DungeonDef {
     pub tier: f32,
     /// Overland tile in front of the entrance (on its act's overland).
     pub entrance: (i32, i32),
-    /// 0 = Act 1 (the Ashlands), 1 = Act 2 (the Frostmarch).
+    /// The act, from 0 (Act 1, the Ashlands) to 4 (Act 5, the Drowned Deep).
     pub act: usize,
 }
 
-pub const DUNGEONS: [DungeonDef; 16] = [
+pub const DUNGEONS: [DungeonDef; 20] = [
     DungeonDef {
         name: "THE BONE CRYPT",
         floors: 2,
@@ -322,6 +348,47 @@ pub const DUNGEONS: [DungeonDef; 16] = [
         entrance: (54, 14),
         act: 3,
     },
+    // ---- Act 5: the Drowned Deep (docs/ACT5_ACT6_PLAN.md) ----
+    DungeonDef {
+        name: "THE WRECK OF THE SOVEREIGN",
+        floors: 2,
+        theme: Theme::Wreck,
+        boss: Kind::Dregmoor,
+        monsters: &[Kind::Drowned, Kind::Merrow, Kind::Shellguard],
+        tier: 10.2,
+        entrance: (20, 84),
+        act: 4,
+    },
+    DungeonDef {
+        name: "THE CORAL CATHEDRAL",
+        floors: 2,
+        theme: Theme::Reef,
+        boss: Kind::Nacre,
+        monsters: &[Kind::Siren, Kind::Jelly, Kind::Merrow, Kind::Shellguard],
+        tier: 10.6,
+        entrance: (92, 86),
+        act: 4,
+    },
+    DungeonDef {
+        name: "THE MIDNIGHT TRENCH",
+        floors: 3,
+        theme: Theme::Trench,
+        boss: Kind::Angler,
+        monsters: &[Kind::Anglerlurk, Kind::InkHorror, Kind::Jelly, Kind::Drowned],
+        tier: 11.0,
+        entrance: (90, 24),
+        act: 4,
+    },
+    DungeonDef {
+        name: "THE DROWNED SANCTUM",
+        floors: 3,
+        theme: Theme::Drowned,
+        boss: Kind::Leviathan,
+        monsters: &[Kind::Merrow, Kind::Siren, Kind::InkHorror, Kind::Shellguard, Kind::Anglerlurk],
+        tier: 11.6,
+        entrance: (54, 14),
+        act: 4,
+    },
 ];
 
 /// The Ashen Sanctum (needs all three seals).
@@ -332,6 +399,8 @@ pub const GLACIER: usize = 7;
 pub const CASTLE: usize = 11;
 /// The Heart of the Clock (needs the three winding keys).
 pub const HEART: usize = 15;
+/// The Drowned Sanctum (needs the three Leviathan pearls).
+pub const ABYSS: usize = 19;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum PortalKind {
@@ -400,6 +469,18 @@ pub enum PropKind {
     Pendulum,
     /// The gear gate between the Mistwood and Mechanus.
     GearGate,
+    // ---- Act 5 ----
+    Kelp,
+    Coral1,
+    Coral2,
+    WreckHull,
+    WhaleBones,
+    StiltHouse1,
+    StiltHouse2,
+    ShellLamp,
+    AnchorRock,
+    /// The diving bell between Mechanus and the Drowned Deep.
+    DivingBell,
 }
 
 impl PropKind {
@@ -430,7 +511,11 @@ impl PropKind {
             PropKind::Entrance(12) => "ent_foundry",
             PropKind::Entrance(13) => "ent_choir",
             PropKind::Entrance(14) => "ent_archive",
-            PropKind::Entrance(_) => "ent_clock",
+            PropKind::Entrance(15) => "ent_clock",
+            PropKind::Entrance(16) => "ent_wreck",
+            PropKind::Entrance(17) => "ent_cathedral",
+            PropKind::Entrance(18) => "ent_trench",
+            PropKind::Entrance(_) => "ent_drowned",
             PropKind::StairsDown => "stairs_down",
             PropKind::StairsUp => "stairs_up",
             PropKind::SnowPine => "tree_snowpine",
@@ -460,6 +545,16 @@ impl PropKind {
             PropKind::ClockTower => "clock_tower",
             PropKind::Pendulum => "pendulum",
             PropKind::GearGate => "gear_gate",
+            PropKind::Kelp => "kelp1",
+            PropKind::Coral1 => "coral1",
+            PropKind::Coral2 => "coral2",
+            PropKind::WreckHull => "wreck_hull",
+            PropKind::WhaleBones => "whale_bones",
+            PropKind::StiltHouse1 => "stilt_house1",
+            PropKind::StiltHouse2 => "stilt_house2",
+            PropKind::ShellLamp => "shell_lamp",
+            PropKind::AnchorRock => "anchor_rock",
+            PropKind::DivingBell => "diving_bell",
         }
     }
 
@@ -557,6 +652,7 @@ pub fn generate(id: LevelId, seed: u64) -> Level {
         LevelId::Frostmarch => frostmarch(seed),
         LevelId::Mistwood => mistwood(seed),
         LevelId::Mechanus => mechanus(seed),
+        LevelId::Deep => deep(seed),
         LevelId::Dungeon(k, f) => dungeon_floor(k, f, seed),
     }
 }
@@ -601,11 +697,12 @@ pub fn add_elites(lv: &mut Level, seed: u64) {
         LevelId::Frostmarch => 0x0f11,
         LevelId::Mistwood => 0x1011,
         LevelId::Mechanus => 0x1111,
+        LevelId::Deep => 0x1211,
         LevelId::Dungeon(k, f) => 0x0e12 + k as u64 * 16 + f as u64,
     };
     let mut rng = Rng::new(seed ^ salt.wrapping_mul(0x9e37_79b9));
     let (champs, elites) = match lv.id {
-        LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus => (5, 3),
+        LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep => (5, 3),
         LevelId::Dungeon(_, f) => (1 + (f > 0) as usize, 1),
     };
     let mut order: Vec<usize> = (0..lv.mobs.len()).filter(|&i| !lv.mobs[i].boss).collect();
@@ -653,6 +750,12 @@ pub const PASS_MIST: (i32, i32) = (6, 56);
 /// The gear gate behind Castle Vardak (opens when the Count dies), and where it comes out on Mechanus.
 pub const GEAR_GATE: (i32, i32) = (22, 16);
 pub const PASS_GEARS: (i32, i32) = (8, 56);
+/// The diving bell at the Last Escapement's east road (down to the deep, once the Clockmaker is dead), and
+/// where it comes up on the Sunken Reach.
+pub const LIFT_GEARS: (i32, i32) = (100, 56);
+pub const LIFT_DEEP: (i32, i32) = (8, 56);
+/// Brinehollow: the stilt town on the sea floor.
+pub const BRINEHOLLOW: (i32, i32, i32, i32) = (44, 46, 64, 64);
 /// The Last Escapement: the refuge town on Mechanus.
 pub const ESCAPEMENT: (i32, i32, i32, i32) = (44, 46, 64, 64);
 /// Mournhold: palisade rectangle on the Mistwood.
@@ -1418,6 +1521,12 @@ pub fn mechanus(seed: u64) -> Level {
     clear(&mut keep, px, py, 4);
     prop(&mut lv, &mut d, PropKind::GearGate, px - 1, py - 3, 3, 2);
     lv.portals.push(Portal { x: px as f32 + 0.5, y: py as f32 + 0.5, kind: PortalKind::Pass(2) });
+    // The diving bell down to the Drowned Deep (once the Clockmaker is dead).
+    let (lx, ly) = LIFT_GEARS;
+    road(&mut d, &mut keep, (tx1 + 1, my), (lx, ly), 9.0);
+    clear(&mut keep, lx, ly, 4);
+    prop(&mut lv, &mut d, PropKind::DivingBell, lx - 1, ly - 3, 3, 2);
+    lv.portals.push(Portal { x: lx as f32 + 0.5, y: ly as f32 + 0.5, kind: PortalKind::Pass(4) });
 
     // ---- the void: the island's ragged rim and a few chasms (never across a road) ----
     let rim = Noise::new(&mut rng, 12, 6.0);
@@ -1474,6 +1583,7 @@ pub fn mechanus(seed: u64) -> Level {
             || d.blocked(x, y, 0.4)
             || DUNGEONS.iter().filter(|d| d.act == 3).any(|def| (def.entrance.0 as f32 - x).abs() + (def.entrance.1 as f32 - y).abs() < 6.0)
             || ((x - px as f32).abs() < 7.0 && (y - py as f32).abs() < 7.0)
+            || ((x - lx as f32).abs() < 7.0 && (y - ly as f32).abs() < 7.0)
         {
             continue;
         }
@@ -1540,6 +1650,236 @@ pub fn mechanus(seed: u64) -> Level {
     lv
 }
 
+/// Brinehollow's square.
+pub fn brinehollow_center() -> (f32, f32) {
+    (54.5, 55.5)
+}
+
+/// Kinds of the sea: they swim faster when the tide is in (tides.rs).
+pub fn sea_kind(k: Kind) -> bool {
+    matches!(k, Kind::Merrow | Kind::Jelly | Kind::Anglerlurk | Kind::Siren | Kind::InkHorror | Kind::Shellguard)
+}
+
+/// Builds Act 5's overland: the Sunken Reach, the floor of the black sea under a great air bubble,
+/// walled in by reef. Low ground (ground 1) floods when the tide comes in. Brinehollow stands on its
+/// stilts in the middle; roads of wreck planks run to the four drowned dungeons and the diving bell.
+pub fn deep(seed: u64) -> Level {
+    let mut rng = Rng::new(seed ^ 0x5EA_F100D);
+    let (w, h) = (WORLD_W, WORLD_H);
+    let mut d = Dungeon::blank(w, h, Tile::Floor);
+    for v in d.var.iter_mut() {
+        *v = rng.range(0, 100) as u8;
+    }
+    let mut lv = Level::new(LevelId::Deep, "THE SUNKEN REACH".into(), Theme::Deep, 9.6, Dungeon::blank(1, 1, Tile::Void));
+    let mut keep = vec![false; (w * h) as usize];
+    let clear = |keep: &mut Vec<bool>, x: i32, y: i32, r: i32| {
+        for yy in y - r..=y + r {
+            for xx in x - r..=x + r {
+                if xx >= 0 && yy >= 0 && xx < w && yy < h {
+                    keep[(yy * w + xx) as usize] = true;
+                }
+            }
+        }
+    };
+    let prop = |lv: &mut Level, d: &mut Dungeon, kind: PropKind, x0: i32, y0: i32, fw: i32, fh: i32| {
+        for y in y0..y0 + fh {
+            for x in x0..x0 + fw {
+                d.set(x, y, Tile::Prop);
+            }
+        }
+        lv.props.push(Prop::on(kind, x0, y0, fw, fh));
+    };
+
+    // ---- tide flats (ground 1): low sand that floods at high tide ----
+    let low = Noise::new(&mut rng, 14, 7.0);
+    for y in 0..h {
+        for x in 0..w {
+            if low.at(x as f32, y as f32) > 0.6 {
+                d.set_ground(x, y, 1);
+            }
+        }
+    }
+
+    // ---- Brinehollow ----
+    let (tx0, ty0, tx1, ty1) = BRINEHOLLOW;
+    let (mx, my) = ((tx0 + tx1) / 2, (ty0 + ty1) / 2);
+    for y in ty0..=ty1 {
+        for x in tx0..=tx1 {
+            d.set_ground(x, y, 0);
+            let edge = x == tx0 || x == tx1 || y == ty0 || y == ty1;
+            let gate = (y == ty0 || y == ty1) && (mx - 1..=mx + 2).contains(&x) || (x == tx0 || x == tx1) && (my - 1..=my + 2).contains(&y);
+            if edge && !gate {
+                d.set(x, y, Tile::Wall);
+            }
+        }
+    }
+    clear(&mut keep, mx, my, 14);
+    for x in tx0..=tx1 {
+        for y in my..=my + 1 {
+            d.set_ground(x, y, 2);
+        }
+    }
+    for y in ty0..=ty1 {
+        for x in mx..=mx + 1 {
+            d.set_ground(x, y, 2);
+        }
+    }
+    prop(&mut lv, &mut d, PropKind::StiltHouse1, 46, 48, 4, 4);
+    prop(&mut lv, &mut d, PropKind::StiltHouse2, 58, 48, 4, 4);
+    prop(&mut lv, &mut d, PropKind::StiltHouse1, 46, 59, 4, 3);
+    prop(&mut lv, &mut d, PropKind::AnchorRock, 59, 59, 2, 2);
+    prop(&mut lv, &mut d, PropKind::ShellLamp, 52, 53, 1, 1);
+    prop(&mut lv, &mut d, PropKind::ShellLamp, 57, 58, 1, 1);
+    prop(&mut lv, &mut d, PropKind::Coral2, 62, 54, 1, 2);
+    lv.safe = Some((tx0 as f32 - 1.0, ty0 as f32 - 1.0, tx1 as f32 + 2.0, ty1 as f32 + 2.0));
+    lv.npcs = vec![
+        Npc::new("CAPTAIN YSOLDE MARROW", Role::Ysolde, "npc_ysolde", 55.5, 56.8, 6),
+        Npc::new("NESSA THE PEARL-DIVER", Role::Nessa, "npc_nessa", 58.0, 55.8, 0),
+        Npc::new("BROTHER CORAL", Role::Coral, "npc_coral", 50.5, 55.5, 2),
+        Npc::new("DIVER", Role::Diver(0), "npc_diver", 52.0, 60.0, 1),
+        Npc::new("DIVER", Role::Diver(1), "npc_diver", 61.5, 57.0, 5),
+        Npc::new("DIVER", Role::Diver(2), "npc_diver", 49.5, 52.0, 3),
+        Npc::new("THE PEARL-SETTER", Role::Jeweler(4), "npc_jeweler4", 54.0, 58.5, 1),
+    ];
+
+    // ---- plank roads (ground 2), never flooded ----
+    let gates = [(mx, ty1 + 1), (tx1 + 1, my), (mx, ty0 - 1), (tx0 - 1, my)];
+    let road = |d: &mut Dungeon, keep: &mut Vec<bool>, (gx, gy): (i32, i32), (ex, ey): (i32, i32), salt: f32| {
+        let (mut x, mut y) = (gx as f32, gy as f32);
+        let mut guard = 0;
+        while ((x - ex as f32).abs() > 0.8 || (y - ey as f32).abs() > 0.8) && guard < 400 {
+            guard += 1;
+            let (dx, dy) = (ex as f32 - x, ey as f32 - y);
+            let l = (dx * dx + dy * dy).sqrt();
+            let wob = (guard as f32 * 0.13 + salt).sin() * 0.6;
+            x += dx / l + (-dy / l) * wob * 0.6;
+            y += dy / l + (dx / l) * wob * 0.6;
+            for (ox, oy) in [(0, 0), (1, 0), (0, 1), (1, 1)] {
+                let (rx, ry) = (x as i32 + ox, y as i32 + oy);
+                if d.get(rx, ry) == Tile::Floor {
+                    d.set_ground(rx, ry, 2);
+                }
+            }
+            clear(keep, x as i32, y as i32, 2);
+        }
+    };
+    for (k, def) in DUNGEONS.iter().enumerate().filter(|(_, d)| d.act == 4) {
+        let (ex, ey) = def.entrance;
+        let &g = gates.iter().min_by_key(|(gx, gy)| (gx - ex).pow(2) + (gy - ey).pow(2)).unwrap();
+        road(&mut d, &mut keep, g, (ex, ey), k as f32);
+        clear(&mut keep, ex, ey, 5);
+        let (fw, fh) = if k == ABYSS { (4, 3) } else { (3, 3) };
+        prop(&mut lv, &mut d, PropKind::Entrance(k), ex - fw / 2, ey - 3, fw, fh);
+        lv.portals.push(Portal { x: ex as f32 + 0.5, y: ey as f32 + 0.5, kind: PortalKind::Entrance(k) });
+    }
+    let (px, py) = LIFT_DEEP;
+    road(&mut d, &mut keep, (tx0 - 1, my), (px, py), 7.0);
+    clear(&mut keep, px, py, 4);
+    prop(&mut lv, &mut d, PropKind::DivingBell, px - 1, py - 3, 3, 2);
+    lv.portals.push(Portal { x: px as f32 + 0.5, y: py as f32 + 0.5, kind: PortalKind::Pass(3) });
+
+    // ---- the reef wall: a ragged rim of coral, and a few coral heads (never across a road) ----
+    let rim = Noise::new(&mut rng, 12, 6.0);
+    let heads = Noise::new(&mut rng, 18, 9.0);
+    for y in 0..h {
+        for x in 0..w {
+            if keep[(y * w + x) as usize] || d.get(x, y) != Tile::Floor {
+                continue;
+            }
+            let edge = x.min(y).min(w - 1 - x).min(h - 1 - y) as f32;
+            let ragged = edge < 3.0 + rim.at(x as f32, y as f32) * 4.0;
+            if ragged || heads.at(x as f32, y as f32) > 0.8 {
+                d.set(x, y, Tile::Wall);
+            }
+        }
+    }
+
+    // ---- kelp forests, coral, wrecks and whale bones ----
+    let kelp = Noise::new(&mut rng, 16, 8.0);
+    for y in 0..h {
+        for x in 0..w {
+            if d.get(x, y) != Tile::Floor || keep[(y * w + x) as usize] {
+                continue;
+            }
+            let f = kelp.at(x as f32, y as f32);
+            let r = rng.f();
+            if f > 0.6 && r < 0.3 || r < 0.008 {
+                let kind = match rng.range(0, 10) {
+                    0..=4 => PropKind::Kelp,
+                    5..=6 => PropKind::Coral1,
+                    _ => PropKind::Coral2,
+                };
+                prop(&mut lv, &mut d, kind, x, y, 1, 1);
+            } else if r < 0.0105 && x + 3 < w && y + 2 < h && (0..3).all(|ox| (0..2).all(|oy| d.get(x + ox, y + oy) == Tile::Floor && !keep[((y + oy) * w + x + ox) as usize])) {
+                let kind = if rng.chance(0.5) { PropKind::WreckHull } else { PropKind::WhaleBones };
+                prop(&mut lv, &mut d, kind, x, y, 3, 2);
+            } else if r < 0.013 {
+                prop(&mut lv, &mut d, PropKind::ShellLamp, x, y, 1, 1);
+            } else if r < 0.015 {
+                prop(&mut lv, &mut d, PropKind::AnchorRock, x, y, 1, 1);
+            }
+        }
+    }
+
+    // ---- roaming packs and a little food ----
+    let (cx, cy) = brinehollow_center();
+    let mut packs = 0;
+    for _ in 0..800 {
+        if packs >= 30 {
+            break;
+        }
+        let x = rng.range(6, w - 6) as f32 + 0.5;
+        let y = rng.range(6, h - 6) as f32 + 0.5;
+        let far = ((x - cx).powi(2) + (y - cy).powi(2)).sqrt();
+        if far < 20.0
+            || d.blocked(x, y, 0.4)
+            || DUNGEONS.iter().filter(|d| d.act == 4).any(|def| (def.entrance.0 as f32 - x).abs() + (def.entrance.1 as f32 - y).abs() < 6.0)
+            || ((x - px as f32).abs() < 7.0 && (y - py as f32).abs() < 7.0)
+        {
+            continue;
+        }
+        let tier = if far < 34.0 { 9.6 } else { 10.0 };
+        let kinds: &[Kind] = if far < 34.0 {
+            &[Kind::Drowned, Kind::Merrow, Kind::Jelly, Kind::Shellguard]
+        } else {
+            &[Kind::Drowned, Kind::Merrow, Kind::Siren, Kind::Anglerlurk, Kind::InkHorror, Kind::Jelly, Kind::Shellguard]
+        };
+        let kind = kinds[rng.range(0, kinds.len() as i32) as usize];
+        let n = match kind {
+            Kind::Anglerlurk | Kind::Siren => rng.range(1, 3),
+            Kind::Shellguard | Kind::InkHorror => rng.range(2, 4),
+            Kind::Jelly => rng.range(4, 7),
+            _ => rng.range(3, 6),
+        };
+        for _ in 0..n {
+            for _try in 0..10 {
+                let (mx, my) = (x + rng.rf(-2.0, 2.0), y + rng.rf(-2.0, 2.0));
+                if !d.blocked(mx, my, 0.35) {
+                    lv.mobs.push(Mob::new(kind, mx, my, tier, &mut rng));
+                    break;
+                }
+            }
+        }
+        packs += 1;
+    }
+    let mut food = 0;
+    for _ in 0..400 {
+        if food >= 10 {
+            break;
+        }
+        let x = rng.range(6, w - 6) as f32 + 0.5;
+        let y = rng.range(6, h - 6) as f32 + 0.5;
+        if ((x - cx).powi(2) + (y - cy).powi(2)).sqrt() > 16.0 && !d.blocked(x, y, 0.3) {
+            lv.pickups.push(Pickup { x, y, kind: Drop::Food(if rng.chance(0.5) { 1 } else { 2 }), t: 1.0 });
+            food += 1;
+        }
+    }
+    lv.explored = vec![false; (w * h) as usize];
+    lv.d = d;
+    lv.start = brinehollow_center();
+    lv
+}
+
 /// One floor of a dungeon: stairs up in the first room, stairs down (or the boss)
 /// in the last, monster packs in between.
 pub fn dungeon_floor(k: usize, floor: usize, seed: u64) -> Level {
@@ -1603,6 +1943,33 @@ pub fn dungeon_floor(k: usize, floor: usize, seed: u64) -> Level {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_sunken_reach_connects_brinehollow_to_every_drowned_dungeon_and_the_bell() {
+        let lv = deep(7);
+        let (cx, cy) = brinehollow_center();
+        let mut kinds = vec![];
+        for p in &lv.portals {
+            assert!(lv.d.walkable(p.x as i32, p.y as i32), "portal {:?} blocked", p.kind);
+            assert!(lv.d.path((cx as i32, cy as i32), (p.x as i32, p.y as i32), 100_000).is_some(), "no road to {:?}", p.kind);
+            kinds.push(p.kind);
+        }
+        for k in 16..20 {
+            assert!(kinds.contains(&PortalKind::Entrance(k)));
+        }
+        assert!(kinds.contains(&PortalKind::Pass(3)));
+        for n in &lv.npcs {
+            assert!(lv.d.walkable(n.x as i32, n.y as i32), "{} stands in a wall", n.name);
+        }
+        assert!(lv.mobs.len() > 50);
+        let (x0, y0, x1, y1) = lv.safe.unwrap();
+        assert!(lv.mobs.iter().all(|m| !(m.x > x0 && m.x < x1 && m.y > y0 && m.y < y1)), "monsters spawned in town");
+        // Mechanus has the bell down.
+        let mech = mechanus(7);
+        let bell = mech.portal(PortalKind::Pass(4)).expect("the diving bell");
+        let (cx, cy) = escapement_center();
+        assert!(mech.d.path((cx as i32, cy as i32), (bell.x as i32, bell.y as i32), 100_000).is_some());
+    }
 
     #[test]
     fn every_entrance_is_reachable_from_town() {

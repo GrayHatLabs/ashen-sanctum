@@ -1506,7 +1506,8 @@ impl Game {
         } else {
             1.0
         };
-        let dmg = dmg * self.taken(kind) * law * ranks;
+        let shell = if kind == crate::mobs::Kind::Shellguard && self.mobs[i].stun <= 0.0 && self.mobs[i].frozen <= 0.0 && self.mobs[i].slow_t <= 0.0 { 0.5 } else { 1.0 };
+        let dmg = dmg * self.taken(kind) * law * ranks * shell;
         self.drain(kind, dmg, 1.0);
         let m = &mut self.mobs[i];
         let (mx, my, boss, r) = (m.x, m.y, m.boss, m.r);
