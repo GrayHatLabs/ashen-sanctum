@@ -2,3 +2,4 @@
 *.sh text eol=lf
 *.gptk text eol=lf
 *.bin binary
+android/gradlew text eol=lf
