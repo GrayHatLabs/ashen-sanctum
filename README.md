@@ -336,3 +336,9 @@ From Windows PowerShell: `wsl -d Ubuntu -e bash scripts/dev-build.sh run`.
 
 Generated art lives in `D:\projects\AshenSanctum-art`. After generating, run
 `python tools/pack.py` there, then `python scripts/import_art.py` here and rebuild.
+
+## Android (RG477V, AYN Odin 2 on stock Android)
+
+One-time setup in WSL: `scripts/setup-android.sh` (JDK 17, Android SDK + NDK, Rust's Android targets, cargo-ndk).
+Then `scripts/build-android.sh` writes `dist/AshenSanctum.apk` (sideload it). `scripts/android-emulator-test.sh`
+runs it in a headless emulator and saves screenshots to `dist/`.

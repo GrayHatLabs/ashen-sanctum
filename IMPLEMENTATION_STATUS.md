@@ -138,6 +138,16 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Fixes found by the long runs: a boss's town portal could land between you and its token (now placed beyond the boss); area names repeated (NIGHTMARE) on every re-entry | H | |
 | Law zones (3 overland, 2 per dungeon): BLADE (only close blows), ARROW (only blows from 4+ tiles), STILLNESS (only foes not moving); forbidden blows do 10% (grey numbers); lure foes out to fight freely | H S | Unit test covers all three laws and leaving the zone |
 
+## Acts 5 and 6, polish, Android (2026-10-07)
+
+| Feature | Status | Notes |
+|---|---|---|
+| Act 5, The Drowned Deep: the Sunken Reach + Brinehollow, tides (`tides.rs`), 7 sea monsters, Dregmoor / Nacre / the Angler Matriarch / the Leviathan, pearls (`docs/ACT5_ACT6_PLAN.md`) | H S | Unit tests: tides, siren pull, run-through, heralds' specials |
+| Act 6, The Shattered Heavens: the Skyreach islands, chain bridges, airship docks, wind and real edges (`sky.rs`), 7 sky monsters, Vael / the Tempest Drake / the Ophan Prime / Solanthos, sun-shards, the ending; Nightmare now follows Solanthos | H S | Unit tests: gusts, falls, knockbacks over edges, airship, zealots, run-through |
+| Inquisitor whip: 5.5-tile lash, damage along the wave, tip +50%, combo with overhead crack, new attack animation | H S | Unit tests |
+| Polish: item level cap 50, bigger hero carousel on 4:3, quieter reef walls, floating fliers bob, anglerlurk remade | S | |
+| Handhelds: PortMaster launcher + art (RG35XX, AYN Odin 2 on ROCKNIX), view picked from the screen's shape; Android APK (`android/`, `scripts/build-android.sh`, emulator test) | S | Emulator-tested only |
+
 ## HUD art (2026-10-06)
 
 | Feature | Status | Notes |
