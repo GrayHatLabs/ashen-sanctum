@@ -81,9 +81,18 @@ pub const ZEAL_MAX: f32 = 0.25;
 fn up(r: u8) -> f32 {
     (r.max(1) - 1) as f32
 }
-/// The censer on its chain reaches this far (Zealotry adds to it).
-/// The censer whips out on its chain this far (the user wanted more reach, 2026-10-06; was 2.6).
-pub const CENSER_REACH: f32 = 3.6;
+/// The censer whips out on its chain this far (Zealotry adds to it). The user wanted long whipping
+/// strikes (2026-10-06; was 2.6, then 3.6): docs/INQUISITOR_WHIP_PLAN.md.
+pub const CENSER_REACH: f32 = 5.5;
+/// The whip's timing: drawn back over her shoulder, then unrolling out to the tip (seconds, before haste).
+pub const WHIP_WIND: f32 = 0.12;
+pub const WHIP_LASH: f32 = 0.18;
+/// The tip (this share of the reach and beyond) hits this much harder.
+pub const WHIP_TIP: f32 = 0.75;
+pub const WHIP_TIP_BONUS: f32 = 1.5;
+/// Every third strike in a row (each within this long of the last) is an overhead crack: further, wider at the tip.
+pub const WHIP_COMBO_T: f32 = 1.5;
+pub const OVERHEAD_REACH: f32 = 1.0;
 pub fn censer_dmg(r: u8) -> (f32, f32) {
     let k = 1.0 + 0.16 * up(r);
     (9.0 * k, 14.0 * k)
@@ -119,7 +128,7 @@ pub fn lash_dmg(r: u8) -> (f32, f32) {
     let k = 1.0 + 0.15 * up(r);
     (14.0 * k, 22.0 * k)
 }
-pub const LASH_REACH: f32 = 5.5;
+pub const LASH_REACH: f32 = 7.5;
 pub fn lash_cost(r: u8) -> f32 {
     14.0 + 0.3 * up(r)
 }
@@ -235,7 +244,7 @@ pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
         match s {
             Skill::CenserStrike => {
                 let (a, b) = censer_dmg(r);
-                format!("{}-{} DAMAGE AT {:.1} TILES + HOLY FIRE, FREE", (a * power) as i32, (b * power) as i32, CENSER_REACH)
+                format!("{}-{} DAMAGE, A {:.1}-TILE WHIP, THE TIP HARDER + HOLY FIRE, FREE", (a * power) as i32, (b * power) as i32, CENSER_REACH)
             }
             Skill::BrandOfJudgment => format!(
                 "BRANDED FOR {:.0} SEC: +{:.0}% DAMAGE FROM YOU (MORE IF CURSED), {:.0} JUDGMENT",
@@ -301,12 +310,36 @@ pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
 pub struct ChainLinkFx {
     /// A whip: the chain unrolls in a curving lash and cracks at the end (else it's drawn whole at once).
     pub whip: bool,
+    /// A whip's wind-up (drawn back over her shoulder) and lash (unrolling) times; the crack lingers after.
+    pub wind: f32,
+    pub lash: f32,
+    /// Which way the lash curls (+1 / -1: forehand and backhand), and how high it arcs (an overhead crack).
+    pub side: f32,
+    pub lift: f32,
     pub x0: f32,
     pub y0: f32,
     pub x1: f32,
     pub y1: f32,
     pub t: f32,
     pub max: f32,
+}
+
+/// A Censer Strike in flight (her whip): the damage travels out along the chain.
+pub struct Whip {
+    pub x: f32,
+    pub y: f32,
+    pub ux: f32,
+    pub uy: f32,
+    pub reach: f32,
+    pub t: f32,
+    pub wind: f32,
+    pub lash: f32,
+    pub lo: f32,
+    pub hi: f32,
+    pub power: f32,
+    pub overhead: bool,
+    pub hit: Vec<usize>,
+    pub cracked: bool,
 }
 
 /// Binding chains holding a spot.
@@ -399,7 +432,7 @@ impl Game {
                 .collect();
             for j in others {
                 let (ox, oy) = (self.mobs[j].x, self.mobs[j].y);
-                self.links.push(ChainLinkFx { whip: false, x0: mx, y0: my, x1: ox, y1: oy, t: 0.0, max: 0.25 });
+                self.links.push(ChainLinkFx { whip: false, wind: 0.0, lash: 0.0, side: 1.0, lift: 0.0, x0: mx, y0: my, x1: ox, y1: oy, t: 0.0, max: 0.25 });
                 self.hit_mob(j, dmg * share, 0.0, 0.0, None, true);
             }
         }
@@ -451,22 +484,88 @@ impl Game {
             return;
         }
         let r = self.p.skills.rank(Skill::CenserStrike).max(1);
-        let reach = CENSER_REACH + zeal_reach(self.p.skills.rank(Skill::Zealotry));
-        self.iq_pose("attack", 0.45);
+        // Forehand, backhand, then an overhead crack.
+        self.whip_combo = if self.whip_combo_t > 0.0 { self.whip_combo % 3 + 1 } else { 1 };
+        self.whip_combo_t = WHIP_COMBO_T;
+        let overhead = self.whip_combo == 3;
+        let full = CENSER_REACH + zeal_reach(self.p.skills.rank(Skill::Zealotry)) + if overhead { OVERHEAD_REACH } else { 0.0 };
+        let haste = self.p.haste.max(0.5);
+        self.iq_pose("attack", 0.5);
         self.sfx.push(Sfx::Swing);
         self.stats.casts += 1;
         let (px, py) = (self.p.x, self.p.y);
-        let a0 = (ty - py).atan2(tx - px);
-        let (ex, ey) = (px + a0.cos() * reach, py + a0.sin() * reach);
-        self.links.push(ChainLinkFx { whip: true, x0: px, y0: py, x1: ex, y1: ey, t: 0.0, max: 0.34 });
-        for _ in 0..6 {
-            self.spray_at(ex, ey, PKind::Holy, 10.0);
+        let (dx, dy) = (tx - px, ty - py);
+        let l = (dx * dx + dy * dy).sqrt().max(0.01);
+        let (ux, uy) = (dx / l, dy / l);
+        // The chain stops at the first wall.
+        let mut reach = 0.5;
+        while reach < full && self.d.walkable((px + ux * reach).floor() as i32, (py + uy * reach).floor() as i32) {
+            reach += 0.25;
         }
+        let reach = reach.min(full);
+        let (wind, lash) = (WHIP_WIND / haste, WHIP_LASH / haste);
+        let side = if self.whip_combo == 2 { -1.0 } else { 1.0 };
+        let lift = if overhead { 1.0 } else { 0.0 };
+        self.links.push(ChainLinkFx { whip: true, wind, lash, side, lift, x0: px, y0: py, x1: px + ux * reach, y1: py + uy * reach, t: 0.0, max: wind + lash + 0.2 });
         let (lo, hi) = censer_dmg(r);
-        let power = self.fire_power();
-        for i in self.in_cone(tx, ty, reach, 0.38) {
-            let dmg = self.rng.rf(lo, hi) * power;
-            self.inq_hit(i, dmg, 0.2, Some((px, py, 0.25)), true);
+        self.whips.push(Whip { x: px, y: py, ux, uy, reach, t: 0.0, wind, lash, lo, hi, power: self.fire_power(), overhead, hit: vec![], cracked: false });
+    }
+
+    /// The whips in flight: each foe along the chain is struck as the wave passes it, the tip hardest; then the crack.
+    pub(crate) fn update_whips(&mut self) {
+        self.whip_combo_t = (self.whip_combo_t - DT).max(0.0);
+        let mut k = 0;
+        while k < self.whips.len() {
+            self.whips[k].t += DT;
+            let w = &self.whips[k];
+            if w.t < w.wind {
+                k += 1;
+                continue;
+            }
+            let p = ((w.t - w.wind) / w.lash).min(1.0);
+            let front = w.reach * p;
+            let (x, y, ux, uy, reach, overhead) = (w.x, w.y, w.ux, w.uy, w.reach, w.overhead);
+            let hit = w.hit.clone();
+            let struck = self.foes_where(|m| {
+                let (mx, my) = (m.x - x, m.y - y);
+                let along = mx * ux + my * uy;
+                let side = (mx * -uy + my * ux).abs();
+                let width = if overhead && along > reach * WHIP_TIP { 1.1 } else if along > reach * WHIP_TIP { 0.7 } else { 0.45 };
+                along > -0.2 && along < front + m.r && along < reach + m.r && side < width + m.r
+            });
+            // Embers off the censer as it flies.
+            let (tx, ty) = (x + ux * front, y + uy * front);
+            if self.tick % 2 == 0 {
+                self.parts.push(Particle { x: tx, y: ty, z: 14.0 + 20.0 * if overhead { 1.0 - p } else { 0.0 }, vx: ux * 2.0, vy: uy * 2.0, vz: 8.0, life: 0.35, max: 0.35, kind: PKind::Holy });
+            }
+            for i in struck.into_iter().filter(|i| !hit.contains(i)) {
+                let m = &self.mobs[i];
+                let along = (m.x - x) * ux + (m.y - y) * uy;
+                let w = &self.whips[k];
+                let mut dmg = self.rng.rf(w.lo, w.hi) * w.power;
+                if along > reach * WHIP_TIP {
+                    dmg *= WHIP_TIP_BONUS;
+                }
+                self.whips[k].hit.push(i);
+                self.inq_hit(i, dmg, 0.2, Some((x, y, 0.25)), true);
+            }
+            if p >= 1.0 && !self.whips[k].cracked {
+                // The crack: a white-gold burst at the tip.
+                self.whips[k].cracked = true;
+                self.sfx.push(Sfx::Hit);
+                self.shake = self.shake.max(if overhead { 0.3 } else { 0.12 });
+                self.lights.push(Light { x: tx, y: ty, r: if overhead { 80.0 } else { 50.0 }, s: 0.8, life: 0.2, max: 0.2 });
+                for n in 0..(if overhead { 16 } else { 8 }) {
+                    let a = n as f32 / if overhead { 16.0 } else { 8.0 } * std::f32::consts::TAU;
+                    let v = if overhead { 7.0 } else { 4.5 };
+                    self.parts.push(Particle { x: tx, y: ty, z: 14.0, vx: a.cos() * v, vy: a.sin() * v, vz: 6.0, life: 0.3, max: 0.3, kind: PKind::Holy });
+                }
+            }
+            if self.whips[k].t > self.whips[k].wind + self.whips[k].lash + 0.05 {
+                self.whips.swap_remove(k);
+            } else {
+                k += 1;
+            }
         }
     }
 
@@ -539,7 +638,7 @@ impl Game {
         while reach < LASH_REACH && self.d.walkable((px + ux * reach).floor() as i32, (py + uy * reach).floor() as i32) {
             reach += 0.25;
         }
-        self.links.push(ChainLinkFx { whip: true, x0: px, y0: py, x1: px + ux * reach, y1: py + uy * reach, t: 0.0, max: 0.36 });
+        self.links.push(ChainLinkFx { whip: true, wind: 0.05, lash: 0.16, side: 1.0, lift: 0.0, x0: px, y0: py, x1: px + ux * reach, y1: py + uy * reach, t: 0.0, max: 0.36 });
         let (lo, hi) = lash_dmg(r);
         let power = self.fire_power();
         for i in self.in_line(tx, ty, reach, 0.45) {
@@ -573,7 +672,7 @@ impl Game {
         self.iq_pose("attack", 0.4);
         self.sfx.push(Sfx::Swing);
         let (mx, my, boss, mr) = (self.mobs[i].x, self.mobs[i].y, self.mobs[i].boss, self.mobs[i].r);
-        self.links.push(ChainLinkFx { whip: true, x0: px, y0: py, x1: mx, y1: my, t: 0.0, max: 0.35 });
+        self.links.push(ChainLinkFx { whip: true, wind: 0.05, lash: 0.16, side: 1.0, lift: 0.0, x0: px, y0: py, x1: mx, y1: my, t: 0.0, max: 0.35 });
         let d = ((mx - px).powi(2) + (my - py).powi(2)).sqrt().max(0.01);
         let (hx, hy) = ((mx - px) / d, (my - py) / d);
         if boss {
@@ -710,6 +809,7 @@ impl Game {
                 self.parts.push(Particle { x, y, z, vx: 0.0, vy: 0.0, vz: 22.0, life: 0.5, max: 0.5, kind: PKind::Holy });
             }
         }
+        self.update_whips();
         for c in self.links.iter_mut() {
             c.t += DT;
         }
@@ -741,7 +841,7 @@ impl Game {
                 let dmg = self.p.whirl_dmg;
                 let a = self.tick as f32 * 0.5;
                 let (ex, ey) = (px + a.cos() * SWEEP_RADIUS, py + a.sin() * SWEEP_RADIUS);
-                self.links.push(ChainLinkFx { whip: false, x0: px, y0: py, x1: ex, y1: ey, t: 0.0, max: 0.3 });
+                self.links.push(ChainLinkFx { whip: false, wind: 0.0, lash: 0.0, side: 1.0, lift: 0.0, x0: px, y0: py, x1: ex, y1: ey, t: 0.0, max: 0.3 });
                 for k in 0..12 {
                     let a = k as f32 / 12.0 * std::f32::consts::TAU + self.tick as f32 * 0.3;
                     self.parts.push(Particle { x: px + a.cos() * 2.2, y: py + a.sin() * 2.2, z: 14.0, vx: -a.sin() * 4.0, vy: a.cos() * 4.0, vz: 4.0, life: 0.25, max: 0.25, kind: PKind::Holy });
@@ -830,20 +930,72 @@ mod tests {
         let w = foe(&mut g, Kind::Wolf, -2.3, 0.0);
         let far = foe(&mut g, Kind::Skeleton, 0.0, 3.3);
         g.censer_strike(g.p.x, g.p.y + 4.0);
+        settle(&mut g);
         assert!(g.mobs[far].hp < 5000.0, "the chain whips out 3.3 tiles");
         g.p.mana = 0.0;
         g.p.cast_cd = 0.0;
+        g.whip_combo_t = 0.0;
         g.censer_strike(g.p.x + 3.0, g.p.y);
+        settle(&mut g);
         assert!(g.mobs[z].hp < 5000.0, "the chain reaches 2.3 tiles");
         assert!(g.mobs[z].holy_t > 0.0, "holy fire takes it");
         let j = g.p.mana;
         assert!((j - JUDGE_CURSED).abs() < 0.01, "a cursed hit: {j}");
         g.p.cast_cd = 0.0;
+        g.whip_combo_t = 0.0;
         g.censer_strike(g.p.x - 3.0, g.p.y);
+        settle(&mut g);
         assert!(g.mobs[w].hp < 5000.0);
         assert!(g.mobs[w].holy < g.mobs[z].holy, "the cursed burn twice as hard");
         assert!((g.p.mana - j - JUDGE_HIT).abs() < 0.01);
         assert_eq!(curse_of(&g.mobs[w]), 0.0);
+    }
+
+    /// Lets her whips fly out and land.
+    fn settle(g: &mut Game) {
+        for _ in 0..40 {
+            g.update_whips();
+        }
+    }
+
+    #[test]
+    fn the_whip_is_long_lands_late_and_cracks_hardest_at_the_tip() {
+        let mut g = inq_game();
+        clear_spot(&mut g);
+        let near = foe(&mut g, Kind::Wolf, 1.5, 0.0);
+        let tip = foe(&mut g, Kind::Wolf, 5.0, 0.0);
+        let beyond = foe(&mut g, Kind::Wolf, 0.0, 7.0);
+        g.censer_strike(g.p.x + 6.0, g.p.y);
+        assert_eq!(g.mobs[tip].hp, 5000.0, "nothing is hit before the chain gets there");
+        settle(&mut g);
+        let (dn, dt) = (5000.0 - g.mobs[near].hp, 5000.0 - g.mobs[tip].hp);
+        assert!(dn > 0.0 && dt > 0.0, "the chain strikes all along its length");
+        assert!(dt > dn * 1.2, "the tip cracks hardest: {dt} vs {dn}");
+        // Straight up: 7 tiles is past her reach.
+        g.p.cast_cd = 0.0;
+        g.whip_combo_t = 0.0;
+        g.censer_strike(g.p.x, g.p.y + 8.0);
+        settle(&mut g);
+        assert_eq!(g.mobs[beyond].hp, 5000.0, "7 tiles is past the whip");
+    }
+
+    #[test]
+    fn every_third_lash_is_an_overhead_crack_that_reaches_further() {
+        let mut g = inq_game();
+        clear_spot(&mut g);
+        let far = foe(&mut g, Kind::Wolf, 6.2, 0.0);
+        for k in 1..=3 {
+            g.p.cast_cd = 0.0;
+            g.censer_strike(g.p.x + 8.0, g.p.y);
+            assert_eq!(g.whip_combo, k);
+            settle(&mut g);
+            g.whip_combo_t = WHIP_COMBO_T;
+            if k < 3 {
+                assert_eq!(g.mobs[far].hp, 5000.0, "6.2 tiles is out of a plain lash's reach");
+            }
+        }
+        assert!(g.mobs[far].hp < 5000.0, "the overhead crack reaches further");
+        assert_eq!(g.links.last().map(|c| c.lift), Some(1.0));
     }
 
     #[test]

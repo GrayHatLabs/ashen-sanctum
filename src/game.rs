@@ -615,6 +615,10 @@ pub struct Game {
     pub(crate) hazards: Vec<Hazard>,
     /// The inquisitor's chains drawn for a moment, and her binding chains.
     pub(crate) links: Vec<crate::inquisitor::ChainLinkFx>,
+    /// Her whips in flight, and her strike combo (forehand, backhand, overhead) with its timer.
+    pub(crate) whips: Vec<crate::inquisitor::Whip>,
+    pub(crate) whip_combo: u8,
+    pub(crate) whip_combo_t: f32,
     pub(crate) binds: Vec<crate::inquisitor::BindFx>,
     /// The blow being dealt to you comes from something cursed (her Iron Halo).
     pub(crate) hurt_cursed: bool,
@@ -721,6 +725,9 @@ impl Game {
             shots: vec![],
             hazards: vec![],
             links: vec![],
+            whips: vec![],
+            whip_combo: 0,
+            whip_combo_t: 0.0,
             binds: vec![],
             hurt_cursed: false,
             clocks: vec![],
@@ -1148,6 +1155,7 @@ impl Game {
         self.vines.clear();
         self.glasses.clear();
         self.links.clear();
+        self.whips.clear();
         self.binds.clear();
         self.p.judge_t = 0.0;
         self.p.rune_prey = None;

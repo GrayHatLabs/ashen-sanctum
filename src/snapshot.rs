@@ -694,11 +694,24 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         let target = g.bot_target().map(|t| (t.0, t.1)).unwrap_or(target);
         cast(&mut g, Skill::BrandOfJudgment, target.0, target.1);
         idle(&mut g, 4);
+        // The whip (docs/INQUISITOR_WHIP_PLAN.md): wind-up, the lash unrolling, the crack; then the combo's overhead crack.
         cast(&mut g, Skill::CenserStrike, target.0, target.1);
-        idle(&mut g, 3);
+        idle(&mut g, 4);
+        save(&mut g, scr, "inquisitor_whip_windup");
+        idle(&mut g, 6);
         save(&mut g, scr, "inquisitor_strike");
-        idle(&mut g, 7);
+        idle(&mut g, 6);
         save(&mut g, scr, "inquisitor_strike_crack");
+        idle(&mut g, 16);
+        let target = g.bot_target().map(|t| (t.0, t.1)).unwrap_or(target);
+        cast(&mut g, Skill::CenserStrike, target.0, target.1);
+        idle(&mut g, 32);
+        let target = g.bot_target().map(|t| (t.0, t.1)).unwrap_or(target);
+        cast(&mut g, Skill::CenserStrike, target.0, target.1);
+        idle(&mut g, 12);
+        save(&mut g, scr, "inquisitor_whip_overhead");
+        idle(&mut g, 5);
+        save(&mut g, scr, "inquisitor_whip_overhead_crack");
         let target = g.bot_target().map(|t| (t.0, t.1)).unwrap_or(target);
         cast(&mut g, Skill::ChainLash, target.0, target.1);
         idle(&mut g, 4);

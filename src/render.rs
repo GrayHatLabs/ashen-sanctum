@@ -525,38 +525,92 @@ impl Game {
             let (x0, y0) = to_scr(c.x0, c.y0);
             let (x1, y1) = to_scr(c.x1, c.y1);
             let fade = 1.0 - (c.t / c.max).min(1.0);
-            // A whip unrolls over the first part of its life, curling to one side, then snaps straight and cracks.
-            let reach = if c.whip { (c.t / (c.max * 0.45)).min(1.0) } else { 1.0 };
-            let curl = if c.whip { (1.0 - reach) * 14.0 } else { 0.0 };
-            let (dx, dy) = ((x1 - x0) as f32, (y1 - 22 - y0 + 8 + 14) as f32);
+            let (sx, sy) = scr.shake;
+            let hand = (x0 as f32, (y0 - 22) as f32);
+            let end = (x1 as f32, (y1 - 14) as f32);
+            let (dx, dy) = (end.0 - hand.0, end.1 - hand.1);
             let len = (dx * dx + dy * dy).sqrt().max(1.0);
             let (nx, ny) = (-dy / len, dx / len);
-            let n = (len / 3.0) as i32 + 2;
-            let mut tip = (x0 as f32, (y0 - 22) as f32);
-            for k in 0..=n {
-                let t = k as f32 / n as f32 * reach;
-                let bend = (t / reach.max(0.01) * std::f32::consts::PI).sin() * curl;
-                let x = x0 as f32 + (x1 - x0) as f32 * t + nx * bend;
-                let y = (y0 - 22) as f32 + ((y1 - y0 + 8) as f32) * t + ny * bend;
-                // Darkened-gold links with a dark edge, so the chain reads on any floor.
-                let (lx, ly) = (x as i32 - 1 + scr.shake.0, y as i32 - 1 + scr.shake.1);
-                scr.fill(lx - 1, ly - 1, 4, 4, rgb(0x140e08));
-                let col = if k % 2 == 0 { rgb(0x9a7430) } else { rgb(0xe0b860) };
-                scr.fill(lx, ly, 2, 2, col);
-                tip = (x, y);
+            // The chain at lash progress p (0..1): the points from her hand to the censer.
+            let chain = |p: f32| -> Vec<(f32, f32)> {
+                let n = (len * p / 3.0) as i32 + 2;
+                (0..=n)
+                    .map(|k| {
+                        let u = k as f32 / n as f32; // along the unrolled part
+                        let a = u * p;
+                        // A curl that travels out and straightens as it goes; an overhead lash arcs high and comes down.
+                        let curl = (u * std::f32::consts::PI).sin() * (1.0 - p) * 16.0 * c.side + (u * 9.0 - p * 12.0).sin() * (1.0 - p) * 3.0;
+                        let arc = (u * std::f32::consts::PI).sin() * (1.0 - p) * 34.0 * c.lift;
+                        (hand.0 + dx * a + nx * curl, hand.1 + dy * a + ny * curl - arc)
+                    })
+                    .collect()
+            };
+            // Heavy links: a dark outline, then iron and darkened gold in turn, catching the light.
+            let link = |scr: &mut Screen, pts: &[(f32, f32)], dim: f32| {
+                if dim > 0.0 {
+                    for &(x, y) in pts {
+                        scr.blend(x as i32 - 1 + sx, y as i32 - 1 + sy, 3, 3, rgb(0xd8b060), dim);
+                    }
+                    return;
+                }
+                for &(x, y) in pts {
+                    scr.fill(x as i32 - 2 + sx, y as i32 - 2 + sy, 4, 4, rgb(0x120e0a));
+                }
+                for (k, &(x, y)) in pts.iter().enumerate() {
+                    let (col, hi) = if k % 2 == 0 { (rgb(0x6a625a), rgb(0xa8a098)) } else { (rgb(0xa88440), rgb(0xf0d080)) };
+                    scr.fill(x as i32 - 1 + sx, y as i32 - 1 + sy, 2, 2, col);
+                    scr.pset(x as i32 - 1 + sx, y as i32 - 1 + sy, hi);
+                }
+            };
+            let censer = |scr: &mut Screen, (x, y): (f32, f32), glow: f32| {
+                let (ex, ey) = (x as i32 + sx, y as i32 + sy);
+                scr.glow(ex, ey, 10.0, rgb(0xffd060), glow);
+                scr.disc(ex, ey, 3, rgb(0x8a6a28));
+                scr.pset(ex, ey, rgb(0xfff6d0));
+            };
+            if !c.whip {
+                let pts = chain(1.0);
+                link(scr, &pts, 0.0);
+                censer(scr, *pts.last().unwrap(), 0.6 * fade + 0.25);
+                continue;
             }
-            // The censer at the end of the chain, coals glowing.
-            let (ex, ey) = (tip.0 as i32 + scr.shake.0, tip.1 as i32 + 8 + scr.shake.1);
-            scr.glow(ex, ey, 10.0, rgb(0xffd060), 0.6 * fade + 0.25);
-            scr.disc(ex, ey, 3, rgb(0x8a6a28));
-            scr.pset(ex, ey, rgb(0xfff6d0));
+            if c.t < c.wind {
+                // The wind-up: the chain swung back over her shoulder.
+                let k = c.t / c.wind.max(0.001);
+                let (bx, by) = (-dx / len, -dy / len);
+                let pts: Vec<(f32, f32)> = (0..=8)
+                    .map(|i| {
+                        let u = i as f32 / 8.0;
+                        let r = u * 20.0 * k;
+                        (hand.0 + bx * r + nx * c.side * u * 6.0, hand.1 + by * r - (u * std::f32::consts::PI * 0.8).sin() * 18.0 * k - 10.0 * c.lift * u * k)
+                    })
+                    .collect();
+                link(scr, &pts, 0.0);
+                censer(scr, *pts.last().unwrap(), 0.5);
+                continue;
+            }
+            let p = ((c.t - c.wind) / c.lash.max(0.001)).min(1.0);
+            // Motion trails: where the chain was a moment ago.
+            for (j, back) in [(1, 0.14f32), (2, 0.28)] {
+                if p - back > 0.05 && p < 1.0 {
+                    let ghost = chain(p - back);
+                    link(scr, &ghost, 0.35 / j as f32);
+                }
+            }
+            let pts = chain(p);
+            link(scr, &pts, 0.0);
+            let tip = *pts.last().unwrap();
+            censer(scr, tip, 0.6 * fade + 0.3);
             // The crack: a white-gold burst as the whip snaps straight.
-            if c.whip && reach >= 1.0 {
-                let k = 1.0 - ((c.t - c.max * 0.45) / (c.max * 0.55)).clamp(0.0, 1.0);
-                scr.glow(ex, ey, 18.0 * k + 4.0, rgb(0xfff0b0), 0.8 * k);
-                for a in 0..8 {
-                    let ang = a as f32 / 8.0 * std::f32::consts::TAU;
-                    let r = 4.0 + 8.0 * k;
+            if p >= 1.0 {
+                let after = (c.t - c.wind - c.lash) / (c.max - c.wind - c.lash).max(0.001);
+                let k = 1.0 - after.clamp(0.0, 1.0);
+                let (ex, ey) = (tip.0 as i32 + sx, tip.1 as i32 + sy);
+                let big = 1.0 + c.lift;
+                scr.glow(ex, ey, (18.0 * k + 4.0) * big, rgb(0xfff0b0), 0.8 * k);
+                for a in 0..10 {
+                    let ang = a as f32 / 10.0 * std::f32::consts::TAU;
+                    let r = (4.0 + 10.0 * (1.0 - k)) * big;
                     scr.pset(ex + (ang.cos() * r) as i32, ey + (ang.sin() * r * 0.6) as i32, rgb(0xfff6d0));
                 }
             }
