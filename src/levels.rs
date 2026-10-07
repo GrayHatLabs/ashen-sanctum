@@ -222,7 +222,7 @@ const PROPS: [PropKind; 55] = [
     PropKind::GearGate,
 ];
 
-const KINDS: [Kind; 41] = [
+const KINDS: [Kind; 44] = [
     Kind::Zombie,
     Kind::Skeleton,
     Kind::Wolf,
@@ -264,6 +264,9 @@ const KINDS: [Kind; 41] = [
     Kind::Archivist,
     Kind::Clockmaker,
     Kind::ClockCrow,
+    Kind::Crate,
+    Kind::Barrel,
+    Kind::Urn,
 ];
 
 fn portal_name(k: PortalKind) -> String {

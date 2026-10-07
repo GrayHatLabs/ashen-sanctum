@@ -21,6 +21,7 @@ mod rng;
 mod save;
 mod skills;
 mod berserker;
+mod breakables;
 mod reaper;
 mod druid;
 mod inquisitor;

@@ -403,7 +403,7 @@ impl Game {
     fn corpse_bloom(&mut self, r: u8) {
         let (px, py) = (self.p.x, self.p.y);
         let corpse = (0..self.mobs.len())
-            .filter(|&i| matches!(self.mobs[i].state, MobState::Dead(_)) && !self.mobs[i].boss && !self.mobs[i].thrall)
+            .filter(|&i| matches!(self.mobs[i].state, MobState::Dead(_)) && !self.mobs[i].boss && !self.mobs[i].thrall && !crate::breakables::is_prop(self.mobs[i].kind))
             .map(|i| (i, (self.mobs[i].x - px).powi(2) + (self.mobs[i].y - py).powi(2)))
             .filter(|&(_, d2)| d2 < 64.0)
             .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap())

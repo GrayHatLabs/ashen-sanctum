@@ -1217,8 +1217,8 @@ impl Game {
     pub fn bot_target(&self) -> Option<(f32, f32, f32, bool)> {
         self.mobs
             .iter()
-            // Not your own allies (wolves, thralls, rats...).
-            .filter(|m| m.alive() && m.charm <= 0.0)
+            // Not your own allies (wolves, thralls, rats...), nor crates and barrels.
+            .filter(|m| m.alive() && m.charm <= 0.0 && !crate::breakables::is_prop(m.kind))
             .map(|m| (m.x, m.y, ((m.x - self.p.x).powi(2) + (m.y - self.p.y).powi(2)).sqrt()))
             .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap())
             .map(|(x, y, d)| (x, y, d, self.d.los(self.p.x, self.p.y, x, y)))
@@ -1436,7 +1436,7 @@ impl Game {
     }
 
     pub fn alive_mobs(&self) -> usize {
-        self.mobs.iter().filter(|m| m.alive()).count()
+        self.mobs.iter().filter(|m| m.alive() && !crate::breakables::is_prop(m.kind)).count()
     }
 
     #[cfg(test)]
@@ -2754,6 +2754,11 @@ impl Game {
     }
 
     pub(crate) fn kill(&mut self, i: usize) {
+        // A crate, barrel or urn: it breaks (no XP, no kill hooks).
+        if crate::breakables::is_prop(self.mobs[i].kind) {
+            self.break_prop(i);
+            return;
+        }
         let (x, y, kind, boss, xp) = (self.mobs[i].x, self.mobs[i].y, self.mobs[i].kind, self.mobs[i].boss, self.mobs[i].xp);
         let marked = self.mobs[i].marked > 0.0;
         let (poisoned, plagued, pdps) = (self.mobs[i].poison_t > 0.0, self.mobs[i].plagued, self.mobs[i].poison);

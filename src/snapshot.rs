@@ -1134,6 +1134,32 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         save(&mut g, scr, "jeweler_bench");
         g.inv = None;
     }
+    // Breakables: a cluster in each act's first dungeon, then one shattering.
+    for (act, k) in [(0usize, 0usize), (1, 4), (2, 8), (3, 12)] {
+        let mut g = Game::new(7, h);
+        g.debug_goto(LevelId::Dungeon(k, 0));
+        g.banner_t = 0.0;
+        g.p.base_hp = 9999.0;
+        g.p.recalc();
+        g.p.hp = 9999.0;
+        g.mobs.retain(|m| crate::breakables::is_prop(m.kind));
+        let Some(i) = (0..g.mobs.len()).min_by(|&a, &b| {
+            let da = (g.mobs[a].x - g.start.0).powi(2) + (g.mobs[a].y - g.start.1).powi(2);
+            let db = (g.mobs[b].x - g.start.0).powi(2) + (g.mobs[b].y - g.start.1).powi(2);
+            da.partial_cmp(&db).unwrap()
+        }) else {
+            continue;
+        };
+        let (x, y) = (g.mobs[i].x, g.mobs[i].y);
+        g.debug_place_near(x, y, 2.0);
+        idle(&mut g, 4);
+        save(&mut g, scr, &format!("breakables_act{}", act + 1));
+        if act == 0 {
+            g.hit_mob(i, 50.0, 0.0, 0.0, None, false);
+            idle(&mut g, 4);
+            save(&mut g, scr, "breakables_shatter");
+        }
+    }
     // HUD details: out of mana (EMBER), hungry, low stamina, food on the floor.
     let mut g = Game::new(7, h);
     g.debug_goto(LevelId::Dungeon(0, 0));

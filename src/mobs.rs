@@ -64,6 +64,10 @@ pub enum Kind {
     Rat,
     MossWolf,
     ThornWarden,
+    // ---- breakables (breakables.rs): no mind, smashed by any hit; the act is in `Mob::form` ----
+    Crate,
+    Barrel,
+    Urn,
 }
 
 pub struct Def {
@@ -238,6 +242,9 @@ pub fn def(k: Kind) -> Def {
         Kind::Rat => Def { r: 0.2, ..d("plague_rat", "PLAGUE RAT", 14.0, 4.5, (3.0, 5.0), 0.25, 0.7, 0.0) },
         Kind::MossWolf => Def { r: 0.36, ..d("moss_wolf", "MOSS WOLF", 80.0, 4.4, (5.0, 8.0), 0.3, 0.8, 0.0) },
         Kind::ThornWarden => Def { r: 0.6, reach: 1.4, ..d("thorn_warden", "THORN WARDEN", 300.0, 2.2, (16.0, 24.0), 0.6, 1.4, 0.0) },
+        Kind::Crate => Def { r: 0.34, ..d("crate", "CRATE", 4.0, 0.0, (0.0, 0.0), 1.0, 9.0, 0.0) },
+        Kind::Barrel => Def { r: 0.34, ..d("barrel", "BARREL", 4.0, 0.0, (0.0, 0.0), 1.0, 9.0, 0.0) },
+        Kind::Urn => Def { r: 0.3, ..d("urn", "URN", 4.0, 0.0, (0.0, 0.0), 1.0, 9.0, 0.0) },
         Kind::Scholar => Def { r: 0.3, reach: 2.4, ..d("scholar_spirit", "SCHOLAR SPIRIT", 50.0, 3.0, (7.0, 11.0), 0.35, 1.1, 0.0) },
         Kind::DireWolf => Def { r: 0.36, ..d("dire_wolf", "DIRE WOLF", 80.0, 4.6, (4.0, 7.0), 0.3, 0.8, 0.0) },
         Kind::Einherjar => Def { r: 0.32, ..d("einherjar", "EINHERJAR", 60.0, 3.0, (8.0, 12.0), 0.35, 1.0, 0.0) },
@@ -480,6 +487,9 @@ impl Mob {
     }
 
     pub fn label(&self) -> String {
+        if crate::breakables::is_prop(self.kind) {
+            return crate::breakables::label(self.kind, self.form).to_string();
+        }
         match &self.name {
             Some(n) => n.clone(),
             None => def(self.kind).label.to_string(),
@@ -598,7 +608,8 @@ impl Game {
         // The lockstep beat: march for 40 ticks, halt (and fire together) for 20.
         let halt = self.tick % 60 >= 40;
         // Charmed monsters hunt the hostile ones.
-        let foes: Vec<(usize, f32, f32, f32)> = self.mobs.iter().enumerate().filter(|(_, m)| m.alive() && m.charm <= 0.0).map(|(i, m)| (i, m.x, m.y, m.r)).collect();
+        let foes: Vec<(usize, f32, f32, f32)> =
+            self.mobs.iter().enumerate().filter(|(_, m)| m.alive() && m.charm <= 0.0 && !crate::breakables::is_prop(m.kind)).map(|(i, m)| (i, m.x, m.y, m.r)).collect();
         let mut ally_hits: Vec<(usize, f32)> = vec![];
         for i in 0..n {
             let (tick, rv, rv2) = (self.tick, self.rng.f(), self.rng.f());
@@ -637,6 +648,11 @@ impl Game {
                 if matches!(m.kind, Kind::IceTroll | Kind::Werewolf) && m.hp < m.max_hp {
                     m.hp = (m.hp + m.max_hp * 0.03 * DT).min(m.max_hp);
                 }
+            }
+            // Breakables have no mind: nothing below applies to them.
+            if crate::breakables::is_prop(m.kind) {
+                m.moving = false;
+                continue;
             }
             // Gearwraiths flicker out of phase now and then.
             if m.kind == Kind::Gearwraith && m.alive() && m.invuln <= 0.0 && rv < DT / 4.0 {
@@ -1025,18 +1041,27 @@ impl Game {
                 let d2 = dx * dx + dy * dy;
                 let min = self.mobs[i].r + self.mobs[j].r;
                 if d2 < min * min && d2 > 1e-6 {
+                    // Breakables don't budge: whatever bumps into one is pushed off it.
+                    let (pi, pj) = (crate::breakables::is_prop(self.mobs[i].kind), crate::breakables::is_prop(self.mobs[j].kind));
+                    if pi && pj {
+                        continue;
+                    }
                     let d = d2.sqrt();
-                    let push = (min - d) * 0.5;
+                    let push = (min - d) * if pi || pj { 1.0 } else { 0.5 };
                     let (ux, uy) = (dx / d * push, dy / d * push);
                     let (ri, rj) = (self.mobs[i].r, self.mobs[j].r);
-                    let (mut x, mut y) = (self.mobs[i].x, self.mobs[i].y);
-                    move_circle(&self.d, &mut x, &mut y, -ux, -uy, ri);
-                    self.mobs[i].x = x;
-                    self.mobs[i].y = y;
-                    let (mut x, mut y) = (self.mobs[j].x, self.mobs[j].y);
-                    move_circle(&self.d, &mut x, &mut y, ux, uy, rj);
-                    self.mobs[j].x = x;
-                    self.mobs[j].y = y;
+                    if !pi {
+                        let (mut x, mut y) = (self.mobs[i].x, self.mobs[i].y);
+                        move_circle(&self.d, &mut x, &mut y, -ux, -uy, ri);
+                        self.mobs[i].x = x;
+                        self.mobs[i].y = y;
+                    }
+                    if !pj {
+                        let (mut x, mut y) = (self.mobs[j].x, self.mobs[j].y);
+                        move_circle(&self.d, &mut x, &mut y, ux, uy, rj);
+                        self.mobs[j].x = x;
+                        self.mobs[j].y = y;
+                    }
                 }
             }
             let (dx, dy) = (self.mobs[i].x - px, self.mobs[i].y - py);

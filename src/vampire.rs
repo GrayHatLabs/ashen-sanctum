@@ -151,6 +151,9 @@ pub fn bloodless(k: Kind) -> bool {
             | Kind::Prism
             | Kind::Marshal
             | Kind::ClockCrow
+            | Kind::Crate
+            | Kind::Barrel
+            | Kind::Urn
             | Kind::Forgemother
             | Kind::Cantor
             | Kind::Archivist
@@ -462,7 +465,7 @@ impl Game {
         }
         let (px, py) = (self.p.x, self.p.y);
         let corpse = (0..self.mobs.len())
-            .filter(|&i| matches!(self.mobs[i].state, MobState::Dead(_)) && !self.mobs[i].boss && !self.mobs[i].thrall)
+            .filter(|&i| matches!(self.mobs[i].state, MobState::Dead(_)) && !self.mobs[i].boss && !self.mobs[i].thrall && !crate::breakables::is_prop(self.mobs[i].kind))
             .map(|i| (i, (self.mobs[i].x - px).powi(2) + (self.mobs[i].y - py).powi(2)))
             .filter(|&(_, d2)| d2 < 49.0)
             .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap())

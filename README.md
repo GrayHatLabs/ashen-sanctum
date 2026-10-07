@@ -185,6 +185,9 @@ take back their Seals, unseal the Sanctum and end the Ash King.
   - Act 4's **Ordinal squads** march in ranks behind their marshal, halting on the beat to fire
     together behind a shield wall. Kill the marshal and the squad breaks. **Clockwork crows** come in
     flocks that circle you.
+  - **Crates, barrels and urns** (a set per act: coffins and bone urns in the Mistwood, brass crates and
+    oil drums in Mechanus) stand in dungeons and by dungeon entrances. Any hit smashes them; some hold gold,
+    potions, food, and now and then a gem or an item.
   - A **jeweler** in every town joins three alike gems into a better one, cuts sockets in plain
     white gear, and takes gems back out unharmed, all for gold. See [docs/ITEMS_SETS_GEMS.md](docs/ITEMS_SETS_GEMS.md).
 - **Monsters**: zombies are slow and hit hard, skeletons are fast and fragile, wolves hunt in fast

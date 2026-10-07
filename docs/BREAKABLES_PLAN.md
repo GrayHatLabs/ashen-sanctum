@@ -1,4 +1,4 @@
-# Breakables: crates, barrels and urns to smash (plan, 2026-10-06)
+# Breakables: crates, barrels and urns to smash (built 2026-10-06)
 
 **Decided with the user:**
 - **Where:** in dungeons, and a few outdoors (never in towns).
@@ -58,6 +58,16 @@ These numbers are easy to tune; they live in one table.
 - none in towns or on portals;
 - the bot doesn't get stuck on them.
 - Snapshots: a room full of them in each act, and one shattering.
+
+## As built
+
+- **Code:** `src/breakables.rs`. `Kind::Crate`, `Barrel` and `Urn`, with the act stored in `Mob::form`.
+- **Skipped by:** the AI, the allies' target list, corpse skills, the bot, `alive_mobs` and difficulty scaling.
+- **Immovable:** separation pushes monsters off them, never the reverse.
+- **Breaking:** `kill()` calls `break_prop` for them: splinters, a debris decal, and the loot roll.
+- **Art:** 12 PixelLab props (`tools/breakables_art.py`), with a code-drawn stand-in if one is missing. There is no separate broken sprite: a debris decal and a splinter burst stand in for it.
+- **Tests:** placement (none in town, the same on every visit); they never act, give no XP and don't count as foes; a fireball and an axe both break them; loot rates.
+- **Snapshots:** `breakables_act1..4`, `breakables_shatter`.
 
 ## Steps
 

@@ -587,6 +587,8 @@ pub fn build_at(id: LevelId, seed: u64, difficulty: u8) -> Level {
             m.tier *= tier;
         }
     }
+    // Crates, barrels and urns to smash (after the elites and difficulty, which don't apply to them).
+    crate::breakables::place(&mut lv, seed);
     lv
 }
 

@@ -1297,6 +1297,9 @@ impl Game {
 
     fn draw_mob(&self, scr: &mut Screen, i: usize, (sx, sy): (i32, i32)) {
         let m = &self.mobs[i];
+        if crate::breakables::is_prop(m.kind) {
+            return self.draw_prop(scr, i, sx, sy);
+        }
         // Count Vardak's last form is a giant bat.
         let name = match (m.kind, m.form) {
             (crate::mobs::Kind::Vardak, 1) => "boss_vardak_bat",

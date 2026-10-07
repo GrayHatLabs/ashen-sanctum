@@ -138,6 +138,15 @@ without errors) but not played by a human yet. Nothing is HW yet.
 | Fixes found by the long runs: a boss's town portal could land between you and its token (now placed beyond the boss); area names repeated (NIGHTMARE) on every re-entry | H | |
 | Law zones (3 overland, 2 per dungeon): BLADE (only close blows), ARROW (only blows from 4+ tiles), STILLNESS (only foes not moving); forbidden blows do 10% (grey numbers); lure foes out to fight freely | H S | Unit test covers all three laws and leaving the zone |
 
+## Breakables (2026-10-06)
+
+| Feature | Status | Notes |
+|---|---|---|
+| Crates, barrels and urns, a set per act (`breakables.rs`), in dungeon rooms and near outdoor entrances, never in town | H S | Unit tests: placement, deterministic |
+| Any hit breaks them (they are mindless monsters): no AI, XP, kills, allies, corpses or bot targeting; immovable | H S | Unit tests: fireball, axe, never act |
+| D2-style loot: 55% nothing, 20% gold, 10% potion, 8% food, 4% gem, 3% item | H | Unit test: rates |
+| Art: 12 PixelLab props (`tools/breakables_art.py`) | S | |
+
 ## The Inquisitor class (2026-10-06)
 
 | Feature | Status | Notes |
