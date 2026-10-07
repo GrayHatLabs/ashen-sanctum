@@ -697,6 +697,8 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         cast(&mut g, Skill::CenserStrike, target.0, target.1);
         idle(&mut g, 3);
         save(&mut g, scr, "inquisitor_strike");
+        idle(&mut g, 7);
+        save(&mut g, scr, "inquisitor_strike_crack");
         let target = g.bot_target().map(|t| (t.0, t.1)).unwrap_or(target);
         cast(&mut g, Skill::ChainLash, target.0, target.1);
         idle(&mut g, 4);

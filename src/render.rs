@@ -525,19 +525,41 @@ impl Game {
             let (x0, y0) = to_scr(c.x0, c.y0);
             let (x1, y1) = to_scr(c.x1, c.y1);
             let fade = 1.0 - (c.t / c.max).min(1.0);
-            let n = ((((x1 - x0).pow(2) + (y1 - y0).pow(2)) as f32).sqrt() / 3.0) as i32 + 2;
+            // A whip unrolls over the first part of its life, curling to one side, then snaps straight and cracks.
+            let reach = if c.whip { (c.t / (c.max * 0.45)).min(1.0) } else { 1.0 };
+            let curl = if c.whip { (1.0 - reach) * 14.0 } else { 0.0 };
+            let (dx, dy) = ((x1 - x0) as f32, (y1 - 22 - y0 + 8 + 14) as f32);
+            let len = (dx * dx + dy * dy).sqrt().max(1.0);
+            let (nx, ny) = (-dy / len, dx / len);
+            let n = (len / 3.0) as i32 + 2;
+            let mut tip = (x0 as f32, (y0 - 22) as f32);
             for k in 0..=n {
-                let t = k as f32 / n as f32;
-                let x = x0 + ((x1 - x0) as f32 * t) as i32 + scr.shake.0;
-                let y = y0 - 22 + ((y1 - y0 + 8) as f32 * t) as i32 + scr.shake.1;
-                let col = if k % 2 == 0 { rgb(0x3a3430) } else { rgb(0x8a8070) };
-                scr.fill(x - 1, y - 1, 2, 2, col);
+                let t = k as f32 / n as f32 * reach;
+                let bend = (t / reach.max(0.01) * std::f32::consts::PI).sin() * curl;
+                let x = x0 as f32 + (x1 - x0) as f32 * t + nx * bend;
+                let y = (y0 - 22) as f32 + ((y1 - y0 + 8) as f32) * t + ny * bend;
+                // Darkened-gold links with a dark edge, so the chain reads on any floor.
+                let (lx, ly) = (x as i32 - 1 + scr.shake.0, y as i32 - 1 + scr.shake.1);
+                scr.fill(lx - 1, ly - 1, 4, 4, rgb(0x140e08));
+                let col = if k % 2 == 0 { rgb(0x9a7430) } else { rgb(0xe0b860) };
+                scr.fill(lx, ly, 2, 2, col);
+                tip = (x, y);
             }
-            // The censer at the end, coals glowing.
-            let (ex, ey) = (x1 + scr.shake.0, y1 - 14 + scr.shake.1);
+            // The censer at the end of the chain, coals glowing.
+            let (ex, ey) = (tip.0 as i32 + scr.shake.0, tip.1 as i32 + 8 + scr.shake.1);
             scr.glow(ex, ey, 10.0, rgb(0xffd060), 0.6 * fade + 0.25);
             scr.disc(ex, ey, 3, rgb(0x8a6a28));
             scr.pset(ex, ey, rgb(0xfff6d0));
+            // The crack: a white-gold burst as the whip snaps straight.
+            if c.whip && reach >= 1.0 {
+                let k = 1.0 - ((c.t - c.max * 0.45) / (c.max * 0.55)).clamp(0.0, 1.0);
+                scr.glow(ex, ey, 18.0 * k + 4.0, rgb(0xfff0b0), 0.8 * k);
+                for a in 0..8 {
+                    let ang = a as f32 / 8.0 * std::f32::consts::TAU;
+                    let r = 4.0 + 8.0 * k;
+                    scr.pset(ex + (ang.cos() * r) as i32, ey + (ang.sin() * r * 0.6) as i32, rgb(0xfff6d0));
+                }
+            }
         }
         // Binding chains: links from the floor to every foe held, under a ring of iron.
         for b in &self.binds {

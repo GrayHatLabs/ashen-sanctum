@@ -82,7 +82,8 @@ fn up(r: u8) -> f32 {
     (r.max(1) - 1) as f32
 }
 /// The censer on its chain reaches this far (Zealotry adds to it).
-pub const CENSER_REACH: f32 = 2.6;
+/// The censer whips out on its chain this far (the user wanted more reach, 2026-10-06; was 2.6).
+pub const CENSER_REACH: f32 = 3.6;
 pub fn censer_dmg(r: u8) -> (f32, f32) {
     let k = 1.0 + 0.16 * up(r);
     (9.0 * k, 14.0 * k)
@@ -298,6 +299,8 @@ pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
 
 /// A chain drawn between two points for a moment (lash, hook, censer strike).
 pub struct ChainLinkFx {
+    /// A whip: the chain unrolls in a curving lash and cracks at the end (else it's drawn whole at once).
+    pub whip: bool,
     pub x0: f32,
     pub y0: f32,
     pub x1: f32,
@@ -396,7 +399,7 @@ impl Game {
                 .collect();
             for j in others {
                 let (ox, oy) = (self.mobs[j].x, self.mobs[j].y);
-                self.links.push(ChainLinkFx { x0: mx, y0: my, x1: ox, y1: oy, t: 0.0, max: 0.25 });
+                self.links.push(ChainLinkFx { whip: false, x0: mx, y0: my, x1: ox, y1: oy, t: 0.0, max: 0.25 });
                 self.hit_mob(j, dmg * share, 0.0, 0.0, None, true);
             }
         }
@@ -455,13 +458,13 @@ impl Game {
         let (px, py) = (self.p.x, self.p.y);
         let a0 = (ty - py).atan2(tx - px);
         let (ex, ey) = (px + a0.cos() * reach, py + a0.sin() * reach);
-        self.links.push(ChainLinkFx { x0: px, y0: py, x1: ex, y1: ey, t: 0.0, max: 0.22 });
+        self.links.push(ChainLinkFx { whip: true, x0: px, y0: py, x1: ex, y1: ey, t: 0.0, max: 0.34 });
         for _ in 0..6 {
             self.spray_at(ex, ey, PKind::Holy, 10.0);
         }
         let (lo, hi) = censer_dmg(r);
         let power = self.fire_power();
-        for i in self.in_cone(tx, ty, reach, 0.45) {
+        for i in self.in_cone(tx, ty, reach, 0.38) {
             let dmg = self.rng.rf(lo, hi) * power;
             self.inq_hit(i, dmg, 0.2, Some((px, py, 0.25)), true);
         }
@@ -536,7 +539,7 @@ impl Game {
         while reach < LASH_REACH && self.d.walkable((px + ux * reach).floor() as i32, (py + uy * reach).floor() as i32) {
             reach += 0.25;
         }
-        self.links.push(ChainLinkFx { x0: px, y0: py, x1: px + ux * reach, y1: py + uy * reach, t: 0.0, max: 0.3 });
+        self.links.push(ChainLinkFx { whip: true, x0: px, y0: py, x1: px + ux * reach, y1: py + uy * reach, t: 0.0, max: 0.36 });
         let (lo, hi) = lash_dmg(r);
         let power = self.fire_power();
         for i in self.in_line(tx, ty, reach, 0.45) {
@@ -570,7 +573,7 @@ impl Game {
         self.iq_pose("attack", 0.4);
         self.sfx.push(Sfx::Swing);
         let (mx, my, boss, mr) = (self.mobs[i].x, self.mobs[i].y, self.mobs[i].boss, self.mobs[i].r);
-        self.links.push(ChainLinkFx { x0: px, y0: py, x1: mx, y1: my, t: 0.0, max: 0.35 });
+        self.links.push(ChainLinkFx { whip: true, x0: px, y0: py, x1: mx, y1: my, t: 0.0, max: 0.35 });
         let d = ((mx - px).powi(2) + (my - py).powi(2)).sqrt().max(0.01);
         let (hx, hy) = ((mx - px) / d, (my - py) / d);
         if boss {
@@ -738,7 +741,7 @@ impl Game {
                 let dmg = self.p.whirl_dmg;
                 let a = self.tick as f32 * 0.5;
                 let (ex, ey) = (px + a.cos() * SWEEP_RADIUS, py + a.sin() * SWEEP_RADIUS);
-                self.links.push(ChainLinkFx { x0: px, y0: py, x1: ex, y1: ey, t: 0.0, max: 0.3 });
+                self.links.push(ChainLinkFx { whip: false, x0: px, y0: py, x1: ex, y1: ey, t: 0.0, max: 0.3 });
                 for k in 0..12 {
                     let a = k as f32 / 12.0 * std::f32::consts::TAU + self.tick as f32 * 0.3;
                     self.parts.push(Particle { x: px + a.cos() * 2.2, y: py + a.sin() * 2.2, z: 14.0, vx: -a.sin() * 4.0, vy: a.cos() * 4.0, vz: 4.0, life: 0.25, max: 0.25, kind: PKind::Holy });
@@ -825,6 +828,11 @@ mod tests {
         assert_eq!(g.p.mana, 0.0, "Judgment starts empty");
         let z = foe(&mut g, Kind::Zombie, 2.3, 0.0);
         let w = foe(&mut g, Kind::Wolf, -2.3, 0.0);
+        let far = foe(&mut g, Kind::Skeleton, 0.0, 3.3);
+        g.censer_strike(g.p.x, g.p.y + 4.0);
+        assert!(g.mobs[far].hp < 5000.0, "the chain whips out 3.3 tiles");
+        g.p.mana = 0.0;
+        g.p.cast_cd = 0.0;
         g.censer_strike(g.p.x + 3.0, g.p.y);
         assert!(g.mobs[z].hp < 5000.0, "the chain reaches 2.3 tiles");
         assert!(g.mobs[z].holy_t > 0.0, "holy fire takes it");
