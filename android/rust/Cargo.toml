@@ -1,0 +1,24 @@
+# The game built as an Android native library (libmain.so) for SDL's Java side: the same source as the
+# desktop and handheld builds (../../src), with SDL built from source as a shared library.
+[package]
+name = "ashensanctum-android"
+version = "0.1.0"
+edition = "2021"
+build = "../../build.rs"
+
+[lib]
+name = "main"
+path = "../../src/main.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+sdl2 = { version = "0.37", features = ["bundled"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

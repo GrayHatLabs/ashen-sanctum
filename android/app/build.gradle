@@ -1,0 +1,40 @@
+apply plugin: 'com.android.application'
+
+android {
+    namespace 'org.grayhatlabs.ashensanctum'
+    compileSdk 34
+    ndkVersion '26.3.11579264'
+    defaultConfig {
+        applicationId 'org.grayhatlabs.ashensanctum'
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+    }
+    // The native libraries (libSDL2.so, libhidapi.so, libmain.so) are built by cargo-ndk into jniLibs.
+    sourceSets.main.jniLibs.srcDirs = ['src/main/jniLibs']
+    signingConfigs {
+        // Sideloaded builds are signed with a local key (scripts/build-android.sh makes it once).
+        sideload {
+            storeFile file('../sideload.keystore')
+            storePassword 'ashensanctum'
+            keyAlias 'ashensanctum'
+            keyPassword 'ashensanctum'
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.sideload
+        }
+    }
+    packagingOptions {
+        jniLibs {
+            // Compressed in the APK (the game carries its art inside libmain.so).
+            useLegacyPackaging true
+        }
+    }
+    lint {
+        abortOnError false
+    }
+}

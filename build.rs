@@ -5,7 +5,10 @@ use std::fmt::Write;
 
 fn main() {
     println!("cargo:rerun-if-changed=levels");
-    let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("levels");
+    // The Android crate (android/rust) builds the same source from two folders down.
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
+    let dir = [root.join("levels"), root.join("../../levels")].into_iter().find(|d| d.is_dir()).unwrap_or_else(|| root.join("levels"));
+    println!("cargo:rerun-if-changed={}", dir.display());
     let mut files: Vec<_> = std::fs::read_dir(&dir)
         .map(|rd| rd.filter_map(|e| e.ok()).map(|e| e.path()).filter(|p| p.extension().map_or(false, |x| x == "json")).collect())
         .unwrap_or_default();

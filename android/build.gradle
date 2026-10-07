@@ -1,0 +1,18 @@
+// Ashen Sanctum for Android (the RG477V, the AYN Odin 2 on stock firmware, ...): SDL's Android project
+// around the game's native library (libmain.so, built by ../scripts/build-android.sh with cargo-ndk).
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.2.2'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}

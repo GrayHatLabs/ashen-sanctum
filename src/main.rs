@@ -78,9 +78,32 @@ fn dead(v: i16) -> f32 {
     }
 }
 
+/// Android: SDL's Java side (android/) loads libmain.so and calls this, its usual entry point.
+#[cfg(target_os = "android")]
+#[no_mangle]
+pub extern "C" fn SDL_main(_argc: std::os::raw::c_int, _argv: *const *const std::os::raw::c_char) -> std::os::raw::c_int {
+    match main() {
+        Ok(()) => 0,
+        Err(e) => {
+            eprintln!("ashen sanctum: {e}");
+            1
+        }
+    }
+}
+
 fn main() -> Result<(), String> {
     let args: Vec<String> = std::env::args().collect();
-    let handheld = cfg!(target_arch = "aarch64");
+    // Android (RG477V, Odin 2 on stock firmware): saves in the app's own storage, landscape only, and the
+    // Back button doesn't quit the game.
+    #[cfg(target_os = "android")]
+    {
+        if let Ok(p) = sdl2::filesystem::pref_path("GrayHatLabs", "AshenSanctum") {
+            std::env::set_var("XDG_DATA_HOME", p);
+        }
+        sdl2::hint::set("SDL_ANDROID_TRAP_BACK_BUTTON", "1");
+        sdl2::hint::set("SDL_IOS_ORIENTATIONS", "LandscapeLeft LandscapeRight");
+    }
+    let handheld = cfg!(target_arch = "aarch64") || cfg!(target_os = "android");
     let tall = args.iter().any(|a| a == "--tall") || (handheld && !args.iter().any(|a| a == "--wide"));
     let seed_arg = args.iter().position(|a| a == "--seed").and_then(|i| args.get(i + 1)).and_then(|s| s.parse::<u64>().ok());
     // --export-music [dir]: write the music loops as WAV files (to listen to them outside the game).
@@ -203,7 +226,13 @@ fn main() -> Result<(), String> {
             None => {}
         }
     }
-    video.text_input().start();
+    // Typing (hero names) from a keyboard. Not on Android: there it raises the on-screen keyboard over the
+    // game; the pad's name entry works as on the other handhelds.
+    if cfg!(target_os = "android") {
+        video.text_input().stop();
+    } else {
+        video.text_input().start();
+    }
     let (mut typed, mut backspace) = (String::new(), false);
     let mut wheel = 0i32;
     let mut menu_out: Option<menu::MenuOut> = None;
@@ -511,11 +540,13 @@ fn main() -> Result<(), String> {
         canvas.clear();
         let (ww, wh) = canvas.output_size()?;
         let (gw, gh) = (gfx::SW as u32, view_h as u32);
+        // Whole-number scaling keeps the pixels crisp, but not at any cost: if it would leave much of the
+        // screen empty (an Android window with its system bars showing, say), scale to fit instead.
         let s = (ww / gw).min(wh / gh);
-        let (dw, dh) = if s >= 1 {
+        let f = (ww as f32 / gw as f32).min(wh as f32 / gh as f32);
+        let (dw, dh) = if s >= 1 && f - (s as f32) < 0.3 {
             (gw * s, gh * s)
         } else {
-            let f = (ww as f32 / gw as f32).min(wh as f32 / gh as f32);
             ((gw as f32 * f) as u32, (gh as f32 * f) as u32)
         };
         dst = Rect::new(((ww - dw) / 2) as i32, ((wh - dh) / 2) as i32, dw.max(1), dh.max(1));
