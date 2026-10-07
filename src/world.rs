@@ -1727,7 +1727,7 @@ pub fn deep(seed: u64) -> Level {
     prop(&mut lv, &mut d, PropKind::StiltHouse1, 46, 48, 4, 4);
     prop(&mut lv, &mut d, PropKind::StiltHouse2, 58, 48, 4, 4);
     prop(&mut lv, &mut d, PropKind::StiltHouse1, 46, 59, 4, 3);
-    prop(&mut lv, &mut d, PropKind::AnchorRock, 59, 59, 2, 2);
+    prop(&mut lv, &mut d, PropKind::Coral1, 59, 59, 2, 2);
     prop(&mut lv, &mut d, PropKind::ShellLamp, 52, 53, 1, 1);
     prop(&mut lv, &mut d, PropKind::ShellLamp, 57, 58, 1, 1);
     prop(&mut lv, &mut d, PropKind::Coral2, 62, 54, 1, 2);
@@ -1816,7 +1816,7 @@ pub fn deep(seed: u64) -> Level {
             } else if r < 0.013 {
                 prop(&mut lv, &mut d, PropKind::ShellLamp, x, y, 1, 1);
             } else if r < 0.015 {
-                prop(&mut lv, &mut d, PropKind::AnchorRock, x, y, 1, 1);
+                prop(&mut lv, &mut d, PropKind::Coral2, x, y, 1, 1);
             }
         }
     }
