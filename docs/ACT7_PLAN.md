@@ -31,6 +31,7 @@ Act 6's side content and the all-act systems.
        ending, then Nightmare.
     6. Afterwards he is like every act boss: the Rekindling Brazier can bring him back for normal boss loot.
   - In Nightmare and Hell the Stillpoint has to be found again (it resets with the difficulty, like quests).
+
 ## Where it fits
 
 - **Unlock:** after Solanthos (Act 6).
