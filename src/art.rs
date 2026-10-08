@@ -513,6 +513,7 @@ impl Art {
             "hoarder" => ("goblin", 0.85, 0xffd040, 0.45),
             "yeti_cub" => ("yeti", 0.55, 0xffffff, 0.15),
             "automaton" => ("inquisitor", 1.0, 0xe0c060, 0.45),
+            "boss_barnacle" => ("shellguard", 1.7, 0x8a9080, 0.35),
             "boss_junkgolem" => ("boiler_brute", 1.6, 0x8a6040, 0.4),
             "npc_magistrate" => ("inquisitor", 1.05, 0x303030, 0.3),
             "boss_gravedigger" => ("ghoul", 1.7, 0x6a6050, 0.4),

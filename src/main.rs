@@ -40,6 +40,7 @@ mod errands;
 mod features;
 mod mist;
 mod gears;
+mod reef;
 mod world;
 
 use game::{Game, Input};

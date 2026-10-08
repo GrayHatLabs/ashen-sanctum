@@ -122,6 +122,20 @@ pub struct Feats {
     /// The Timeless Vault's door tile, and whether it's been emptied.
     pub vault_door: (i32, i32),
     pub vault_looted: bool,
+    // ---- Act 5 (reef.rs) ----
+    pub reef_placed: Vec<LevelId>,
+    pub choir_spot: (f32, f32),
+    pub whirl: (f32, f32),
+    pub choir_done: bool,
+    pub song_t: f32,
+    pub kraken_spot: (f32, f32),
+    pub kraken_done: bool,
+    /// Bottles read (0-3), 4 once the cache is dug up; where the cache lies.
+    pub bottle: u8,
+    pub cache: (f32, f32),
+    pub cache_level: Option<LevelId>,
+    /// Ysolde's crew laid to rest (bits).
+    pub ghosts: u8,
 }
 
 impl Game {

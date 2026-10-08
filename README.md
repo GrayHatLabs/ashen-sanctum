@@ -319,6 +319,19 @@ Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`;
     - the **Unlawful Court** (the Piston Flats): fight, bribe or argue; a writ frees you from the laws;
     - the **Scrapyard Lottery**: smash scrap heaps for loot, or a junk golem;
     - the **Timeless Vault** (the Archive Stacks): it opens only while its clock is stopped.
+  - **Act 5:**
+    - **Low Tide Treasure**: chests out on the tide flats of each area, reachable only at low tide;
+    - the **Siren's Song** (the Sunken Galleon): a choir of three sirens drags you toward a whirlpool every few
+      seconds until all three are silenced;
+    - the **Kraken's Arm** (the Bone Reef): a great tentacle that pulls you in and slams the reef;
+    - **Message in a Bottle**: three bottles, each naming the next area, lead to Captain Salt's buried cache
+      (a red X on the ground and the map).
+- **Act 5's side content:**
+  - **The Pearl Grotto**, the optional dungeon in the Kelp Shallows, open only at low tide, with Old Barnacle.
+  - **Side quests:** Nessa's Black Pearl (a skill point), Ysolde's Ghosts of the Sovereign (+life) and Brother
+    Coral's Siren's Price (a ward).
+  - **Super uniques:** Bosun Krake, Lirael and Maw, plus Ysolde's three drowned crewmen and the siren choir.
+  - **Lore:** five pages.
 - **Act 4's side content:**
   - **The Scrapheap Labyrinth**, with the Junk Golem, who rebuilds itself twice.
   - **Side quests:** Brother Piston's Oil for the Saint, Tally's Count and Vesper's Grand Inquisitor.

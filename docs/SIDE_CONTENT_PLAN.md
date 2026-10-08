@@ -187,6 +187,10 @@ Random encounters on overlands and in dungeons. At most one is active at a time.
   - Bosun Krake (drowned sailor, cursed + cold);
   - Lirael (siren, mana burn + teleport);
   - Old Barnacle (as boss).
+- **As built (2026-10-08, `src/reef.rs`):** the grotto's mouth is in the Kelp Shallows and is blocked while
+  the tide is in. Old Barnacle slams with his claw and calls merrow. The Siren's Price pays a ward, and
+  Ysolde's crew are Mate Hollis (Coral Gardens), Cook Brannigan (Bone Reef) and Boy Tobias (Abyssal Plain).
+  Maw the anglerlurk joins Bosun Krake and Lirael as a super unique.
 
 ### Act 6: the Skyreach
 - **Optional dungeon: the Fallen Observatory** (2 floors), a broken star-tower on its own island, reached by
@@ -246,7 +250,7 @@ The user took every idea offered and added two of their own (marked *).
 
 **Order:**
 1. Act 1's extras and all of Act 2: the extras above, plus the planned optional dungeon, side quests, super uniques and pages. *(done 2026-10-08, `src/features.rs`)*
-2. Then Acts 3, 4, 5 and 6, in turn. *(Act 3 done 2026-10-08, `src/mist.rs`; Act 4 done, `src/gears.rs`)*
+2. Then Acts 3, 4, 5 and 6, in turn. *(Act 3 done 2026-10-08, `src/mist.rs`; Act 4 done, `src/gears.rs`; Act 5 done, `src/reef.rs`)*
 3. Then the all-act systems.
 
 ## 3. Phases (stop for a review after each)

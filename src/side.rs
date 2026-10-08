@@ -115,6 +115,7 @@ pub fn shrine_art(act: u8) -> &'static str {
         1 => "shrine_frost",
         2 => "shrine_mist",
         3 => "shrine_gear",
+        4 => "shrine_coral",
         _ => "shrine_ash",
     }
 }
@@ -307,10 +308,25 @@ pub const SUPERS: &[SuperDef] = &[
         page: Some(17),
         camp: None,
     },
+    // ---- Act 5: the Drowned Deep ----
+    SuperDef { name: "BOSUN KRAKE", kind: Kind::Drowned, home: LevelId::Area(4, 1), spot: (0, 0), mods: M_STRONG | crate::mobs::M_VAMPIRE, gang: (Kind::Drowned, 4), tint: 0x80a090, line: "ALL HANDS... ALL HANDS ON DECK...", unique: "krake", page: Some(20), camp: None },
+    SuperDef { name: "LIRAEL", kind: Kind::Siren, home: LevelId::Area(4, 4), spot: (0, 0), mods: crate::mobs::M_MANABURN | M_FAST, gang: (Kind::Merrow, 3), tint: 0xa0f0e0, line: "COME CLOSER, SWEET ONE. CLOSER...", unique: "lirael", page: Some(21), camp: None },
+    SuperDef { name: "MAW", kind: Kind::Anglerlurk, home: LevelId::Area(4, 5), spot: (0, 0), mods: M_STRONG | M_STONE, gang: (Kind::Anglerlurk, 2), tint: 0x406080, line: "(A LIGHT BOBS IN THE DARK... AND THEN THE TEETH)", unique: "maw", page: Some(22), camp: None },
+    // Captain Ysolde's drowned crew (side.rs quest: lay all three to rest).
+    SuperDef { name: "MATE HOLLIS", kind: Kind::Drowned, home: LevelId::Area(4, 2), spot: (0, 0), mods: M_STRONG, gang: (Kind::Drowned, 2), tint: 0xb0c8d0, line: "CAPTAIN? IS THAT YOU, CAPTAIN?", unique: "sovereign", page: None, camp: None },
+    SuperDef { name: "COOK BRANNIGAN", kind: Kind::Drowned, home: LevelId::Area(4, 3), spot: (0, 0), mods: M_FIERY, gang: (Kind::Drowned, 2), tint: 0xb0c8d0, line: "SUPPER'S GETTING COLD, LADS...", unique: "sovereign", page: None, camp: None },
+    SuperDef { name: "BOY TOBIAS", kind: Kind::Drowned, home: LevelId::Area(4, 5), spot: (0, 0), mods: M_FAST, gang: (Kind::Drowned, 2), tint: 0xb0c8d0, line: "I'M SORRY, CAPTAIN, I'M SORRY, I DIDN'T MEAN TO...", unique: "sovereign", page: None, camp: None },
+    // The Sunken Galleon's siren choir (reef.rs places them).
+    SuperDef { name: "CORALIE OF THE CHOIR", kind: Kind::Siren, home: LevelId::Area(4, 99), spot: (0, 0), mods: crate::mobs::M_MANABURN, gang: (Kind::Siren, 0), tint: 0xffc0e0, line: "SING WITH US...", unique: "choir", page: None, camp: None },
+    SuperDef { name: "MARIS OF THE CHOIR", kind: Kind::Siren, home: LevelId::Area(4, 99), spot: (0, 0), mods: M_FAST, gang: (Kind::Siren, 0), tint: 0xc0e0ff, line: "...DOWN, DOWN, DOWN...", unique: "choir", page: None, camp: None },
+    SuperDef { name: "LYRA OF THE CHOIR", kind: Kind::Siren, home: LevelId::Area(4, 99), spot: (0, 0), mods: M_STONE, gang: (Kind::Siren, 0), tint: 0xe0ffc0, line: "...INTO THE DARK WATER...", unique: "choir", page: None, camp: None },
 ];
 
 /// Jarl Hrogar's index in SUPERS (features.rs).
 pub const JARL: usize = 5;
+/// Ysolde's drowned crew, and the Sunken Galleon's choir, in SUPERS (reef.rs).
+pub const GHOSTS: [usize; 3] = [18, 19, 20];
+pub const CHOIR: [usize; 3] = [21, 22, 23];
 /// Vardak's brides in SUPERS (mist.rs places them).
 pub const BRIDES: [usize; 3] = [9, 10, 11];
 
@@ -364,6 +380,8 @@ pub enum Goal {
     Scouts,
     /// Ring the three bells of Mournhold (mist.rs).
     Bells,
+    /// Lay Captain Ysolde's three drowned crewmen to rest (reef.rs).
+    Ghosts,
 }
 
 pub struct SideDef {
@@ -578,6 +596,46 @@ pub const SIDES: &[SideDef] = &[
         reward: Reward::Ward,
         todo: "SILENCE GRAND INQUISITOR HALVANE (THE CLOCKFACE PLAIN)",
     },
+    // ---- Act 5 ----
+    SideDef {
+        name: "THE BLACK PEARL",
+        act: 4,
+        giver: Role::Nessa,
+        giver_name: "NESSA THE PEARL-DIVER",
+        ask: "ASK ABOUT THE GROTTO",
+        offer: &["THERE'S A GROTTO IN THE KELP SHALLOWS WHERE THE BLACK PEARLS GROW. YOU CAN ONLY GET IN AT LOW TIDE, AND SOMETHING LIVES IN THERE NOW: OLD BARNACLE, A CRAB THE SIZE OF A COTTAGE. THE BIGGEST BLACK PEARL IN THE DEEP IS UNDER HIM. KILL HIM AND IT'S YOURS... WELL. WE'LL SEE."],
+        remind: "THE PEARL GROTTO, IN THE KELP SHALLOWS. WAIT FOR THE TIDE TO GO OUT, OR THE MOUTH IS UNDER WATER.",
+        thanks: &["OLD BARNACLE, DEAD? I'VE DIVED FOR TWENTY YEARS AND NEVER SEEN ANYONE DO THAT. I'LL TEACH YOU A DIVER'S TRICK OR TWO FOR IT. BREATHE IN..."],
+        goal: Goal::Boss(Kind::Barnacle),
+        reward: Reward::SkillPoint,
+        todo: "SLAY OLD BARNACLE IN THE PEARL GROTTO (THE KELP SHALLOWS, AT LOW TIDE)",
+    },
+    SideDef {
+        name: "GHOSTS OF THE SOVEREIGN",
+        act: 4,
+        giver: Role::Ysolde,
+        giver_name: "CAPTAIN YSOLDE MARROW",
+        ask: "ASK ABOUT HER LOST CREW",
+        offer: &["THE SOVEREIGN WENT DOWN WITH MY CREW ABOARD. THREE OF THEM STILL WALK THE REEF: HOLLIS, MY MATE, IN THE CORAL GARDENS; BRANNIGAN, THE COOK, ON THE BONE REEF; AND YOUNG TOBIAS, OUT ON THE ABYSSAL PLAIN. THEY DON'T KNOW THEY'RE DEAD. TELL THEM. GENTLY, IF YOU CAN."],
+        remind: "HOLLIS IN THE CORAL GARDENS, BRANNIGAN ON THE BONE REEF, TOBIAS ON THE ABYSSAL PLAIN. LET THEM REST.",
+        thanks: &["ALL THREE. THANK YOU. THEY WERE GOOD MEN. TOBIAS WAS ONLY FOURTEEN. TAKE MY OLD CHARM: IT KEPT ME ALIVE WHEN THE SOVEREIGN DIDN'T."],
+        goal: Goal::Ghosts,
+        reward: Reward::Life(20),
+        todo: "LAY YSOLDE'S DROWNED CREW TO REST (CORAL GARDENS, BONE REEF, ABYSSAL PLAIN)",
+    },
+    SideDef {
+        name: "THE SIREN'S PRICE",
+        act: 4,
+        giver: Role::Coral,
+        giver_name: "BROTHER CORAL",
+        ask: "ASK ABOUT HIS APPRENTICE",
+        offer: &["MY APPRENTICE HEARD SINGING OVER THE TRENCH RIM AND WALKED OUT OF THE BUBBLE AFTER IT. LIRAEL, THE SIREN WHO SINGS THERE. SHE KEEPS WHAT SHE CATCHES. BRING HIM BACK, IF HE CAN STILL BE BROUGHT."],
+        remind: "THE TRENCH RIM. YOU'LL HEAR HER BEFORE YOU SEE HER. STOP YOUR EARS IF YOU CAN.",
+        thanks: &["HE'S HOME, SHIVERING, ALIVE. THE TIDE BLESS YOU. A TIDE-PRIEST'S BLESSING ISN'T NOTHING: IT TURNS BLADES LIKE WATER TURNS STONES."],
+        goal: Goal::Super(16),
+        reward: Reward::Ward,
+        todo: "SLAY LIRAEL THE SIREN (THE TRENCH RIM)",
+    },
 ];
 
 // ------------------------------------------------------------------ lore
@@ -604,6 +662,11 @@ pub const LORE: &[(u8, &str, &str)] = &[
     (3, "A JOKE, WRITTEN ON A GEAR", "WHAT DID THE CLOCKMAKER SAY TO THE THIEF? NOTHING. HE NEVER SAW ME. TICK TOCK. (SIGNED: J.)"),
     (3, "SCAVENGER'S MAP", "THE HEAP KEEPS GROWING. WE BRING IT SCRAP AND IT EATS IT AND STANDS UP TALLER. YESTERDAY IT HAD ARMS. TODAY IT HAD OPINIONS."),
     (3, "AN APPRENTICE'S NOTE", "IF YOU FIND THIS, THE VAULT IN THE ARCHIVE STACKS ONLY OPENS WHEN THE CLOCK BESIDE IT IS STOPPED. I GOT IN. I DID NOT THINK ABOUT GETTING OUT."),
+    (4, "THE BOSUN'S ROLL CALL", "HOLLIS. BRANNIGAN. TOBIAS. SALT. MARROW. (THE NAMES ARE CARVED INTO A PLANK, AND SCRATCHED OUT, AND CARVED AGAIN, OVER AND OVER.)"),
+    (4, "LIRAEL'S VERSE", "I DO NOT DROWN THEM. THEY COME TO ME. I SING AND THEY WALK INTO THE DARK WATER SMILING, AND IS THAT NOT KINDER THAN THE SEA?"),
+    (4, "A DIVER'S WARNING", "IF YOU SEE A LIGHT BOBBING IN THE DEEP TRENCH, DO NOT SWIM TOWARD IT. THE LIGHT IS NOT A LANTERN. THE LIGHT IS BAIT."),
+    (4, "NESSA'S DIVE LOG", "GROTTO AGAIN TODAY. THE BLACK PEARL IS STILL THERE, UNDER THE BIG ONE. I COULD REACH IT IF HE WOULD ONLY MOVE. HE NEVER MOVES."),
+    (4, "THE SOVEREIGN'S LAST ENTRY", "THE LEVIATHAN ROSE BENEATH US AT THE SECOND BELL. CAPTAIN ORDERED ALL HANDS TO THE BOATS. WE DID NOT HAVE ENOUGH BOATS."),
 ];
 
 pub fn pages_of(act: usize) -> impl Iterator<Item = usize> {
@@ -734,7 +797,7 @@ pub fn place(lv: &mut Level, seed: u64) {
 }
 
 /// The optional dungeons: (dungeon index, the lore page on its first floor).
-pub const OPTIONAL: &[(usize, u8)] = &[(crate::world::CHARNEL, 3), (crate::world::LONGSHIP, 9), (crate::world::CELLAR, 13), (crate::world::MANOR, 14), (crate::world::SCRAPHEAP, 18)];
+pub const OPTIONAL: &[(usize, u8)] = &[(crate::world::CHARNEL, 3), (crate::world::LONGSHIP, 9), (crate::world::CELLAR, 13), (crate::world::MANOR, 14), (crate::world::SCRAPHEAP, 18), (crate::world::GROTTO, 23)];
 
 // ------------------------------------------------------------------ the game side
 

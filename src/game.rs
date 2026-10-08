@@ -186,6 +186,9 @@ pub enum Drop {
     Keepsake(u8),
     /// One of the brass automaton's five gears (gears.rs).
     Gear(u8),
+    /// A chest out on the tide flats, and a message in a bottle (reef.rs).
+    TideChest,
+    Bottle(u8),
     /// Equipment.
     Item(Box<crate::items::Item>),
 }
@@ -1334,6 +1337,7 @@ impl Game {
         self.features_enter();
         self.mist_enter();
         self.gears_enter();
+        self.reef_enter();
         if let Some(mut w) = wolf {
             let (wx, wy) = if self.d.blocked(x + 1.0, y, 0.35) { (x, y) } else { (x + 1.0, y) };
             w.x = wx;
@@ -1757,6 +1761,7 @@ impl Game {
         self.update_features();
         self.update_mist();
         self.update_gears();
+        self.update_reef();
         self.update_sky();
         self.update_rift();
         self.second_wind_t = (self.second_wind_t - DT).max(0.0);
@@ -1854,6 +1859,11 @@ impl Game {
                     self.portal_cd = 2.0;
                     let n = self.quest.sigil_count();
                     self.say(format!("THE CASTLE GATE WILL NOT MOVE. ({n}/3 SIGILS)"));
+                    return;
+                }
+                if k == world::GROTTO && self.tide > 0.5 {
+                    self.portal_cd = 2.0;
+                    self.say("THE GROTTO'S MOUTH IS UNDER WATER. WAIT FOR LOW TIDE".into());
                     return;
                 }
                 if k == HEART && self.quest.stage4 < 2 {
@@ -2581,15 +2591,18 @@ impl Game {
         self.collect_pickups();
     }
 
-    fn collect_pickups(&mut self) {
+    pub(crate) fn collect_pickups(&mut self) {
         let (px, py) = (self.p.x, self.p.y);
         // The vampire can't eat: she only feeds on blood.
         let full = self.p.food > MAX_FOOD - 8.0 || self.p.skills.class == crate::skills::Class::Vampire;
         let mut bag_free = self.p.gear.free();
         let mut bag_full = false;
         let mut got = vec![];
+        // A chest on the flats can't be reached under the tide (reef.rs).
+        let wet = self.tide > 0.5 && crate::tides::tidal(self.level);
+        let d = &self.d;
         self.pickups.retain(|k| {
-            let food_but_full = matches!(k.kind, Drop::Food(_)) && full;
+            let food_but_full = matches!(k.kind, Drop::Food(_)) && full || matches!(k.kind, Drop::TideChest) && wet && d.ground_at(k.x as i32, k.y as i32) == 1;
             let near = (k.x - px).powi(2) + (k.y - py).powi(2) < 0.5 && k.t > 0.3;
             let no_room = matches!(k.kind, Drop::Item(_)) && bag_free == 0;
             if near && no_room {
@@ -2643,6 +2656,8 @@ impl Game {
                 Drop::Herb | Drop::Heirloom | Drop::Clue => self.errand_pick(&k),
                 Drop::Keepsake(n) => self.pick_keepsake(n),
                 Drop::Gear(n) => self.pick_gear(n),
+                Drop::TideChest => self.open_tide_chest(),
+                Drop::Bottle(n) => self.read_bottle(n),
                 Drop::Key(i) => {
                     self.quest.keys[i] = true;
                     self.p.skills.points += 1;
@@ -3228,6 +3243,18 @@ impl Game {
             self.bride_killed(su, x, y);
         }
         self.moon_kill(kind, x, y);
+        // Act 5 (reef.rs): the kraken's arm, Ysolde's crew.
+        if kind == Kind::KrakenArm {
+            self.kraken_killed(x, y);
+        }
+        let su = self.mobs[i].superu as usize;
+        if let Some(b) = crate::side::GHOSTS.iter().position(|&g| g + 1 == su) {
+            self.feats.ghosts |= 1 << b;
+            self.floater(x, y, "...REST NOW, SAILOR".into(), rgb(0xb0e0ff));
+            if self.feats.ghosts.count_ones() >= 3 {
+                self.side_progress(crate::side::Goal::Ghosts);
+            }
+        }
         // The Scrapyard's lottery (gears.rs).
         if kind == Kind::ScrapPile {
             self.scrap_lottery(x, y);

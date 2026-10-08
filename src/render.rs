@@ -169,6 +169,22 @@ impl Game {
                 }
             }
         }
+        // The siren choir's whirlpool, and Captain Salt's X.
+        if self.level == crate::reef::CHOIR && !self.feats.choir_done && self.feats.whirl != (0.0, 0.0) {
+            let (sx, sy) = to_scr(self.feats.whirl.0, self.feats.whirl.1);
+            for k in 0..3 {
+                let t = (self.tick as f32) * 0.08 + k as f32 * 2.1;
+                ring(scr, sx + (t.cos() * 2.0) as i32, sy, 20 - k * 6, 8 - k * 2, mix(rgb(0x206070), rgb(0x80e0f0), 0.3 + 0.2 * k as f32));
+            }
+            blend_ellipse(scr, sx, sy, 8, 3, rgb(0x081820), 0.8);
+        }
+        if let Some((x, y)) = self.cache_x() {
+            let (sx, sy) = to_scr(x, y);
+            for k in -5..=5 {
+                scr.fill(sx + k * 2, sy + k, 2, 1, rgb(0xc03020));
+                scr.fill(sx + k * 2, sy - k, 2, 1, rgb(0xc03020));
+            }
+        }
         // The yeti cub's den.
         if self.level == crate::features::CUB && self.feats.cub < 2 && self.feats.den != (0.0, 0.0) {
             let (sx, sy) = to_scr(self.feats.den.0, self.feats.den.1);
@@ -1414,6 +1430,13 @@ impl Game {
                 scr.fill(sx - 2, sy - 2, 5, 5, rgb(0xffb040));
             }
         }
+        if let Some((x, y)) = self.cache_x() {
+            let (sx, sy) = proj(x, y);
+            for k in -3..=3 {
+                scr.fill(sx + k, sy + k, 1, 1, rgb(0xff3020));
+                scr.fill(sx + k, sy - k, 1, 1, rgb(0xff3020));
+            }
+        }
         if self.feats.tomb_level == Some(self.level) && self.feats.shade == 1 {
             let (sx, sy) = proj(self.feats.tomb_spot.0, self.feats.tomb_spot.1);
             scr.fill(sx - 2, sy - 3, 5, 6, rgb(0xa0c0ff));
@@ -1607,6 +1630,22 @@ impl Game {
         let m = &self.mobs[i];
         if crate::breakables::is_prop(m.kind) {
             return self.draw_prop(scr, i, sx, sy);
+        }
+        if m.kind == crate::mobs::Kind::KrakenArm {
+            if !m.alive() {
+                return;
+            }
+            // A great coil of tentacle out of the reef, swaying.
+            let s = self.art.prop("leviathan_coil");
+            let sway = ((self.tick as f32) * 0.05 + i as f32).sin();
+            let mut fx = Fx { tint: rgb(0x406858), tint_a: 0.3, ..Fx::default() };
+            if m.flash > 0.0 {
+                fx.tint = WHITE;
+                fx.tint_a = 0.6;
+            }
+            blend_ellipse(scr, sx, sy, 26, 9, BLACK, 0.45);
+            scr.blit_scaled(s, sx + (sway * 3.0) as i32, sy + 8, 1.2 + 0.05 * sway, fx);
+            return;
         }
         if m.kind == crate::mobs::Kind::ScrapPile {
             if !m.alive() {
@@ -2502,6 +2541,27 @@ fn draw_pickup(scr: &mut Screen, k: &Pickup, sx: i32, sy: i32, tick: u32, art: &
                     }
                 }
             }
+        }
+        &Drop::TideChest => {
+            // A wrecked chest half buried in the flats.
+            let y = sy - 4;
+            blend_ellipse(scr, sx, y + 3, 16, 5, BLACK, 0.4);
+            scr.glow(sx, y - 6, 22.0, rgb(0xffd060), 0.35);
+            scr.fill(sx - 13, y - 13, 26, 16, rgb(0x2a1808));
+            scr.fill(sx - 12, y - 12, 24, 14, rgb(0x6a4a24));
+            scr.fill(sx - 12, y - 12, 24, 4, rgb(0x8a6232));
+            scr.fill(sx - 13, y - 7, 26, 2, rgb(0x9a8a50));
+            scr.fill(sx - 9, y - 12, 2, 14, rgb(0x9a8a50));
+            scr.fill(sx + 7, y - 12, 2, 14, rgb(0x9a8a50));
+            scr.fill(sx - 2, y - 8, 4, 5, rgb(0xd8b040));
+            scr.fill(sx - 12, y, 24, 2, rgb(0x40706a));
+        }
+        &Drop::Bottle(_) => {
+            let y = sy - 6 - pop + bob;
+            scr.glow(sx, y, 12.0, rgb(0x80e0c0), 0.5);
+            scr.fill(sx - 2, y - 5, 4, 8, rgb(0x3a8a6a));
+            scr.fill(sx - 1, y - 7, 2, 2, rgb(0x8a6a40));
+            scr.fill(sx - 1, y - 3, 2, 3, rgb(0xe8d8b0));
         }
         &Drop::Gear(_) => {
             let y = sy - 8 - pop + bob;

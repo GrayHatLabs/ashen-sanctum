@@ -133,6 +133,11 @@ pub enum Kind {
     JunkGolem,
     /// A scrap heap in the Scrapyard: smash it for the lottery.
     ScrapPile,
+    // ---- Act 5's side content (reef.rs) ----
+    /// Old Barnacle, the giant crab knight of the Pearl Grotto.
+    Barnacle,
+    /// The kraken's arm in the Bone Reef: it grabs and slams, it doesn't move.
+    KrakenArm,
     // ---- breakables (breakables.rs): no mind, smashed by any hit; the act is in `Mob::form` ----
     Crate,
     Barrel,
@@ -323,6 +328,13 @@ pub fn def(k: Kind) -> Def {
             boss: true,
             ..d("boss_firewyrm", "VAURATH THE EMBER WYRM", 9000.0, 2.6, (45.0, 65.0), 0.8, 1.6, 9000.0)
         },
+        Kind::Barnacle => Def {
+            r: 0.75,
+            reach: 1.6,
+            boss: true,
+            ..d("boss_barnacle", "OLD BARNACLE", 1300.0, 1.4, (28.0, 40.0), 0.8, 1.8, 1900.0)
+        },
+        Kind::KrakenArm => Def { r: 0.8, reach: 2.2, ..d("kraken_arm", "THE KRAKEN'S ARM", 220.0, 0.0, (20.0, 30.0), 0.7, 2.2, 600.0) },
         Kind::Automaton => Def { r: 0.38, reach: 1.0, ..d("automaton", "THE BRASS KNIGHT", 420.0, 3.8, (14.0, 20.0), 0.4, 0.9, 0.0) },
         Kind::JunkGolem => Def {
             r: 0.7,
@@ -1513,6 +1525,20 @@ fn boss_specials(
                     fired: false,
                     kind: HazardKind::Poison,
                 });
+            }
+        }
+        Kind::Barnacle => {
+            // A claw slam, and the grotto's merrow come running.
+            if m.special <= 0.0 && dist < 3.2 {
+                m.special = if m.enraged { 3.0 } else { 4.4 };
+                hazards.push(Hazard { x: m.x, y: m.y, r: 2.6, warn: 0.9, live: 0.0, dps: 0.0, burst: 26.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Quake });
+                texts.push((m.x, m.y, "CLACK!"));
+            }
+            if m.special2 <= 0.0 {
+                m.special2 = if m.enraged { 8.0 } else { 12.0 };
+                if summons < 5 {
+                    around(rng, 2, Kind::Merrow, m.tier, spawns);
+                }
             }
         }
         Kind::JunkGolem => {

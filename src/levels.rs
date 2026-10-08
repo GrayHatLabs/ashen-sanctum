@@ -65,7 +65,7 @@ pub struct LevelFile {
 
 // ---------------------------------------------------------------- names
 
-pub const DUNGEON_SLUGS: [&str; 30] = [
+pub const DUNGEON_SLUGS: [&str; 31] = [
     "bone_crypt",
     "rotting_warrens",
     "hexed_catacombs",
@@ -96,6 +96,7 @@ pub const DUNGEON_SLUGS: [&str; 30] = [
     "gravediggers_cellar",
     "hollow_manor",
     "scrapheap_labyrinth",
+    "pearl_grotto",
 ];
 
 /// File name (without .json) for a level.
@@ -213,7 +214,7 @@ const THEMES: [(&str, Theme); 30] = [
     ("zenith", Theme::Zenith),
 ];
 
-const PROPS: [PropKind; 94] = [
+const PROPS: [PropKind; 96] = [
     PropKind::TreeOak,
     PropKind::TreePine,
     PropKind::TreeDead,
@@ -308,9 +309,11 @@ const PROPS: [PropKind; 94] = [
     PropKind::Shrine(0),
     PropKind::Entrance(29),
     PropKind::Shrine(3),
+    PropKind::Entrance(30),
+    PropKind::Shrine(4),
 ];
 
-const KINDS: [Kind; 80] = [
+const KINDS: [Kind; 82] = [
     Kind::Zombie,
     Kind::Skeleton,
     Kind::Wolf,
@@ -391,6 +394,8 @@ const KINDS: [Kind; 80] = [
     Kind::Automaton,
     Kind::JunkGolem,
     Kind::ScrapPile,
+    Kind::Barnacle,
+    Kind::KrakenArm,
 ];
 
 fn portal_name(k: PortalKind) -> String {
@@ -478,7 +483,7 @@ fn item_name(d: &Drop) -> Option<String> {
         Drop::Health => "health_potion".into(),
         Drop::Mana => "mana_potion".into(),
         Drop::Gold(n) => format!("gold{n}"),
-        Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Pearl(_) | Drop::Shard(_) | Drop::Page(_) | Drop::Hoard(_) | Drop::Herb | Drop::Heirloom | Drop::Clue | Drop::Keepsake(_) | Drop::Gear(_) | Drop::Item(_) => return None,
+        Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Pearl(_) | Drop::Shard(_) | Drop::Page(_) | Drop::Hoard(_) | Drop::Herb | Drop::Heirloom | Drop::Clue | Drop::Keepsake(_) | Drop::Gear(_) | Drop::TideChest | Drop::Bottle(_) | Drop::Item(_) => return None,
     })
 }
 
@@ -828,7 +833,7 @@ mod tests {
             assert_eq!(parse_id(&id_string(id)), Some(id));
             assert_eq!(id_from_name(&format!("levels/{}.json", file_name(id))), Some(id));
         }
-        assert_eq!(parse_id("dungeon:30:0"), None);
+        assert_eq!(parse_id("dungeon:31:0"), None);
     }
 
     #[test]

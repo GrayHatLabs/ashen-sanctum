@@ -1484,6 +1484,54 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             save(&mut g, scr, "gear_golem");
         }
     }
+    // Act 5's set pieces (reef.rs): a tide chest, the choir's whirlpool, the kraken's arm, a bottle, Old Barnacle.
+    {
+        let mut g = Game::new(7, h);
+        g.p.base_hp = 9999.0;
+        g.p.recalc();
+        g.p.hp = 9999.0;
+        let quiet = |g: &mut Game| {
+            g.banner_t = 0.0;
+            g.event_cd = 9999.0;
+            g.message = None;
+        };
+        g.debug_goto(LevelId::Area(4, 1));
+        quiet(&mut g);
+        if let Some((x, y)) = g.pickups.iter().find(|k| matches!(k.kind, crate::game::Drop::TideChest)).map(|k| (k.x, k.y)) {
+            g.mobs.retain(|m| (m.x - x).powi(2) + (m.y - y).powi(2) > 100.0);
+            g.debug_place_near(x, y, 2.5);
+            idle(&mut g, 20);
+            save(&mut g, scr, "reef_chest");
+        }
+        if let Some((x, y)) = g.pickups.iter().find(|k| matches!(k.kind, crate::game::Drop::Bottle(_))).map(|k| (k.x, k.y)) {
+            g.debug_place_near(x, y, 2.5);
+            idle(&mut g, 20);
+            save(&mut g, scr, "reef_bottle");
+        }
+        g.debug_goto(crate::reef::CHOIR);
+        quiet(&mut g);
+        let (x, y) = g.feats.choir_spot;
+        if x > 0.0 {
+            g.debug_place_near(x, y, 4.0);
+            idle(&mut g, 40);
+            save(&mut g, scr, "reef_choir");
+        }
+        g.debug_goto(crate::reef::KRAKEN);
+        quiet(&mut g);
+        let (x, y) = g.feats.kraken_spot;
+        if x > 0.0 {
+            g.mobs.retain(|m| m.kind == crate::mobs::Kind::KrakenArm || (m.x - x).powi(2) + (m.y - y).powi(2) > 64.0);
+            g.debug_place_near(x, y, 3.5);
+            idle(&mut g, 40);
+            save(&mut g, scr, "reef_kraken");
+        }
+        g.debug_goto(LevelId::Dungeon(crate::world::GROTTO, 1));
+        quiet(&mut g);
+        if g.debug_near_boss() {
+            idle(&mut g, 40);
+            save(&mut g, scr, "reef_barnacle");
+        }
+    }
     // Side content (side.rs): a shrine and its blessing, Skrat One-Ear and his gang, the Charnel Well, the
     // Well-Witch, a lore page and the journal on the map.
     {

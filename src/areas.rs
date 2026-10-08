@@ -442,7 +442,7 @@ pub const AREAS: &[AreaDef] = &[
         tier: 10.0,
         size: (96, 96),
         exits: &[(Side::W, 0.5, 0), (Side::N, 0.5, 2)],
-        doors: &[(16, (62, 32))],
+        doors: &[(16, (62, 32)), (crate::world::GROTTO, (30, 66))],
         pass: None,
         monsters: &[Kind::Drowned, Kind::Merrow, Kind::Jelly],
         packs: 18,

@@ -331,4 +331,6 @@ pub static ITEMS: &[ItemDef] = &[
     ItemDef { name: "tomb_shade", data: include_bytes!("../assets/art/item_tomb_shade.bin") },
     ItemDef { name: "shrine_gear", data: include_bytes!("../assets/art/item_shrine_gear.bin") },
     ItemDef { name: "ent_scrapheap", data: include_bytes!("../assets/art/item_ent_scrapheap.bin") },
+    ItemDef { name: "shrine_coral", data: include_bytes!("../assets/art/item_shrine_coral.bin") },
+    ItemDef { name: "ent_grotto", data: include_bytes!("../assets/art/item_ent_grotto.bin") },
 ];

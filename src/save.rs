@@ -166,6 +166,7 @@ pub fn to_text(g: &Game) -> String {
     s += &format!("feats={},{},{},{},{},{},{},{},{},{}\n", f.barn_over as u8, f.market_hostile as u8, f.jarl, f.merchant_free as u8, f.cub, f.scouts, f.shade, f.shade_known as u8, f.bells, f.brides);
     s += &format!("pacts={}\n", g.p.pacts);
     s += &format!("mech={},{},{},{},{}\n", f.gears, f.automaton as u8, f.court, f.writ as u8, f.vault_looted as u8);
+    s += &format!("reef={},{},{},{}\n", f.choir_done as u8, f.kraken_done as u8, f.bottle, f.ghosts);
     s += &format!("act={}\n", g.level.act());
     s += &p.skills.save_text();
     s += &format!("waypoints={}\n", g.waypoints.iter().map(|w| crate::levels::id_string(*w)).collect::<Vec<_>>().join(","));
@@ -259,6 +260,15 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
         }
     }
     g.p.pacts = (num("pacts").unwrap_or(0.0) as u8) & 7;
+    if let Some(v) = get("reef") {
+        let n: Vec<u8> = v.split(',').filter_map(|x| x.parse().ok()).collect();
+        if n.len() >= 4 {
+            g.feats.choir_done = n[0] != 0;
+            g.feats.kraken_done = n[1] != 0;
+            g.feats.bottle = n[2].min(4);
+            g.feats.ghosts = n[3] & 7;
+        }
+    }
     if let Some(v) = get("mech") {
         let n: Vec<u8> = v.split(',').filter_map(|x| x.parse().ok()).collect();
         if n.len() >= 5 {

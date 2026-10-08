@@ -270,6 +270,15 @@ window.CATALOG = {
       "slug": "scrapheap_labyrinth",
       "theme": "foundry",
       "tier": 8.399999618530273
+    },
+    {
+      "act": 4,
+      "boss": "boss_barnacle",
+      "floors": 2,
+      "name": "THE PEARL GROTTO",
+      "slug": "pearl_grotto",
+      "theme": "reef",
+      "tier": 10.800000190734863
     }
   ],
   "lands": {
@@ -986,7 +995,8 @@ window.CATALOG = {
     "area:4:1": {
       "act": 4,
       "doors": [
-        16
+        16,
+        30
       ],
       "exits": [
         [
@@ -1953,6 +1963,18 @@ window.CATALOG = {
       "kind": "scrap_pile",
       "name": "SCRAP HEAP",
       "prop": false
+    },
+    {
+      "boss": true,
+      "kind": "boss_barnacle",
+      "name": "OLD BARNACLE",
+      "prop": false
+    },
+    {
+      "boss": false,
+      "kind": "kraken_arm",
+      "name": "THE KRAKEN'S ARM",
+      "prop": false
     }
   ],
   "npcs": [
@@ -2636,6 +2658,16 @@ window.CATALOG = {
     {
       "h": 1,
       "kind": "shrine_gear",
+      "w": 1
+    },
+    {
+      "h": 3,
+      "kind": "ent_grotto",
+      "w": 3
+    },
+    {
+      "h": 1,
+      "kind": "shrine_coral",
       "w": 1
     }
   ],
