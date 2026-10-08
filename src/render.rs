@@ -169,6 +169,31 @@ impl Game {
                 }
             }
         }
+        // Act 6: the storm cells, the fallen star's crater, the sanctum's light.
+        if self.level == crate::isles::STORMFIELDS && self.feats.relic < 3 {
+            for c in self.feats.cells.iter() {
+                let (sx, sy) = to_scr(c.0, c.1);
+                // A dark cloud hanging over its patch of ground, raining.
+                blend_ellipse(scr, sx, sy, 46, 18, rgb(0x101828), 0.3);
+                ring(scr, sx, sy, 46, 18, rgb(0x6080c0));
+
+            }
+        }
+        if let Some((x, y)) = self.star_here() {
+            let (sx, sy) = to_scr(x, y);
+            blend_ellipse(scr, sx, sy, 40, 16, rgb(0x100818), 0.6);
+            ring(scr, sx, sy, 40, 16, rgb(0x5a4060));
+            if !self.feats.star_done {
+                scr.glow(sx, sy, 34.0, rgb(0xa080ff), 0.3);
+            }
+        }
+        if self.level == crate::isles::HALO && self.feats.sanctum >= 1 {
+            let (x, y) = self.feats.sanctum_spot;
+            let (sx, sy) = to_scr(x, y);
+            let t = (self.tick as f32 * 0.05).sin();
+            scr.glow(sx, sy - 20, 40.0, rgb(0xfff0c0), if self.feats.sanctum == 1 { 0.3 + 0.08 * t } else { 0.15 });
+            ring(scr, sx, sy, 24, 9, rgb(0xffe8a0));
+        }
         // The siren choir's whirlpool, and Captain Salt's X.
         if self.level == crate::reef::CHOIR && !self.feats.choir_done && self.feats.whirl != (0.0, 0.0) {
             let (sx, sy) = to_scr(self.feats.whirl.0, self.feats.whirl.1);
@@ -1096,6 +1121,27 @@ impl Game {
         }
         scr.shake = (0, 0);
 
+        // The Stormfields' storm cells (isles.rs): dark clouds over their patch of ground, raining.
+        if self.level == crate::isles::STORMFIELDS && self.feats.relic < 3 {
+            for (k, c) in self.feats.cells.iter().enumerate() {
+                let (sx, sy) = to_scr(c.0, c.1);
+                for r in 0..14 {
+                    let rx = sx - 38 + ((r * 29 + k * 11) % 76) as i32;
+                    let ry = sy - 50 + ((self.tick as usize * 3 + r * 17) % 48) as i32;
+                    scr.fill(rx, ry, 1, 5, rgb(0x8098c0));
+                }
+                for (ox, oy, rx, ry) in [(0, -62, 40, 14), (-22, -56, 24, 10), (22, -58, 26, 11), (0, -70, 26, 10)] {
+                    blend_ellipse(scr, sx + ox, sy + oy, rx, ry, rgb(0x2a3040), 0.7);
+                }
+                if (self.tick as usize + k * 7) % 23 < 3 {
+                    let ox = ((self.tick as usize * 13 + k * 31) % 60) as i32 - 30;
+                    for st in 0..6 {
+                        scr.fill(sx + ox + (st % 2) * 3 - 1, sy - 56 + st * 9, 2, 10, rgb(0xd0e8ff));
+                    }
+                    scr.glow(sx + ox, sy, 20.0, rgb(0xa0c8ff), 0.5);
+                }
+            }
+        }
         // Weather: the heavens' ash drifting upward, and the wind's streaks (warning, then the gust).
         if self.theme.sky() {
             let (cx, cy) = iso::to_screen(self.p.x, self.p.y);
@@ -1630,6 +1676,16 @@ impl Game {
         let m = &self.mobs[i];
         if crate::breakables::is_prop(m.kind) {
             return self.draw_prop(scr, i, sx, sy);
+        }
+        if m.kind == crate::mobs::Kind::StarMetal {
+            if !m.alive() {
+                return;
+            }
+            let s = self.art.prop("star_metal");
+            let fx = if m.flash > 0.0 { Fx { tint: WHITE, tint_a: 0.6, ..Fx::default() } } else if self.hover == Some(i) { Fx { tint: rgb(0xe0c0ff), tint_a: 0.2, ..Fx::default() } } else { Fx::default() };
+            scr.glow(sx, sy - 8, 16.0, rgb(0xa080ff), 0.35);
+            scr.blit_scaled(s, sx, sy + 6, 1.3, fx);
+            return;
         }
         if m.kind == crate::mobs::Kind::KrakenArm {
             if !m.alive() {
@@ -2555,6 +2611,37 @@ fn draw_pickup(scr: &mut Screen, k: &Pickup, sx: i32, sy: i32, tick: u32, art: &
             scr.fill(sx + 7, y - 12, 2, 14, rgb(0x9a8a50));
             scr.fill(sx - 2, y - 8, 4, 5, rgb(0xd8b040));
             scr.fill(sx - 12, y, 24, 2, rgb(0x40706a));
+        }
+        &Drop::StormRelic => {
+            // A glass sphere with a dead spark, on a stone stub.
+            let y = sy - 8 + bob;
+            scr.fill(sx - 4, sy - 4, 8, 5, rgb(0x6a6a7a));
+            scr.glow(sx, y, 14.0, rgb(0x80b0ff), 0.45);
+            ring(scr, sx, y, 5, 5, rgb(0xc0d8ff));
+            scr.fill(sx - 1, y - 1, 2, 2, rgb(0xffffff));
+        }
+        &Drop::Singer(_) => {
+            // A lost singer: a pale robed figure in a shaft of light.
+            let t = (tick as f32 * 0.06).sin();
+            scr.glow(sx, sy - 14, 22.0, rgb(0xfff0c0), 0.35 + 0.1 * t);
+            scr.fill(sx - 1, sy - 40, 2, 40, mix(rgb(0xfff0c0), BLACK, 0.4));
+            scr.fill(sx - 4, sy - 16, 8, 14, rgb(0xe8e0d0));
+            scr.fill(sx - 3, sy - 21, 6, 5, rgb(0xf0d8c0));
+            scr.fill(sx - 5, sy - 3, 10, 2, rgb(0xb8b0a0));
+            let ny = sy - 26 - ((tick / 4) % 10) as i32;
+            scr.fill(sx + 4, ny, 2, 2, rgb(0xfff0a0));
+            scr.fill(sx + 6, ny - 4, 1, 5, rgb(0xfff0a0));
+        }
+        &Drop::Cargo(_) => {
+            // A sky-pirate's crate, Bram's mark on the side.
+            let y = sy - 4;
+            blend_ellipse(scr, sx, y + 4, 12, 4, BLACK, 0.4);
+            scr.fill(sx - 9, y - 14, 18, 16, rgb(0x3a2a14));
+            scr.fill(sx - 8, y - 13, 16, 14, rgb(0x8a6a3a));
+            scr.fill(sx - 8, y - 7, 16, 2, rgb(0x5a4020));
+            scr.fill(sx - 2, y - 13, 2, 14, rgb(0x5a4020));
+            scr.fill(sx + 2, y - 11, 4, 4, rgb(0xc03020));
+            scr.glow(sx, y - 6, 14.0, rgb(0xffe0a0), 0.2);
         }
         &Drop::Bottle(_) => {
             let y = sy - 6 - pop + bob;

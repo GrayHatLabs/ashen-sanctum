@@ -193,6 +193,11 @@ Random encounters on overlands and in dungeons. At most one is active at a time.
   Maw the anglerlurk joins Bosun Krake and Lirael as a super unique.
 
 ### Act 6: the Skyreach
+- **As built (2026-10-08, `src/isles.rs`):** the Observatory's door is in the Drifting Isles. The Astronomer
+  draws a ring of falling stars round you, throws fans of starlight and calls ophanim. *The Star Chart* pays a
+  skill point; *Bram's Lost Cargo* (three crates in random areas) pays gold and a rare; *The Weeping Seraph*
+  wants the tears of Choirmaster Ezekar (the Zenith), Stormwing (the Stormfields) and Sabine the Halo-Knight
+  (the Halo Isles), and pays the Seraph's Tear (a unique ring) instead of resists.
 - **Optional dungeon: the Fallen Observatory** (2 floors), a broken star-tower on its own island, reached by
   the airship.
   - **Quest:** *The Star Chart*, from Sister Aurel.
@@ -246,11 +251,12 @@ The user took every idea offered and added two of their own (marked *).
 | 4 | **Broken Automaton**: five gears for a clockwork companion. **Unlawful Court**: fight, bribe or argue. **Scrapyard Lottery**: scrap piles, and a junk golem. **Timeless Vault**: opens only while time is stopped. |
 | 5 | **Low Tide Treasure**: wrecks and chests at low tide. **Siren's Song**: a choir in the Sunken Galleon. **Kraken's Arm**: a tentacle in the Bone Reef. **Message in a Bottle**: a chain of bottles to a pirate's cache. |
 | 6 | **Island Hopping**: islands that crumble behind you. **Storm Chase**: charge a lightning relic. **Fallen Star**: star-spawn and star-metal. **The Last Choir**: three singers open a hidden sanctum. |
+| All (rival, the user 2026-10-08) | **Not easy to farm:** one rival at a time, and a new one only turns up after a long wait (the next act, or a cooldown of about an hour of play), never by quitting and reloading. Only the first defeat of each rival pays its unique; repeat defeats pay a little gold. Losing to a rival costs some gold, so it isn't a free roll. |
 | All | **Bestiary**: kills per monster, small bonuses per tier. *Rival adventurer: an opt-in quest; beat them and they leave, and a new rival can come later. **Merchant caravans** between towns. **Arena challenges** with a best-time board. |
 
 **Order:**
 1. Act 1's extras and all of Act 2: the extras above, plus the planned optional dungeon, side quests, super uniques and pages. *(done 2026-10-08, `src/features.rs`)*
-2. Then Acts 3, 4, 5 and 6, in turn. *(Act 3 done 2026-10-08, `src/mist.rs`; Act 4 done, `src/gears.rs`; Act 5 done, `src/reef.rs`)*
+2. Then Acts 3, 4, 5 and 6, in turn. *(Act 3 done 2026-10-08, `src/mist.rs`; Act 4 done, `src/gears.rs`; Act 5 done, `src/reef.rs`; Act 6 done, `src/isles.rs`)*
 3. Then the all-act systems.
 
 ## 3. Phases (stop for a review after each)

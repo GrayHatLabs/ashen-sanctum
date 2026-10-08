@@ -326,6 +326,22 @@ Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`;
     - the **Kraken's Arm** (the Bone Reef): a great tentacle that pulls you in and slams the reef;
     - **Message in a Bottle**: three bottles, each naming the next area, lead to Captain Salt's buried cache
       (a red X on the ground and the map).
+  - **Act 6:**
+    - **Island Hopping** (the Drifting Isles and the Halo Isles): stepping stones over the sky to a
+      sky-pirate's strongbox. Each one crumbles a moment after you step on it and grows back a few seconds
+      later;
+    - **Storm Chase** (the Stormfields): carry the storm relic into the roaming storm clouds to charge it (they
+      zap you), then set it back on its pedestal;
+    - **Fallen Star**: a crater in a different area every playthrough, star-spawn around it, three lumps of
+      star-metal to break open;
+    - **The Last Choir**: find three lost singers in three areas, and a sanctum of light opens in the Halo
+      Isles, held by three guardians.
+- **Act 6's side content:**
+  - **The Fallen Observatory**, the optional dungeon in the Drifting Isles, with the Astronomer.
+  - **Side quests:** Sister Aurel's Star Chart (a skill point), Bram's Lost Cargo (a rare and gold) and
+    Seraphine's Weeping Seraph (three tears, for a unique ring).
+  - **Super uniques:** Choirmaster Ezekar, Stormwing and Sabine the Halo-Knight.
+  - **Lore:** five pages.
 - **Act 5's side content:**
   - **The Pearl Grotto**, the optional dungeon in the Kelp Shallows, open only at low tide, with Old Barnacle.
   - **Side quests:** Nessa's Black Pearl (a skill point), Ysolde's Ghosts of the Sovereign (+life) and Brother

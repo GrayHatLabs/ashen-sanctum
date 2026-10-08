@@ -88,6 +88,7 @@ pub static CHARS: &[CharDef] = &[
     CharDef { name: "automaton", cell: (71, 80), anchor: (28, 61), data: include_bytes!("../assets/art/automaton.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 8 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 12 }] },
     CharDef { name: "boss_junkgolem", cell: (81, 103), anchor: (41, 101), data: include_bytes!("../assets/art/boss_junkgolem.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
     CharDef { name: "boss_barnacle", cell: (61, 84), anchor: (31, 82), data: include_bytes!("../assets/art/boss_barnacle.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
+    CharDef { name: "boss_astronomer", cell: (64, 96), anchor: (31, 94), data: include_bytes!("../assets/art/boss_astronomer.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
     CharDef { name: "boss_gravedigger", cell: (126, 121), anchor: (46, 95), data: include_bytes!("../assets/art/boss_gravedigger.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 7 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 10 }] },
     CharDef { name: "boss_wellwitch", cell: (109, 103), anchor: (47, 86), data: include_bytes!("../assets/art/boss_wellwitch.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 7 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 10 }] },
     CharDef { name: "valkyrie", cell: (92, 81), anchor: (38, 67), data: include_bytes!("../assets/art/valkyrie.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 9 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 16 }, AnimDef { name: "sweep", row: 24, frames: 6, fps: 14 }, AnimDef { name: "whirl", row: 32, frames: 6, fps: 14 }, AnimDef { name: "throw", row: 40, frames: 6, fps: 14 }, AnimDef { name: "cast", row: 48, frames: 6, fps: 12 }] },
@@ -335,4 +336,7 @@ pub static ITEMS: &[ItemDef] = &[
     ItemDef { name: "shrine_coral", data: include_bytes!("../assets/art/item_shrine_coral.bin") },
     ItemDef { name: "ent_grotto", data: include_bytes!("../assets/art/item_ent_grotto.bin") },
     ItemDef { name: "kraken_arm", data: include_bytes!("../assets/art/item_kraken_arm.bin") },
+    ItemDef { name: "shrine_sky", data: include_bytes!("../assets/art/item_shrine_sky.bin") },
+    ItemDef { name: "ent_observatory", data: include_bytes!("../assets/art/item_ent_observatory.bin") },
+    ItemDef { name: "star_metal", data: include_bytes!("../assets/art/item_star_metal.bin") },
 ];

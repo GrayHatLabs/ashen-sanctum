@@ -138,6 +138,11 @@ pub enum Kind {
     Barnacle,
     /// The kraken's arm in the Bone Reef: it grabs and slams, it doesn't move.
     KrakenArm,
+    // ---- Act 6's side content (isles.rs) ----
+    /// The Astronomer, the fallen seraph of the Fallen Observatory: he throws constellations.
+    Astronomer,
+    /// A lump of star-metal in a fallen star's crater: break it open.
+    StarMetal,
     // ---- breakables (breakables.rs): no mind, smashed by any hit; the act is in `Mob::form` ----
     Crate,
     Barrel,
@@ -334,6 +339,14 @@ pub fn def(k: Kind) -> Def {
             boss: true,
             ..d("boss_barnacle", "OLD BARNACLE", 1300.0, 1.4, (28.0, 40.0), 0.8, 1.8, 1900.0)
         },
+        Kind::Astronomer => Def {
+            r: 0.6,
+            reach: 1.6,
+            ranged: true,
+            boss: true,
+            ..d("boss_astronomer", "THE ASTRONOMER", 1500.0, 2.0, (26.0, 36.0), 0.6, 1.6, 2400.0)
+        },
+        Kind::StarMetal => Def { r: 0.45, reach: 0.0, ..d("star_metal", "STAR-METAL", 60.0, 0.0, (0.0, 0.0), 9.0, 99.0, 30.0) },
         Kind::KrakenArm => Def { r: 0.8, reach: 2.2, ..d("kraken_arm", "THE KRAKEN'S ARM", 220.0, 0.0, (20.0, 30.0), 0.7, 2.2, 600.0) },
         Kind::Automaton => Def { r: 0.38, reach: 1.0, ..d("automaton", "THE BRASS KNIGHT", 420.0, 3.8, (14.0, 20.0), 0.4, 0.9, 0.0) },
         Kind::JunkGolem => Def {
@@ -1525,6 +1538,30 @@ fn boss_specials(
                     fired: false,
                     kind: HazardKind::Poison,
                 });
+            }
+        }
+        Kind::Astronomer => {
+            // He draws a constellation around you, and its stars fall; a fan of starlight; his ophanim.
+            if m.special <= 0.0 && dist < 14.0 {
+                m.special = if m.enraged { 3.0 } else { 4.2 };
+                let n = if m.enraged { 7 } else { 5 };
+                let a0 = rng.f() * std::f32::consts::TAU;
+                hazards.push(Hazard { x: px, y: py, r: 1.0, warn: 1.1, live: 0.0, dps: 0.0, burst: 22.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Nova });
+                for k in 0..n {
+                    let a = a0 + k as f32 / n as f32 * std::f32::consts::TAU;
+                    hazards.push(Hazard { x: px + a.cos() * 2.6, y: py + a.sin() * 2.6, r: 1.0, warn: 1.1, live: 0.0, dps: 0.0, burst: 22.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Nova });
+                }
+                texts.push((m.x, m.y, "THE STARS ALIGN!"));
+            } else if m.special2 <= 0.0 && dist < 12.0 {
+                m.special2 = if m.enraged { 2.6 } else { 3.6 };
+                let base = (py - m.y).atan2(px - m.x);
+                for k in -2..=2 {
+                    let a = base + k as f32 * 0.18;
+                    shots.push((m.x, m.y, a.cos() * 7.5, a.sin() * 7.5, 13.0 * m.tier.powf(0.8), ShotKind::Ash));
+                }
+                if summons < 4 && rng.chance(0.3) {
+                    around(rng, 2, Kind::Ophanim, m.tier, spawns);
+                }
             }
         }
         Kind::Barnacle => {

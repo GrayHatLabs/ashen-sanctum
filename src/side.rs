@@ -116,6 +116,7 @@ pub fn shrine_art(act: u8) -> &'static str {
         2 => "shrine_mist",
         3 => "shrine_gear",
         4 => "shrine_coral",
+        5 => "shrine_sky",
         _ => "shrine_ash",
     }
 }
@@ -320,6 +321,10 @@ pub const SUPERS: &[SuperDef] = &[
     SuperDef { name: "CORALIE OF THE CHOIR", kind: Kind::Siren, home: LevelId::Area(4, 99), spot: (0, 0), mods: crate::mobs::M_MANABURN, gang: (Kind::Siren, 0), tint: 0xffc0e0, line: "SING WITH US...", unique: "choir", page: None, camp: None },
     SuperDef { name: "MARIS OF THE CHOIR", kind: Kind::Siren, home: LevelId::Area(4, 99), spot: (0, 0), mods: M_FAST, gang: (Kind::Siren, 0), tint: 0xc0e0ff, line: "...DOWN, DOWN, DOWN...", unique: "choir", page: None, camp: None },
     SuperDef { name: "LYRA OF THE CHOIR", kind: Kind::Siren, home: LevelId::Area(4, 99), spot: (0, 0), mods: M_STONE, gang: (Kind::Siren, 0), tint: 0xe0ffc0, line: "...INTO THE DARK WATER...", unique: "choir", page: None, camp: None },
+    // ---- Act 6: the Shattered Heavens (each weeps a tear for the Weeping Seraph) ----
+    SuperDef { name: "CHOIRMASTER EZEKAR", kind: Kind::Zealot, home: LevelId::Area(5, 5), spot: (0, 0), mods: M_FIERY | M_STRONG, gang: (Kind::Zealot, 4), tint: 0xffe080, line: "SING, OR BURN! THERE IS NO THIRD VERSE!", unique: "ezekar", page: Some(25), camp: None },
+    SuperDef { name: "STORMWING", kind: Kind::Thunderbird, home: LevelId::Area(5, 2), spot: (0, 0), mods: M_FAST | crate::mobs::M_MANABURN, gang: (Kind::StormDrake, 2), tint: 0xa0c0ff, line: "(A SCREAM LIKE THUNDER SPLITTING THE SKY)", unique: "stormwing", page: Some(26), camp: None },
+    SuperDef { name: "SABINE THE HALO-KNIGHT", kind: Kind::Sentinel, home: LevelId::Area(5, 4), spot: (0, 0), mods: M_STONE | M_STRONG, gang: (Kind::FallenSeraph, 3), tint: 0xfff0c0, line: "THE SUN IS DEAD. I GUARD HIS GRAVE ALL THE SAME.", unique: "sabine", page: Some(27), camp: None },
 ];
 
 /// Jarl Hrogar's index in SUPERS (features.rs).
@@ -327,6 +332,8 @@ pub const JARL: usize = 5;
 /// Ysolde's drowned crew, and the Sunken Galleon's choir, in SUPERS (reef.rs).
 pub const GHOSTS: [usize; 3] = [18, 19, 20];
 pub const CHOIR: [usize; 3] = [21, 22, 23];
+/// The sky's three super uniques, whose tears the Weeping Seraph wants (isles.rs).
+pub const TEARS: [usize; 3] = [24, 25, 26];
 /// Vardak's brides in SUPERS (mist.rs places them).
 pub const BRIDES: [usize; 3] = [9, 10, 11];
 
@@ -382,6 +389,10 @@ pub enum Goal {
     Bells,
     /// Lay Captain Ysolde's three drowned crewmen to rest (reef.rs).
     Ghosts,
+    /// Find Bram's three lost cargo crates (isles.rs).
+    Cargo,
+    /// The tears of the sky's three super uniques (isles.rs).
+    Tears,
 }
 
 pub struct SideDef {
@@ -636,6 +647,46 @@ pub const SIDES: &[SideDef] = &[
         reward: Reward::Ward,
         todo: "SLAY LIRAEL THE SIREN (THE TRENCH RIM)",
     },
+    // ---- Act 6 ----
+    SideDef {
+        name: "THE STAR CHART",
+        act: 5,
+        giver: Role::Aurel,
+        giver_name: "SISTER AUREL",
+        ask: "ASK ABOUT THE OBSERVATORY",
+        offer: &["OUT PAST THE DRIFTING ISLES THERE'S AN OBSERVATORY, FALLEN ON ITS OWN ROCK. THE ASTRONOMER STILL WORKS THERE: A SERAPH WHO CHARTED EVERY STAR, AND WENT MAD WHEN THE SUN FELL OUT OF HIS CHART. HE THROWS CONSTELLATIONS NOW. END HIS WORK, AND BRING ME WHAT HE KNEW."],
+        remind: "THE FALLEN OBSERVATORY, OUT IN THE DRIFTING ISLES, EAST OF THE FALLEN GARDENS. WATCH THE SKY ABOVE YOU WHEN HE RAISES HIS HAND.",
+        thanks: &["HIS CHART. EVERY STAR, AND A BLANK WHERE THE SUN WAS. POOR THING. LET ME SHOW YOU WHAT HE SAW: HOLD STILL, AND LOOK UP..."],
+        goal: Goal::Boss(Kind::Astronomer),
+        reward: Reward::SkillPoint,
+        todo: "SLAY THE ASTRONOMER IN THE FALLEN OBSERVATORY (THE DRIFTING ISLES)",
+    },
+    SideDef {
+        name: "BRAM'S LOST CARGO",
+        act: 5,
+        giver: Role::Bram,
+        giver_name: "QUARTERMASTER BRAM",
+        ask: "ASK ABOUT HIS CARGO",
+        offer: &["A SQUALL CAUGHT MY LAST RUN AND TIPPED THREE CRATES OVERBOARD. THEY'LL HAVE COME DOWN ON THE ISLANDS SOMEWHERE OUT THERE. BRING ALL THREE BACK AND I'LL SPLIT WHAT'S IN 'EM WITH YOU. NO, I WON'T SAY WHAT'S IN 'EM."],
+        remind: "THREE CRATES, MY MARK ON THE SIDE. THEY COULD BE ON ANY OF THE ISLANDS. MIND THE EDGES WHILE YOU'RE LOOKING.",
+        thanks: &["ALL THREE, AND NOT A SEAL BROKEN. YOU'RE HONEST, FOR A GROUNDLING. HERE: YOUR SHARE, AND THE PICK OF THE LOT."],
+        goal: Goal::Cargo,
+        reward: Reward::Rare(1500),
+        todo: "FIND BRAM'S THREE LOST CRATES ON THE ISLANDS OF THE SKYREACH",
+    },
+    SideDef {
+        name: "THE WEEPING SERAPH",
+        act: 5,
+        giver: Role::Seraphine,
+        giver_name: "SERAPHINE",
+        ask: "ASK ABOUT THE WEEPING STATUE",
+        offer: &["THE STATUE BY THE DOCK WAS MY SISTER, ONCE. SHE WEEPS LIGHT FOR THE ONES WHO WENT BAD WHEN THE SUN FELL: EZEKAR THE CHOIRMASTER, STORMWING, AND SABINE OF THE HALO. WHEN EACH FALLS, THEY WEEP ONE TEAR OF THE LIGHT THEY STOLE. BRING HER ALL THREE AND SHE MAY REST."],
+        remind: "EZEKAR IN THE ZENITH, STORMWING OVER THE STORMFIELDS, SABINE IN THE HALO ISLES. THREE TEARS.",
+        thanks: &["THREE TEARS. LISTEN: SHE'S STOPPED WEEPING. THANK YOU. SHE LEFT THIS FOR WHOEVER BROUGHT THEM. IT'S STILL WARM."],
+        goal: Goal::Tears,
+        reward: Reward::Unique("tears"),
+        todo: "BRING THE WEEPING SERAPH THREE TEARS: EZEKAR (THE ZENITH), STORMWING (THE STORMFIELDS), SABINE (THE HALO ISLES)",
+    },
 ];
 
 // ------------------------------------------------------------------ lore
@@ -667,6 +718,11 @@ pub const LORE: &[(u8, &str, &str)] = &[
     (4, "A DIVER'S WARNING", "IF YOU SEE A LIGHT BOBBING IN THE DEEP TRENCH, DO NOT SWIM TOWARD IT. THE LIGHT IS NOT A LANTERN. THE LIGHT IS BAIT."),
     (4, "NESSA'S DIVE LOG", "GROTTO AGAIN TODAY. THE BLACK PEARL IS STILL THERE, UNDER THE BIG ONE. I COULD REACH IT IF HE WOULD ONLY MOVE. HE NEVER MOVES."),
     (4, "THE SOVEREIGN'S LAST ENTRY", "THE LEVIATHAN ROSE BENEATH US AT THE SECOND BELL. CAPTAIN ORDERED ALL HANDS TO THE BOATS. WE DID NOT HAVE ENOUGH BOATS."),
+    (5, "EZEKAR'S HYMNAL", "VERSE THE LAST: AND WHEN THE SUN FALLS, SING LOUDER, THAT HE MAY HEAR YOU ALL THE WAY DOWN. (THE PAGE IS SCORCHED AT THE EDGES.)"),
+    (5, "A SKY-PIRATE'S LOG", "SAW THE GREAT BIRD AGAIN TODAY, RIDING THE FRONT OF THE STORM. LOST TWO MEN AND A SAIL. BRAM SAYS WE'RE CURSED. BRAM SAYS THAT EVERY DAY."),
+    (5, "THE HALO-KNIGHT'S OATH", "I WILL GUARD THE LIGHT UNTIL THE LIGHT GOES OUT. AND THEN? (SOMEONE HAS ADDED, IN A DIFFERENT HAND: AND THEN YOU GUARD THE DARK.)"),
+    (5, "THE ASTRONOMER'S LAST CHART", "EVERY STAR IN ITS PLACE. EVERY ONE. BUT HERE, WHERE THE SUN SHOULD BE: NOTHING. I HAVE CHECKED MY SUMS A THOUSAND TIMES. THE SKY IS WRONG."),
+    (5, "SERAPHINE'S LETTER", "SISTER, I CUT MY WINGS SO I COULD NOT FOLLOW HIM UP. I AM SORRY I DID NOT ASK YOU TO CUT YOURS. I AM SORRY YOU ARE STONE. - S."),
 ];
 
 pub fn pages_of(act: usize) -> impl Iterator<Item = usize> {
@@ -797,7 +853,7 @@ pub fn place(lv: &mut Level, seed: u64) {
 }
 
 /// The optional dungeons: (dungeon index, the lore page on its first floor).
-pub const OPTIONAL: &[(usize, u8)] = &[(crate::world::CHARNEL, 3), (crate::world::LONGSHIP, 9), (crate::world::CELLAR, 13), (crate::world::MANOR, 14), (crate::world::SCRAPHEAP, 18), (crate::world::GROTTO, 23)];
+pub const OPTIONAL: &[(usize, u8)] = &[(crate::world::CHARNEL, 3), (crate::world::LONGSHIP, 9), (crate::world::CELLAR, 13), (crate::world::MANOR, 14), (crate::world::SCRAPHEAP, 18), (crate::world::GROTTO, 23), (crate::world::OBSERVATORY, 28)];
 
 // ------------------------------------------------------------------ the game side
 

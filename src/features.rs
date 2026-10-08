@@ -136,6 +136,26 @@ pub struct Feats {
     pub cache_level: Option<LevelId>,
     /// Ysolde's crew laid to rest (bits).
     pub ghosts: u8,
+    // ---- Act 6 (isles.rs) ----
+    pub isles_placed: Vec<LevelId>,
+    pub stones: Vec<crate::isles::Stone>,
+    /// The storm relic: 0 on its pedestal, 1 carried, 2 charged, 3 returned.
+    pub relic: u8,
+    pub relic_spot: (f32, f32),
+    pub charge: f32,
+    pub zap_t: f32,
+    /// Storm cells over the Stormfields: where each is, and where it's drifting to.
+    pub cells: Vec<(f32, f32, f32, f32)>,
+    pub star_level: Option<LevelId>,
+    pub star_spot: (f32, f32),
+    pub star_done: bool,
+    /// The Last Choir's singers found (bits); the sanctum: 0 sealed, 1 guarded, 2 open.
+    pub singers: u8,
+    pub sanctum: u8,
+    pub sanctum_spot: (f32, f32),
+    /// Bram's crates found, the Weeping Seraph's tears (bits).
+    pub cargo: u8,
+    pub tears: u8,
 }
 
 impl Game {

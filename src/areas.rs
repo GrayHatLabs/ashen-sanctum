@@ -596,7 +596,7 @@ pub const AREAS: &[AreaDef] = &[
         tier: 12.6,
         size: (64, 64),
         exits: &[(Side::W, 0.5, 3)],
-        doors: &[],
+        doors: &[(crate::world::OBSERVATORY, (44, 18))],
         pass: None,
         monsters: &[Kind::Harpy, Kind::StormDrake, Kind::Thunderbird],
         packs: 8,

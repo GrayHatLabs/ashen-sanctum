@@ -1532,6 +1532,85 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             save(&mut g, scr, "reef_barnacle");
         }
     }
+    // Act 6's set pieces (isles.rs): stepping stones, the storm relic, the fallen star, a singer, the sanctum,
+    // a crate, the Astronomer.
+    {
+        let mut g = Game::new(7, h);
+        g.p.base_hp = 9999.0;
+        g.p.recalc();
+        g.p.hp = 9999.0;
+        let quiet = |g: &mut Game| {
+            g.banner_t = 0.0;
+            g.event_cd = 9999.0;
+            g.message = None;
+            g.wind_t = 9999.0;
+        };
+        g.debug_goto(crate::isles::DRIFTING);
+        quiet(&mut g);
+        if let Some(s) = g.feats.stones.iter().find(|s| s.level == crate::isles::DRIFTING).cloned() {
+            g.mobs.retain(|m| (m.x - s.x as f32).powi(2) + (m.y - s.y as f32).powi(2) > 150.0);
+            (g.p.x, g.p.y) = (s.x as f32 + 0.5, s.y as f32 + 0.5);
+            idle(&mut g, 8);
+            save(&mut g, scr, "isle_hop");
+        }
+        g.debug_goto(crate::isles::STORMFIELDS);
+        quiet(&mut g);
+        let (rx, ry) = g.feats.relic_spot;
+        if rx > 0.0 {
+            g.debug_place_near(rx, ry, 2.5);
+            idle(&mut g, 10);
+            save(&mut g, scr, "isle_relic");
+            g.take_relic();
+            g.dialog = None;
+            idle(&mut g, 2);
+            let c = g.feats.cells[0];
+            g.mobs.retain(|m| (m.x - c.0).powi(2) + (m.y - c.1).powi(2) > 100.0);
+            g.debug_place_near(c.0, c.1, 1.0);
+            idle(&mut g, 40);
+            save(&mut g, scr, "isle_storm");
+        }
+        let (star, singers, cargo) = crate::isles::rolls(g.world_seed, g.quest.difficulty);
+        g.debug_goto(LevelId::Area(5, star));
+        quiet(&mut g);
+        if let Some((x, y)) = g.star_here() {
+            g.debug_place_near(x, y, 5.0);
+            idle(&mut g, 30);
+            save(&mut g, scr, "isle_star");
+        }
+        g.debug_goto(LevelId::Area(5, singers[0]));
+        quiet(&mut g);
+        if let Some((x, y)) = g.pickups.iter().find(|k| matches!(k.kind, crate::game::Drop::Singer(_))).map(|k| (k.x, k.y)) {
+            g.mobs.retain(|m| (m.x - x).powi(2) + (m.y - y).powi(2) > 100.0);
+            g.debug_place_near(x, y, 2.5);
+            idle(&mut g, 20);
+            save(&mut g, scr, "isle_singer");
+        }
+        g.debug_goto(LevelId::Area(5, cargo[0]));
+        quiet(&mut g);
+        if let Some((x, y)) = g.pickups.iter().find(|k| matches!(k.kind, crate::game::Drop::Cargo(_))).map(|k| (k.x, k.y)) {
+            g.mobs.retain(|m| (m.x - x).powi(2) + (m.y - y).powi(2) > 100.0);
+            g.debug_place_near(x, y, 2.5);
+            idle(&mut g, 20);
+            save(&mut g, scr, "isle_cargo");
+        }
+        g.debug_goto(crate::isles::HALO);
+        quiet(&mut g);
+        g.feats.singers = 7;
+        g.isles_enter();
+        g.dialog = None;
+        let (x, y) = g.feats.sanctum_spot;
+        if g.feats.sanctum == 1 {
+            g.debug_place_near(x, y, 5.0);
+            idle(&mut g, 20);
+            save(&mut g, scr, "isle_sanctum");
+        }
+        g.debug_goto(LevelId::Dungeon(crate::world::OBSERVATORY, 1));
+        quiet(&mut g);
+        if g.debug_near_boss() {
+            idle(&mut g, 40);
+            save(&mut g, scr, "isle_astronomer");
+        }
+    }
     // Side content (side.rs): a shrine and its blessing, Skrat One-Ear and his gang, the Charnel Well, the
     // Well-Witch, a lore page and the journal on the map.
     {

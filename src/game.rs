@@ -189,6 +189,10 @@ pub enum Drop {
     /// A chest out on the tide flats, and a message in a bottle (reef.rs).
     TideChest,
     Bottle(u8),
+    /// The storm relic, a lost singer, one of Bram's crates (isles.rs).
+    StormRelic,
+    Singer(u8),
+    Cargo(u8),
     /// Equipment.
     Item(Box<crate::items::Item>),
 }
@@ -1338,6 +1342,7 @@ impl Game {
         self.mist_enter();
         self.gears_enter();
         self.reef_enter();
+        self.isles_enter();
         if let Some(mut w) = wolf {
             let (wx, wy) = if self.d.blocked(x + 1.0, y, 0.35) { (x, y) } else { (x + 1.0, y) };
             w.x = wx;
@@ -1762,6 +1767,7 @@ impl Game {
         self.update_mist();
         self.update_gears();
         self.update_reef();
+        self.update_isles();
         self.update_sky();
         self.update_rift();
         self.second_wind_t = (self.second_wind_t - DT).max(0.0);
@@ -2658,6 +2664,9 @@ impl Game {
                 Drop::Gear(n) => self.pick_gear(n),
                 Drop::TideChest => self.open_tide_chest(),
                 Drop::Bottle(n) => self.read_bottle(n),
+                Drop::StormRelic => self.take_relic(),
+                Drop::Singer(n) => self.find_singer(n),
+                Drop::Cargo(n) => self.find_cargo(n),
                 Drop::Key(i) => {
                     self.quest.keys[i] = true;
                     self.p.skills.points += 1;
@@ -3255,6 +3264,11 @@ impl Game {
                 self.side_progress(crate::side::Goal::Ghosts);
             }
         }
+        // Act 6 (isles.rs): star-metal, the Weeping Seraph's tears.
+        if kind == Kind::StarMetal {
+            self.star_metal(x, y);
+        }
+        self.tear_check(su as u8, x, y);
         // The Scrapyard's lottery (gears.rs).
         if kind == Kind::ScrapPile {
             self.scrap_lottery(x, y);

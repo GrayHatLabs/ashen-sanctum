@@ -41,6 +41,7 @@ mod features;
 mod mist;
 mod gears;
 mod reef;
+mod isles;
 mod world;
 
 use game::{Game, Input};

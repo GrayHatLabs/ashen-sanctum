@@ -167,6 +167,7 @@ pub fn to_text(g: &Game) -> String {
     s += &format!("pacts={}\n", g.p.pacts);
     s += &format!("mech={},{},{},{},{}\n", f.gears, f.automaton as u8, f.court, f.writ as u8, f.vault_looted as u8);
     s += &format!("reef={},{},{},{}\n", f.choir_done as u8, f.kraken_done as u8, f.bottle, f.ghosts);
+    s += &format!("isles={},{},{},{},{},{}\n", f.relic.min(3), f.star_done as u8, f.singers, f.sanctum, f.cargo, f.tears);
     s += &format!("act={}\n", g.level.act());
     s += &p.skills.save_text();
     s += &format!("waypoints={}\n", g.waypoints.iter().map(|w| crate::levels::id_string(*w)).collect::<Vec<_>>().join(","));
@@ -260,6 +261,19 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
         }
     }
     g.p.pacts = (num("pacts").unwrap_or(0.0) as u8) & 7;
+    if let Some(v) = get("isles") {
+        let n: Vec<u8> = v.split(',').filter_map(|x| x.parse().ok()).collect();
+        if n.len() >= 6 {
+            // A relic carried (or charged) when you quit is back on its pedestal, empty.
+            g.feats.relic = if n[0] == 3 { 3 } else { 0 };
+            g.feats.star_done = n[1] != 0;
+            g.feats.singers = n[2] & 7;
+            // Guardians standing when you quit stand again next time.
+            g.feats.sanctum = if n[3] == 2 { 2 } else { 0 };
+            g.feats.cargo = n[4] & 7;
+            g.feats.tears = n[5] & 7;
+        }
+    }
     if let Some(v) = get("reef") {
         let n: Vec<u8> = v.split(',').filter_map(|x| x.parse().ok()).collect();
         if n.len() >= 4 {

@@ -229,7 +229,14 @@ impl Game {
         if self.rng.chance(0.3) {
             self.pickups.push(Pickup { x: x - 0.5, y, kind: Drop::Item(Box::new(crate::items::gem_item(crate::items::roll_gem(ilvl, &mut self.rng)))), t: 0.0 });
         }
-        self.floater(x, y, "A WRECKED CHEST, DRAGGED OUT OF THE SAND".into(), rgb(0xe0c080));
+        if self.level.act() == 5 {
+            // Island hopping's prize (isles.rs): a sky-pirate's strongbox always holds something good.
+            let it = crate::items::roll(ilvl + 2, crate::items::Rarity::Rare, &mut self.rng);
+            self.pickups.push(Pickup { x, y: y - 0.5, kind: Drop::Item(Box::new(it)), t: 0.0 });
+            self.floater(x, y, "A SKY-PIRATE'S STRONGBOX!".into(), rgb(0xe0c080));
+        } else {
+            self.floater(x, y, "A WRECKED CHEST, DRAGGED OUT OF THE SAND".into(), rgb(0xe0c080));
+        }
     }
 
     /// Read a bottle's note: it points to the next area.

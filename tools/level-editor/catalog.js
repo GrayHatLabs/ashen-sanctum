@@ -279,6 +279,15 @@ window.CATALOG = {
       "slug": "pearl_grotto",
       "theme": "reef",
       "tier": 10.800000190734863
+    },
+    {
+      "act": 5,
+      "boss": "boss_astronomer",
+      "floors": 2,
+      "name": "THE FALLEN OBSERVATORY",
+      "slug": "fallen_observatory",
+      "theme": "wheel",
+      "tier": 13.199999809265137
     }
   ],
   "lands": {
@@ -1284,7 +1293,9 @@ window.CATALOG = {
     },
     "area:5:6": {
       "act": 5,
-      "doors": [],
+      "doors": [
+        31
+      ],
       "exits": [
         [
           3,
@@ -1974,6 +1985,18 @@ window.CATALOG = {
       "boss": false,
       "kind": "kraken_arm",
       "name": "THE KRAKEN'S ARM",
+      "prop": false
+    },
+    {
+      "boss": true,
+      "kind": "boss_astronomer",
+      "name": "THE ASTRONOMER",
+      "prop": false
+    },
+    {
+      "boss": false,
+      "kind": "star_metal",
+      "name": "STAR-METAL",
       "prop": false
     }
   ],
@@ -2668,6 +2691,16 @@ window.CATALOG = {
     {
       "h": 1,
       "kind": "shrine_coral",
+      "w": 1
+    },
+    {
+      "h": 3,
+      "kind": "ent_observatory",
+      "w": 3
+    },
+    {
+      "h": 1,
+      "kind": "shrine_sky",
       "w": 1
     }
   ],
