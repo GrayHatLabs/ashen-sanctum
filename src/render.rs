@@ -169,6 +169,14 @@ impl Game {
                 }
             }
         }
+        // Act 7 (chaos.rs): the anchor stones: dark obelisks, and gold when lit, with the stilled ground round them.
+        for a in self.feats.anchors.iter().filter(|a| a.level == self.level) {
+            let (sx, sy) = to_scr(a.x, a.y);
+            if a.lit {
+                let r = (crate::chaos::ANCHOR_R * 16.0) as i32;
+                ring(scr, sx, sy, r, r / 2, mix(rgb(0xffe0a0), BLACK, 0.55));
+            }
+        }
         // Act 6: the storm cells, the fallen star's crater, the sanctum's light.
         if self.level == crate::isles::STORMFIELDS && self.feats.relic < 3 {
             for c in self.feats.cells.iter() {
@@ -1121,6 +1129,33 @@ impl Game {
         }
         scr.shake = (0, 0);
 
+        // The anchor stones (chaos.rs), standing up out of the ground.
+        for a in self.feats.anchors.iter().filter(|a| a.level == self.level) {
+            let (sx, sy) = to_scr(a.x, a.y);
+            blend_ellipse(scr, sx, sy, 10, 4, BLACK, 0.5);
+            let stone = if a.lit { rgb(0x8a7a60) } else { rgb(0x3a3448) };
+            let dark = if a.lit { rgb(0x5a4a38) } else { rgb(0x241e30) };
+            scr.fill(sx - 4, sy - 30, 8, 30, stone);
+            scr.fill(sx + 1, sy - 30, 3, 30, dark);
+            scr.fill(sx - 3, sy - 34, 6, 4, stone);
+            scr.fill(sx - 1, sy - 37, 2, 3, stone);
+            let rune = if a.lit { rgb(0xffe080) } else { rgb(0x7a50a0) };
+            for k in 0..3 {
+                scr.fill(sx - 1, sy - 26 + k * 7, 3, 2, rune);
+            }
+            if a.lit {
+                let t = (self.tick as f32 * 0.08).sin();
+                scr.glow(sx, sy - 20, 22.0, rgb(0xffd070), 0.35 + 0.1 * t);
+            } else {
+                scr.glow(sx, sy - 20, 10.0, rgb(0x9060c0), 0.25);
+            }
+        }
+        // A surge coming in the Churn (chaos.rs): the world pulses violet.
+        if self.feats.surge_warn > 0.0 && crate::chaos::churning(self.level) {
+            let t = (self.tick as f32 * 0.35).sin() * 0.5 + 0.5;
+            let a = 0.06 + 0.12 * t * (1.0 - self.feats.surge_warn / crate::chaos::WARN + 0.3).min(1.0);
+            scr.blend(0, 0, scr.w, view_h, rgb(0x6020a0), a);
+        }
         // The Stormfields' storm cells (isles.rs): dark clouds over their patch of ground, raining.
         if self.level == crate::isles::STORMFIELDS && self.feats.relic < 3 {
             for (k, c) in self.feats.cells.iter().enumerate() {
@@ -2168,6 +2203,7 @@ impl Game {
         // An Ash Rift's bar, clock and modifiers.
         crate::endgame::draw_rift_hud(self, scr);
         crate::extras::draw_arena_hud(self, scr);
+        crate::chaos::draw_chaos_hud(self, scr);
         // Area name and quest log (top left).
         scr.text(&self.level_name, 6, 6, rgb(0xd8b878), Align::Left, 1);
         let log = self.quest_log();

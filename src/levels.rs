@@ -109,6 +109,7 @@ pub fn file_name(id: LevelId) -> String {
         LevelId::Mechanus => "mechanus".into(),
         LevelId::Deep => "deep".into(),
         LevelId::Heavens => "heavens".into(),
+        LevelId::Churn => "churn".into(),
         LevelId::Dungeon(k, f) => format!("{}_floor{}", DUNGEON_SLUGS[k], f + 1),
         LevelId::Rift(t) => format!("rift{t}"),
         LevelId::Arena(a) => format!("arena{a}"),
@@ -124,6 +125,7 @@ pub fn id_string(id: LevelId) -> String {
         LevelId::Mechanus => "mechanus".into(),
         LevelId::Deep => "deep".into(),
         LevelId::Heavens => "heavens".into(),
+        LevelId::Churn => "churn".into(),
         LevelId::Dungeon(k, f) => format!("dungeon:{k}:{f}"),
         LevelId::Rift(t) => format!("rift:{t}"),
         LevelId::Arena(a) => format!("arena:{a}"),
@@ -150,13 +152,16 @@ pub fn parse_id(s: &str) -> Option<LevelId> {
     if s == "heavens" {
         return Some(LevelId::Heavens);
     }
+    if s == "churn" {
+        return Some(LevelId::Churn);
+    }
     if let Some(t) = s.strip_prefix("area:") {
         let mut it = t.split(':');
         let (a, n): (u8, u8) = (it.next()?.parse().ok()?, it.next()?.parse().ok()?);
         return crate::areas::AREAS.iter().any(|d| d.act == a && d.n == n).then_some(LevelId::Area(a, n));
     }
     if let Some(t) = s.strip_prefix("arena:") {
-        return t.parse().ok().filter(|a| *a < 6).map(LevelId::Arena);
+        return t.parse().ok().filter(|a| *a < 7).map(LevelId::Arena);
     }
     if let Some(t) = s.strip_prefix("rift:") {
         return t.parse().ok().map(LevelId::Rift);
@@ -169,7 +174,7 @@ pub fn parse_id(s: &str) -> Option<LevelId> {
 
 /// Every level in the game, in order.
 pub fn all_ids() -> Vec<LevelId> {
-    let mut v = vec![LevelId::Overworld, LevelId::Frostmarch, LevelId::Mistwood, LevelId::Mechanus, LevelId::Deep, LevelId::Heavens];
+    let mut v = vec![LevelId::Overworld, LevelId::Frostmarch, LevelId::Mistwood, LevelId::Mechanus, LevelId::Deep, LevelId::Heavens, LevelId::Churn];
     for a in crate::areas::AREAS {
         v.push(LevelId::Area(a.act, a.n));
     }
@@ -187,7 +192,7 @@ pub fn id_from_name(name: &str) -> Option<LevelId> {
     all_ids().into_iter().find(|id| file_name(*id) == stem)
 }
 
-const THEMES: [(&str, Theme); 30] = [
+const THEMES: [(&str, Theme); 31] = [
     ("overworld", Theme::Overworld),
     ("crypt", Theme::Crypt),
     ("warrens", Theme::Warrens),
@@ -218,6 +223,7 @@ const THEMES: [(&str, Theme); 30] = [
     ("spire", Theme::Spire),
     ("wheel", Theme::Wheel),
     ("zenith", Theme::Zenith),
+    ("churn", Theme::Churn),
 ];
 
 const PROPS: [PropKind; 98] = [
@@ -432,6 +438,7 @@ fn portal_kind(s: &str) -> Option<PortalKind> {
         "pass3" => Some(PortalKind::Pass(3)),
         "pass4" => Some(PortalKind::Pass(4)),
         "pass5" => Some(PortalKind::Pass(5)),
+        "pass6" => Some(PortalKind::Pass(6)),
         "dock0" => Some(PortalKind::Dock(0)),
         _ if s.starts_with("exit") => s[4..].parse().ok().map(PortalKind::Exit),
         _ => s.strip_prefix("entrance")?.parse().ok().filter(|i: &usize| *i < DUNGEONS.len()).map(PortalKind::Entrance),
@@ -439,7 +446,7 @@ fn portal_kind(s: &str) -> Option<PortalKind> {
 }
 
 /// NPC kinds: file name, role, display name, art.
-const NPCS: [(&str, Role, &str, &str); 44] = [
+const NPCS: [(&str, Role, &str, &str); 51] = [
     ("elder", Role::Elder, "ELDER MAREN", "npc_elder"),
     ("merchant", Role::Merchant, "GERTA", "npc_merchant"),
     ("healer", Role::Healer, "BROTHER ALDRIC", "npc_healer"),
@@ -484,6 +491,13 @@ const NPCS: [(&str, Role, &str, &str); 44] = [
     ("deckhand1", Role::Deckhand(1), "DECKHAND", "npc_deckhand"),
     ("deckhand2", Role::Deckhand(2), "DECKHAND", "npc_deckhand"),
     ("jeweler5", Role::Jeweler(5), "THE GILDER", "npc_jeweler5"),
+    ("abbot", Role::Abbot, "ABBOT QUIET", "npc_priest"),
+    ("ferro", Role::Ferro, "SISTER FERRO", "npc_vesper"),
+    ("hush", Role::Hush, "BROTHER HUSH", "npc_healer"),
+    ("monk0", Role::Monk(0), "MONK", "npc_peasant"),
+    ("monk1", Role::Monk(1), "MONK", "npc_peasant"),
+    ("monk2", Role::Monk(2), "MONK", "npc_peasant"),
+    ("jeweler6", Role::Jeweler(6), "THE CUTTER", "npc_jeweler6"),
 ];
 
 fn item_name(d: &Drop) -> Option<String> {

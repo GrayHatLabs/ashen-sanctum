@@ -6,8 +6,15 @@ The model is the planar idea of a **realm of raw chaos** (D&D's Limbo): a soup o
 holds a shape unless a mind holds it still. Everything here is our own invention, with no D&D names: no
 slaadi, no githzerai.
 
-Status: **planned; the user made their picks on 2026-10-08 (below).** Nothing is built yet; it comes after
-Act 6's side content and the all-act systems.
+Status: **being built in stages, with a review after each.**
+- **Stage 1 (done 2026-10-08, `src/chaos.rs`):** Stillhold (Abbot Quiet, Sister Ferro, Brother Hush, the
+  Cutter, monks), six areas (the Breach, the Drift of Worlds, the Elemental Tangle, the Spawning Mire, the
+  Shattered Monastery, the Eye of the Churn), the way down through a crack in the Zenith once Solanthos is
+  ended, chaos surges, anchor stones, the stillness meter, and lava, ice and water ground. Monsters are
+  borrowed from earlier acts for now; the art is stand-ins (chaos-stone is graded stone).
+- Stage 2: the Churn's own monsters and the three herald dungeons.
+- Stage 3: Ylgrath and the Stillpoint, the story, and Nightmare moved to after Act 7.
+- Stage 4: side content, the extras, art and music.
 
 ## The user's picks (2026-10-08)
 

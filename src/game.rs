@@ -224,7 +224,7 @@ pub struct Light {
 pub struct Player {
     /// Endgame (endgame.rs): how often each act has been rekindled, the deepest Ash Rift cleared in time,
     /// rifts opened, and Embers of mastery (four tracks, and points to spend).
-    pub rekindles: [u32; 6],
+    pub rekindles: [u32; 7],
     pub rift_best: u16,
     pub rift_runs: u32,
     pub embers: [u8; 4],
@@ -350,7 +350,7 @@ pub struct Player {
 impl Player {
     fn new() -> Self {
         Player {
-            rekindles: [0; 6],
+            rekindles: [0; 7],
             rift_best: 0,
             rift_runs: 0,
             embers: [0; 4],
@@ -1006,7 +1006,7 @@ impl Game {
     /// Where this level's waypoint stands: beside the town square, or near a floor's way in.
     fn find_waypoint(&self) -> (f32, f32) {
         let base = match self.level {
-            LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep | LevelId::Heavens => (self.town_start.0 + 3.0, self.town_start.1 + 2.0),
+            LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep | LevelId::Heavens | LevelId::Churn => (self.town_start.0 + 3.0, self.town_start.1 + 2.0),
             LevelId::Dungeon(..) => self.portals.iter().find(|p| p.kind == PortalKind::Up).map(|p| (p.x + 2.0, p.y + 1.0)).unwrap_or(self.start),
             LevelId::Rift(_) | LevelId::Arena(_) => self.start,
             // An area's waypoint stands by the road in from town.
@@ -1042,6 +1042,7 @@ impl Game {
             LevelId::Mechanus => "THE LAST ESCAPEMENT".into(),
             LevelId::Deep => "BRINEHOLLOW".into(),
             LevelId::Heavens => "WINDWARD ANCHORAGE".into(),
+            LevelId::Churn => "STILLHOLD".into(),
             LevelId::Dungeon(k, f) => format!("{} - LEVEL {}", DUNGEONS_LIST[k].name, f + 1),
             LevelId::Rift(t) => format!("ASH RIFT - TIER {t}"),
             LevelId::Arena(a) => crate::extras::ARENAS[a as usize % 6].into(),
@@ -1153,8 +1154,8 @@ impl Game {
     /// earlier acts were done (level 18 / 26 / 34, their relics' power, gear and gold to match).
     pub fn act_start(&mut self, act: usize) {
         use crate::items::{self, Rarity, WORN};
-        let act = act.clamp(1, 5);
-        let clvl = [1, 18, 26, 34, 42, 50][act];
+        let act = act.clamp(1, 6);
+        let clvl = [1, 18, 26, 34, 42, 50, 56][act];
         let relics = 3 * act as i32;
         let ilvl = (clvl - 2) as u8;
         let p = &mut self.p;
@@ -1199,8 +1200,10 @@ impl Game {
             keys: [done(3); 3],
             stage5: if done(4) { 3 } else { 0 },
             pearls: [done(4); 3],
-            stage6: 0,
-            shards: [false; 3],
+            stage6: if done(5) { 3 } else { 0 },
+            shards: [done(5); 3],
+            stage7: 0,
+            akeys: [false; 3],
             side: [0; 32],
         };
         self.waypoints = (0..=act).map(LevelId::land).collect();
@@ -1221,7 +1224,7 @@ impl Game {
     /// Nightmare / Hell: the world is rebuilt harder, the quests start over, your hero carries on.
     pub(crate) fn next_difficulty(&mut self) {
         let d = (self.quest.difficulty + 1).min(2);
-        self.quest = Quest { stage: 1, seals: [false; 3], difficulty: d, stage2: 0, runes: [false; 3], stage3: 0, sigils: [false; 3], stage4: 0, keys: [false; 3], stage5: 0, pearls: [false; 3], stage6: 0, shards: [false; 3], side: [0; 32] };
+        self.quest = Quest { stage: 1, seals: [false; 3], difficulty: d, stage2: 0, runes: [false; 3], stage3: 0, sigils: [false; 3], stage4: 0, keys: [false; 3], stage5: 0, pearls: [false; 3], stage6: 0, shards: [false; 3], stage7: 0, akeys: [false; 3], side: [0; 32] };
         self.parked.clear();
         // New tasks on the new difficulty.
         self.errands.clear();
@@ -1344,6 +1347,7 @@ impl Game {
         self.errand_enter();
         self.features_enter();
         self.mist_enter();
+        self.chaos_enter();
         self.gears_enter();
         self.reef_enter();
         self.isles_enter();
@@ -1493,6 +1497,7 @@ impl Game {
             };
         }
         match self.level.act() {
+            6 => self.quest.log7(),
             5 => self.quest.log6(),
             4 => self.quest.log5(),
             3 => self.quest.log4(),
@@ -1774,6 +1779,7 @@ impl Game {
         self.update_reef();
         self.update_isles();
         self.update_extras();
+        self.update_chaos();
         self.update_sky();
         self.update_rift();
         self.second_wind_t = (self.second_wind_t - DT).max(0.0);
@@ -1930,6 +1936,11 @@ impl Game {
                     self.say("A STAIR OF FAINT LIGHT. IT WON'T BEAR YOUR WEIGHT WHILE THE LEVIATHAN LIVES.".into());
                     return;
                 }
+                if act == 6 && !self.quest.churn_open() {
+                    self.portal_cd = 2.0;
+                    self.say("A HAIRLINE CRACK IN THE ZENITH'S FLOOR. SOMETHING BEHIND IT PUSHES BACK. NOT WHILE THE SUN STILL BURNS.".into());
+                    return;
+                }
                 if act == 4 && !self.quest.deep_open() {
                     self.portal_cd = 2.0;
                     self.say("AN OLD DIVING BELL. ITS CHAINS ARE LOCKED BY THE CLOCK'S OWN GEARS.".into());
@@ -1948,6 +1959,9 @@ impl Game {
                 }
                 if act == 5 && !self.waypoints.contains(&LevelId::Heavens) {
                     self.say("THE SHATTERED HEAVENS. FIND WINDWARD ANCHORAGE. MIND THE EDGES".into());
+                }
+                if act == 6 && !self.waypoints.contains(&LevelId::Churn) {
+                    self.say("THE CHURNING CHAOS. FIND STILLHOLD, THE MONASTERY THAT HOLDS STILL".into());
                 }
                 if act == 4 && !self.waypoints.contains(&LevelId::Deep) {
                     self.say("THE DROWNED DEEP. FIND BRINEHOLLOW, THE TOWN ON STILTS".into());

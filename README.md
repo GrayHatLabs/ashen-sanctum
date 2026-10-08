@@ -262,6 +262,25 @@ servants who grew souls hide from their maker.
   shapes (cubits, prisms and a marshal) that march in step. Kill the marshal and the squad falls into disorder.
 - Drifting steam and brass sparks; a ticking harpsichord outside, an engine's clangour in the works.
 
+## Act 7: the Churning Chaos (being built)
+
+Ending Solanthos takes the lid off the world. A crack opens in the Zenith's floor (Act 6, area 5), down into
+**the Churn**: a realm of raw chaos, where the ground is a patchwork of every world the ash fell on, and
+nothing holds its shape unless a mind holds it still. Start a test hero there with `--act7`.
+- **Stillhold**, a monastery that floats in the Churn: **Abbot Quiet** (who never speaks aloud), **Sister
+  Ferro** (chaos-steel, potions, food), **Brother Hush** (heals and resets skills) and **the Cutter** (gems).
+- **Six areas:** the Breach, the Drift of Worlds (chunks of every act stitched together), the Elemental
+  Tangle (lava, ice and water), the Spawning Mire, the Shattered Monastery and the Eye of the Churn.
+- **Chaos surges:** every 40-60 seconds the Churn shudders (the screen pulses violet), then patches of land
+  around you reshape: walls melt and rise, the ground turns to lava, ice or water. The roads between the ways
+  in and out never close, and the ground under your feet never changes.
+- **Anchor stones:** touch one and it lights; the land within ten tiles of it never shifts again.
+- **Stillness:** a meter that fills while you stand still (faster by a lit anchor). Full when a surge comes,
+  it's spent and the surge passes you by.
+- **The ground:** lava burns, ice and water chill.
+- Still to come: the Churn's monsters, three herald dungeons, Ylgrath and the Stillpoint, side content and
+  art (docs/ACT7_PLAN.md).
+
 ## After the Clockmaker
 
 Like Diablo 2, beating the game opens **Nightmare**, then **Hell**: talk to Tally. The

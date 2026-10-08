@@ -1741,6 +1741,55 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         save(&mut g, scr, "extra_bestiary");
         g.show_map = false;
     }
+    // Act 7, the Churning Chaos (chaos.rs): Stillhold, the Breach and an anchor stone, the Drift of Worlds,
+    // the Elemental Tangle, a surge coming and the land after it.
+    {
+        let mut g = Game::new(7, h);
+        g.act_start(6);
+        g.p.base_hp = 99999.0;
+        g.p.recalc();
+        g.p.hp = g.p.max_hp;
+        let quiet = |g: &mut Game| {
+            g.banner_t = 0.0;
+            g.event_cd = 9999.0;
+            g.message = None;
+            g.feats.surge_t = 9999.0;
+        };
+        quiet(&mut g);
+        idle(&mut g, 10);
+        save(&mut g, scr, "churn_town");
+        g.debug_goto(LevelId::Area(6, 1));
+        quiet(&mut g);
+        if let Some(a) = g.feats.anchors.iter().find(|a| a.level == g.level).cloned() {
+            g.mobs.retain(|m| (m.x - a.x).powi(2) + (m.y - a.y).powi(2) > 144.0);
+            (g.p.x, g.p.y) = (a.x + 2.5, a.y + 2.5);
+            idle(&mut g, 10);
+            save(&mut g, scr, "churn_anchor");
+            (g.p.x, g.p.y) = (a.x, a.y);
+            idle(&mut g, 4);
+            (g.p.x, g.p.y) = (a.x + 2.5, a.y + 2.5);
+            g.message = None;
+            g.floaters.clear();
+            idle(&mut g, 30);
+            save(&mut g, scr, "churn_anchor_lit");
+        }
+        g.debug_goto(LevelId::Area(6, 2));
+        quiet(&mut g);
+        g.mobs.retain(|m| (m.x - g.p.x).powi(2) + (m.y - g.p.y).powi(2) > 100.0);
+        idle(&mut g, 20);
+        save(&mut g, scr, "churn_drift");
+        g.debug_goto(LevelId::Area(6, 3));
+        quiet(&mut g);
+        g.mobs.retain(|m| (m.x - g.p.x).powi(2) + (m.y - g.p.y).powi(2) > 100.0);
+        idle(&mut g, 20);
+        save(&mut g, scr, "churn_tangle");
+        g.feats.surge_t = 0.01;
+        idle(&mut g, 60);
+        save(&mut g, scr, "churn_surge_warn");
+        idle(&mut g, 160);
+        g.message = None;
+        save(&mut g, scr, "churn_surge_after");
+    }
     // Side content (side.rs): a shrine and its blessing, Skrat One-Ear and his gang, the Charnel Well, the
     // Well-Witch, a lore page and the journal on the map.
     {

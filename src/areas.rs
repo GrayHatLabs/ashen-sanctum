@@ -583,7 +583,8 @@ pub const AREAS: &[AreaDef] = &[
         size: (96, 96),
         exits: &[(Side::W, 0.5, 4)],
         doors: &[(23, (60, 30))],
-        pass: None,
+        // Down into the Churn, once Solanthos is ended (Act 7).
+        pass: Some((6, (30, 64))),
         monsters: &[Kind::FallenSeraph, Kind::Zealot, Kind::Sentinel, Kind::StormDrake, Kind::Ophanim],
         packs: 20,
         style: Style { forest: 0.74, dead: 0.3, dirt: 0.45, rocks: 0.05 },
@@ -602,10 +603,96 @@ pub const AREAS: &[AreaDef] = &[
         packs: 8,
         style: Style { forest: 0.68, dead: 0.3, dirt: 0.5, rocks: 0.05 },
     },
+    // ---- Act 7: the Churning Chaos (docs/ACT7_PLAN.md; the land surges, chaos.rs) ----
+    AreaDef {
+        act: 6,
+        n: 1,
+        slug: "the_breach",
+        name: "THE BREACH",
+        tier: 14.0,
+        size: (96, 96),
+        exits: &[(Side::W, 0.5, 0), (Side::N, 0.5, 2)],
+        doors: &[],
+        // Back up through the crack to the Zenith.
+        pass: Some((5, (66, 70))),
+        monsters: &[Kind::FallenSeraph, Kind::Zealot, Kind::Wisp, Kind::Banshee],
+        packs: 16,
+        style: Style { forest: 0.74, dead: 0.35, dirt: 0.0, rocks: 0.05 },
+    },
+    AreaDef {
+        act: 6,
+        n: 2,
+        slug: "the_drift_of_worlds",
+        name: "THE DRIFT OF WORLDS",
+        tier: 14.4,
+        size: (96, 96),
+        exits: &[(Side::S, 0.5, 1), (Side::N, 0.5, 3)],
+        doors: &[],
+        pass: None,
+        monsters: &[Kind::Werewolf, Kind::IceTroll, Kind::BoilerBrute, Kind::Merrow, Kind::Sentinel, Kind::Ghoul],
+        packs: 18,
+        style: Style { forest: 0.7, dead: 0.25, dirt: 0.0, rocks: 0.05 },
+    },
+    AreaDef {
+        act: 6,
+        n: 3,
+        slug: "the_elemental_tangle",
+        name: "THE ELEMENTAL TANGLE",
+        tier: 14.8,
+        size: (96, 96),
+        exits: &[(Side::S, 0.5, 2), (Side::N, 0.5, 5), (Side::E, 0.5, 4)],
+        doors: &[],
+        pass: None,
+        monsters: &[Kind::IceWraith, Kind::StormDrake, Kind::Jelly, Kind::Wisp],
+        packs: 20,
+        style: Style { forest: 0.76, dead: 0.3, dirt: 0.0, rocks: 0.05 },
+    },
+    AreaDef {
+        act: 6,
+        n: 4,
+        slug: "the_spawning_mire",
+        name: "THE SPAWNING MIRE",
+        tier: 14.6,
+        size: (80, 80),
+        exits: &[(Side::W, 0.5, 3)],
+        doors: &[],
+        pass: None,
+        monsters: &[Kind::Drowned, Kind::Merrow, Kind::InkHorror],
+        packs: 12,
+        style: Style { forest: 0.68, dead: 0.4, dirt: 0.0, rocks: 0.05 },
+    },
+    AreaDef {
+        act: 6,
+        n: 5,
+        slug: "the_shattered_monastery",
+        name: "THE SHATTERED MONASTERY",
+        tier: 15.2,
+        size: (96, 96),
+        exits: &[(Side::S, 0.5, 3), (Side::E, 0.5, 6)],
+        doors: &[],
+        pass: None,
+        monsters: &[Kind::Cultist, Kind::Banshee, Kind::Zealot, Kind::Sentinel],
+        packs: 20,
+        style: Style { forest: 0.74, dead: 0.3, dirt: 0.0, rocks: 0.06 },
+    },
+    AreaDef {
+        act: 6,
+        n: 6,
+        slug: "the_eye_of_the_churn",
+        name: "THE EYE OF THE CHURN",
+        tier: 15.6,
+        size: (96, 96),
+        exits: &[(Side::W, 0.5, 5)],
+        doors: &[],
+        pass: None,
+        monsters: &[Kind::Ophanim, Kind::FallenSeraph, Kind::Werewolf, Kind::InkHorror],
+        packs: 20,
+        style: Style { forest: 0.76, dead: 0.3, dirt: 0.0, rocks: 0.05 },
+    },
 ];
 
 /// The town maps' roads out: (act, edge, where along it, the area it leads to).
-pub const TOWN_EXITS: &[(u8, Side, f32, u8)] = &[(0, Side::N, 0.69, 1), (1, Side::E, 0.0, 1), (2, Side::E, 0.0, 1), (3, Side::E, 0.0, 1), (4, Side::E, 0.0, 1), (5, Side::E, 0.0, 1)];
+pub const TOWN_EXITS: &[(u8, Side, f32, u8)] = &[(0, Side::N, 0.69, 1), (1, Side::E, 0.0, 1), (2, Side::E, 0.0, 1), (3, Side::E, 0.0, 1), (4, Side::E, 0.0, 1), (5, Side::E, 0.0, 1), (6, Side::E, 0.5, 1)];
 
 pub fn def(act: u8, n: u8) -> &'static AreaDef {
     AREAS.iter().find(|a| a.act == act && a.n == n).expect("area")
@@ -726,6 +813,7 @@ fn theme_of(act: u8) -> Theme {
         3 => Theme::Mechanus,
         4 => Theme::Deep,
         5 => Theme::Heavens,
+        6 => Theme::Churn,
         _ => Theme::Overworld,
     }
 }
@@ -746,6 +834,8 @@ fn palette(act: u8) -> Palette {
         3 => Palette { tree: PropKind::GearTower, tree2: PropKind::GasLamp, dead: PropKind::CogPile, rock: (PropKind::SteamVent, 1, 1), bush: PropKind::CogPile },
         4 => Palette { tree: PropKind::Kelp, tree2: PropKind::Kelp, dead: PropKind::Kelp, rock: (PropKind::Coral2, 1, 2), bush: PropKind::Kelp },
         5 => Palette { tree: PropKind::CloudTree, tree2: PropKind::CloudTree, dead: PropKind::MarbleRuin, rock: (PropKind::AngelStatue, 1, 1), bush: PropKind::SkyLamp },
+        // The Churn's own land: twisted, half-made things (its patches of other worlds use their palettes).
+        6 => Palette { tree: PropKind::TwistedTree, tree2: PropKind::MarbleRuin, dead: PropKind::TreeDead, rock: (PropKind::Rock, 1, 1), bush: PropKind::GlowShrooms },
         _ => Palette { tree: PropKind::TreePine, tree2: PropKind::TreeOak, dead: PropKind::TreeDead, rock: (PropKind::Rock, 1, 1), bush: PropKind::Bush },
     }
 }
@@ -757,6 +847,8 @@ fn pass_prop(to: usize) -> (PropKind, i32, i32, i32, i32) {
         3 => (PropKind::GearGate, -1, -3, 3, 2),
         4 => (PropKind::DivingBell, -1, -3, 3, 2),
         5 => (PropKind::LightStair, -1, -3, 2, 2),
+        // The crack in the Sanctum's floor, down into the Churn (art in stage 4: the mist wall for now).
+        6 => (PropKind::PassMist, 1, -1, 2, 3),
         _ => (PropKind::Pass, -1, -3, 3, 2),
     }
 }
@@ -844,7 +936,8 @@ impl Builder {
     /// Trees, rocks and bushes everywhere not kept clear (a thick wall of trees at the border), and patches of
     /// ash and dirt.
     fn wilds(&mut self, lv: &mut Level, rng: &mut Rng, st: Style) {
-        let pal = palette(self.act);
+        let own = palette(self.act);
+        let churn = self.act == 6;
         let forest = Noise::new(rng, 16, 9.0);
         let dirt = Noise::new(rng, 16, 7.0);
         for y in 0..self.h {
@@ -852,9 +945,11 @@ impl Builder {
                 if self.d.get(x, y) != Tile::Floor {
                     continue;
                 }
-                if dirt.at(x as f32, y as f32) < st.dirt && self.d.ground_at(x, y) == 0 {
+                if !churn && dirt.at(x as f32, y as f32) < st.dirt && self.d.ground_at(x, y) == 0 {
                     self.d.set_ground(x, y, 1);
                 }
+                let pal = if churn { palette(crate::chaos::ground_act(self.d.ground_at(x, y))) } else { palette(self.act) };
+                let _ = &own;
                 if self.keep[(y * self.w + x) as usize] {
                     continue;
                 }
@@ -881,6 +976,47 @@ impl Builder {
                 } else if r < st.rocks + 0.012 {
                     self.prop(lv, pal.bush, x, y, 1, 1);
                 }
+            }
+        }
+    }
+
+    /// Act 7's ground (chaos.rs codes): the roads stay roads; the rest is chaos-stone with this area's
+    /// patches (other worlds in the Drift, the elements in the Tangle, and so on).
+    fn churn_ground(&mut self, n: u8, rng: &mut Rng) {
+        use crate::chaos::*;
+        let cells = Noise::new(rng, 16, 9.0);
+        let blobs = Noise::new(rng, 16, 6.0);
+        let worlds = [G_ASH, G_SNOW, G_MIST, G_BRASS, G_SAND, G_MARBLE];
+        for y in 0..self.h {
+            for x in 0..self.w {
+                if self.d.ground_at(x, y) == G_ROAD {
+                    continue;
+                }
+                let c = cells.at(x as f32, y as f32);
+                let b = blobs.at(x as f32, y as f32);
+                let g = match n {
+                    // The Drift of Worlds: chunks of every act stitched together.
+                    2 => {
+                        let k = ((x / 11) * 7 + (y / 11) * 13 + (c * 5.0) as i32).rem_euclid(7) as usize;
+                        if k < 6 { worlds[k] } else { G_CHAOS }
+                    }
+                    // The Elemental Tangle: lava, ice and water pools.
+                    3 if b > 0.72 => G_LAVA,
+                    3 if b < 0.22 => G_ICE,
+                    3 if c > 0.7 => G_WATER,
+                    // The Spawning Mire: bubbling water and wet sand.
+                    4 if b > 0.55 => G_WATER,
+                    4 if c > 0.6 => G_SAND,
+                    // The Shattered Monastery: broken marble floors.
+                    5 if c > 0.45 => G_MARBLE,
+                    // The Eye: rings of lava round the calm.
+                    6 if b > 0.8 => G_LAVA,
+                    // The Breach: marble and ash falling in from above.
+                    1 if c > 0.68 => G_MARBLE,
+                    1 if b > 0.75 => G_ASH,
+                    _ => G_CHAOS,
+                };
+                self.d.set_ground(x, y, g);
             }
         }
     }
@@ -958,6 +1094,9 @@ pub fn area(def: &AreaDef, seed: u64) -> Level {
         lv.portals.push(Portal { x: px as f32 + 0.5, y: py as f32 + 0.5, kind: PortalKind::Pass(to) });
     }
     b.clear(arrive.0, arrive.1, 4);
+    if def.act == 6 {
+        b.churn_ground(def.n, &mut rng);
+    }
     b.wilds(&mut lv, &mut rng, def.style);
     // ---- roaming packs (none near where you arrive, the doors or the exits) ----
     let mut packs = 0;
@@ -1116,6 +1255,65 @@ pub fn hollowmere(seed: u64) -> Level {
     lv.explored = vec![false; (w * h) as usize];
     lv.d = b.d;
     lv.start = crate::world::town_center();
+    lv
+}
+
+/// Stillhold (Act 7's town map): a monastery that floats in the Churn, held together by its monks' unbroken
+/// meditation. Marble cloisters inside a wall, and the road east into the Breach.
+pub fn stillhold(seed: u64) -> Level {
+    let mut rng = Rng::new(seed ^ 0x57_111_401D);
+    let (w, h) = (80, 80);
+    let mut b = Builder::new(w, h, &mut rng);
+    b.act = 6;
+    let mut lv = empty_level(LevelId::Churn, "STILLHOLD".into(), Theme::Churn, 14.0, Dungeon::blank(1, 1, Tile::Void));
+    let (tx0, ty0, tx1, ty1) = (26, 28, 52, 50);
+    for y in ty0..=ty1 {
+        for x in tx0..=tx1 {
+            b.d.set_ground(x, y, crate::chaos::G_MARBLE);
+            let edge = x == tx0 || x == tx1 || y == ty0 || y == ty1;
+            let gate = (x == tx1 || x == tx0) && (38..=40).contains(&y) || (y == ty0 || y == ty1) && (38..=40).contains(&x);
+            if edge && !gate {
+                b.d.set(x, y, Tile::Wall);
+            }
+        }
+    }
+    b.clear(39, 39, 15);
+    for x in tx0..=tx1 {
+        b.d.set_ground(x, 39, crate::chaos::G_ROAD);
+    }
+    for y in ty0..=ty1 {
+        b.d.set_ground(39, y, crate::chaos::G_ROAD);
+    }
+    b.prop(&mut lv, PropKind::SkyHouse1, 28, 30, 4, 3);
+    b.prop(&mut lv, PropKind::SkyHouse2, 46, 30, 4, 3);
+    b.prop(&mut lv, PropKind::SkyHouse1, 28, 44, 4, 3);
+    b.prop(&mut lv, PropKind::HaloArch, 38, 33, 2, 2);
+    b.prop(&mut lv, PropKind::AngelStatue, 35, 36, 1, 1);
+    b.prop(&mut lv, PropKind::AngelStatue, 43, 36, 1, 1);
+    b.prop(&mut lv, PropKind::SkyLamp, 36, 42, 1, 1);
+    b.prop(&mut lv, PropKind::SkyLamp, 42, 42, 1, 1);
+    b.prop(&mut lv, PropKind::MarbleRuin, 47, 45, 1, 1);
+    lv.safe = Some((tx0 as f32 - 1.0, ty0 as f32 - 1.0, tx1 as f32 + 2.0, ty1 as f32 + 2.0));
+    lv.npcs = vec![
+        Npc::new("ABBOT QUIET", Role::Abbot, "npc_priest", 39.5, 36.0, 0),
+        Npc::new("SISTER FERRO", Role::Ferro, "npc_vesper", 44.5, 40.5, 6),
+        Npc::new("BROTHER HUSH", Role::Hush, "npc_healer", 33.5, 40.5, 2),
+        Npc::new("THE CUTTER", Role::Jeweler(6), "npc_jeweler6", 36.0, 44.5, 1),
+        Npc::new("MONK", Role::Monk(0), "npc_peasant", 31.0, 37.0, 2),
+        Npc::new("MONK", Role::Monk(1), "npc_peasant", 48.0, 37.5, 5),
+        Npc::new("MONK", Role::Monk(2), "npc_peasant", 41.5, 47.0, 1),
+    ];
+    for &(_, side, at, to) in TOWN_EXITS.iter().filter(|e| e.0 == 6) {
+        b.exit(&mut lv, side, at, to, (tx1 + 1, 39), 2.0);
+    }
+    b.road((tx0 - 1, 39), (tx0 - 6, 39), 2.5);
+    b.road((39, ty0 - 1), (39, ty0 - 6), 1.5);
+    b.road((39, ty1 + 1), (39, ty1 + 6), 3.5);
+    b.churn_ground(1, &mut rng);
+    b.wilds(&mut lv, &mut rng, Style { forest: 0.62, dead: 0.3, dirt: 0.0, rocks: 0.03 });
+    lv.explored = vec![false; (w * h) as usize];
+    lv.d = b.d;
+    lv.start = (39.5, 40.5);
     lv
 }
 

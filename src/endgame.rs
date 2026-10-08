@@ -104,7 +104,7 @@ impl Game {
 
     /// The act's bosses come back: its dungeons are rebuilt with fresh layouts and monsters.
     pub(crate) fn rekindle(&mut self, act: usize) {
-        self.p.rekindles[act.min(5)] += 1;
+        self.p.rekindles[act.min(6)] += 1;
         self.parked.retain(|id, _| !matches!(*id, LevelId::Dungeon(k, _) if DUNGEONS[k].act == act));
         self.sfx.push(Sfx::Boom);
         self.shake = self.shake.max(0.4);
@@ -117,7 +117,7 @@ impl Game {
     pub(crate) fn level_seed(&self, id: LevelId) -> u64 {
         match id {
             LevelId::Dungeon(k, _) => {
-                let n = self.p.rekindles[DUNGEONS[k].act.min(5)] as u64;
+                let n = self.p.rekindles[DUNGEONS[k].act.min(6)] as u64;
                 self.world_seed ^ n.wrapping_mul(0x9E37_79B9_7F4A_7C15)
             }
             LevelId::Rift(t) => self.world_seed ^ (t as u64).wrapping_mul(0x51ED_270B) ^ self.p.rift_runs as u64 * 0x2545_F491,

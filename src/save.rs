@@ -155,6 +155,7 @@ pub fn to_text(g: &Game) -> String {
     s += &format!("stage4={}\nkeys={}\n", q.stage4, bits(&q.keys));
     s += &format!("stage5={}\npearls={}\n", q.stage5, bits(&q.pearls));
     s += &format!("stage6={}\nshards={}\n", q.stage6, bits(&q.shards));
+    s += &format!("stage7={}\nakeys={}\n", q.stage7, bits(&q.akeys));
     let p = &g.p;
     let list = |v: &[u32]| v.iter().map(|n| n.to_string()).collect::<Vec<_>>().join(",");
     s += &format!("rekindles={}\nrift_best={}\nrift_runs={}\nembers={}\nember_points={}\n", list(&p.rekindles), p.rift_best, p.rift_runs, list(&p.embers.map(|e| e as u32)), p.ember_points);
@@ -226,7 +227,7 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
     }
     g.quest.stage6 = (num("stage6").unwrap_or(0.0) as u8).min(3);
     let nums = |k: &str| get(k).map(|v| v.split(',').filter_map(|n| n.parse::<u32>().ok()).collect::<Vec<_>>()).unwrap_or_default();
-    for (i, n) in nums("rekindles").into_iter().take(6).enumerate() {
+    for (i, n) in nums("rekindles").into_iter().take(7).enumerate() {
         g.p.rekindles[i] = n;
     }
     g.p.rift_best = num("rift_best").unwrap_or(0.0) as u16;
@@ -309,7 +310,14 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
             g.quest.shards[i] = c == '1';
         }
     }
+    g.quest.stage7 = (num("stage7").unwrap_or(0.0) as u8).min(3);
+    if let Some(s) = get("akeys") {
+        for (i, c) in s.chars().take(3).enumerate() {
+            g.quest.akeys[i] = c == '1';
+        }
+    }
     let act = match num("act").unwrap_or(0.0) as usize {
+        6 if g.quest.churn_open() => 6,
         5 if g.quest.skies_open() => 5,
         4 if g.quest.deep_open() => 4,
         3 if g.quest.gears_open() => 3,
@@ -342,7 +350,7 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
     }
     // You wake in the town of the act you saved in.
     if g.quest.difficulty > 0 || act > 0 {
-        g.rebuild_world(act.min(5));
+        g.rebuild_world(act.min(6));
     }
     g.p.recalc();
     g.p.hp = g.p.max_hp;

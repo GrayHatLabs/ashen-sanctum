@@ -66,6 +66,14 @@ pub enum Role {
     Brazier(u8),
     /// The Riftwarden in Windward Anchorage: opens the Ash Rifts, and spends Embers (endgame.rs).
     Riftwarden,
+    // ---- Stillhold (Act 7) ----
+    /// Abbot Quiet, who has not spoken aloud in forty years: the Act 7 story.
+    Abbot,
+    /// Sister Ferro, the smith of stilled chaos-steel: sells like Gerta.
+    Ferro,
+    /// Brother Hush: heals and resets skills.
+    Hush,
+    Monk(u8),
     // ---- The all-act systems (extras.rs) ----
     /// A rival adventurer, waiting in town with a challenge.
     Rival,
@@ -77,7 +85,7 @@ pub enum Role {
 }
 
 /// Jeweler names by act.
-pub const JEWELERS: [&str; 6] = ["MASTER ODO", "INGRID STONEHAND", "SILAS GREAVE", "THE LAPIDARY", "THE PEARL-SETTER", "THE GILDER"];
+pub const JEWELERS: [&str; 7] = ["MASTER ODO", "INGRID STONEHAND", "SILAS GREAVE", "THE LAPIDARY", "THE PEARL-SETTER", "THE GILDER", "THE CUTTER"];
 
 
 pub struct Npc {
@@ -134,6 +142,10 @@ pub struct Quest {
     pub stage6: u8,
     /// Sun-shards from Vael, the Tempest Drake and the Ophan Prime.
     pub shards: [bool; 3],
+    /// Act 7 (chaos.rs; the story comes in stage 3): 0 = haven't met Abbot Quiet ... 3 = Ylgrath is unmade;
+    /// the three Anchor Keys.
+    pub stage7: u8,
+    pub akeys: [bool; 3],
     /// Side quests (side.rs SIDES): 0 not given, 1 given, 2 done, 3 rewarded. Per difficulty, like D2.
     pub side: [u8; 32],
 }
@@ -143,11 +155,11 @@ pub const DIFFICULTIES: [&str; 3] = ["NORMAL", "NIGHTMARE", "HELL"];
 impl Quest {
     /// An act's story stage (0-3) and herald tokens, by act index.
     pub fn stage_of(&self, act: usize) -> u8 {
-        [self.stage, self.stage2, self.stage3, self.stage4, self.stage5, self.stage6][act.min(5)]
+        [self.stage, self.stage2, self.stage3, self.stage4, self.stage5, self.stage6, self.stage7][act.min(6)]
     }
 
     pub fn tokens_of(&self, act: usize) -> [bool; 3] {
-        [self.seals, self.runes, self.sigils, self.keys, self.pearls, self.shards][act.min(5)]
+        [self.seals, self.runes, self.sigils, self.keys, self.pearls, self.shards, self.akeys][act.min(6)]
     }
 
     pub fn seal_count(&self) -> usize {
@@ -224,6 +236,11 @@ impl Quest {
         self.stage5 >= 3
     }
 
+    /// Act 7 is open (Solanthos is ended, and the lid is off the Churn).
+    pub fn churn_open(&self) -> bool {
+        self.stage6 >= 3
+    }
+
     pub fn log6(&self) -> String {
         match self.stage6 {
             0 => "FIND SERAPHINE IN WINDWARD ANCHORAGE".into(),
@@ -232,6 +249,14 @@ impl Quest {
             2 => "ENTER THE TRUE SANCTUM. END SOLANTHOS".into(),
             _ if self.difficulty < 2 => "THE SUN IS OUT. SERAPHINE WANTS A WORD".into(),
             _ => "THE ASH HAS STOPPED FALLING. THE WORLD IS YOURS AGAIN".into(),
+        }
+    }
+
+    /// Act 7's quest log (the story itself comes in stage 3 of docs/ACT7_PLAN.md).
+    pub fn log7(&self) -> String {
+        match self.stage7 {
+            0 => "FIND ABBOT QUIET IN STILLHOLD. LIGHT THE ANCHOR STONES".into(),
+            _ => "SOMETHING AT THE HEART OF THE CHURN IS AWAKE".into(),
         }
     }
 
@@ -682,6 +707,40 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
             ];
             d
         }
+        Role::Abbot => Dialog::new(
+            "ABBOT QUIET",
+            &[
+                "(THE ABBOT DOES NOT SPEAK. HIS WORDS SIMPLY ARRIVE, THE WAY A THOUGHT DOES.)",
+                "YOU PUT OUT THE SUN. WE FELT IT HERE. HIS LIGHT WAS THE LID ON ALL OF THIS, AND NOW THE LID IS OFF.",
+                "STILLHOLD STANDS BECAUSE WE DO NOT STOP MEDITATING. THE LAND OUT THERE DOES NOT HOLD STILL FOR ANYONE. LIGHT THE ANCHOR STONES AND IT WILL HOLD STILL FOR YOU.",
+                "WHEN THE GROUND SHUDDERS, A SURGE IS COMING. BE STILL, IF YOU CAN. STILLNESS IS THE ONLY ARMOUR THAT WORKS HERE.",
+            ],
+        ),
+        Role::Ferro => {
+            let mut d = Dialog::new("SISTER FERRO", &["CHAOS-STEEL, STILLED IN THE FORGE. IT HOLDS AN EDGE AS LONG AS YOU HOLD YOUR NERVE. POTIONS TOO, AND BREAD THAT STAYS BREAD."]);
+            d.options = vec![
+                (format!("HEALING POTION  {} GOLD", Ware::HealthPotion.price()), Act::Buy(Ware::HealthPotion)),
+                (format!("MANA POTION  {} GOLD", Ware::ManaPotion.price()), Act::Buy(Ware::ManaPotion)),
+                (format!("LOAF OF BREAD  {} GOLD", Ware::Bread.price()), Act::Buy(Ware::Bread)),
+                (format!("ROAST  {} GOLD", Ware::Roast.price()), Act::Buy(Ware::Roast)),
+                ("SHOW ME YOUR GEAR (AND BUY MINE)".into(), Act::Shop),
+                ("LEAVE".into(), Act::Close),
+            ];
+            d
+        }
+        Role::Hush => {
+            let mut d = Dialog::new("BROTHER HUSH", &["SIT. BREATHE. LET THE WOUNDS FORGET THEY WERE EVER OPEN."]);
+            d.heals = true;
+            d
+        }
+        Role::Monk(k) => {
+            let lines = [
+                "THE WALLS FLICKER IF I STOP. SO I DON'T STOP. I HAVEN'T STOPPED IN NINE YEARS.",
+                "THE ANCHOR STONES WERE OURS ONCE. THE TWIN MONASTERY RAISED THEM, BEFORE IT LOST ITS FOCUS AND FELL.",
+                "SOMETHING AT THE HEART OF THE CHURN IS AWAKE NOW. IT HAS NO SHAPE. IT IS TRYING THEM ALL ON.",
+            ];
+            Dialog::new("MONK", &[lines[k as usize % 3]])
+        }
         Role::Aurel => {
             let mut d = Dialog::new("SISTER AUREL", &["THE SUN WAS KIND, ONCE. LET A LITTLE OF WHAT WAS KIND IN IT MEND YOU."]);
             d.heals = true;
@@ -778,8 +837,9 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
                 "FACETS ARE ONLY ANGLES. ANGLES I UNDERSTAND. THREE STONES IN, ONE BETTER STONE OUT.",
                 "PEARLS, GEMS, THE EYES OF FISH THAT SHOULDN'T HAVE EYES. I SET ANYTHING THAT SHINES.",
                 "SUNLIGHT HARDENS INTO GOLD UP HERE, IF YOU WAIT LONG ENOUGH. I'VE BEEN WAITING A LONG TIME.",
+                "A GEM IS CHAOS THAT HELD STILL LONG ENOUGH TO GROW HARD. I HELP IT ALONG.",
             ];
-            let mut d = Dialog::new(JEWELERS[k as usize % 6], &[greet[k as usize % 6]]);
+            let mut d = Dialog::new(JEWELERS[k as usize % 7], &[greet[k as usize % 7]]);
             d.options = vec![
                 ("JOIN MY GEMS (3 ALIKE MAKE 1 BETTER)".into(), Act::Combine),
                 ("SOCKETS: ADD THEM, OR TAKE GEMS OUT".into(), Act::Jewel),

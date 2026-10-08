@@ -156,6 +156,17 @@ pub struct Feats {
     /// Bram's crates found, the Weeping Seraph's tears (bits).
     pub cargo: u8,
     pub tears: u8,
+    // ---- Act 7 (chaos.rs) ----
+    /// Seconds to the next surge, and the warning before it; surges so far.
+    pub surge_t: f32,
+    pub surge_warn: f32,
+    pub surges: u32,
+    /// The stillness meter (0-100).
+    pub stillness: f32,
+    pub chaos_placed: Vec<LevelId>,
+    pub anchors: Vec<crate::chaos::Anchor>,
+    /// The roads that never close, for this level.
+    pub lifeline: (Option<LevelId>, Vec<bool>),
 }
 
 impl Game {

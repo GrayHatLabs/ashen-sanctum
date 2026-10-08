@@ -43,6 +43,7 @@ mod gears;
 mod reef;
 mod isles;
 mod extras;
+mod chaos;
 mod world;
 
 use game::{Game, Input};
@@ -202,14 +203,14 @@ fn main() -> Result<(), String> {
     // --act2: a ready-made level 18 character in Kaldholm, with its own save file
     // (save_act2.txt) so your real character is never touched. --act2 --new starts it over.
     // --act3 / --act4 / --act5 likewise: level 26 in Mournhold, 34 in the Last Escapement, 42 in Brinehollow.
-    let test_act = [("--act2", 1), ("--act3", 2), ("--act4", 3), ("--act5", 4), ("--act6", 5)].iter().find(|(f, _)| args.iter().any(|a| a == f)).map(|&(_, n)| n);
+    let test_act = [("--act2", 1), ("--act3", 2), ("--act4", 3), ("--act5", 4), ("--act6", 5), ("--act7", 6)].iter().find(|(f, _)| args.iter().any(|a| a == f)).map(|&(_, n)| n);
     let act2 = test_act.is_some();
     if let Some(n) = test_act {
         save::use_file(&format!("save_act{}.txt", n + 1));
     }
     // The title screen and character select (heroes in heroes/), unless a test flag skips them:
     // --new / --act2 / --vampire / --sorceress / --level use the old single save.txt flow.
-    let skip_menu = ["--new", "--act2", "--act3", "--act4", "--act5", "--act6", "--vampire", "--sorceress", "--inventor", "--valkyrie", "--berserker", "--reaper", "--druid", "--inquisitor", "--level"].iter().any(|f| args.iter().any(|a| a == f));
+    let skip_menu = ["--new", "--act2", "--act3", "--act4", "--act5", "--act6", "--act7", "--vampire", "--sorceress", "--inventor", "--valkyrie", "--berserker", "--reaper", "--druid", "--inquisitor", "--level"].iter().any(|f| args.iter().any(|a| a == f));
     let mut menu: Option<menu::Menu> = if skip_menu { None } else { Some(menu::Menu::new(save::list_heroes())) };
     // Continue the saved character (fresh world from the same seed), unless --new.
     let saved = if menu.is_some() || args.iter().any(|a| a == "--new") { None } else { save::read() };

@@ -124,6 +124,9 @@ pub struct Art {
     /// Act 6 overland ground: cloud marble, pale sky grass, chain bridges.
     marble: Vec<Sprite>,
     sky_grass: Sprite,
+    /// Act 7 (chaos.rs ground codes): chaos-stone, and lava (stand-ins graded from the stone set).
+    chaos: Vec<Sprite>,
+    lava: Sprite,
     bridge: Sprite,
     /// Item and prop sprites (anchored at the bottom centre, where they sit on the floor).
     items: Vec<(&'static str, Sprite)>,
@@ -160,6 +163,7 @@ fn theme_grade(t: Theme) -> (u32, f32, f32) {
         Theme::Spire => (0x201838, 0.4, 0.8),
         Theme::Wheel => (0x4a3a10, 0.3, 0.9),
         Theme::Zenith => (0x2a1008, 0.4, 0.8),
+        Theme::Churn => (0x4a2060, 0.38, 0.85),
     }
 }
 
@@ -320,6 +324,8 @@ impl Art {
         let marble = if marble.is_empty() { (0..2).map(|v| sprites::fallback_ground(v, 0xc8c0b0, 0xe8e0d0)).collect() } else { marble };
         let sky_grass = exact("sky_grass").unwrap_or_else(|| sprites::fallback_ground(9, 0xa09058, 0xc8b878));
         let bridge = exact("chain_bridge").unwrap_or_else(|| sprites::fallback_ground(10, 0x5a4028, 0x7a5a38));
+        let chaos: Vec<Sprite> = stone.iter().map(|s| grade(s, (0x5a2878, 0.42, 0.85))).collect();
+        let lava = exact("chaos_lava").unwrap_or_else(|| grade(&stone[0], (0xff5a10, 0.7, 1.0)));
         let items: Vec<(&'static str, Sprite)> = ITEMS
             .iter()
             .map(|d| {
@@ -331,7 +337,7 @@ impl Art {
             .collect();
         let fallback_props = sprites::PROP_NAMES.iter().filter(|n| !items.iter().any(|i| i.0 == **n)).map(|n| (*n, sprites::fallback_prop(n))).collect();
         let missing = sprites::fallback_prop("rock1");
-        Art { chars, floors, walls, grass, dirt, road, snow, lake, snow_road, mist_earth, moss, mist_road, brass, verdigris, conveyor, sea_sand, flats, deck, marble, sky_grass, bridge, items, fallback_props, missing }
+        Art { chars, floors, walls, grass, dirt, road, snow, lake, snow_road, mist_earth, moss, mist_road, brass, verdigris, conveyor, sea_sand, flats, deck, marble, sky_grass, bridge, chaos, lava, items, fallback_props, missing }
     }
 
     pub fn floor(&self, theme: Theme, ground: u8, var: usize) -> &Sprite {
@@ -347,6 +353,22 @@ impl Art {
                 1 => &self.lake,
                 2 => &self.snow_road,
                 _ => &self.snow[var % self.snow.len()],
+            };
+        }
+        if theme == Theme::Churn {
+            use crate::chaos::*;
+            return match ground {
+                G_ASH => &self.grass[var % self.grass.len()],
+                G_ROAD => &self.marble[var % self.marble.len()],
+                G_SNOW => &self.snow[var % self.snow.len()],
+                G_MIST => &self.mist_earth[var % self.mist_earth.len()],
+                G_BRASS => &self.brass[var % self.brass.len()],
+                G_SAND => &self.sea_sand[var % self.sea_sand.len()],
+                G_LAVA => &self.lava,
+                G_ICE => &self.lake,
+                G_WATER => &self.flats,
+                G_MARBLE => &self.marble[var % self.marble.len()],
+                _ => &self.chaos[var % self.chaos.len()],
             };
         }
         if theme == Theme::Heavens {
@@ -513,6 +535,7 @@ impl Art {
             "hoarder" => ("goblin", 0.85, 0xffd040, 0.45),
             "yeti_cub" => ("yeti", 0.55, 0xffffff, 0.15),
             "automaton" => ("inquisitor", 1.0, 0xe0c060, 0.45),
+            "npc_jeweler6" => ("npc_jeweler3", 1.0, 0x8060c0, 0.4),
             "boss_junkgolem" => ("boiler_brute", 1.6, 0x8a6040, 0.4),
             "npc_magistrate" => ("inquisitor", 1.05, 0x303030, 0.3),
             "boss_gravedigger" => ("ghoul", 1.7, 0x6a6050, 0.4),

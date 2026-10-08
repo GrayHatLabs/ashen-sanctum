@@ -45,7 +45,7 @@ pub const RIVALS: [(&str, &str, &str); 8] = [
 ];
 
 /// The arena's challenges, by act.
-pub const ARENAS: [&str; 6] = ["THE ASH PIT", "THE FROST RING", "THE BLOOD COURT", "THE GEAR PIT", "THE DROWNED RING", "THE SUN COURT"];
+pub const ARENAS: [&str; 7] = ["THE ASH PIT", "THE FROST RING", "THE BLOOD COURT", "THE GEAR PIT", "THE DROWNED RING", "THE SUN COURT", "THE CHAOS PIT"];
 
 /// Caravan merchants' names.
 const MERCHANTS: [&str; 4] = ["HESKETH THE TRAVELLER", "MAMA OLUWA", "THE SILK BROTHERS", "PEDDLER QUILL"];
@@ -81,8 +81,8 @@ pub struct Extras {
     pub caravan_ambush: u8,
     /// The arena: the run in progress, your best times by act (0 none), first clears (bits per difficulty).
     pub arena: Option<ArenaRun>,
-    pub arena_best: [f32; 6],
-    pub arena_cleared: [u8; 6],
+    pub arena_best: [f32; 7],
+    pub arena_cleared: [u8; 7],
     pub started: bool,
 }
 
@@ -120,7 +120,7 @@ pub fn fmt_time(t: f32) -> String {
     if t <= 0.0 {
         return "--".into();
     }
-    format!("{}:{:04.1}", (t / 60.0) as u32, t % 60.0)
+    format!("{}:{:04.1}", (t / 60.0) as u32, t % 70.0)
 }
 
 /// The arena's best-time board (shared by all heroes): (act, seconds, hero, class) lines.
@@ -147,7 +147,7 @@ pub fn post_time(act: u8, t: f32, hero: &str, class: &str) -> Option<usize> {
     b.push((act, t, hero.replace('|', " "), class.into()));
     let mut out: Vec<(u8, f32, String, String)> = vec![];
     let mut place = None;
-    for a in 0..6u8 {
+    for a in 0..7u8 {
         let mut rows: Vec<_> = b.iter().filter(|r| r.0 == a).cloned().collect();
         rows.sort_by(|x, y| x.1.partial_cmp(&y.1).unwrap_or(std::cmp::Ordering::Equal));
         rows.truncate(5);
@@ -242,7 +242,7 @@ impl Game {
         }
         if let LevelId::Arena(a) = self.level {
             self.ex.arena = Some(ArenaRun { act: a, wave: 0, time: 0.0, pause: 3.0, done: false });
-            self.say(format!("{}: FIVE WAVES, THEN THE CHAMPION. THE CLOCK STARTS WITH THE FIRST", ARENAS[a as usize % 6]));
+            self.say(format!("{}: FIVE WAVES, THEN THE CHAMPION. THE CLOCK STARTS WITH THE FIRST", ARENAS[a as usize % 7]));
         } else {
             self.ex.arena = None;
         }
@@ -598,7 +598,7 @@ impl Game {
         );
         let reached = self.level.act().max(self.highest_act());
         let mut opts = vec![];
-        for a in 0..=reached.min(5) {
+        for a in 0..=reached.min(6) {
             let best = self.ex.arena_best[a];
             opts.push((format!("{} (ACT {})  BEST {}", ARENAS[a], a + 1, fmt_time(best)), Act::Arena(a as u8)));
         }
@@ -611,7 +611,7 @@ impl Game {
     /// The furthest act this hero has reached (on this difficulty).
     fn highest_act(&self) -> usize {
         let q = &self.quest;
-        [q.stage2, q.stage3, q.stage4, q.stage5, q.stage6].iter().filter(|&&s| s > 0).count()
+        [q.stage2, q.stage3, q.stage4, q.stage5, q.stage6, q.stage7].iter().filter(|&&s| s > 0).count()
     }
 
     pub(crate) fn arena_choice(&mut self, a: u8) {
@@ -696,7 +696,7 @@ impl Game {
     }
 
     fn arena_won(&mut self, act: u8, t: f32) {
-        let a = act as usize % 6;
+        let a = act as usize % 7;
         let first = self.ex.arena_cleared[a] & (1 << self.quest.difficulty) == 0;
         self.ex.arena_cleared[a] |= 1 << self.quest.difficulty;
         let best = self.ex.arena_best[a];
@@ -739,9 +739,9 @@ pub fn draw_arena_hud(g: &Game, scr: &mut crate::gfx::Screen) {
     } else {
         format!("WAVE {}/{ARENA_WAVES}", r.wave)
     };
-    let label = format!("{}  {wave}  {}", ARENAS[r.act as usize % 6], fmt_time(r.time.max(0.01)));
+    let label = format!("{}  {wave}  {}", ARENAS[r.act as usize % 7], fmt_time(r.time.max(0.01)));
     scr.text(&label, w / 2, 62, rgb(0xffc080), Align::Center, 1);
-    let best = g.ex.arena_best[r.act as usize % 6];
+    let best = g.ex.arena_best[r.act as usize % 7];
     if best > 0.0 {
         scr.text(&format!("YOUR BEST {}", fmt_time(best)), w / 2, 73, rgb(0xa08070), Align::Center, 1);
     }
@@ -795,10 +795,10 @@ pub fn from_lines(get: &dyn Fn(&str) -> Option<String>, e: &mut Extras) {
     }
     if let Some(v) = get("arena") {
         if let Some((b, c)) = v.split_once(';') {
-            for (k, t) in b.split(',').enumerate().take(6) {
+            for (k, t) in b.split(',').enumerate().take(7) {
                 e.arena_best[k] = t.parse().unwrap_or(0.0);
             }
-            for (k, t) in c.split(',').enumerate().take(6) {
+            for (k, t) in c.split(',').enumerate().take(7) {
                 e.arena_cleared[k] = t.parse().unwrap_or(0);
             }
         }

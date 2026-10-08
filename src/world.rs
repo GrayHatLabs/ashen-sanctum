@@ -21,6 +21,8 @@ pub enum LevelId {
     Deep,
     /// Act 6's overland: the Skyreach and Windward Anchorage, islands above the clouds.
     Heavens,
+    /// Act 7's town map: Stillhold, the floating monastery in the Churn (chaos.rs).
+    Churn,
     /// (dungeon index into DUNGEONS, floor from 0)
     Dungeon(usize, usize),
     /// An outdoor area of an act (areas.rs): (act, area from 1). The act's town map keeps its own id.
@@ -34,12 +36,12 @@ pub enum LevelId {
 impl LevelId {
     /// An open-air map with a town (one per act).
     pub fn overland(self) -> bool {
-        matches!(self, LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep | LevelId::Heavens | LevelId::Area(..))
+        matches!(self, LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep | LevelId::Heavens | LevelId::Churn | LevelId::Area(..))
     }
 
     /// An act's town map (the overland with the town; the wild areas around it don't count).
     pub fn town(self) -> bool {
-        matches!(self, LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep | LevelId::Heavens)
+        matches!(self, LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep | LevelId::Heavens | LevelId::Churn)
     }
 
     /// 0 for Act 1 ... 4 for Act 5.
@@ -51,6 +53,7 @@ impl LevelId {
             LevelId::Mechanus => 3,
             LevelId::Deep => 4,
             LevelId::Heavens => 5,
+            LevelId::Churn => 6,
             LevelId::Dungeon(k, _) => DUNGEONS[k].act,
             LevelId::Area(a, _) => a as usize,
             // The rifts open from Windward Anchorage, and lead back there.
@@ -67,7 +70,8 @@ impl LevelId {
             2 => LevelId::Mistwood,
             3 => LevelId::Mechanus,
             4 => LevelId::Deep,
-            _ => LevelId::Heavens,
+            5 => LevelId::Heavens,
+            _ => LevelId::Churn,
         }
     }
 }
@@ -109,10 +113,12 @@ pub enum Theme {
     Spire,
     Wheel,
     Zenith,
+    /// Act 7 overland: the Churn, a patchwork of every world, and chaos-stone (chaos.rs ground codes).
+    Churn,
 }
 
 impl Theme {
-    pub const ALL: [Theme; 30] = [
+    pub const ALL: [Theme; 31] = [
         Theme::Overworld,
         Theme::Crypt,
         Theme::Warrens,
@@ -143,11 +149,12 @@ impl Theme {
         Theme::Spire,
         Theme::Wheel,
         Theme::Zenith,
+        Theme::Churn,
     ];
 
     /// Open-air (grass or snow ground, palisade walls).
     pub fn open(self) -> bool {
-        matches!(self, Theme::Overworld | Theme::Tundra | Theme::Mistwood | Theme::Mechanus | Theme::Deep | Theme::Heavens)
+        matches!(self, Theme::Overworld | Theme::Tundra | Theme::Mistwood | Theme::Mechanus | Theme::Deep | Theme::Heavens | Theme::Churn)
     }
 
     /// Act 4 themes (drifting steam and brass sparks).
@@ -210,6 +217,8 @@ impl Theme {
             Theme::Spire => (240.0, 0.12),
             Theme::Wheel => (300.0, 0.22),
             Theme::Zenith => (240.0, 0.1),
+            // The Churn: a bruised violet-gold half light, everywhere and from nowhere.
+            Theme::Churn => (340.0, 0.36),
             _ => (250.0, 0.10),
         }
     }
@@ -881,6 +890,7 @@ pub fn generate(id: LevelId, seed: u64) -> Level {
         LevelId::Mechanus => mechanus(seed),
         LevelId::Deep => deep(seed),
         LevelId::Heavens => heavens(seed),
+        LevelId::Churn => crate::areas::stillhold(seed),
         LevelId::Rift(t) => rift(t, seed),
         LevelId::Arena(a) => arena(a, seed),
         LevelId::Dungeon(k, f) => dungeon_floor(k, f, seed),
@@ -943,6 +953,7 @@ pub fn add_elites(lv: &mut Level, seed: u64) {
         LevelId::Mechanus => 0x1111,
         LevelId::Deep => 0x1211,
         LevelId::Heavens => 0x1311,
+        LevelId::Churn => 0x1811,
         LevelId::Rift(t) => 0x1411 + t as u64,
         LevelId::Arena(a) => 0x1611 + a as u64,
         LevelId::Dungeon(k, f) => 0x0e12 + k as u64 * 16 + f as u64,
@@ -950,7 +961,7 @@ pub fn add_elites(lv: &mut Level, seed: u64) {
     };
     let mut rng = Rng::new(seed ^ salt.wrapping_mul(0x9e37_79b9));
     let (champs, elites) = match lv.id {
-        LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep | LevelId::Heavens => (5, 3),
+        LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep | LevelId::Heavens | LevelId::Churn => (5, 3),
         LevelId::Dungeon(_, f) => (1 + (f > 0) as usize, 1),
         LevelId::Rift(t) => (2 + t as usize / 4, 1 + t as usize / 8),
         LevelId::Arena(_) => (0, 0),
@@ -2271,7 +2282,7 @@ pub fn rift(tier: u16, seed: u64) -> Level {
 /// Bosses past Act 1 fell in seconds (balance pass 2026-10-07, scripts/balance-bench.sh): more life by
 /// act, so a herald lasts ~8 s and an act's last boss ~20-30 s at that act's power.
 pub fn boss_life(act: usize) -> f32 {
-    [1.0, 2.5, 3.0, 3.5, 4.0, 4.5][act.min(5)]
+    [1.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0][act.min(6)]
 }
 
 /// One floor of a dungeon: stairs up in the first room, stairs down (or the boss)
