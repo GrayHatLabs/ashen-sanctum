@@ -17,20 +17,20 @@ Act 6's side content and the all-act systems.
 - **Stillness meter:** yes.
 - **Extras:** all four (Chaos Roulette, the Wandering Room, Gravity Wells, Echo Hunt).
 - **The user's own idea: Ylgrath can only be destroyed with an object from Mechanus (Act 4).**
-  - Beat him without it and he does not die: he comes apart and pulls himself back together, mocks you,
-    and in his gloating tells you what can unmake him and where it is.
-  - The object (working name): **the Stillpoint**, the Clockmaker's first and perfect gear, the one piece of
-    absolute order ever made. Chaos cannot touch it.
-  - It lies in Mechanus, back in Act 4 (by waypoint), in a sealed place that only opens once Ylgrath has
-    told you about it, so nobody finds it early by accident. Candidate spots: deep in the Heart of the Clock,
-    or behind the Timeless Vault.
-  - With the Stillpoint in your bag, the final fight changes: at the end the Stillpoint locks Ylgrath into
-    one shape and he can die. Then the ending, then Nightmare.
+  - **How it plays (agreed with the user, 2026-10-08):**
+    1. **First fight, without the Stillpoint:** you beat him and he comes apart. He drops a fair reward (a
+       rare, some gold, his first lore page) but no uniques and no ancients.
+    2. While he pulls himself back together he gloats, and tells you what can unmake him: "only the first gear
+       of the Clockmaker could hold me still... and it's lost in Mechanus." Then he flees deeper into the Eye.
+    3. **The Eye seals behind him.** His chamber stays shut until you carry the Stillpoint, so leaving and
+       coming back does not bring him back: nothing to farm. The quest log points you to Mechanus.
+    4. Back in Act 4 by waypoint, a sealed spot (deep in the Heart of the Clock, or behind the Timeless
+       Vault) has opened since his hint. It holds **the Stillpoint**, the Clockmaker's first and perfect gear.
+    5. **The real fight:** with the Stillpoint, the Eye opens and he fights at full strength. At the end the
+       Stillpoint locks him into one shape and he truly dies: the full boss loot (his uniques), then the
+       ending, then Nightmare.
+    6. Afterwards he is like every act boss: the Rekindling Brazier can bring him back for normal boss loot.
   - In Nightmare and Hell the Stillpoint has to be found again (it resets with the difficulty, like quests).
-  - **Loot (user, 2026-10-08):** beaten without the Stillpoint, Ylgrath drops very little (a little gold,
-    no uniques, no ancients), so it isn't worth farming the fight that doesn't kill him. The full boss
-    loot only drops when the Stillpoint lets him truly die.
-
 ## Where it fits
 
 - **Unlock:** after Solanthos (Act 6).
