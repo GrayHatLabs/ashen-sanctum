@@ -243,6 +243,24 @@ window.CATALOG = {
       "slug": "icebound_longship",
       "theme": "wreck",
       "tier": 4.400000095367432
+    },
+    {
+      "act": 2,
+      "boss": "boss_gravedigger",
+      "floors": 2,
+      "name": "THE GRAVEDIGGER'S CELLAR",
+      "slug": "gravediggers_cellar",
+      "theme": "barrow",
+      "tier": 6.199999809265137
+    },
+    {
+      "act": 2,
+      "boss": "boss_elspeth",
+      "floors": 1,
+      "name": "THE HOLLOW MANOR",
+      "slug": "hollow_manor",
+      "theme": "castle",
+      "tier": 6.599999904632568
     }
   ],
   "lands": {
@@ -642,7 +660,8 @@ window.CATALOG = {
     "area:2:1": {
       "act": 2,
       "doors": [
-        8
+        8,
+        27
       ],
       "exits": [
         [
@@ -699,7 +718,9 @@ window.CATALOG = {
     },
     "area:2:3": {
       "act": 2,
-      "doors": [],
+      "doors": [
+        28
+      ],
       "exits": [
         [
           2,
@@ -1879,6 +1900,30 @@ window.CATALOG = {
       "kind": "boss_hrolf",
       "name": "HROLF ICE-BEARD",
       "prop": false
+    },
+    {
+      "boss": true,
+      "kind": "boss_gravedigger",
+      "name": "THE GRAVEDIGGER",
+      "prop": false
+    },
+    {
+      "boss": true,
+      "kind": "boss_elspeth",
+      "name": "LADY ELSPETH",
+      "prop": false
+    },
+    {
+      "boss": false,
+      "kind": "vampire_bride",
+      "name": "VAMPIRE BRIDE",
+      "prop": false
+    },
+    {
+      "boss": false,
+      "kind": "shade",
+      "name": "THE WAILING SHADE",
+      "prop": false
     }
   ],
   "npcs": [
@@ -2522,6 +2567,31 @@ window.CATALOG = {
     {
       "h": 1,
       "kind": "shrine_frost",
+      "w": 1
+    },
+    {
+      "h": 3,
+      "kind": "ent_cellar",
+      "w": 3
+    },
+    {
+      "h": 3,
+      "kind": "ent_manor",
+      "w": 3
+    },
+    {
+      "h": 1,
+      "kind": "shrine_mist",
+      "w": 1
+    },
+    {
+      "h": 1,
+      "kind": "bell_shrine",
+      "w": 1
+    },
+    {
+      "h": 1,
+      "kind": "tomb_shade",
       "w": 1
     },
     {

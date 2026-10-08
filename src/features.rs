@@ -93,6 +93,22 @@ pub struct Feats {
     pub stock: Vec<(Role, Vec<Option<Item>>)>,
     /// Whose wares the open conversation shows.
     pub trading: Option<Role>,
+    // ---- Act 3 (mist.rs) ----
+    pub mist_placed: Vec<LevelId>,
+    /// The wolf moon: seconds left, and until the next.
+    pub moon: f32,
+    pub moon_cd: f32,
+    /// The shade: 0 not met, 1 haunting, 2 at rest; until it comes back; whether you know where its grave is.
+    pub shade: u8,
+    pub shade_cd: f32,
+    pub shade_known: bool,
+    pub tomb_level: Option<LevelId>,
+    pub tomb_spot: (f32, f32),
+    /// Bells rung, brides slain (bits), Lady Elspeth's keepsakes found.
+    pub bells: u8,
+    pub bell_spot: [(f32, f32); 3],
+    pub brides: u8,
+    pub keepsakes: u8,
 }
 
 impl Game {
@@ -683,6 +699,7 @@ impl Game {
                 d.options = vec![("CHALLENGE THE JARL TO A DUEL".into(), Act::Duel), ("FAREWELL".into(), Act::Close)];
                 Some(d)
             }
+            Role::BogWitch => Some(self.witch_dialog()),
             Role::YetiCub => Some(Dialog::new("A LOST YETI CUB", &["MRRR. (IT SNIFFS YOUR HAND AND WON'T LEAVE YOUR SIDE.)"])),
             Role::Rescue(_) => Some(Dialog::new("TRAPPED VILLAGER", &["HELP! THE FIRE! GET ME OUT OF HERE!"])),
             _ => None,

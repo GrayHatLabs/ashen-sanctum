@@ -113,6 +113,7 @@ impl Shrine {
 pub fn shrine_art(act: u8) -> &'static str {
     match act {
         1 => "shrine_frost",
+        2 => "shrine_mist",
         _ => "shrine_ash",
     }
 }
@@ -221,10 +222,56 @@ pub const SUPERS: &[SuperDef] = &[
         page: Some(8),
         camp: None,
     },
+    // ---- Act 3: the Mistwood ----
+    SuperDef {
+        name: "THE PALE HUNTSMAN",
+        kind: Kind::Werewolf,
+        home: LevelId::Area(2, 3),
+        spot: (0, 0),
+        mods: crate::mobs::M_FAST | crate::mobs::M_VAMPIRE,
+        gang: (Kind::Werewolf, 2),
+        tint: 0xe8e0d0,
+        line: "I SMELL YOUR FEAR, LITTLE HUNTER...",
+        unique: "pale",
+        page: Some(10),
+        camp: None,
+    },
+    SuperDef {
+        name: "SISTER MOURNWAIL",
+        kind: Kind::Banshee,
+        home: LevelId::Area(2, 2),
+        spot: (0, 0),
+        mods: M_STRONG | crate::mobs::M_MANABURN,
+        gang: (Kind::Banshee, 2),
+        tint: 0xc0d0ff,
+        line: "SING WITH US... SING WITH US FOREVER...",
+        unique: "mournwail",
+        page: Some(11),
+        camp: None,
+    },
+    SuperDef {
+        name: "BLACKMOOR THE GIBBET-HANGED",
+        kind: Kind::Cultist,
+        home: LevelId::Area(2, 4),
+        spot: (0, 0),
+        mods: M_STONE | M_FIERY,
+        gang: (Kind::Cultist, 3),
+        tint: 0x707060,
+        line: "THEY HANGED ME TWICE. IT DIDN'T TAKE.",
+        unique: "blackmoor",
+        page: Some(12),
+        camp: Some(PropKind::Gallows),
+    },
+    // Count Vardak's brides (mist.rs hides them in three areas).
+    SuperDef { name: "LUCRETIA, VARDAK'S BRIDE", kind: Kind::Bride, home: LevelId::Area(2, 99), spot: (0, 0), mods: M_FAST | M_VAMPIRE, gang: (Kind::Cultist, 0), tint: 0xf0d0e0, line: "MY LORD WILL DRINK YOU DRY.", unique: "bride", page: None, camp: None },
+    SuperDef { name: "MORGANA, VARDAK'S BRIDE", kind: Kind::Bride, home: LevelId::Area(2, 99), spot: (0, 0), mods: M_STRONG | M_VAMPIRE, gang: (Kind::Cultist, 0), tint: 0xd8c0f0, line: "OH, A GUEST. HOW... APPETISING.", unique: "bride", page: None, camp: None },
+    SuperDef { name: "ISOLDE, VARDAK'S BRIDE", kind: Kind::Bride, home: LevelId::Area(2, 99), spot: (0, 0), mods: M_STONE | M_VAMPIRE, gang: (Kind::Cultist, 0), tint: 0xe0e8ff, line: "YOU'LL NEVER REACH THE CASTLE.", unique: "bride", page: None, camp: None },
 ];
 
 /// Jarl Hrogar's index in SUPERS (features.rs).
 pub const JARL: usize = 5;
+/// Vardak's brides in SUPERS (mist.rs places them).
+pub const BRIDES: [usize; 3] = [9, 10, 11];
 
 /// Super uniques are drawn this much bigger than their kind.
 pub const SUPER_SCALE: f32 = 1.25;
@@ -243,6 +290,8 @@ pub enum Reward {
     Ward,
     /// A socket punched into your weapon (or armour, if the weapon is full).
     Socket,
+    /// This unique item (items::UNIQUES boss key).
+    Unique(&'static str),
     Respec,
     Gold(i32),
 }
@@ -255,6 +304,7 @@ impl Reward {
             Reward::Rare(g) => format!("A RARE ITEM AND {g} GOLD"),
             Reward::Ward => "-5% DAMAGE TAKEN, FOR GOOD".into(),
             Reward::Socket => "A SOCKET IN YOUR GEAR".into(),
+            Reward::Unique(k) => crate::items::boss_unique(k).map(|u| u.name).unwrap_or_default(),
             Reward::Respec => "A FREE RESPEC".into(),
             Reward::Gold(g) => format!("{g} GOLD"),
         }
@@ -272,6 +322,8 @@ pub enum Goal {
     Heist,
     /// Thaw Brenna's three frozen scouts (features.rs).
     Scouts,
+    /// Ring the three bells of Mournhold (mist.rs).
+    Bells,
 }
 
 pub struct SideDef {
@@ -406,6 +458,46 @@ pub const SIDES: &[SideDef] = &[
         reward: Reward::Respec,
         todo: "LAY THE FROZEN BRIDE TO REST (THE RIME WOODS)",
     },
+    // ---- Act 3 ----
+    SideDef {
+        name: "A HUSBAND'S GRAVE",
+        act: 2,
+        giver: Role::Widow,
+        giver_name: "WIDOW KASIA",
+        ask: "ASK ABOUT HER HUSBAND",
+        offer: &["I WENT TO LAY FLOWERS ON MY HUSBAND'S GRAVE AND FOUND IT DUG UP. EMPTY. HALF THE GRAVES IN THE BLIGHTED FIELDS ARE THE SAME, AND THERE'S A CELLAR DOOR IN THE OLD MOUND THERE THAT WASN'T THERE LAST SPRING. SOMEONE IS DIGGING. PLEASE. MAKE IT STOP."],
+        remind: "THE CELLAR DOOR IN THE BLIGHTED FIELDS. WHATEVER DIGS DOWN THERE, END IT.",
+        thanks: &["THE GRAVEDIGGER IS DEAD? THEN MY HUSBAND CAN SLEEP. TAKE THIS... IT WAS HIS. HE'D WANT IT KEEPING SOMEONE ALIVE."],
+        goal: Goal::Boss(Kind::Gravedigger),
+        reward: Reward::Life(20),
+        todo: "SLAY THE GRAVEDIGGER IN HIS CELLAR (THE BLIGHTED FIELDS)",
+    },
+    SideDef {
+        name: "THE BELLS OF MOURNHOLD",
+        act: 2,
+        giver: Role::Priest,
+        giver_name: "FATHER LUCIAN",
+        ask: "ASK ABOUT THE SILENT BELLS",
+        offer: &["THREE BELLS STAND OUT IN THE MIST, OLDER THAN THE VILLAGE. WHEN THEY RANG, THE DEAD STAYED DOWN. THEN THE BELL-RINGERS DIED, AND THE DEAD CROWDED ROUND THE BELLS. RING THEM AGAIN: THE BLIGHTED FIELDS, THE GALLOWS MOOR, THE BARROW HILLS."],
+        remind: "THE BLIGHTED FIELDS, THE GALLOWS MOOR, THE BARROW HILLS. CLEAR THE DEAD FROM EACH BELL AND RING IT.",
+        thanks: &["I HEARD THEM FROM HERE, ALL THREE. LISTEN... THE MIST IS QUIETER ALREADY. KNEEL, CHILD. A BLESSING, AND SOMETHING MORE: KNOWLEDGE."],
+        goal: Goal::Bells,
+        reward: Reward::SkillPoint,
+        todo: "RING THE THREE BELLS (BLIGHTED FIELDS, GALLOWS MOOR, BARROW HILLS)",
+    },
+    SideDef {
+        name: "THE PALE HUNTSMAN",
+        act: 2,
+        giver: Role::Hunter,
+        giver_name: "ABELARD",
+        ask: "ASK ABOUT HIS RIVAL",
+        offer: &["THERE WAS A HUNTER BETTER THAN ME. WE HUNTED THE WOLVES OF THE HOLLOW WOOD TOGETHER, UNTIL ONE BIT HIM. NOW HE HUNTS FOR THEM. PALE AS BONE, FAST AS ANYTHING. END HIM, AND I'LL GIVE YOU THE CHARM WE MADE TOGETHER, YEARS AGO."],
+        remind: "THE HOLLOW WOOD. FOLLOW THE KILLS; HE LEAVES THEM WHERE YOU'LL SEE.",
+        thanks: &["HE'S GONE, THEN. GOOD. HE'D HAVE WANTED IT. HERE: THE HUNTER'S CHARM. IT NEVER MISSED FOR US."],
+        goal: Goal::Super(6),
+        reward: Reward::Unique("abelard"),
+        todo: "SLAY THE PALE HUNTSMAN (THE HOLLOW WOOD)",
+    },
 ];
 
 // ------------------------------------------------------------------ lore
@@ -422,6 +514,11 @@ pub const LORE: &[(u8, &str, &str)] = &[
     (1, "THE BRIDE'S VEIL", "SHE WORE HER MOTHER'S VEIL INTO THE WOODS. THEY FOUND IT ON A BRANCH IN SPRING, FROZEN STIFF, AND HER FOOTPRINTS GOING ON INTO THE TREES. JUST HERS."),
     (1, "THE JARL'S BOAST", "HROGAR CLAIMS HE TOOK HIS HORN FROM A FROST GIANT'S CORPSE. HIS MEN SAY HE WON IT AT DICE. THE GIANT IS NOT AVAILABLE FOR COMMENT."),
     (1, "THE LONGSHIP'S LOG", "DAY 3 OF THE ICE. THE CAPTAIN WILL NOT LEAVE THE SHIP. DAY 40. THE CAPTAIN'S BEARD HAS FROZEN TO HIS CHEST. HE LAUGHED. DAY ???. THE CAPTAIN DOES NOT SLEEP NOW. NONE OF US DO."),
+    (2, "THE HUNTSMAN'S LAST NOTE", "IT BIT ME AT DUSK. ABELARD THINKS I DON'T KNOW WHAT THAT MEANS. I KNOW. I'LL GO INTO THE WOOD BEFORE THE MOON IS FULL, SO HE NEVER HAS TO DO IT."),
+    (2, "A HYMN, UNFINISHED", "SISTERS OF THE MOOR, SING FOR THE DEAD, SING SO THEY SLEEP, SING SO THEY... (THE REST IS SCRATCHED OUT, OVER AND OVER, UNTIL THE PAGE TEARS.)"),
+    (2, "THE SENTENCE", "BLACKMOOR, FOR WORSHIPPING THE COUNT IN THE COUNT'S OWN DUNGEON, IS TO HANG BY THE NECK UNTIL DEAD. ADDENDUM: AGAIN. ADDENDUM: WE HAVE RUN OUT OF ROPE."),
+    (2, "THE GRAVEDIGGER'S LEDGER", "TWELVE FROM THE FIELDS. NINE FROM THE MOOR. THE COUNT PAYS A SILVER A HEAD AND ASKS NO QUESTIONS, AND I ASK HIM NONE ABOUT WHAT HE DOES WITH THEM."),
+    (2, "ELSPETH'S DIARY", "MY LITTLE ONE IS SICK AGAIN. THE COUNT SAYS HE CAN CURE HER, FOR A PRICE. I WILL PAY ANYTHING. I WILL PAY ANYTHING. I PAID."),
 ];
 
 pub fn pages_of(act: usize) -> impl Iterator<Item = usize> {
@@ -552,7 +649,7 @@ pub fn place(lv: &mut Level, seed: u64) {
 }
 
 /// The optional dungeons: (dungeon index, the lore page on its first floor).
-pub const OPTIONAL: &[(usize, u8)] = &[(crate::world::CHARNEL, 3), (crate::world::LONGSHIP, 9)];
+pub const OPTIONAL: &[(usize, u8)] = &[(crate::world::CHARNEL, 3), (crate::world::LONGSHIP, 9), (crate::world::CELLAR, 13), (crate::world::MANOR, 14)];
 
 // ------------------------------------------------------------------ the game side
 
@@ -568,11 +665,9 @@ impl Game {
 
     /// Damage dealt (Combat shrine).
     pub fn bless_damage(&self) -> f32 {
-        if self.blessed(Blessing::Combat) {
-            1.3
-        } else {
-            1.0
-        }
+        let shrine = if self.blessed(Blessing::Combat) { 1.3 } else { 1.0 };
+        // The Bog Witch's Wolf's Heart (mist.rs).
+        shrine * self.pact_damage()
     }
 
     /// Damage taken: the Armor shrine, and the wards earned from side quests.
@@ -943,6 +1038,13 @@ impl Game {
                 }
             }
             Reward::Ward => self.p.ward = (self.p.ward + 1).min(6),
+            Reward::Unique(k) => {
+                if let Some(u) = crate::items::boss_unique(k) {
+                    if let Err(u) = self.p.gear.add(u) {
+                        self.pickups.push(Pickup { x: self.p.x, y: self.p.y + 0.4, kind: Drop::Item(Box::new(u)), t: 0.0 });
+                    }
+                }
+            }
             Reward::Socket => {
                 // The weapon first, then the armour.
                 for slot in 0..self.p.gear.worn.len() {
@@ -1026,6 +1128,16 @@ impl Game {
         for (i, s) in SUPERS.iter().enumerate().filter(|(_, s)| s.home.act() == act) {
             let slain = self.p.supers & (1 << i) != 0;
             out.push((if slain { format!("  {}  SLAIN", s.name) } else { "  ???".into() }, if slain { rgb(0xd8a850) } else { rgb(0x6a5a48) }));
+        }
+        // The Wailing Shade (mist.rs).
+        if act == 2 && self.feats.shade > 0 {
+            let (t, c) = match (self.feats.shade, self.feats.shade_known) {
+                (2, _) => ("THE WAILING SHADE  AT REST".to_string(), 0x80a080),
+                (_, true) => (format!("THE WAILING SHADE  ITS GRAVE: {}", Game::waypoint_name(crate::mist::tomb_area(self.world_seed, self.quest.difficulty))), 0xc0d8ff),
+                _ => ("THE WAILING SHADE  HAUNTS YOU (WOUND IT)".to_string(), 0xc0d8ff),
+            };
+            out.push((String::new(), 0));
+            out.push((t, rgb(c)));
         }
         let errands = self.errand_journal();
         if !errands.is_empty() {

@@ -16,6 +16,8 @@ pub enum Role {
     Jarl,
     FrozenMerchant,
     YetiCub,
+    /// The Bog Witch (mist.rs): pacts.
+    BogWitch,
     // ---- Kaldholm (Act 2) ----
     /// Captain Brenna: the Act 2 story.
     Captain,
@@ -328,6 +330,8 @@ pub enum Act {
     BuyStock(u8),
     /// Challenge Jarl Hrogar (features.rs).
     Duel,
+    /// Strike one of the Bog Witch's pacts (mist.rs).
+    Pact(u8),
 }
 
 pub struct Dialog {
@@ -795,7 +799,7 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
             ];
             Dialog::new(if k == 2 { "FISHERWIFE" } else { "FISHERMAN" }, &[lines[k as usize % 3]])
         }
-        Role::Rescue(_) | Role::GoblinTrader | Role::Jarl | Role::FrozenMerchant | Role::YetiCub => Dialog::new("", &["..."]),
+        Role::Rescue(_) | Role::GoblinTrader | Role::Jarl | Role::FrozenMerchant | Role::YetiCub | Role::BogWitch => Dialog::new("", &["..."]),
         Role::Captive => Dialog::new("CAPTIVE", &["PLEASE... THEY'RE ALL AROUND ME. KILL THEM AND I CAN RUN FOR IT!"]),
         Role::Guard => {
             let line = if q.stage == 0 {

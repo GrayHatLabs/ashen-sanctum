@@ -299,6 +299,20 @@ Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`;
     horn); the **frozen merchant** in the Rime Woods (thaw him and he sells rare goods once); a lost
     **yeti cub** in the Howling Tundra (lead it home and the yetis leave you be).
   - Out in the wilds, Enter / confirm talks to whoever is close.
+  - **Act 3:**
+    - the **Bog Witch** (the Witch's Bog): three pacts, each with a price, for good;
+    - the **Wolf Moon**: werewolf packs, double pelt bounty;
+    - the **Hollow Manor** (the Hollow Wood): find Lady Elspeth's three keepsakes to lay her ghost to rest;
+    - **Vardak's Brides**: three of them, hidden in different areas each playthrough; all three before the Count
+      and he loses his wedding band;
+    - the **Wailing Shade**: it haunts you through the Mistwood, flees when wounded, and can only be put to rest at
+      its tomb, in a random area.
+- **Act 3's side content:**
+  - **The Gravedigger's Cellar**, the optional dungeon in the Blighted Fields.
+  - **Side quests:** Kasia's A Husband's Grave (+life), Father Lucian's Bells of Mournhold (ring three bells, for
+    a skill point) and Abelard's Pale Huntsman (his charm).
+  - **Super uniques:** the Pale Huntsman, Sister Mournwail and Blackmoor the Gibbet-Hanged.
+  - **Lore:** five pages.
 - **Act 2's side content:**
   - **The Icebound Longship**, the optional dungeon in the Raiders' Fjord, with Hrolf Ice-Beard.
   - **Side quests:** Sigurd's Axe (a socket), Brenna's Lost Patrol (thaw three frozen scouts, for a ward)

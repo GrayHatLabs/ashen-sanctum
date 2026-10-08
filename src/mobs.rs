@@ -117,6 +117,15 @@ pub enum Kind {
     IceBlock,
     /// Hrolf Ice-Beard, raider-king of the Icebound Longship (Act 2's optional dungeon).
     Hrolf,
+    // ---- Act 3's side content (mist.rs) ----
+    /// The Gravedigger, under Widow Kasia's graveyard.
+    Gravedigger,
+    /// Lady Elspeth's ghost in the Hollow Manor.
+    Elspeth,
+    /// One of Count Vardak's brides.
+    Bride,
+    /// The Wailing Shade that haunts you through the Mistwood.
+    Shade,
     // ---- breakables (breakables.rs): no mind, smashed by any hit; the act is in `Mob::form` ----
     Crate,
     Barrel,
@@ -307,6 +316,20 @@ pub fn def(k: Kind) -> Def {
             boss: true,
             ..d("boss_firewyrm", "VAURATH THE EMBER WYRM", 9000.0, 2.6, (45.0, 65.0), 0.8, 1.6, 9000.0)
         },
+        Kind::Gravedigger => Def {
+            r: 0.6,
+            reach: 1.5,
+            boss: true,
+            ..d("boss_gravedigger", "THE GRAVEDIGGER", 560.0, 1.6, (18.0, 26.0), 0.8, 1.7, 1000.0)
+        },
+        Kind::Elspeth => Def {
+            r: 0.45,
+            boss: true,
+            ranged: true,
+            ..d("boss_elspeth", "LADY ELSPETH", 480.0, 2.0, (10.0, 15.0), 0.6, 1.8, 900.0)
+        },
+        Kind::Bride => Def { r: 0.32, ..d("vampire_bride", "VAMPIRE BRIDE", 90.0, 3.4, (9.0, 14.0), 0.35, 0.9, 120.0) },
+        Kind::Shade => Def { r: 0.36, ranged: true, ..d("shade", "THE WAILING SHADE", 260.0, 3.2, (7.0, 11.0), 0.5, 1.4, 300.0) },
         Kind::AshElemental => Def { r: 0.34, ..d("ash_elemental", "ASH ELEMENTAL", 38.0, 2.6, (5.0, 9.0), 0.45, 1.2, 28.0) },
         Kind::IceBlock => Def { r: 0.45, reach: 0.0, cold: true, ..d("ice_block", "BLOCK OF ICE", 150.0, 0.0, (0.0, 0.0), 9.0, 99.0, 20.0) },
         Kind::Hrolf => Def {
@@ -1112,7 +1135,7 @@ impl Game {
                                     shots.push((m.x, m.y, a.cos() * 7.0, a.sin() * 7.0, dmg, ShotKind::Necro));
                                 }
                             }
-                            Kind::Banshee | Kind::Wisp | Kind::Cultist | Kind::WellWitch => shots.push((m.x, m.y, ux * 7.0, uy * 7.0, dmg, ShotKind::Necro)),
+                            Kind::Banshee | Kind::Wisp | Kind::Cultist | Kind::WellWitch | Kind::Elspeth | Kind::Shade => shots.push((m.x, m.y, ux * 7.0, uy * 7.0, dmg, ShotKind::Necro)),
                             Kind::Inquisitor => {
                                 for k in 0..3 {
                                     let a = uy.atan2(ux) + (k as f32 - 1.0) * 0.18;
@@ -1475,6 +1498,31 @@ fn boss_specials(
                     fired: false,
                     kind: HazardKind::Poison,
                 });
+            }
+        }
+        Kind::Gravedigger => {
+            // The shovel comes down; the graves give up their dead.
+            if m.special <= 0.0 && dist < 3.2 {
+                m.special = if m.enraged { 3.2 } else { 4.6 };
+                hazards.push(Hazard { x: m.x, y: m.y, r: 2.6, warn: 0.9, live: 0.0, dps: 0.0, burst: 20.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Quake });
+                texts.push((m.x, m.y, "DIG! DIG!"));
+            }
+            if m.special2 <= 0.0 {
+                m.special2 = if m.enraged { 8.0 } else { 11.0 };
+                if summons < 6 {
+                    around(rng, 3, Kind::Ghoul, m.tier, spawns);
+                    texts.push((m.x, m.y, "UP YOU GET, FRESH ONES!"));
+                }
+            }
+        }
+        Kind::Elspeth => {
+            // Will-o'-wisps from the manor's cold hearth.
+            if m.special2 <= 0.0 {
+                m.special2 = 9.0;
+                if summons < 4 {
+                    around(rng, 2, Kind::Wisp, m.tier, spawns);
+                    texts.push((m.x, m.y, "LEAVE MY HOUSE!"));
+                }
             }
         }
         Kind::Hrolf => {

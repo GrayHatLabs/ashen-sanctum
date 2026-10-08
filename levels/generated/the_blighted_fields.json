@@ -57,52 +57,52 @@
     "...................................................o..o...ooo.o...o...o.......o.......o......ooo",
     "..........................o...o....................o......................o..................ooo",
     ".................................o..o.................o.........o.......................o....ooo",
-    ".......................o............o.o.............o........o...............................oo.",
-    "........................o..........o...............................o..o......................ooo",
-    "ooo......o......................o...o.o..............................oo.oo.o...oo....o....o..ooo",
-    "oo..o...oooo................o......ooo..............o....oo......o.....o..oo......o..........ooo",
-    "ooo......oo.......o...............o.................................oo.o.o...................oo.",
-    "ooo.....o.oo.......................ooo......................o....o....o.......o..............ooo",
-    "ooo...........................o...o.oooo.............................o.ooooo..............o..ooo",
-    "ooo............o...................oooo..o...........o............o.....ooo..........oo......ooo",
-    "ooo............o..................o.o.............o................o.o......o.....o.....o....oo.",
-    "o.o.........o.............o..........o.......................................................ooo",
-    "ooo..................o..............o..............o..o.........o.....................o...o..ooo",
-    "oooo...............o.........o................................oo.............................ooo",
-    "ooo....................o............o..................o...o...o.oo..o.......................ooo",
-    "ooo..............o............................................ooo.o.o...o....................ooo",
-    "ooo.............o.o...................o.................o..o.o..o.o..........................o.o",
-    "oooo........................o...................................ooo..o.........o......o......ooo",
-    "ooo.......................o...........................o.......o.oo..........................ooo.",
-    "ooo........oo.........o............................oo...o..............o....o..o............oooo",
-    "o.o...........o..................................o.....o.....oooo.oooo.o....................o.oo",
-    "ooo.......................oo....................o........o....o..oo..oo.o....................o.o",
-    "o.o...o.........o.o.oo.o.ooo..........................o.....o...o..oo.....o.............o....ooo",
-    "ooo............o.o.ooo..ooo.oo...o......o................o...o.o..o...oo.o.o.................ooo",
-    "ooo.o...o.o......o.....oo.o..o............o.......o.o......ooooo..o..oo.o..o.................ooo",
-    "o.o...o..........oooooo.....o..o..............................o...oo.ooo.ooo..................oo",
-    "ooo.............o..oooo...oo.o..o.......o.o....................o..ooooo.ooo..o.........o.....ooo",
-    "ooo......o........oo......o..o.o.............................o....o.....o.............o......ooo",
-    "ooo...o........o.o.o..oo.ooooo.....o...............o...............o...o.ooo.................ooo",
-    "ooo....o.......o.ooo..o.o.o.oo........................................ooo..oo................ooo",
-    ".oo............o...ooooo.....ooo...........................o.........ooo.oo.ooo.............oooo",
-    "ooo............o.....o.o...oo........................................ooo.ooo.o..o.oo.........ooo",
-    "ooo........oo..o.oo..o.ooo..o.o......o....................o..........oooo.ooooo.o.oo........oooo",
-    "o.o.o...........oo..ooooo...o.o......................o.............o...oo...oo.oooo..........ooo",
-    "ooo............o.o.oo....o..oo.......o.....o.........................ooooooooo.ooooo.........o.o",
-    "ooo...o......o...o..o.ooo.o.............................................ooooooo...oo.........oo.",
-    "ooo.....oo..o.....oooo...o.o.o........o......o..................oo...ooooo.ooo.........oo....ooo",
-    "ooo.....o.......o..o..oo.ooo...........................o..............oo.oo..................ooo",
-    "oooo.............o...oo.o............................o...................o...........o.....o.ooo",
-    "ooo.....o.o.....o..o......o..o.............o..........o................o.........o......ooo..o.o",
-    "oooo.......o..o.oooooo...........ooooo..o....................oo..o.o....................oooooooo",
-    "ooo..............ooooo..........o.o.ooo.....................o.oo..o................o....o....ooo",
-    "ooo....................o.o...o..oo....o..................o.o.o.oo.o...o...................oo.ooo",
-    "ooo....o.o.......oo..............o.o.................o.o.......o..o..........................ooo",
-    "oooo.............o.oo.......o...o.o.o.o...o..................oooo..............o...........o..oo",
-    "oooooooooo.oooooo.ooooooooooooo.o.ooooooo.oo.........ooooooo.oooooooooo.ooooooo.o..oo.oooooooooo",
-    "oooo.oooo.oo..ooooooooooo..o.oooooooooooooooo.......oooooo..oo.oooooooooooooooo..ooooooooo.ooooo",
-    ".ooooooooooo.oooooooooo.oooooooooo.oooooooooo.......oooooooooooooooooooooooooooooooooooo.ooooo.o"
+    ".......................o............o.....................o........o.........................ooo",
+    ".............................o......o.................................oo....o................ooo",
+    "ooo..o.................................................o.............o..ooo..................ooo",
+    "ooo..o..ooo...........o.........................................o......ooo.........o....oo...ooo",
+    "ooo......oooo.........oo........o.................................o...oooo.o.................ooo",
+    "ooo...o..o.o..................................................o......oo.o....................ooo",
+    ".o.........o....o.............o....................................o.ooo.ooo.................ooo",
+    ".oo..o.................................................................o.oo...................oo",
+    "oo..................o.o..o.............o.................o.....................oo......o.....ooo",
+    "ooo.....o............................................o................o.o......o.....o.....o.ooo",
+    "oo.o.........o.............o.........o.........................o..............................oo",
+    "oooo...........................................o..............o..o....o..o..........o........ooo",
+    "ooo.o...o...o.......................o...................o....o.ooo...........................ooo",
+    ".ooo.........................ooo.............................o......o........................ooo",
+    "ooo.o.....o..................ooo.......................o.....o.ooo.......o...................ooo",
+    "ooo............o....o...o....ooo..............................oooooo..............o.o........ooo",
+    "ooo............o..o...................o......................o.oo.o...........................oo",
+    "ooo.o.................................................o....o.o..o.o......o......o............ooo",
+    "ooo..........o......................................o.......o.oo....o....................o...ooo",
+    "oo......oo.........o.......................................oo.o...........o.o....o..o........ooo",
+    "ooo.............oooo...o...................................o....o..oooooo.oo.................ooo",
+    "ooo............o..o.o..............................o.........ooo.o.....o.oo..................ooo",
+    "oo...............o.oo.o....o.....o.........................o.....o.o.o..o.o.o................o.o",
+    ".oo......o.......o..oo...o.ooo..o..o.........................o.oo...oo...oo..o.......o.......ooo",
+    "ooo.............ooooo...oooo.o..................................o.ooooo.o.o..................ooo",
+    "ooo.............ooooo...oooo.........o.....o..................o...oo.oo..ooo.................ooo",
+    "ooo............o.ooo.oo..oooo.........o..............o........o.....ooo.oo.o........o......o..oo",
+    "o.o.........o..o..ooo.oooo.ooo......o.......o............o...........o..o.oooo...............oo.",
+    "o.o...........o.o..o.o.....ooo.................................o......oo...oo.............o..ooo",
+    "o.o.............ooo..oooooooo...............o........................o.ooo..ooo....o.........o.o",
+    ".oo...........o...o.oooo..oo........o..o.............oo...............o..ooo..ooooo..........ooo",
+    ".oo....o........oo...o..oooo....o..o.................................o.oooo..ooo.ooo.o.......ooo",
+    "ooo....o........o.o.oo..o.oo..o.........................o............oo..oo..ooooo.oo.......oooo",
+    "ooo..ooo........ooo.ooo.oo..oo....................................o...oo..ooo..oo...........oooo",
+    "ooo...o.......o.......o.o.o.o.o..............o............o.....o.....o.......o.......o....o.ooo",
+    "o.o...oo.........o....oo.oo.o.....o.......o............o.o.............oo....................ooo",
+    "ooo............oo.ooo...........oo......oo...........o..........o.....o..............o......oooo",
+    "ooo.oo..........o..ooo.........oo....o........................oo.....o................o...oo.ooo",
+    "oooo............oo.ooo...........o.ooo.................o....oooo.o...o..................o.oooooo",
+    "ooo......o.........oo....o.......oo.oo..o.o..................o......o..o.............o.o.o.o.ooo",
+    "oooo.....o......ooo.............oo...oo.o.o.................o.ooo.o.o...o....o..o...........oooo",
+    "ooo................ooo..........ooo.........................oooo..o.........o..........ooooooooo",
+    ".oo..............o.oo.............oo.o.........................oo.o..........o..........ooo.ooo.",
+    "ooooooo.ooooooooooooooooooooo.oooooooo.oooo..........oooooooo.oooo.o.oooo.oooooooooo.oo.oooooooo",
+    "oooooooooooooooooooooo.ooooooo.ooooo.oooooooo.......oooo.oooooo.ooooooooooooo.o.ooooooo.oooooooo",
+    "o.oooooooooo.ooooooo.o..oo.oooooooooooooo.ooo.......o.oo..ooooooooooo..o.oooooooooooooooooooooo."
   ],
   "ground": [
     "ggggdddddddggggggggddddddddddddgggggggggdddddddrrdggggggggggggggggggdddddgggggggggdddddggggggggg",
@@ -154,24 +154,24 @@
     "gggggdddddggggggggggrrrrrrrrrrrrrrrrrrrrgggggrrrrrggggggggggggddddgggggggggggggggggggggggggggggg",
     "rrrrrrddddggggggggrrrrrrrggggggggggrrrrrrrrrrrrrrggggggggggggddddddggggggggggggggggggggggggggggg",
     "rrrrrrrrrrggggrrrrrrrrddgggggggggggggggrrrrrrrrrgggggggggggggddddddggggggggggggggggggggggggggggg",
-    "gggggrrrrrrrrrrrrrrdddddgggggggggggggggggggggrrggggggggggggggddddddggggggggggggggggggggggggggggg",
-    "gggggddddrrrrrgggggdddddgggggggggggggggggggggrrggggggggggggggddddddggggggggggggggggggggggggggggg",
-    "ggggggdddggggggggggdddddgggggggggggggggggggggrrggggggggggggggddddddggggggggggggggggggggggggggggg",
-    "gggggggggggggggggggggggggggggggggggggggggggggrrgggggggggggggggdddddggggggggggggggggggggggggggggg",
-    "dggggggggggggggggggggggggggggggggggggggggggggrrggggggggggggggggggggggggggggggggggggggggggggggggg",
-    "dddgggggggggggggggggggggggddddddddddddgggggggrrggggggggggggggggggggggggggggggggggggggggggggggggg",
-    "ddddggggggggggggggggggggggdddddddddddddggggggrrggggggggdddggggggggggggdggggggggggggggggggggggggg",
-    "ddddggggggggggggggggggggggdddddddddddddgggggrrrggggggddddddggggggggggdddgggggggggggggggggggggggg",
-    "ddddggggggggggggggggggggggdddddddddddddgggggrrggggggggdddddggggggggggddggggggggggggggggggggggggg",
-    "ddddggggggggggggggggggggggdddddddddddddgggggrrggggggggggggggggggggggggdggggggggggggggggggggggggg",
-    "ddddgggggggggggggggggggggggdddddddddddggggggrrgggggggggggggggggggggggggggggggggggggggggggggggggg",
-    "dddddgggggggggggggggggggggggggggggggggggggggrrgggggggggggggggggggggggggggggggggggggggggggggggggg",
-    "dddddddgggggggggggdddddddgggggggggggggggggggrrgggggggggggggggggggggggggggggggggggggggggggggggggg",
-    "ddddddddddgggggggddddddddggggggggggggggggggrrrgggggggggggggggggggggggggggggggggggggggggggggggggg",
-    "dddddddddddggggggddddddddggggggggggggggggggrrggggggggggggggggggggggggggggggggggggggggggggggggggg",
-    "ddddddddddgggggggddddddddggggggggggggggggggrrggggggggggggggggggggggggggggggggggggggggggggggggggg",
-    "dddddddddggggggggddddddddggggggggggggggggggrrggggggggggggggggggggggggggggggggggggggggggggggggggg",
-    "ggggggggggggggggggddddddddgggggggggggggggggrrrgggdgggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggrrrrrrrrrrrrrrdddddggggggggggggggggggggrrrggggggggggggggddddddggggggggggggggggggggggggggggg",
+    "gggggddddrrrrrgggggdddddgggggggggggggggggggrrrrggggggggggggggddddddggggggggggggggggggggggggggggg",
+    "ggggggdddggggggggggdddddggggggggggggggggggrrrrrggggggggggggggddddddggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggrrrrgrrgggggggggggggggdddddggggggggggggggggggggggggggggg",
+    "dggggggggggggggggggggggggggggggggggggggrrrrggrrggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "dddgggggggggggggggggggggggddddddddddddrrrggggrrggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ddddggggggggggggggggggggggddddddddddrrrrgggggrrggggggggdddggggggggggggdggggggggggggggggggggggggg",
+    "ddddggggggggggggggggggggggdddddddddrrrrgggggrrrggggggddddddggggggggggdddgggggggggggggggggggggggg",
+    "ddddggggggggggggggggggggggdddddddddrrddgggggrrggggggggdddddggggggggggddggggggggggggggggggggggggg",
+    "ddddggggggggggggggggggggggdddddddrrrrddgggggrrggggggggggggggggggggggggdggggggggggggggggggggggggg",
+    "ddddgggggggggggggggggggggggddddddrrrddggggggrrgggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "dddddgggggggggggggggggggggggggggrrrgggggggggrrgggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "dddddddgggggggggggdddddddgggggggrrggggggggggrrgggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ddddddddddgggggggddddddddggggggrrrgggggggggrrrgggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "dddddddddddggggggddddddddggggggrrggggggggggrrggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ddddddddddgggggggddddddddgggggrrrggggggggggrrggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "dddddddddggggggggddddddddgggggrrgggggggggggrrggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggddddddddggggrrgggggggggggrrrgggdgggggggggggggggggggggggggggggggggggggggggggggg",
     "ggggggggggggggggggddddddddddddggggggggggggggrrggdddggggggggggggggggggggggggggggggggggggggggggggg",
     "ggggggggggggggggggddddddddddddddggggggggggggrrgddddggggggggggggggggggggggggggggggggggggggggggggg",
     "ggggggggggggggggggdddddddddddddddgggggggggggrrgdddddggggggggggggggggggggggggddddddggggggdddddggg",
@@ -212,6 +212,13 @@
       "kind": "ent_chapel",
       "x": 65.0,
       "y": 31.0,
+      "w": 3,
+      "h": 3
+    },
+    {
+      "kind": "ent_cellar",
+      "x": 29.0,
+      "y": 63.0,
       "w": 3,
       "h": 3
     },
@@ -7882,21 +7889,14 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 38.0,
-      "y": 50.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 52.0,
+      "x": 58.0,
       "y": 50.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "glow_shrooms",
-      "x": 61.0,
+      "x": 67.0,
       "y": 50.0,
       "w": 1,
       "h": 1
@@ -7916,22 +7916,22 @@
       "h": 1
     },
     {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
       "kind": "gravestone",
-      "x": 24.0,
+      "x": 29.0,
       "y": 51.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 35.0,
-      "y": 51.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 67.0,
+      "x": 36.0,
       "y": 51.0,
       "w": 1,
       "h": 1
@@ -7939,6 +7939,20 @@
     {
       "kind": "tree_twisted",
       "x": 70.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 71.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 76.0,
       "y": 51.0,
       "w": 1,
       "h": 1
@@ -7986,29 +8000,15 @@
       "h": 1
     },
     {
-      "kind": "tree_twisted",
-      "x": 9.0,
+      "kind": "gravestone",
+      "x": 5.0,
       "y": 52.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "gravestone",
-      "x": 32.0,
-      "y": 52.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 36.0,
-      "y": 52.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 38.0,
+      "x": 55.0,
       "y": 52.0,
       "w": 1,
       "h": 1
@@ -8016,13 +8016,6 @@
     {
       "kind": "tree_twisted",
       "x": 69.0,
-      "y": 52.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 70.0,
       "y": 52.0,
       "w": 1,
       "h": 1
@@ -8043,35 +8036,7 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 75.0,
-      "y": 52.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 79.0,
-      "y": 52.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 80.0,
-      "y": 52.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 85.0,
-      "y": 52.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 90.0,
+      "x": 74.0,
       "y": 52.0,
       "w": 1,
       "h": 1
@@ -8112,8 +8077,15 @@
       "h": 1
     },
     {
-      "kind": "glow_shrooms",
-      "x": 4.0,
+      "kind": "tree_twisted",
+      "x": 2.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 5.0,
       "y": 53.0,
       "w": 1,
       "h": 1
@@ -8140,92 +8112,57 @@
       "h": 1
     },
     {
-      "kind": "tree_twisted",
-      "x": 11.0,
-      "y": 53.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 28.0,
-      "y": 53.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 35.0,
-      "y": 53.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 36.0,
-      "y": 53.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 37.0,
-      "y": 53.0,
-      "w": 1,
-      "h": 1
-    },
-    {
       "kind": "glow_shrooms",
-      "x": 52.0,
+      "x": 22.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 64.0,
       "y": 53.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 57.0,
-      "y": 53.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 58.0,
-      "y": 53.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 65.0,
-      "y": 53.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
       "x": 71.0,
       "y": 53.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_mistpine",
-      "x": 74.0,
+      "kind": "tree_twisted",
+      "x": 72.0,
       "y": 53.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 75.0,
+      "x": 73.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "glow_shrooms",
+      "x": 83.0,
       "y": 53.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 82.0,
+      "x": 88.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 89.0,
       "y": 53.0,
       "w": 1,
       "h": 1
@@ -8287,29 +8224,50 @@
       "h": 1
     },
     {
+      "kind": "tree_twisted",
+      "x": 11.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 12.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "glow_shrooms",
+      "x": 22.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
       "kind": "gravestone",
-      "x": 18.0,
+      "x": 23.0,
       "y": 54.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_twisted",
-      "x": 34.0,
+      "kind": "gravestone",
+      "x": 32.0,
       "y": 54.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_twisted",
-      "x": 68.0,
+      "kind": "gravestone",
+      "x": 66.0,
       "y": 54.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_twisted",
-      "x": 69.0,
+      "kind": "tree_mistpine",
+      "x": 70.0,
       "y": 54.0,
       "w": 1,
       "h": 1
@@ -8317,6 +8275,13 @@
     {
       "kind": "tree_mistpine",
       "x": 71.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 72.0,
       "y": 54.0,
       "w": 1,
       "h": 1
@@ -8330,6 +8295,13 @@
     },
     {
       "kind": "tree_twisted",
+      "x": 75.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
       "x": 93.0,
       "y": 54.0,
       "w": 1,
@@ -8338,6 +8310,13 @@
     {
       "kind": "tree_twisted",
       "x": 94.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
       "y": 54.0,
       "w": 1,
       "h": 1
@@ -8364,15 +8343,15 @@
       "h": 1
     },
     {
-      "kind": "tree_twisted",
-      "x": 8.0,
+      "kind": "gravestone",
+      "x": 6.0,
       "y": 55.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 10.0,
+      "x": 9.0,
       "y": 55.0,
       "w": 1,
       "h": 1
@@ -8385,36 +8364,15 @@
       "h": 1
     },
     {
-      "kind": "tree_twisted",
-      "x": 35.0,
-      "y": 55.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 36.0,
-      "y": 55.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 37.0,
-      "y": 55.0,
-      "w": 1,
-      "h": 1
-    },
-    {
       "kind": "glow_shrooms",
-      "x": 60.0,
+      "x": 62.0,
       "y": 55.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "gravestone",
-      "x": 65.0,
+      "kind": "tree_twisted",
+      "x": 69.0,
       "y": 55.0,
       "w": 1,
       "h": 1
@@ -8427,8 +8385,8 @@
       "h": 1
     },
     {
-      "kind": "tree_twisted",
-      "x": 78.0,
+      "kind": "tree_mistpine",
+      "x": 72.0,
       "y": 55.0,
       "w": 1,
       "h": 1
@@ -8456,27 +8414,27 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 0.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
       "x": 1.0,
       "y": 56.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_twisted",
-      "x": 2.0,
+      "kind": "glow_shrooms",
+      "x": 11.0,
       "y": 56.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "gravestone",
+      "x": 16.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
       "x": 30.0,
       "y": 56.0,
       "w": 1,
@@ -8484,371 +8442,287 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 34.0,
+      "x": 67.0,
       "y": 56.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 36.0,
+      "x": 69.0,
       "y": 56.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 37.0,
+      "x": 70.0,
       "y": 56.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 38.0,
+      "x": 71.0,
       "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 73.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 74.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 75.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 93.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 1.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 2.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 5.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 71.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 73.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 74.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 0.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 1.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "glow_shrooms",
+      "x": 20.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 22.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "glow_shrooms",
+      "x": 25.0,
+      "y": 58.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "gravestone",
       "x": 39.0,
-      "y": 56.0,
+      "y": 58.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 69.0,
-      "y": 56.0,
+      "x": 57.0,
+      "y": 58.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_mistpine",
-      "x": 71.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 72.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 73.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 74.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 75.0,
-      "y": 56.0,
+      "kind": "glow_shrooms",
+      "x": 79.0,
+      "y": 58.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "gravestone",
-      "x": 90.0,
-      "y": 56.0,
+      "x": 80.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 87.0,
+      "y": 58.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
       "x": 93.0,
-      "y": 56.0,
+      "y": 58.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
       "x": 94.0,
-      "y": 56.0,
+      "y": 58.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
       "x": 95.0,
-      "y": 56.0,
+      "y": 58.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
       "x": 0.0,
-      "y": 57.0,
+      "y": 59.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
       "x": 1.0,
-      "y": 57.0,
+      "y": 59.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
       "x": 2.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "glow_shrooms",
-      "x": 15.0,
-      "y": 57.0,
+      "y": 59.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 35.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 36.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 37.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 38.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "glow_shrooms",
-      "x": 41.0,
-      "y": 57.0,
+      "x": 8.0,
+      "y": 59.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "gravestone",
       "x": 53.0,
-      "y": 57.0,
+      "y": 59.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_twisted",
-      "x": 66.0,
-      "y": 57.0,
+      "kind": "glow_shrooms",
+      "x": 70.0,
+      "y": 59.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_twisted",
+      "kind": "gravestone",
       "x": 72.0,
-      "y": 57.0,
+      "y": 59.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_twisted",
-      "x": 73.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 74.0,
-      "y": 57.0,
+      "kind": "glow_shrooms",
+      "x": 79.0,
+      "y": 59.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "glow_shrooms",
       "x": 85.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 86.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 94.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 0.0,
-      "y": 58.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 1.0,
-      "y": 58.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 2.0,
-      "y": 58.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 15.0,
-      "y": 58.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 34.0,
-      "y": 58.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 36.0,
-      "y": 58.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 50.0,
-      "y": 58.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "glow_shrooms",
-      "x": 67.0,
-      "y": 58.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 69.0,
-      "y": 58.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "glow_shrooms",
-      "x": 76.0,
-      "y": 58.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "glow_shrooms",
-      "x": 82.0,
-      "y": 58.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 88.0,
-      "y": 58.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 58.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 94.0,
-      "y": 58.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 0.0,
-      "y": 59.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 2.0,
       "y": 59.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "gravestone",
-      "x": 12.0,
-      "y": 59.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "glow_shrooms",
-      "x": 26.0,
-      "y": 59.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 37.0,
+      "x": 91.0,
       "y": 59.0,
       "w": 1,
       "h": 1
@@ -8885,3190 +8759,3064 @@
       "kind": "tree_twisted",
       "x": 1.0,
       "y": 60.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 2.0,
-      "y": 60.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 21.0,
-      "y": 60.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 36.0,
-      "y": 60.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 51.0,
-      "y": 60.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "glow_shrooms",
-      "x": 54.0,
-      "y": 60.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 64.0,
-      "y": 60.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 86.0,
-      "y": 60.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 90.0,
-      "y": 60.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 60.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 94.0,
-      "y": 60.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 60.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 0.0,
-      "y": 61.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 1.0,
-      "y": 61.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 2.0,
-      "y": 61.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
       "x": 3.0,
-      "y": 61.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 19.0,
-      "y": 61.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 29.0,
-      "y": 61.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 62.0,
-      "y": 61.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 63.0,
-      "y": 61.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 61.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 94.0,
-      "y": 61.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 61.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 0.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 1.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 2.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 23.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 36.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 55.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 59.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 63.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 65.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 66.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 69.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 94.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 0.0,
-      "y": 63.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 1.0,
-      "y": 63.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 2.0,
-      "y": 63.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 17.0,
-      "y": 63.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 62.0,
-      "y": 63.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 63.0,
-      "y": 63.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 64.0,
-      "y": 63.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 66.0,
-      "y": 63.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 68.0,
-      "y": 63.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 72.0,
-      "y": 63.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 63.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 94.0,
-      "y": 63.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 63.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 0.0,
-      "y": 64.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 1.0,
-      "y": 64.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 2.0,
-      "y": 64.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 16.0,
-      "y": 64.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 18.0,
-      "y": 64.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 38.0,
-      "y": 64.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 56.0,
-      "y": 64.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 59.0,
-      "y": 64.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 61.0,
-      "y": 64.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 64.0,
-      "y": 64.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 66.0,
-      "y": 64.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 64.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 64.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 0.0,
-      "y": 65.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 1.0,
-      "y": 65.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 2.0,
-      "y": 65.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 3.0,
-      "y": 65.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 28.0,
-      "y": 65.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 64.0,
-      "y": 65.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 65.0,
-      "y": 65.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 66.0,
-      "y": 65.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 69.0,
-      "y": 65.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 79.0,
-      "y": 65.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 86.0,
-      "y": 65.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 65.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 94.0,
-      "y": 65.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 65.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 0.0,
-      "y": 66.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 1.0,
-      "y": 66.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 2.0,
-      "y": 66.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 26.0,
-      "y": 66.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 54.0,
-      "y": 66.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 62.0,
-      "y": 66.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 64.0,
-      "y": 66.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 65.0,
-      "y": 66.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 92.0,
-      "y": 66.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 66.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 94.0,
-      "y": 66.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 0.0,
-      "y": 67.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 1.0,
-      "y": 67.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 2.0,
-      "y": 67.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 11.0,
-      "y": 67.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 12.0,
-      "y": 67.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "glow_shrooms",
-      "x": 22.0,
-      "y": 67.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "glow_shrooms",
-      "x": 51.0,
-      "y": 67.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 52.0,
-      "y": 67.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "glow_shrooms",
-      "x": 56.0,
-      "y": 67.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "glow_shrooms",
-      "x": 71.0,
-      "y": 67.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 76.0,
-      "y": 67.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 79.0,
-      "y": 67.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 92.0,
-      "y": 67.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 67.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 94.0,
-      "y": 67.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 67.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 0.0,
-      "y": 68.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 2.0,
-      "y": 68.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 14.0,
-      "y": 68.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 49.0,
-      "y": 68.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 55.0,
-      "y": 68.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 61.0,
-      "y": 68.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 62.0,
-      "y": 68.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 63.0,
-      "y": 68.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 64.0,
-      "y": 68.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 66.0,
-      "y": 68.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 67.0,
-      "y": 68.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 68.0,
-      "y": 68.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 69.0,
-      "y": 68.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 71.0,
-      "y": 68.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 92.0,
-      "y": 68.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 94.0,
-      "y": 68.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 68.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 0.0,
-      "y": 69.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 1.0,
-      "y": 69.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 2.0,
-      "y": 69.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 26.0,
-      "y": 69.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 27.0,
-      "y": 69.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 48.0,
-      "y": 69.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 57.0,
-      "y": 69.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 62.0,
-      "y": 69.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 65.0,
-      "y": 69.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 66.0,
-      "y": 69.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 69.0,
-      "y": 69.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 70.0,
-      "y": 69.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 72.0,
-      "y": 69.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 69.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 69.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 0.0,
-      "y": 70.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 2.0,
-      "y": 70.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "glow_shrooms",
-      "x": 6.0,
-      "y": 70.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 16.0,
-      "y": 70.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 18.0,
-      "y": 70.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 20.0,
-      "y": 70.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 21.0,
-      "y": 70.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 23.0,
-      "y": 70.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 25.0,
-      "y": 70.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 26.0,
-      "y": 70.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 27.0,
-      "y": 70.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "glow_shrooms",
-      "x": 54.0,
-      "y": 70.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 60.0,
-      "y": 70.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 64.0,
-      "y": 70.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 67.0,
-      "y": 70.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 68.0,
-      "y": 70.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 74.0,
-      "y": 70.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 88.0,
-      "y": 70.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 70.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 94.0,
-      "y": 70.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 70.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 0.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 1.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 2.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 15.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 17.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 19.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 20.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 21.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 24.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 25.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 26.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 28.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 29.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 33.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 40.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 57.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 61.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 63.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 66.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 70.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 71.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 73.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 75.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 94.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 71.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 0.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 1.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 2.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 4.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "glow_shrooms",
-      "x": 8.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 10.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 17.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 23.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 24.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 26.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 29.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 42.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 50.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 52.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 59.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 60.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 61.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 62.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 63.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 66.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 69.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 70.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 72.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 75.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 94.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 72.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 0.0,
-      "y": 73.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 2.0,
-      "y": 73.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 6.0,
-      "y": 73.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 17.0,
-      "y": 73.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 18.0,
-      "y": 73.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 19.0,
-      "y": 73.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 20.0,
-      "y": 73.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 21.0,
-      "y": 73.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 22.0,
-      "y": 73.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 28.0,
-      "y": 73.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "glow_shrooms",
-      "x": 31.0,
-      "y": 73.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 62.0,
-      "y": 73.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 66.0,
-      "y": 73.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 67.0,
-      "y": 73.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 69.0,
-      "y": 73.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 70.0,
-      "y": 73.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 71.0,
-      "y": 73.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 73.0,
-      "y": 73.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 74.0,
-      "y": 73.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 75.0,
-      "y": 73.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 94.0,
-      "y": 73.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 73.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 0.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 1.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 2.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 16.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 19.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 20.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 21.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 22.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 26.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 27.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 29.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 32.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 40.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 42.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 63.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 66.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 67.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 68.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 69.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 70.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 72.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 73.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 74.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "glow_shrooms",
-      "x": 77.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 87.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 94.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 74.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 0.0,
-      "y": 75.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 1.0,
-      "y": 75.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 2.0,
-      "y": 75.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 9.0,
-      "y": 75.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 18.0,
-      "y": 75.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 19.0,
-      "y": 75.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 26.0,
-      "y": 75.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 29.0,
-      "y": 75.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 31.0,
-      "y": 75.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 61.0,
-      "y": 75.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 66.0,
-      "y": 75.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 72.0,
-      "y": 75.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 86.0,
-      "y": 75.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 75.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 94.0,
-      "y": 75.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 75.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 0.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 1.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 2.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 6.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 15.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 17.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 19.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 22.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 23.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 25.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 26.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 27.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 28.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 29.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 35.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 51.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 67.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 71.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 73.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 74.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 75.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 94.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 76.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 0.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 1.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 2.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 7.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 15.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 17.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 18.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 19.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 22.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 24.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 26.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 28.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 29.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 70.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 71.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 72.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 75.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 76.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 94.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 1.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 2.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 15.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 19.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 20.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 21.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 22.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 23.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 29.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 30.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 31.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 59.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 69.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 70.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 71.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 73.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 74.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 76.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 77.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 78.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 92.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 94.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 0.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 1.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 2.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 15.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 21.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 23.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 27.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 28.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 69.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 70.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 71.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 73.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 74.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 75.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 77.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 80.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 82.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 83.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 94.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 0.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 1.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 2.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 11.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 12.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 15.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 17.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 18.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 21.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 23.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 24.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 25.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 28.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 30.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 37.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "glow_shrooms",
-      "x": 58.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 69.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 70.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 71.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 72.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 74.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 75.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 76.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 77.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 78.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 80.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 82.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 83.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "glow_shrooms",
-      "x": 92.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 94.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 0.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 2.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 4.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 16.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 17.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 20.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 21.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 22.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 23.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 24.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 28.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 30.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 53.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 67.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 71.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 72.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 76.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 77.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 79.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 80.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 81.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 82.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 94.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 0.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 1.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 2.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 15.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 17.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 19.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 20.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 25.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 28.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 29.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 37.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 43.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 69.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 70.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 71.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 72.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 73.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 74.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 75.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 76.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 77.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 79.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 80.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 81.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 82.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 83.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 93.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 0.0,
-      "y": 83.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 1.0,
-      "y": 83.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 2.0,
-      "y": 83.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 6.0,
-      "y": 83.0,
+      "y": 60.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "gravestone",
       "x": 13.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "glow_shrooms",
+      "x": 27.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 37.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 63.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 0.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 1.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 2.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 3.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 47.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 62.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 65.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 70.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "glow_shrooms",
+      "x": 73.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 84.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 93.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 0.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 1.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 2.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 4.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 8.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 12.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 36.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 56.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 61.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 63.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 64.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 65.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 93.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 1.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 2.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 3.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 61.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 68.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 93.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 0.0,
+      "y": 64.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 1.0,
+      "y": 64.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 2.0,
+      "y": 64.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 4.0,
+      "y": 64.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 10.0,
+      "y": 64.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "glow_shrooms",
+      "x": 55.0,
+      "y": 64.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 61.0,
+      "y": 64.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 63.0,
+      "y": 64.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 64.0,
+      "y": 64.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 65.0,
+      "y": 64.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 73.0,
+      "y": 64.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 93.0,
+      "y": 64.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 64.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 64.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 0.0,
+      "y": 65.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 1.0,
+      "y": 65.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 2.0,
+      "y": 65.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 15.0,
+      "y": 65.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 20.0,
+      "y": 65.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 24.0,
+      "y": 65.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 62.0,
+      "y": 65.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 63.0,
+      "y": 65.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 64.0,
+      "y": 65.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 65.0,
+      "y": 65.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 66.0,
+      "y": 65.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 67.0,
+      "y": 65.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 82.0,
+      "y": 65.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 84.0,
+      "y": 65.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 93.0,
+      "y": 65.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 65.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 65.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 0.0,
+      "y": 66.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 1.0,
+      "y": 66.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 2.0,
+      "y": 66.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 15.0,
+      "y": 66.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 18.0,
+      "y": 66.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 38.0,
+      "y": 66.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 61.0,
+      "y": 66.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 63.0,
+      "y": 66.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 64.0,
+      "y": 66.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 66.0,
+      "y": 66.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 66.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 66.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 0.0,
+      "y": 67.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 1.0,
+      "y": 67.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 2.0,
+      "y": 67.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 4.0,
+      "y": 67.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 54.0,
+      "y": 67.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 59.0,
+      "y": 67.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 61.0,
+      "y": 67.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 64.0,
+      "y": 67.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 66.0,
+      "y": 67.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 73.0,
+      "y": 67.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 80.0,
+      "y": 67.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 93.0,
+      "y": 67.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 67.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 67.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 0.0,
+      "y": 68.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 1.0,
+      "y": 68.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 2.0,
+      "y": 68.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 13.0,
+      "y": 68.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 52.0,
+      "y": 68.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 60.0,
+      "y": 68.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 62.0,
+      "y": 68.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 63.0,
+      "y": 68.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 68.0,
+      "y": 68.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 89.0,
+      "y": 68.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 93.0,
+      "y": 68.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 68.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 68.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 0.0,
+      "y": 69.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 1.0,
+      "y": 69.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 8.0,
+      "y": 69.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 9.0,
+      "y": 69.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "glow_shrooms",
+      "x": 19.0,
+      "y": 69.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "glow_shrooms",
+      "x": 59.0,
+      "y": 69.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 60.0,
+      "y": 69.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 62.0,
+      "y": 69.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 74.0,
+      "y": 69.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "glow_shrooms",
+      "x": 76.0,
+      "y": 69.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 81.0,
+      "y": 69.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 84.0,
+      "y": 69.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 93.0,
+      "y": 69.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 69.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 69.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 0.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 1.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 2.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 16.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 17.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 18.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 19.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 23.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 59.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 64.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 67.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 68.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 69.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 70.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 71.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 72.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 74.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 75.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 93.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 0.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 1.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 2.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 15.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 18.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 20.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 51.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 61.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 62.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 63.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 65.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 71.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 73.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 74.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 93.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 0.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 1.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 17.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 19.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 20.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 22.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 27.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 33.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 59.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 65.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 67.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 69.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 72.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 74.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 76.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 93.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 1.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 2.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 9.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 17.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 20.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 21.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 25.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 27.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 28.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 29.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 32.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 35.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 61.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 63.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 64.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 68.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 69.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 73.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 74.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 77.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 85.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 93.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 0.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 1.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 2.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 16.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 17.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 18.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 19.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 20.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 24.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 25.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 26.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 27.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 29.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 64.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 66.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 67.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 68.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 69.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 70.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 72.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 74.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 93.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 0.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 1.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 2.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 16.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 17.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 18.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 19.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 20.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 24.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 25.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 26.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 27.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 37.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "glow_shrooms",
+      "x": 43.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "glow_shrooms",
+      "x": 62.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 66.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 67.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 69.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 70.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 73.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 74.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 75.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 93.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 0.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 1.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 2.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 15.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 17.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 18.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 19.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 21.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 22.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 25.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 26.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 27.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 28.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "glow_shrooms",
+      "x": 38.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 53.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 62.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 68.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 69.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 70.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 72.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 73.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 75.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 84.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "glow_shrooms",
+      "x": 91.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 0.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 2.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 12.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 15.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 18.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 19.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 20.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 22.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 23.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 24.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 25.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 27.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 28.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 29.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "glow_shrooms",
+      "x": 36.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 44.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 57.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 69.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 72.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 74.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 75.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 76.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 77.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 93.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 0.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 2.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 14.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 16.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 19.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 21.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 27.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 28.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 29.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 63.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 70.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 71.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 75.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 76.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "glow_shrooms",
+      "x": 90.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 93.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 0.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 2.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 16.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 17.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 18.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 21.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 22.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 23.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 24.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 25.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 26.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 27.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 28.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 44.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 69.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 71.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 72.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 73.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 76.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 77.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 78.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 83.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 93.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 1.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 2.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 14.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 18.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 20.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 21.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 22.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 23.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 26.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 27.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 36.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 39.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 53.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 54.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 70.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 73.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 74.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 75.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 78.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 79.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 80.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 81.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 82.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 93.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 1.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 2.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 7.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 16.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 17.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 21.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 24.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 25.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 26.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 27.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 32.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 35.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 69.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 71.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 72.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 73.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 74.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 77.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 78.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 79.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 81.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 82.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 83.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 85.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 93.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 0.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 1.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 2.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 7.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 16.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 18.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 20.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 21.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 24.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 26.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 27.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 30.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 56.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 69.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 70.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 73.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 74.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 77.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 78.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 79.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 80.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 81.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 83.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 84.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 92.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 93.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 0.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 1.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 2.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "glow_shrooms",
+      "x": 5.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 6.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 7.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 16.0,
       "y": 83.0,
       "w": 1,
       "h": 1
@@ -12082,7 +11830,21 @@
     },
     {
       "kind": "tree_twisted",
+      "x": 18.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
       "x": 20.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 21.0,
       "y": 83.0,
       "w": 1,
       "h": 1
@@ -12096,41 +11858,55 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 23.0,
-      "y": 83.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
       "x": 24.0,
       "y": 83.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_mistpine",
-      "x": 26.0,
-      "y": 83.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 72.0,
+      "kind": "tree_twisted",
+      "x": 25.0,
       "y": 83.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 73.0,
+      "x": 28.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 29.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 66.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 70.0,
       "y": 83.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_mistpine",
+      "x": 71.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
       "x": 74.0,
       "y": 83.0,
       "w": 1,
@@ -12152,28 +11928,21 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 77.0,
+      "x": 79.0,
       "y": 83.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 78.0,
+      "x": 80.0,
       "y": 83.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_twisted",
-      "x": 82.0,
-      "y": 83.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 83.0,
+      "kind": "glow_shrooms",
+      "x": 92.0,
       "y": 83.0,
       "w": 1,
       "h": 1
@@ -12188,6 +11957,13 @@
     {
       "kind": "tree_twisted",
       "x": 94.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 95.0,
       "y": 83.0,
       "w": 1,
       "h": 1
@@ -12214,78 +11990,50 @@
       "h": 1
     },
     {
-      "kind": "gravestone",
-      "x": 8.0,
-      "y": 84.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 9.0,
+      "kind": "tree_twisted",
+      "x": 6.0,
       "y": 84.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "gravestone",
-      "x": 12.0,
+      "x": 14.0,
       "y": 84.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 18.0,
+      "x": 22.0,
       "y": 84.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 19.0,
+      "x": 24.0,
       "y": 84.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 20.0,
+      "x": 26.0,
       "y": 84.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 21.0,
-      "y": 84.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 25.0,
-      "y": 84.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 27.0,
-      "y": 84.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 29.0,
+      "x": 28.0,
       "y": 84.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "gravestone",
-      "x": 38.0,
+      "x": 30.0,
       "y": 84.0,
       "w": 1,
       "h": 1
@@ -12299,21 +12047,14 @@
     },
     {
       "kind": "gravestone",
+      "x": 58.0,
+      "y": 84.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
       "x": 64.0,
-      "y": 84.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 65.0,
-      "y": 84.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 69.0,
       "y": 84.0,
       "w": 1,
       "h": 1
@@ -12327,56 +12068,21 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 71.0,
+      "x": 78.0,
       "y": 84.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_twisted",
-      "x": 72.0,
-      "y": 84.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 73.0,
-      "y": 84.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 75.0,
-      "y": 84.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 76.0,
-      "y": 84.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 77.0,
+      "kind": "glow_shrooms",
+      "x": 86.0,
       "y": 84.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "gravestone",
-      "x": 87.0,
-      "y": 84.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 88.0,
+      "x": 91.0,
       "y": 84.0,
       "w": 1,
       "h": 1
@@ -12411,13 +12117,6 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 1.0,
-      "y": 85.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
       "x": 2.0,
       "y": 85.0,
       "w": 1,
@@ -12425,21 +12124,21 @@
     },
     {
       "kind": "glow_shrooms",
-      "x": 8.0,
+      "x": 6.0,
       "y": 85.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 16.0,
+      "x": 7.0,
       "y": 85.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 19.0,
+      "x": 17.0,
       "y": 85.0,
       "w": 1,
       "h": 1
@@ -12474,7 +12173,21 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 27.0,
+      "x": 28.0,
+      "y": 85.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 34.0,
+      "y": 85.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 42.0,
       "y": 85.0,
       "w": 1,
       "h": 1
@@ -12488,7 +12201,7 @@
     },
     {
       "kind": "gravestone",
-      "x": 70.0,
+      "x": 57.0,
       "y": 85.0,
       "w": 1,
       "h": 1
@@ -12502,14 +12215,7 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 73.0,
-      "y": 85.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 74.0,
+      "x": 72.0,
       "y": 85.0,
       "w": 1,
       "h": 1
@@ -12557,36 +12263,64 @@
       "h": 1
     },
     {
-      "kind": "tree_twisted",
-      "x": 3.0,
+      "kind": "gravestone",
+      "x": 15.0,
       "y": 86.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 17.0,
+      "x": 16.0,
       "y": 86.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 21.0,
+      "x": 18.0,
       "y": 86.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 22.0,
+      "x": 19.0,
       "y": 86.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 24.0,
+      "x": 20.0,
+      "y": 86.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 32.0,
+      "y": 86.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 33.0,
+      "y": 86.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 40.0,
+      "y": 86.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 41.0,
       "y": 86.0,
       "w": 1,
       "h": 1
@@ -12600,7 +12334,14 @@
     },
     {
       "kind": "gravestone",
-      "x": 73.0,
+      "x": 64.0,
+      "y": 86.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 70.0,
       "y": 86.0,
       "w": 1,
       "h": 1
@@ -12613,8 +12354,8 @@
       "h": 1
     },
     {
-      "kind": "tree_twisted",
-      "x": 91.0,
+      "kind": "gravestone",
+      "x": 92.0,
       "y": 86.0,
       "w": 1,
       "h": 1
@@ -12662,15 +12403,15 @@
       "h": 1
     },
     {
-      "kind": "glow_shrooms",
-      "x": 8.0,
+      "kind": "gravestone",
+      "x": 4.0,
       "y": 87.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "gravestone",
-      "x": 10.0,
+      "kind": "tree_twisted",
+      "x": 5.0,
       "y": 87.0,
       "w": 1,
       "h": 1
@@ -12690,57 +12431,64 @@
       "h": 1
     },
     {
-      "kind": "glow_shrooms",
-      "x": 26.0,
+      "kind": "tree_twisted",
+      "x": 20.0,
       "y": 87.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 29.0,
+      "x": 21.0,
       "y": 87.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "gravestone",
-      "x": 43.0,
-      "y": 87.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "glow_shrooms",
-      "x": 54.0,
-      "y": 87.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "glow_shrooms",
-      "x": 71.0,
-      "y": 87.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "glow_shrooms",
-      "x": 81.0,
+      "x": 31.0,
       "y": 87.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "gravestone",
-      "x": 88.0,
+      "x": 32.0,
       "y": 87.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 89.0,
+      "x": 37.0,
+      "y": 87.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "glow_shrooms",
+      "x": 62.0,
+      "y": 87.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 63.0,
+      "y": 87.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 69.0,
+      "y": 87.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 86.0,
       "y": 87.0,
       "w": 1,
       "h": 1
@@ -12754,7 +12502,21 @@
     },
     {
       "kind": "tree_twisted",
+      "x": 91.0,
+      "y": 87.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
       "x": 93.0,
+      "y": 87.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 94.0,
       "y": 87.0,
       "w": 1,
       "h": 1
@@ -12774,7 +12536,7 @@
       "h": 1
     },
     {
-      "kind": "tree_twisted",
+      "kind": "tree_mistpine",
       "x": 1.0,
       "y": 88.0,
       "w": 1,
@@ -12796,20 +12558,6 @@
     },
     {
       "kind": "gravestone",
-      "x": 11.0,
-      "y": 88.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 14.0,
-      "y": 88.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "glow_shrooms",
       "x": 16.0,
       "y": 88.0,
       "w": 1,
@@ -12818,13 +12566,6 @@
     {
       "kind": "tree_twisted",
       "x": 17.0,
-      "y": 88.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 18.0,
       "y": 88.0,
       "w": 1,
       "h": 1
@@ -12859,13 +12600,6 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 34.0,
-      "y": 88.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
       "x": 35.0,
       "y": 88.0,
       "w": 1,
@@ -12886,8 +12620,15 @@
       "h": 1
     },
     {
-      "kind": "gravestone",
-      "x": 40.0,
+      "kind": "tree_twisted",
+      "x": 55.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 60.0,
       "y": 88.0,
       "w": 1,
       "h": 1
@@ -12908,6 +12649,13 @@
     },
     {
       "kind": "tree_twisted",
+      "x": 63.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
       "x": 65.0,
       "y": 88.0,
       "w": 1,
@@ -12915,7 +12663,7 @@
     },
     {
       "kind": "gravestone",
-      "x": 67.0,
+      "x": 69.0,
       "y": 88.0,
       "w": 1,
       "h": 1
@@ -12923,13 +12671,6 @@
     {
       "kind": "tree_twisted",
       "x": 88.0,
-      "y": 88.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 89.0,
       "y": 88.0,
       "w": 1,
       "h": 1
@@ -12977,7 +12718,7 @@
       "h": 1
     },
     {
-      "kind": "tree_mistpine",
+      "kind": "tree_twisted",
       "x": 0.0,
       "y": 89.0,
       "w": 1,
@@ -12998,15 +12739,8 @@
       "h": 1
     },
     {
-      "kind": "tree_twisted",
-      "x": 17.0,
-      "y": 89.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 18.0,
+      "kind": "gravestone",
+      "x": 9.0,
       "y": 89.0,
       "w": 1,
       "h": 1
@@ -13027,14 +12761,14 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 21.0,
+      "x": 25.0,
       "y": 89.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 32.0,
+      "x": 33.0,
       "y": 89.0,
       "w": 1,
       "h": 1
@@ -13061,50 +12795,64 @@
       "h": 1
     },
     {
-      "kind": "tree_twisted",
-      "x": 38.0,
+      "kind": "glow_shrooms",
+      "x": 40.0,
+      "y": 89.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 42.0,
       "y": 89.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 60.0,
-      "y": 89.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 62.0,
-      "y": 89.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_mistpine",
-      "x": 63.0,
-      "y": 89.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 66.0,
+      "x": 61.0,
       "y": 89.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "glow_shrooms",
-      "x": 83.0,
+      "x": 68.0,
       "y": 89.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 88.0,
+      "x": 71.0,
+      "y": 89.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 85.0,
+      "y": 89.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "glow_shrooms",
+      "x": 87.0,
+      "y": 89.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 89.0,
+      "y": 89.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 91.0,
       "y": 89.0,
       "w": 1,
       "h": 1
@@ -13138,7 +12886,7 @@
       "h": 1
     },
     {
-      "kind": "tree_mistpine",
+      "kind": "tree_twisted",
       "x": 1.0,
       "y": 90.0,
       "w": 1,
@@ -13152,22 +12900,36 @@
       "h": 1
     },
     {
-      "kind": "gravestone",
-      "x": 23.0,
+      "kind": "tree_twisted",
+      "x": 3.0,
+      "y": 90.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "glow_shrooms",
+      "x": 9.0,
       "y": 90.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "gravestone",
-      "x": 25.0,
+      "x": 16.0,
       "y": 90.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "gravestone",
-      "x": 29.0,
+      "kind": "tree_twisted",
+      "x": 17.0,
+      "y": 90.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 18.0,
       "y": 90.0,
       "w": 1,
       "h": 1
@@ -13188,6 +12950,13 @@
     },
     {
       "kind": "tree_twisted",
+      "x": 37.0,
+      "y": 90.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
       "x": 38.0,
       "y": 90.0,
       "w": 1,
@@ -13195,21 +12964,28 @@
     },
     {
       "kind": "gravestone",
-      "x": 57.0,
+      "x": 40.0,
       "y": 90.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "gravestone",
-      "x": 59.0,
+      "kind": "glow_shrooms",
+      "x": 42.0,
       "y": 90.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 61.0,
+      "x": 60.0,
+      "y": 90.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 62.0,
       "y": 90.0,
       "w": 1,
       "h": 1
@@ -13222,7 +12998,7 @@
       "h": 1
     },
     {
-      "kind": "tree_twisted",
+      "kind": "tree_mistpine",
       "x": 64.0,
       "y": 90.0,
       "w": 1,
@@ -13237,21 +13013,35 @@
     },
     {
       "kind": "gravestone",
-      "x": 70.0,
+      "x": 68.0,
       "y": 90.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_mistpine",
-      "x": 90.0,
+      "kind": "gravestone",
+      "x": 72.0,
+      "y": 90.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 77.0,
+      "y": 90.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 80.0,
       "y": 90.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 91.0,
+      "x": 92.0,
       "y": 90.0,
       "w": 1,
       "h": 1
@@ -13292,36 +13082,36 @@
       "h": 1
     },
     {
-      "kind": "tree_mistpine",
+      "kind": "tree_twisted",
       "x": 2.0,
       "y": 91.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "gravestone",
-      "x": 7.0,
-      "y": 91.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 9.0,
+      "kind": "tree_twisted",
+      "x": 19.0,
       "y": 91.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 17.0,
+      "x": 20.0,
       "y": 91.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 18.0,
+      "x": 21.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 32.0,
       "y": 91.0,
       "w": 1,
       "h": 1
@@ -13335,21 +13125,28 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 35.0,
+      "x": 34.0,
       "y": 91.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "gravestone",
-      "x": 53.0,
+      "kind": "tree_twisted",
+      "x": 60.0,
       "y": 91.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "glow_shrooms",
-      "x": 55.0,
+      "kind": "tree_twisted",
+      "x": 61.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 62.0,
       "y": 91.0,
       "w": 1,
       "h": 1
@@ -13369,6 +13166,55 @@
       "h": 1
     },
     {
+      "kind": "gravestone",
+      "x": 76.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 87.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 88.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 89.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 90.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 91.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 92.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
       "kind": "tree_twisted",
       "x": 93.0,
       "y": 91.0,
@@ -13390,14 +13236,7 @@
       "h": 1
     },
     {
-      "kind": "tree_twisted",
-      "x": 0.0,
-      "y": 92.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
+      "kind": "tree_mistpine",
       "x": 1.0,
       "y": 92.0,
       "w": 1,
@@ -13406,13 +13245,6 @@
     {
       "kind": "tree_twisted",
       "x": 2.0,
-      "y": 92.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 3.0,
       "y": 92.0,
       "w": 1,
       "h": 1
@@ -13440,20 +13272,6 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 28.0,
-      "y": 92.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 32.0,
-      "y": 92.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
       "x": 34.0,
       "y": 92.0,
       "w": 1,
@@ -13461,35 +13279,14 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 36.0,
+      "x": 35.0,
       "y": 92.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 38.0,
-      "y": 92.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "gravestone",
-      "x": 42.0,
-      "y": 92.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 61.0,
-      "y": 92.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 62.0,
+      "x": 37.0,
       "y": 92.0,
       "w": 1,
       "h": 1
@@ -13509,15 +13306,50 @@
       "h": 1
     },
     {
-      "kind": "glow_shrooms",
-      "x": 79.0,
+      "kind": "tree_twisted",
+      "x": 66.0,
+      "y": 92.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gravestone",
+      "x": 77.0,
       "y": 92.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 91.0,
+      "x": 88.0,
+      "y": 92.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 89.0,
+      "y": 92.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 90.0,
+      "y": 92.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 92.0,
+      "y": 92.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 93.0,
       "y": 92.0,
       "w": 1,
       "h": 1
@@ -13525,13 +13357,6 @@
     {
       "kind": "tree_twisted",
       "x": 94.0,
-      "y": 92.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 95.0,
       "y": 92.0,
       "w": 1,
       "h": 1
@@ -13587,13 +13412,6 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 7.0,
-      "y": 93.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
       "x": 8.0,
       "y": 93.0,
       "w": 1,
@@ -13602,6 +13420,13 @@
     {
       "kind": "tree_twisted",
       "x": 9.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 10.0,
       "y": 93.0,
       "w": 1,
       "h": 1
@@ -13650,6 +13475,13 @@
     },
     {
       "kind": "tree_twisted",
+      "x": 17.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
       "x": 18.0,
       "y": 93.0,
       "w": 1,
@@ -13727,13 +13559,6 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 29.0,
-      "y": 93.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
       "x": 30.0,
       "y": 93.0,
       "w": 1,
@@ -13741,7 +13566,21 @@
     },
     {
       "kind": "tree_twisted",
+      "x": 31.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
       "x": 32.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 33.0,
       "y": 93.0,
       "w": 1,
       "h": 1
@@ -13776,13 +13615,6 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 38.0,
-      "y": 93.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
       "x": 39.0,
       "y": 93.0,
       "w": 1,
@@ -13797,14 +13629,14 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 42.0,
+      "x": 41.0,
       "y": 93.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 43.0,
+      "x": 42.0,
       "y": 93.0,
       "w": 1,
       "h": 1
@@ -13860,7 +13692,7 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 61.0,
+      "x": 60.0,
       "y": 93.0,
       "w": 1,
       "h": 1
@@ -13895,21 +13727,7 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 66.0,
-      "y": 93.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
       "x": 67.0,
-      "y": 93.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 68.0,
       "y": 93.0,
       "w": 1,
       "h": 1
@@ -13930,14 +13748,14 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 72.0,
+      "x": 71.0,
       "y": 93.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 73.0,
+      "x": 72.0,
       "y": 93.0,
       "w": 1,
       "h": 1
@@ -13979,7 +13797,28 @@
     },
     {
       "kind": "tree_twisted",
+      "x": 79.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
       "x": 80.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 81.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 82.0,
       "y": 93.0,
       "w": 1,
       "h": 1
@@ -13993,7 +13832,7 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 84.0,
+      "x": 85.0,
       "y": 93.0,
       "w": 1,
       "h": 1
@@ -14007,20 +13846,13 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 87.0,
-      "y": 93.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
       "x": 88.0,
       "y": 93.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_mistpine",
+      "kind": "tree_twisted",
       "x": 89.0,
       "y": 93.0,
       "w": 1,
@@ -14034,7 +13866,7 @@
       "h": 1
     },
     {
-      "kind": "tree_mistpine",
+      "kind": "tree_twisted",
       "x": 91.0,
       "y": 93.0,
       "w": 1,
@@ -14098,6 +13930,13 @@
     },
     {
       "kind": "tree_twisted",
+      "x": 4.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
       "x": 5.0,
       "y": 94.0,
       "w": 1,
@@ -14126,6 +13965,13 @@
     },
     {
       "kind": "tree_twisted",
+      "x": 9.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
       "x": 10.0,
       "y": 94.0,
       "w": 1,
@@ -14134,6 +13980,20 @@
     {
       "kind": "tree_twisted",
       "x": 11.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 12.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 13.0,
       "y": 94.0,
       "w": 1,
       "h": 1
@@ -14196,13 +14056,6 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 22.0,
-      "y": 94.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
       "x": 23.0,
       "y": 94.0,
       "w": 1,
@@ -14217,6 +14070,20 @@
     },
     {
       "kind": "tree_twisted",
+      "x": 25.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 26.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
       "x": 27.0,
       "y": 94.0,
       "w": 1,
@@ -14224,14 +14091,14 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 29.0,
+      "x": 28.0,
       "y": 94.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 30.0,
+      "x": 29.0,
       "y": 94.0,
       "w": 1,
       "h": 1
@@ -14267,13 +14134,6 @@
     {
       "kind": "tree_twisted",
       "x": 35.0,
-      "y": 94.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 36.0,
       "y": 94.0,
       "w": 1,
       "h": 1
@@ -14364,14 +14224,21 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 56.0,
+      "x": 57.0,
       "y": 94.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 57.0,
+      "x": 58.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
+      "x": 59.0,
       "y": 94.0,
       "w": 1,
       "h": 1
@@ -14392,7 +14259,7 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 63.0,
+      "x": 62.0,
       "y": 94.0,
       "w": 1,
       "h": 1
@@ -14490,14 +14357,14 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 77.0,
+      "x": 78.0,
       "y": 94.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_twisted",
-      "x": 78.0,
+      "x": 80.0,
       "y": 94.0,
       "w": 1,
       "h": 1
@@ -14546,13 +14413,6 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 87.0,
-      "y": 94.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
       "x": 88.0,
       "y": 94.0,
       "w": 1,
@@ -14567,6 +14427,13 @@
     },
     {
       "kind": "tree_mistpine",
+      "x": 90.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
       "x": 91.0,
       "y": 94.0,
       "w": 1,
@@ -14602,7 +14469,7 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 1.0,
+      "x": 0.0,
       "y": 95.0,
       "w": 1,
       "h": 1
@@ -14728,21 +14595,7 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 20.0,
-      "y": 95.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
       "x": 21.0,
-      "y": 95.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 22.0,
       "y": 95.0,
       "w": 1,
       "h": 1
@@ -14757,13 +14610,6 @@
     {
       "kind": "tree_twisted",
       "x": 25.0,
-      "y": 95.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 26.0,
       "y": 95.0,
       "w": 1,
       "h": 1
@@ -14819,6 +14665,13 @@
     },
     {
       "kind": "tree_twisted",
+      "x": 34.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
       "x": 35.0,
       "y": 95.0,
       "w": 1,
@@ -14861,13 +14714,6 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 41.0,
-      "y": 95.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
       "x": 42.0,
       "y": 95.0,
       "w": 1,
@@ -14896,13 +14742,6 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 53.0,
-      "y": 95.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
       "x": 54.0,
       "y": 95.0,
       "w": 1,
@@ -14911,20 +14750,6 @@
     {
       "kind": "tree_twisted",
       "x": 55.0,
-      "y": 95.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 56.0,
-      "y": 95.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 57.0,
       "y": 95.0,
       "w": 1,
       "h": 1
@@ -15008,28 +14833,7 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 69.0,
-      "y": 95.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 70.0,
-      "y": 95.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
       "x": 71.0,
-      "y": 95.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 72.0,
       "y": 95.0,
       "w": 1,
       "h": 1
@@ -15140,21 +14944,28 @@
       "h": 1
     },
     {
-      "kind": "tree_twisted",
-      "x": 89.0,
-      "y": 95.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_twisted",
-      "x": 90.0,
+      "kind": "tree_mistpine",
+      "x": 88.0,
       "y": 95.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_mistpine",
+      "x": 89.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_mistpine",
+      "x": 90.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_twisted",
       "x": 91.0,
       "y": 95.0,
       "w": 1,
@@ -15176,7 +14987,7 @@
     },
     {
       "kind": "tree_twisted",
-      "x": 95.0,
+      "x": 94.0,
       "y": 95.0,
       "w": 1,
       "h": 1
@@ -15202,26 +15013,205 @@
       "kind": "entrance8",
       "x": 66.5,
       "y": 34.5
+    },
+    {
+      "kind": "entrance27",
+      "x": 30.5,
+      "y": 66.5
     }
   ],
   "monsters": [
     {
-      "kind": "ghoul",
-      "x": 15.33,
-      "y": 54.77,
-      "tier": 5.547
+      "kind": "cultist",
+      "x": 18.13,
+      "y": 42.76,
+      "tier": 5.299
+    },
+    {
+      "kind": "cultist",
+      "x": 16.52,
+      "y": 45.05,
+      "tier": 5.299
+    },
+    {
+      "kind": "cultist",
+      "x": 17.69,
+      "y": 43.73,
+      "tier": 5.299
+    },
+    {
+      "kind": "cultist",
+      "x": 15.53,
+      "y": 45.85,
+      "tier": 5.299
+    },
+    {
+      "kind": "wisp",
+      "x": 88.39,
+      "y": 40.52,
+      "tier": 5.172
+    },
+    {
+      "kind": "wisp",
+      "x": 88.61,
+      "y": 37.63,
+      "tier": 5.172
+    },
+    {
+      "kind": "wisp",
+      "x": 87.61,
+      "y": 41.28,
+      "tier": 5.172
+    },
+    {
+      "kind": "wisp",
+      "x": 88.77,
+      "y": 37.98,
+      "tier": 5.172
+    },
+    {
+      "kind": "wisp",
+      "x": 88.96,
+      "y": 62.7,
+      "tier": 5.839
+    },
+    {
+      "kind": "wisp",
+      "x": 90.15,
+      "y": 62.67,
+      "tier": 5.839
+    },
+    {
+      "kind": "wisp",
+      "x": 88.54,
+      "y": 63.54,
+      "tier": 5.839
+    },
+    {
+      "kind": "wisp",
+      "x": 90.1,
+      "y": 62.32,
+      "tier": 5.839
+    },
+    {
+      "kind": "wisp",
+      "x": 86.92,
+      "y": 64.48,
+      "tier": 5.839
     },
     {
       "kind": "ghoul",
-      "x": 16.97,
-      "y": 56.7,
-      "tier": 5.547
+      "x": 75.63,
+      "y": 51.87,
+      "tier": 5.548
     },
     {
       "kind": "ghoul",
-      "x": 15.1,
-      "y": 55.97,
-      "tier": 5.547
+      "x": 75.47,
+      "y": 53.59,
+      "tier": 5.548
+    },
+    {
+      "kind": "ghoul",
+      "x": 73.94,
+      "y": 51.55,
+      "tier": 5.548
+    },
+    {
+      "kind": "ghoul",
+      "x": 76.48,
+      "y": 54.57,
+      "tier": 5.548
+    },
+    {
+      "kind": "ghoul",
+      "x": 75.83,
+      "y": 52.54,
+      "tier": 5.548
+    },
+    {
+      "kind": "wisp",
+      "x": 81.24,
+      "y": 77.23,
+      "tier": 5.069
+    },
+    {
+      "kind": "wisp",
+      "x": 81.04,
+      "y": 76.04,
+      "tier": 5.069
+    },
+    {
+      "kind": "wisp",
+      "x": 79.01,
+      "y": 76.14,
+      "tier": 5.069
+    },
+    {
+      "kind": "wisp",
+      "x": 79.18,
+      "y": 78.5,
+      "tier": 5.069
+    },
+    {
+      "kind": "wisp",
+      "x": 22.27,
+      "y": 52.46,
+      "tier": 5.73
+    },
+    {
+      "kind": "wisp",
+      "x": 25.14,
+      "y": 52.49,
+      "tier": 5.73
+    },
+    {
+      "kind": "wisp",
+      "x": 22.6,
+      "y": 52.62,
+      "tier": 5.73
+    },
+    {
+      "kind": "wisp",
+      "x": 21.55,
+      "y": 50.45,
+      "tier": 5.73
+    },
+    {
+      "kind": "ghoul",
+      "x": 32.83,
+      "y": 23.98,
+      "tier": 5.588
+    },
+    {
+      "kind": "ghoul",
+      "x": 34.24,
+      "y": 26.1,
+      "tier": 5.588
+    },
+    {
+      "kind": "ghoul",
+      "x": 33.08,
+      "y": 23.89,
+      "tier": 5.588
+    },
+    {
+      "kind": "wisp",
+      "x": 12.31,
+      "y": 52.78,
+      "tier": 6.012
+    },
+    {
+      "kind": "wisp",
+      "x": 12.97,
+      "y": 52.7,
+      "tier": 6.012
+    },
+    {
+      "kind": "wisp",
+      "x": 11.1,
+      "y": 51.97,
+      "tier": 6.012
     },
     {
       "kind": "wisp",
@@ -15297,63 +15287,57 @@
     },
     {
       "kind": "cultist",
-      "x": 6.92,
-      "y": 82.01,
+      "x": 9.68,
+      "y": 83.7,
       "tier": 5.644
     },
     {
       "kind": "cultist",
-      "x": 8.78,
-      "y": 81.72,
+      "x": 8.64,
+      "y": 84.99,
       "tier": 5.644
     },
     {
       "kind": "cultist",
-      "x": 7.67,
-      "y": 82.38,
+      "x": 9.04,
+      "y": 82.72,
       "tier": 5.644
     },
     {
       "kind": "cultist",
-      "x": 7.67,
-      "y": 83.64,
+      "x": 8.89,
+      "y": 84.15,
       "tier": 5.644
     },
     {
       "kind": "cultist",
-      "x": 9.72,
-      "y": 82.64,
+      "x": 8.53,
+      "y": 83.92,
       "tier": 5.644
     },
     {
       "kind": "ghoul",
-      "x": 76.6,
-      "y": 51.88,
-      "tier": 5.67
+      "x": 11.54,
+      "y": 73.77,
+      "tier": 5.75
     },
     {
       "kind": "ghoul",
-      "x": 75.54,
-      "y": 48.77,
-      "tier": 5.67
+      "x": 13.96,
+      "y": 75.56,
+      "tier": 5.75
     },
     {
       "kind": "ghoul",
-      "x": 77.96,
-      "y": 50.56,
-      "tier": 5.67
+      "x": 13.16,
+      "y": 76.43,
+      "tier": 5.75
     },
     {
       "kind": "ghoul",
-      "x": 77.16,
-      "y": 51.43,
-      "tier": 5.67
-    },
-    {
-      "kind": "ghoul",
-      "x": 76.99,
-      "y": 51.1,
-      "tier": 5.67
+      "x": 12.99,
+      "y": 76.1,
+      "tier": 5.75
     },
     {
       "kind": "wisp",
@@ -15423,20 +15407,20 @@
     },
     {
       "kind": "wisp",
-      "x": 6.94,
-      "y": 55.17,
+      "x": 8.8,
+      "y": 52.61,
       "tier": 5.48
     },
     {
       "kind": "wisp",
-      "x": 7.55,
-      "y": 55.32,
+      "x": 8.03,
+      "y": 55.04,
       "tier": 5.48
     },
     {
       "kind": "wisp",
-      "x": 9.13,
-      "y": 56.38,
+      "x": 6.72,
+      "y": 53.87,
       "tier": 5.48
     },
     {
@@ -15474,201 +15458,39 @@
       "x": 9.76,
       "y": 33.42,
       "tier": 5.702
-    },
-    {
-      "kind": "cultist",
-      "x": 44.11,
-      "y": 13.57,
-      "tier": 6.072
-    },
-    {
-      "kind": "cultist",
-      "x": 44.31,
-      "y": 12.78,
-      "tier": 6.072
-    },
-    {
-      "kind": "cultist",
-      "x": 46.42,
-      "y": 14.27,
-      "tier": 6.072
-    },
-    {
-      "kind": "cultist",
-      "x": 45.79,
-      "y": 16.31,
-      "tier": 6.072
-    },
-    {
-      "kind": "wisp",
-      "x": 66.92,
-      "y": 27.98,
-      "tier": 5.572
-    },
-    {
-      "kind": "wisp",
-      "x": 67.82,
-      "y": 26.58,
-      "tier": 5.572
-    },
-    {
-      "kind": "wisp",
-      "x": 67.28,
-      "y": 25.21,
-      "tier": 5.572
-    },
-    {
-      "kind": "cultist",
-      "x": 44.08,
-      "y": 68.72,
-      "tier": 5.593
-    },
-    {
-      "kind": "cultist",
-      "x": 42.15,
-      "y": 71.63,
-      "tier": 5.593
-    },
-    {
-      "kind": "cultist",
-      "x": 42.13,
-      "y": 68.89,
-      "tier": 5.593
-    },
-    {
-      "kind": "cultist",
-      "x": 43.42,
-      "y": 69.92,
-      "tier": 5.593
-    },
-    {
-      "kind": "cultist",
-      "x": 43.65,
-      "y": 71.71,
-      "tier": 5.593
-    },
-    {
-      "kind": "cultist",
-      "x": 36.47,
-      "y": 80.77,
-      "tier": 5.583
-    },
-    {
-      "kind": "cultist",
-      "x": 36.19,
-      "y": 80.7,
-      "tier": 5.583
-    },
-    {
-      "kind": "cultist",
-      "x": 38.33,
-      "y": 81.79,
-      "tier": 5.583
-    },
-    {
-      "kind": "cultist",
-      "x": 35.21,
-      "y": 80.38,
-      "tier": 5.583
-    },
-    {
-      "kind": "cultist",
-      "x": 38.43,
-      "y": 79.64,
-      "tier": 5.583
-    },
-    {
-      "kind": "cultist",
-      "x": 66.31,
-      "y": 51.94,
-      "tier": 5.756
-    },
-    {
-      "kind": "cultist",
-      "x": 67.84,
-      "y": 53.42,
-      "tier": 5.756
-    },
-    {
-      "kind": "cultist",
-      "x": 65.58,
-      "y": 52.58,
-      "tier": 5.756
-    },
-    {
-      "kind": "cultist",
-      "x": 67.15,
-      "y": 53.01,
-      "tier": 5.756
-    },
-    {
-      "kind": "wisp",
-      "x": 36.58,
-      "y": 76.66,
-      "tier": 5.201
-    },
-    {
-      "kind": "wisp",
-      "x": 38.3,
-      "y": 76.98,
-      "tier": 5.201
-    },
-    {
-      "kind": "wisp",
-      "x": 34.52,
-      "y": 77.65,
-      "tier": 5.201
-    },
-    {
-      "kind": "wisp",
-      "x": 25.26,
-      "y": 24.02,
-      "tier": 5.985
-    },
-    {
-      "kind": "wisp",
-      "x": 22.35,
-      "y": 21.64,
-      "tier": 5.985
-    },
-    {
-      "kind": "wisp",
-      "x": 21.76,
-      "y": 23.96,
-      "tier": 5.985
     }
   ],
   "npcs": [],
   "items": [
     {
       "kind": "apple",
-      "x": 88.5,
-      "y": 50.5
+      "x": 44.5,
+      "y": 14.5
     },
     {
       "kind": "apple",
-      "x": 77.5,
-      "y": 64.5
+      "x": 41.5,
+      "y": 66.5
     },
     {
       "kind": "apple",
-      "x": 12.5,
-      "y": 52.5
+      "x": 41.5,
+      "y": 67.5
     },
     {
       "kind": "apple",
-      "x": 7.5,
-      "y": 81.5
-    },
-    {
-      "kind": "apple",
-      "x": 80.5,
-      "y": 20.5
+      "x": 45.5,
+      "y": 88.5
     },
     {
       "kind": "apple",
       "x": 89.5,
-      "y": 33.5
+      "y": 49.5
+    },
+    {
+      "kind": "apple",
+      "x": 62.5,
+      "y": 26.5
     }
   ]
 }

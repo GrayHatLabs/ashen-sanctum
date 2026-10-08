@@ -1357,6 +1357,72 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         idle(&mut g, 60);
         save(&mut g, scr, "feat_storm");
     }
+    // Act 3's set pieces (mist.rs): the Bog Witch, the wolf moon, the shade, a bell, a bride, the manor, the tomb.
+    {
+        let mut g = Game::new(7, h);
+        g.p.base_hp = 9999.0;
+        g.p.recalc();
+        g.p.hp = 9999.0;
+        let quiet = |g: &mut Game| {
+            g.banner_t = 0.0;
+            g.event_cd = 9999.0;
+            g.feats.shade_cd = 9999.0;
+            g.feats.moon_cd = 9999.0;
+            g.message = None;
+        };
+        g.debug_goto(crate::mist::WITCH);
+        quiet(&mut g);
+        if let Some((x, y)) = g.npcs.iter().find(|n| n.role == Role::BogWitch).map(|n| (n.x, n.y)) {
+            g.mobs.retain(|m| (m.x - x).powi(2) + (m.y - y).powi(2) > 144.0);
+            (g.p.x, g.p.y) = (x + 1.5, y + 1.0);
+            idle(&mut g, 10);
+            g.dialog = Some(g.witch_dialog());
+            save(&mut g, scr, "mist_witch");
+            g.dialog = None;
+        }
+        g.debug_goto(LevelId::Area(2, 2));
+        quiet(&mut g);
+        g.start_moon();
+        idle(&mut g, 70);
+        save(&mut g, scr, "mist_moon");
+        g.feats.moon = 0.0;
+        g.mobs.retain(|m| m.kind != crate::mobs::Kind::Werewolf);
+        g.feats.shade_cd = 0.0;
+        idle(&mut g, 50);
+        save(&mut g, scr, "mist_shade");
+        let (bx, by) = g.feats.bell_spot[1];
+        if bx > 0.0 {
+            g.mobs.retain(|m| (m.x - bx).powi(2) + (m.y - by).powi(2) > 144.0 || m.kind == crate::mobs::Kind::Shade);
+            g.mobs.retain(|m| m.kind != crate::mobs::Kind::Shade);
+            (g.p.x, g.p.y) = (bx + 1.5, by + 0.5);
+            quiet(&mut g);
+            idle(&mut g, 30);
+            save(&mut g, scr, "mist_bell");
+        }
+        let brides = crate::mist::bride_areas(g.world_seed, 0);
+        g.debug_goto(LevelId::Area(2, brides[0]));
+        quiet(&mut g);
+        if let Some((x, y)) = g.mobs.iter().find(|m| m.kind == crate::mobs::Kind::Bride).map(|m| (m.x, m.y)) {
+            g.debug_place_near(x, y, 4.0);
+            idle(&mut g, 40);
+            save(&mut g, scr, "mist_bride");
+        }
+        g.debug_goto(crate::mist::tomb_area(g.world_seed, 0));
+        quiet(&mut g);
+        let (tx, ty) = g.feats.tomb_spot;
+        if tx > 0.0 {
+            g.debug_place_near(tx, ty, 4.5);
+            idle(&mut g, 40);
+            save(&mut g, scr, "mist_tomb");
+        }
+        g.debug_goto(LevelId::Dungeon(crate::world::MANOR, 0));
+        quiet(&mut g);
+        if let Some((x, y)) = g.mobs.iter().find(|m| m.kind == crate::mobs::Kind::Elspeth).map(|m| (m.x, m.y)) {
+            g.debug_place_near(x, y, 4.0);
+            idle(&mut g, 40);
+            save(&mut g, scr, "mist_manor");
+        }
+    }
     // Side content (side.rs): a shrine and its blessing, Skrat One-Ear and his gang, the Charnel Well, the
     // Well-Witch, a lore page and the journal on the map.
     {

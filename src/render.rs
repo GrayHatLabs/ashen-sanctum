@@ -1414,6 +1414,10 @@ impl Game {
                 scr.fill(sx - 2, sy - 2, 5, 5, rgb(0xffb040));
             }
         }
+        if self.feats.tomb_level == Some(self.level) && self.feats.shade == 1 {
+            let (sx, sy) = proj(self.feats.tomb_spot.0, self.feats.tomb_spot.1);
+            scr.fill(sx - 2, sy - 3, 5, 6, rgb(0xa0c0ff));
+        }
         if self.level == crate::features::CUB && self.feats.cub == 1 {
             let (sx, sy) = proj(self.feats.den.0, self.feats.den.1);
             scr.fill(sx - 2, sy - 2, 5, 5, rgb(0xa0e0ff));
@@ -2489,6 +2493,13 @@ fn draw_pickup(scr: &mut Screen, k: &Pickup, sx: i32, sy: i32, tick: u32, art: &
                     }
                 }
             }
+        }
+        &Drop::Keepsake(_) => {
+            let y = sy - 8 - pop + bob;
+            scr.glow(sx, y, 18.0, rgb(0xc0d8ff), 0.7);
+            scr.disc(sx, y, 4, rgb(0xc8c0e0));
+            scr.disc(sx, y, 2, rgb(0x6050a0));
+            scr.fill(sx, y - 6, 1, 3, rgb(0xd8d0b0));
         }
         &Drop::Herb => {
             // A glowing herb.

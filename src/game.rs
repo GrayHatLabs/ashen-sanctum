@@ -182,6 +182,8 @@ pub enum Drop {
     Herb,
     Heirloom,
     Clue,
+    /// One of Lady Elspeth's keepsakes in the Hollow Manor (mist.rs).
+    Keepsake(u8),
     /// Equipment.
     Item(Box<crate::items::Item>),
 }
@@ -228,6 +230,8 @@ pub struct Player {
     pub shrines_used: u32,
     /// Gold in the hoard sack (dragon.rs): yours once you're out of the Ember Wyrm's cave.
     pub sack: i32,
+    /// The Bog Witch's pacts (mist.rs bits).
+    pub pacts: u8,
     pub x: f32,
     pub y: f32,
     pub hp: f32,
@@ -349,6 +353,7 @@ impl Player {
             supers: 0,
             shrines_used: 0,
             sack: 0,
+            pacts: 0,
             x: 0.0,
             y: 0.0,
             hp: 70.0,
@@ -547,7 +552,13 @@ impl Player {
         self.mana = self.mana.min(self.max_mana);
         // A Skill shrine adds one more.
         let shrine = (self.bless_t > 0.0 && crate::side::Blessing::from_id(self.blessing) == Some(crate::side::Blessing::Skill)) as i32;
-        self.skills.bonus = (self.bonus.get(Stat::Skills).clamp(0, 5) + shrine) as u8;
+        // The Bog Witch: the Crow's Eye (+1 skills) and the Wolf's Heart (-10% life).
+        let crow = (self.pacts & crate::mist::PACT_CROW != 0) as i32;
+        self.skills.bonus = (self.bonus.get(Stat::Skills).clamp(0, 5) + shrine + crow) as u8;
+        if self.pacts & crate::mist::PACT_WOLF != 0 {
+            self.max_hp *= 0.9;
+            self.hp = self.hp.min(self.max_hp);
+        }
         self.skills.gear_fire = self.bonus.frac(Stat::Fire, 300);
     }
 
@@ -1319,6 +1330,7 @@ impl Game {
         // This area's random errand and its set pieces start as you arrive.
         self.errand_enter();
         self.features_enter();
+        self.mist_enter();
         if let Some(mut w) = wolf {
             let (wx, wy) = if self.d.blocked(x + 1.0, y, 0.35) { (x, y) } else { (x + 1.0, y) };
             w.x = wx;
@@ -1740,6 +1752,7 @@ impl Game {
         self.update_wyrm();
         self.update_errands();
         self.update_features();
+        self.update_mist();
         self.update_sky();
         self.update_rift();
         self.second_wind_t = (self.second_wind_t - DT).max(0.0);
@@ -2105,6 +2118,7 @@ impl Game {
             }
             Some(Act::BuyStock(k)) => self.buy_stock(k as usize),
             Some(Act::Duel) => self.start_duel(),
+            Some(Act::Pact(k)) => self.make_pact(k as usize),
             Some(Act::Side(q)) => {
                 // Leaving the story conversation still counts as having heard it.
                 if let Some(stage) = self.dialog.as_ref().and_then(|d| d.advance_to) {
@@ -2537,7 +2551,7 @@ impl Game {
         }
         // Hunger doesn't tick in the safety of town.
         if !in_town {
-            let drain = if run { FOOD_DRAIN_RUN } else { FOOD_DRAIN } * (1.0 - gear.frac(crate::items::Stat::Hunger, 75));
+            let drain = if run { FOOD_DRAIN_RUN } else { FOOD_DRAIN } * (1.0 - gear.frac(crate::items::Stat::Hunger, 75)) * self.pact_hunger();
             self.p.food = (self.p.food - drain * DT).max(0.0);
         }
         let base = if run { RUN_SPEED } else { WALK_SPEED };
@@ -2601,7 +2615,7 @@ impl Game {
                     self.floater(px, py, "MANA POTION".into(), rgb(0x6090ff));
                 }
                 Drop::Gold(n) => {
-                    let n = (n as f32 * (1.0 + self.p.bonus.frac(crate::items::Stat::Gold, 300) + self.ember_fortune() as f32 / 100.0)).round() as i32;
+                    let n = (n as f32 * (1.0 + self.p.bonus.frac(crate::items::Stat::Gold, 300) + self.ember_fortune() as f32 / 100.0) * self.pact_gold()).round() as i32;
                     self.p.gold += n;
                     self.floater(px, py, format!("{n} GOLD"), rgb(0xe8c050));
                 }
@@ -2622,6 +2636,7 @@ impl Game {
                 Drop::Page(i) => self.read_page(i),
                 Drop::Hoard(n) => self.grab_hoard(n),
                 Drop::Herb | Drop::Heirloom | Drop::Clue => self.errand_pick(&k),
+                Drop::Keepsake(n) => self.pick_keepsake(n),
                 Drop::Key(i) => {
                     self.quest.keys[i] = true;
                     self.p.skills.points += 1;
@@ -3194,6 +3209,15 @@ impl Game {
             let form = self.mobs[i].form;
             self.ice_broken(form, x, y);
         }
+        // Act 3 (mist.rs): the shade, Vardak's brides, the wolf moon's pelts.
+        if kind == Kind::Shade {
+            self.shade_killed(x, y);
+        }
+        if kind == Kind::Bride {
+            let su = self.mobs[i].superu;
+            self.bride_killed(su, x, y);
+        }
+        self.moon_kill(kind, x, y);
         if shatter {
             self.shatter(x, y);
         }

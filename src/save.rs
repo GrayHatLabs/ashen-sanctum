@@ -163,7 +163,8 @@ pub fn to_text(g: &Game) -> String {
     let done: Vec<String> = g.errands_done.iter().map(|(l, k)| format!("{}/{}", crate::levels::id_string(*l), crate::errands::KINDS.iter().position(|x| x == k).unwrap_or(0))).collect();
     s += &format!("errands={}\n", done.join(","));
     let f = &g.feats;
-    s += &format!("feats={},{},{},{},{},{}\n", f.barn_over as u8, f.market_hostile as u8, f.jarl, f.merchant_free as u8, f.cub, f.scouts);
+    s += &format!("feats={},{},{},{},{},{},{},{},{},{}\n", f.barn_over as u8, f.market_hostile as u8, f.jarl, f.merchant_free as u8, f.cub, f.scouts, f.shade, f.shade_known as u8, f.bells, f.brides);
+    s += &format!("pacts={}\n", g.p.pacts);
     s += &format!("act={}\n", g.level.act());
     s += &p.skills.save_text();
     s += &format!("waypoints={}\n", g.waypoints.iter().map(|w| crate::levels::id_string(*w)).collect::<Vec<_>>().join(","));
@@ -249,7 +250,14 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
             g.feats.cub = n[4].min(2);
             g.feats.scouts = n[5].min(3);
         }
+        if n.len() >= 10 {
+            g.feats.shade = n[6].min(2);
+            g.feats.shade_known = n[7] != 0;
+            g.feats.bells = n[8] & 7;
+            g.feats.brides = n[9] & 7;
+        }
     }
+    g.p.pacts = (num("pacts").unwrap_or(0.0) as u8) & 7;
     if let Some(v) = get("errands") {
         for e in v.split(',').filter(|e| !e.is_empty()) {
             if let Some((l, k)) = e.rsplit_once('/') {

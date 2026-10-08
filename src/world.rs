@@ -225,7 +225,7 @@ pub struct DungeonDef {
     pub act: usize,
 }
 
-pub const DUNGEONS: [DungeonDef; 27] = [
+pub const DUNGEONS: [DungeonDef; 29] = [
     DungeonDef {
         name: "THE BONE CRYPT",
         floors: 2,
@@ -499,6 +499,26 @@ pub const DUNGEONS: [DungeonDef; 27] = [
         entrance: (0, 0),
         act: 1,
     },
+    DungeonDef {
+        name: "THE GRAVEDIGGER'S CELLAR",
+        floors: 2,
+        theme: Theme::Barrow,
+        boss: Kind::Gravedigger,
+        monsters: &[Kind::Ghoul, Kind::Skeleton, Kind::Ghoul],
+        tier: 6.2,
+        entrance: (0, 0),
+        act: 2,
+    },
+    DungeonDef {
+        name: "THE HOLLOW MANOR",
+        floors: 1,
+        theme: Theme::Castle,
+        boss: Kind::Elspeth,
+        monsters: &[Kind::Banshee, Kind::Wisp, Kind::Ghoul],
+        tier: 6.6,
+        entrance: (0, 0),
+        act: 2,
+    },
 ];
 
 /// The Ashen Sanctum (needs all three seals).
@@ -519,6 +539,9 @@ pub const CHARNEL: usize = 24;
 pub const WYRM: usize = 25;
 /// Act 2's optional dungeon (side.rs): Hrolf Ice-Beard's longship, frozen into the Raiders' Fjord.
 pub const LONGSHIP: usize = 26;
+/// Act 3's optional dungeons (mist.rs): the Gravedigger's cellar, and Lady Elspeth's manor.
+pub const CELLAR: usize = 27;
+pub const MANOR: usize = 28;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum PortalKind {
@@ -558,6 +581,9 @@ pub enum PropKind {
     Entrance(usize),
     /// A shrine (side.rs), in its act's style.
     Shrine(u8),
+    /// Act 3's bells, and the Wailing Shade's tomb (mist.rs).
+    Bell,
+    Tomb,
     StairsDown,
     StairsUp,
     // ---- Act 2 ----
@@ -657,6 +683,10 @@ impl PropKind {
             PropKind::Entrance(CHARNEL) => "ent_charnel",
             PropKind::Entrance(WYRM) => "ent_wyrm",
             PropKind::Entrance(LONGSHIP) => "ent_longship",
+            PropKind::Entrance(CELLAR) => "ent_cellar",
+            PropKind::Entrance(MANOR) => "ent_manor",
+            PropKind::Bell => "bell_shrine",
+            PropKind::Tomb => "tomb_shade",
             PropKind::Entrance(_) => "ent_zenith",
             PropKind::Shrine(a) => crate::side::shrine_art(a),
             PropKind::StairsDown => "stairs_down",
@@ -837,6 +867,8 @@ pub fn build_at(id: LevelId, seed: u64, difficulty: u8) -> Level {
     crate::side::place(&mut lv, seed);
     // The Ember Wyrm's cavern and hoard (dragon.rs).
     crate::dragon::place(&mut lv, seed, difficulty);
+    // Lady Elspeth's keepsakes (mist.rs).
+    crate::mist::place(&mut lv, seed);
     let (hp, dmg, xp, tier) = match difficulty {
         0 => (1.0, 1.0, 1.0, 1.0),
         1 => (3.5, 2.0, 2.8, 2.0),
@@ -1088,7 +1120,7 @@ pub fn frostmarch(seed: u64) -> Level {
             clear(keep, x as i32, y as i32, 2);
         }
     };
-    for (k, def) in DUNGEONS.iter().enumerate().filter(|(_, d)| d.act == 1) {
+    for (k, def) in DUNGEONS.iter().enumerate().filter(|(_, d)| d.act == 1 && d.entrance != (0, 0)) {
         let (ex, ey) = def.entrance;
         let &g = gates.iter().min_by_key(|(gx, gy)| (gx - ex).pow(2) + (gy - ey).pow(2)).unwrap();
         road(&mut d, &mut keep, g, (ex, ey), k as f32);
@@ -1289,7 +1321,7 @@ pub fn mistwood(seed: u64) -> Level {
             clear(keep, x as i32, y as i32, 2);
         }
     };
-    for (k, def) in DUNGEONS.iter().enumerate().filter(|(_, d)| d.act == 2) {
+    for (k, def) in DUNGEONS.iter().enumerate().filter(|(_, d)| d.act == 2 && d.entrance != (0, 0)) {
         let (ex, ey) = def.entrance;
         let &g = gates.iter().min_by_key(|(gx, gy)| (gx - ex).pow(2) + (gy - ey).pow(2)).unwrap();
         road(&mut d, &mut keep, g, (ex, ey), k as f32);
@@ -1492,7 +1524,7 @@ pub fn mechanus(seed: u64) -> Level {
             clear(keep, x as i32, y as i32, 2);
         }
     };
-    for (k, def) in DUNGEONS.iter().enumerate().filter(|(_, d)| d.act == 3) {
+    for (k, def) in DUNGEONS.iter().enumerate().filter(|(_, d)| d.act == 3 && d.entrance != (0, 0)) {
         let (ex, ey) = def.entrance;
         let &g = gates.iter().min_by_key(|(gx, gy)| (gx - ex).pow(2) + (gy - ey).pow(2)).unwrap();
         road(&mut d, &mut keep, g, (ex, ey), k as f32);
@@ -1769,7 +1801,7 @@ pub fn heavens(seed: u64) -> Level {
             }
         }
     };
-    for (k, def) in DUNGEONS.iter().enumerate().filter(|(_, d)| d.act == 5) {
+    for (k, def) in DUNGEONS.iter().enumerate().filter(|(_, d)| d.act == 5 && d.entrance != (0, 0)) {
         let (ex, ey) = def.entrance;
         clear(&mut keep, ex, ey, 4);
         let (fw, fh) = if k == ZENITH { (4, 3) } else { (3, 3) };
@@ -2002,7 +2034,7 @@ pub fn deep(seed: u64) -> Level {
             clear(keep, x as i32, y as i32, 2);
         }
     };
-    for (k, def) in DUNGEONS.iter().enumerate().filter(|(_, d)| d.act == 4) {
+    for (k, def) in DUNGEONS.iter().enumerate().filter(|(_, d)| d.act == 4 && d.entrance != (0, 0)) {
         let (ex, ey) = def.entrance;
         let &g = gates.iter().min_by_key(|(gx, gy)| (gx - ex).pow(2) + (gy - ey).pow(2)).unwrap();
         road(&mut d, &mut keep, g, (ex, ey), k as f32);
