@@ -261,6 +261,15 @@ window.CATALOG = {
       "slug": "hollow_manor",
       "theme": "castle",
       "tier": 6.599999904632568
+    },
+    {
+      "act": 3,
+      "boss": "boss_junkgolem",
+      "floors": 2,
+      "name": "THE SCRAPHEAP LABYRINTH",
+      "slug": "scrapheap_labyrinth",
+      "theme": "foundry",
+      "tier": 8.399999618530273
     }
   ],
   "lands": {
@@ -953,7 +962,9 @@ window.CATALOG = {
     },
     "area:3:6": {
       "act": 3,
-      "doors": [],
+      "doors": [
+        29
+      ],
       "exits": [
         [
           1,
@@ -1924,6 +1935,24 @@ window.CATALOG = {
       "kind": "shade",
       "name": "THE WAILING SHADE",
       "prop": false
+    },
+    {
+      "boss": false,
+      "kind": "automaton",
+      "name": "THE BRASS KNIGHT",
+      "prop": false
+    },
+    {
+      "boss": true,
+      "kind": "boss_junkgolem",
+      "name": "THE JUNK GOLEM",
+      "prop": false
+    },
+    {
+      "boss": false,
+      "kind": "scrap_pile",
+      "name": "SCRAP HEAP",
+      "prop": false
     }
   ],
   "npcs": [
@@ -2597,6 +2626,16 @@ window.CATALOG = {
     {
       "h": 1,
       "kind": "shrine_ash",
+      "w": 1
+    },
+    {
+      "h": 3,
+      "kind": "ent_scrapheap",
+      "w": 3
+    },
+    {
+      "h": 1,
+      "kind": "shrine_gear",
       "w": 1
     }
   ],

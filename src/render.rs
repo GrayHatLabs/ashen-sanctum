@@ -1608,6 +1608,15 @@ impl Game {
         if crate::breakables::is_prop(m.kind) {
             return self.draw_prop(scr, i, sx, sy);
         }
+        if m.kind == crate::mobs::Kind::ScrapPile {
+            if !m.alive() {
+                return;
+            }
+            let s = self.art.prop("cog_pile");
+            let fx = if m.flash > 0.0 { Fx { tint: WHITE, tint_a: 0.6, ..Fx::default() } } else if self.hover == Some(i) { Fx { tint: rgb(0xffe0a0), tint_a: 0.2, ..Fx::default() } } else { Fx::default() };
+            scr.blit_scaled(s, sx, sy + 6, 1.4, fx);
+            return;
+        }
         if m.kind == crate::mobs::Kind::IceBlock {
             if !m.alive() {
                 return;
@@ -1741,7 +1750,7 @@ impl Game {
             fx.tint = rgb(0x9ad8ff);
             fx.tint_a = 0.6;
             fx.dither = (self.tick / 2) % 3 == 0;
-        } else if m.charm > 0.0 && !matches!(m.kind, crate::mobs::Kind::DireWolf | crate::mobs::Kind::Rat | crate::mobs::Kind::MossWolf | crate::mobs::Kind::ThornWarden) {
+        } else if m.charm > 0.0 && !matches!(m.kind, crate::mobs::Kind::DireWolf | crate::mobs::Kind::Rat | crate::mobs::Kind::MossWolf | crate::mobs::Kind::ThornWarden | crate::mobs::Kind::Automaton) {
             fx.tint = rgb(0xa040e0);
             fx.tint_a = 0.35;
         }
@@ -2493,6 +2502,17 @@ fn draw_pickup(scr: &mut Screen, k: &Pickup, sx: i32, sy: i32, tick: u32, art: &
                     }
                 }
             }
+        }
+        &Drop::Gear(_) => {
+            let y = sy - 8 - pop + bob;
+            scr.glow(sx, y, 18.0, rgb(0xffd060), 0.7);
+            scr.disc(sx, y, 5, rgb(0x6a4a18));
+            scr.disc(sx, y, 4, rgb(0xd8a840));
+            for k in 0..8 {
+                let a = k as f32 * std::f32::consts::FRAC_PI_4 + tick as f32 * 0.03;
+                scr.fill(sx + (a.cos() * 5.5) as i32, y + (a.sin() * 5.5) as i32, 2, 2, rgb(0xd8a840));
+            }
+            scr.disc(sx, y, 1, rgb(0x3a2808));
         }
         &Drop::Keepsake(_) => {
             let y = sy - 8 - pop + bob;

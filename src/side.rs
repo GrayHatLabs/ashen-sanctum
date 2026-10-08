@@ -114,6 +114,7 @@ pub fn shrine_art(act: u8) -> &'static str {
     match act {
         1 => "shrine_frost",
         2 => "shrine_mist",
+        3 => "shrine_gear",
         _ => "shrine_ash",
     }
 }
@@ -266,6 +267,46 @@ pub const SUPERS: &[SuperDef] = &[
     SuperDef { name: "LUCRETIA, VARDAK'S BRIDE", kind: Kind::Bride, home: LevelId::Area(2, 99), spot: (0, 0), mods: M_FAST | M_VAMPIRE, gang: (Kind::Cultist, 0), tint: 0xf0d0e0, line: "MY LORD WILL DRINK YOU DRY.", unique: "bride", page: None, camp: None },
     SuperDef { name: "MORGANA, VARDAK'S BRIDE", kind: Kind::Bride, home: LevelId::Area(2, 99), spot: (0, 0), mods: M_STRONG | M_VAMPIRE, gang: (Kind::Cultist, 0), tint: 0xd8c0f0, line: "OH, A GUEST. HOW... APPETISING.", unique: "bride", page: None, camp: None },
     SuperDef { name: "ISOLDE, VARDAK'S BRIDE", kind: Kind::Bride, home: LevelId::Area(2, 99), spot: (0, 0), mods: M_STONE | M_VAMPIRE, gang: (Kind::Cultist, 0), tint: 0xe0e8ff, line: "YOU'LL NEVER REACH THE CASTLE.", unique: "bride", page: None, camp: None },
+    // ---- Act 4: Mechanus ----
+    SuperDef {
+        name: "MAINSPRING",
+        kind: Kind::BoilerBrute,
+        home: LevelId::Area(3, 2),
+        spot: (0, 0),
+        mods: M_STONE | M_FIERY,
+        gang: (Kind::Scarab, 4),
+        tint: 0xffa060,
+        line: "PRESSURE... RISING...",
+        unique: "mainspring",
+        page: Some(15),
+        camp: None,
+    },
+    SuperDef {
+        name: "GRAND INQUISITOR HALVANE",
+        kind: Kind::Inquisitor,
+        home: LevelId::Area(3, 5),
+        spot: (0, 0),
+        mods: M_STRONG | M_FIERY,
+        gang: (Kind::Inquisitor, 3),
+        tint: 0xfff0c0,
+        line: "THE CLOCK-LAW IS ABSOLUTE. KNEEL!",
+        unique: "halvane",
+        page: Some(16),
+        camp: None,
+    },
+    SuperDef {
+        name: "TICK-TOCK JACK",
+        kind: Kind::SpringJack,
+        home: LevelId::Area(3, 3),
+        spot: (0, 0),
+        mods: M_FAST | M_STRONG,
+        gang: (Kind::ClockCrow, 4),
+        tint: 0xc0ffe0,
+        line: "TICK, TOCK! CATCH ME IF YOU CAN!",
+        unique: "ticktock",
+        page: Some(17),
+        camp: None,
+    },
 ];
 
 /// Jarl Hrogar's index in SUPERS (features.rs).
@@ -279,7 +320,6 @@ pub const SUPER_SCALE: f32 = 1.25;
 // ------------------------------------------------------------------ side quests
 
 #[derive(Clone, Copy, PartialEq, Debug)]
-#[allow(dead_code)] // Gold is for the later acts' quests.
 pub enum Reward {
     SkillPoint,
     /// Permanent extra life.
@@ -498,6 +538,46 @@ pub const SIDES: &[SideDef] = &[
         reward: Reward::Unique("abelard"),
         todo: "SLAY THE PALE HUNTSMAN (THE HOLLOW WOOD)",
     },
+    // ---- Act 4 ----
+    SideDef {
+        name: "OIL FOR THE SAINT",
+        act: 3,
+        giver: Role::Oiler,
+        giver_name: "BROTHER PISTON",
+        ask: "ASK ABOUT THE HOLY OIL",
+        offer: &["THE HOLY OIL OF THE ESCAPEMENT, STOLEN! SCAVENGERS DRAGGED THE CASKS INTO THE SCRAPHEAP LABYRINTH, PAST THE SCRAPYARD, AND SOMETHING DOWN THERE IS BUILT OUT OF EVERYTHING THEY EVER STOLE. BRING BACK THE OIL. THE SAINT'S GEARS RUN DRY."],
+        remind: "THE SCRAPHEAP LABYRINTH, IN THE SCRAPYARD EAST OF THE GEARFIELDS. MIND THE GOLEM: IT DOESN'T STAY BROKEN.",
+        thanks: &["THE OIL! THE SAINT TURNS AGAIN. MADAME VESPER OWES ME A FAVOUR, AND YOU'RE IT: SHE'S MADE YOU SOMETHING. AND A PURSE, FROM THE COLLECTION PLATE."],
+        goal: Goal::Boss(Kind::JunkGolem),
+        reward: Reward::Rare(500),
+        todo: "DESTROY THE JUNK GOLEM IN THE SCRAPHEAP LABYRINTH (THE SCRAPYARD)",
+    },
+    SideDef {
+        name: "TALLY'S COUNT",
+        act: 3,
+        giver: Role::Tally,
+        giver_name: "TALLY",
+        ask: "ASK ABOUT THE MISSING LEDGER",
+        offer: &["MY LEDGER! EVERY GEAR IN MECHANUS, COUNTED AND ACCOUNTED, AND A SPRING-HEELED LUNATIC SNATCHED IT RIGHT OFF MY DESK. TICK-TOCK JACK, THEY CALL HIM. HE BOUNCES ROUND THE COGWORKS LAUGHING AT HIS OWN JOKES. BRING IT BACK. I'LL PAY. I ALWAYS PAY. IT'S IN THE LEDGER."],
+        remind: "TICK-TOCK JACK, IN THE COGWORKS. HE'S FAST. BE FASTER.",
+        thanks: &["MY LEDGER. NOT A PAGE MISSING. FIFTEEN HUNDRED GOLD, AS AGREED. I'VE WRITTEN IT DOWN."],
+        goal: Goal::Super(14),
+        reward: Reward::Gold(1500),
+        todo: "CATCH TICK-TOCK JACK (THE COGWORKS)",
+    },
+    SideDef {
+        name: "THE GRAND INQUISITOR",
+        act: 3,
+        giver: Role::Vesper,
+        giver_name: "MADAME VESPER",
+        ask: "ASK ABOUT THE PREACHER IN THE FIELDS",
+        offer: &["HALVANE. A GRAND INQUISITOR WHO DECIDED THE CLOCK-LAW WASN'T STRICT ENOUGH. HE PREACHES ON THE CLOCKFACE PLAIN, AND HIS ZEALOTS 'CORRECT' ANYONE WHO WALKS OUT OF STEP. SILENCE HIM, DARLING. I'LL MAKE IT WORTH YOUR WHILE."],
+        remind: "THE CLOCKFACE PLAIN. FOLLOW THE SOUND OF SERMONS AND SCREAMING.",
+        thanks: &["HALVANE, SILENCED. HOW RESTFUL. HERE: A LITTLE CLOCKWORK OF MY OWN. IT TURNS BLADES ASIDE."],
+        goal: Goal::Super(13),
+        reward: Reward::Ward,
+        todo: "SILENCE GRAND INQUISITOR HALVANE (THE CLOCKFACE PLAIN)",
+    },
 ];
 
 // ------------------------------------------------------------------ lore
@@ -519,6 +599,11 @@ pub const LORE: &[(u8, &str, &str)] = &[
     (2, "THE SENTENCE", "BLACKMOOR, FOR WORSHIPPING THE COUNT IN THE COUNT'S OWN DUNGEON, IS TO HANG BY THE NECK UNTIL DEAD. ADDENDUM: AGAIN. ADDENDUM: WE HAVE RUN OUT OF ROPE."),
     (2, "THE GRAVEDIGGER'S LEDGER", "TWELVE FROM THE FIELDS. NINE FROM THE MOOR. THE COUNT PAYS A SILVER A HEAD AND ASKS NO QUESTIONS, AND I ASK HIM NONE ABOUT WHAT HE DOES WITH THEM."),
     (2, "ELSPETH'S DIARY", "MY LITTLE ONE IS SICK AGAIN. THE COUNT SAYS HE CAN CURE HER, FOR A PRICE. I WILL PAY ANYTHING. I WILL PAY ANYTHING. I PAID."),
+    (3, "PRESSURE LOG, BOILER 9", "PRESSURE NOMINAL. PRESSURE HIGH. PRESSURE HIGH. PRESSURE HIGH. PRESSURE (THE NEEDLE HAS BEEN BENT PAST THE LAST MARK BY SOMETHING VERY STRONG.)"),
+    (3, "HALVANE'S SERMON", "THE CLOCK DOES NOT FORGIVE. THE CLOCK DOES NOT HURRY. THE CLOCK DOES NOT CARE IF YOU ARE TIRED. BE AS THE CLOCK, AND YOU WILL NEVER BE LATE FOR YOUR JUDGMENT."),
+    (3, "A JOKE, WRITTEN ON A GEAR", "WHAT DID THE CLOCKMAKER SAY TO THE THIEF? NOTHING. HE NEVER SAW ME. TICK TOCK. (SIGNED: J.)"),
+    (3, "SCAVENGER'S MAP", "THE HEAP KEEPS GROWING. WE BRING IT SCRAP AND IT EATS IT AND STANDS UP TALLER. YESTERDAY IT HAD ARMS. TODAY IT HAD OPINIONS."),
+    (3, "AN APPRENTICE'S NOTE", "IF YOU FIND THIS, THE VAULT IN THE ARCHIVE STACKS ONLY OPENS WHEN THE CLOCK BESIDE IT IS STOPPED. I GOT IN. I DID NOT THINK ABOUT GETTING OUT."),
 ];
 
 pub fn pages_of(act: usize) -> impl Iterator<Item = usize> {
@@ -649,7 +734,7 @@ pub fn place(lv: &mut Level, seed: u64) {
 }
 
 /// The optional dungeons: (dungeon index, the lore page on its first floor).
-pub const OPTIONAL: &[(usize, u8)] = &[(crate::world::CHARNEL, 3), (crate::world::LONGSHIP, 9), (crate::world::CELLAR, 13), (crate::world::MANOR, 14)];
+pub const OPTIONAL: &[(usize, u8)] = &[(crate::world::CHARNEL, 3), (crate::world::LONGSHIP, 9), (crate::world::CELLAR, 13), (crate::world::MANOR, 14), (crate::world::SCRAPHEAP, 18)];
 
 // ------------------------------------------------------------------ the game side
 

@@ -225,7 +225,7 @@ pub struct DungeonDef {
     pub act: usize,
 }
 
-pub const DUNGEONS: [DungeonDef; 29] = [
+pub const DUNGEONS: [DungeonDef; 30] = [
     DungeonDef {
         name: "THE BONE CRYPT",
         floors: 2,
@@ -519,6 +519,16 @@ pub const DUNGEONS: [DungeonDef; 29] = [
         entrance: (0, 0),
         act: 2,
     },
+    DungeonDef {
+        name: "THE SCRAPHEAP LABYRINTH",
+        floors: 2,
+        theme: Theme::Foundry,
+        boss: Kind::JunkGolem,
+        monsters: &[Kind::Scarab, Kind::BoilerBrute, Kind::ClockCrow],
+        tier: 8.4,
+        entrance: (0, 0),
+        act: 3,
+    },
 ];
 
 /// The Ashen Sanctum (needs all three seals).
@@ -542,6 +552,8 @@ pub const LONGSHIP: usize = 26;
 /// Act 3's optional dungeons (mist.rs): the Gravedigger's cellar, and Lady Elspeth's manor.
 pub const CELLAR: usize = 27;
 pub const MANOR: usize = 28;
+/// Act 4's optional dungeon (gears.rs): the Junk Golem's labyrinth under the Scrapyard.
+pub const SCRAPHEAP: usize = 29;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum PortalKind {
@@ -685,6 +697,7 @@ impl PropKind {
             PropKind::Entrance(LONGSHIP) => "ent_longship",
             PropKind::Entrance(CELLAR) => "ent_cellar",
             PropKind::Entrance(MANOR) => "ent_manor",
+            PropKind::Entrance(SCRAPHEAP) => "ent_scrapheap",
             PropKind::Bell => "bell_shrine",
             PropKind::Tomb => "tomb_shade",
             PropKind::Entrance(_) => "ent_zenith",

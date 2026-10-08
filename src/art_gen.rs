@@ -84,6 +84,9 @@ pub static CHARS: &[CharDef] = &[
     CharDef { name: "npc_riftwarden", cell: (32, 52), anchor: (16, 46), data: include_bytes!("../assets/art/npc_riftwarden.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
     CharDef { name: "boss_firewyrm", cell: (171, 157), anchor: (74, 114), data: include_bytes!("../assets/art/boss_firewyrm.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 7 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 10 }, AnimDef { name: "sleep", row: 24, frames: 6, fps: 4 }] },
     CharDef { name: "npc_bogwitch", cell: (31, 54), anchor: (14, 48), data: include_bytes!("../assets/art/npc_bogwitch.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
+    CharDef { name: "npc_magistrate", cell: (32, 58), anchor: (16, 52), data: include_bytes!("../assets/art/npc_magistrate.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
+    CharDef { name: "automaton", cell: (71, 80), anchor: (28, 61), data: include_bytes!("../assets/art/automaton.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 8 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 12 }] },
+    CharDef { name: "boss_junkgolem", cell: (134, 132), anchor: (51, 105), data: include_bytes!("../assets/art/boss_junkgolem.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 7 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 10 }] },
     CharDef { name: "boss_gravedigger", cell: (126, 121), anchor: (46, 95), data: include_bytes!("../assets/art/boss_gravedigger.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 7 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 10 }] },
     CharDef { name: "boss_wellwitch", cell: (109, 103), anchor: (47, 86), data: include_bytes!("../assets/art/boss_wellwitch.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 7 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 10 }] },
     CharDef { name: "valkyrie", cell: (92, 81), anchor: (38, 67), data: include_bytes!("../assets/art/valkyrie.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 9 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 16 }, AnimDef { name: "sweep", row: 24, frames: 6, fps: 14 }, AnimDef { name: "whirl", row: 32, frames: 6, fps: 14 }, AnimDef { name: "throw", row: 40, frames: 6, fps: 14 }, AnimDef { name: "cast", row: 48, frames: 6, fps: 12 }] },
@@ -326,4 +329,6 @@ pub static ITEMS: &[ItemDef] = &[
     ItemDef { name: "ent_manor", data: include_bytes!("../assets/art/item_ent_manor.bin") },
     ItemDef { name: "bell_shrine", data: include_bytes!("../assets/art/item_bell_shrine.bin") },
     ItemDef { name: "tomb_shade", data: include_bytes!("../assets/art/item_tomb_shade.bin") },
+    ItemDef { name: "shrine_gear", data: include_bytes!("../assets/art/item_shrine_gear.bin") },
+    ItemDef { name: "ent_scrapheap", data: include_bytes!("../assets/art/item_ent_scrapheap.bin") },
 ];

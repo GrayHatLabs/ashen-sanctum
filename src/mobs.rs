@@ -126,6 +126,13 @@ pub enum Kind {
     Bride,
     /// The Wailing Shade that haunts you through the Mistwood.
     Shade,
+    // ---- Act 4's side content (gears.rs) ----
+    /// The brass knight you rebuild from five gears: it fights for you.
+    Automaton,
+    /// The Junk Golem: rebuilds itself from scrap twice.
+    JunkGolem,
+    /// A scrap heap in the Scrapyard: smash it for the lottery.
+    ScrapPile,
     // ---- breakables (breakables.rs): no mind, smashed by any hit; the act is in `Mob::form` ----
     Crate,
     Barrel,
@@ -316,6 +323,14 @@ pub fn def(k: Kind) -> Def {
             boss: true,
             ..d("boss_firewyrm", "VAURATH THE EMBER WYRM", 9000.0, 2.6, (45.0, 65.0), 0.8, 1.6, 9000.0)
         },
+        Kind::Automaton => Def { r: 0.38, reach: 1.0, ..d("automaton", "THE BRASS KNIGHT", 420.0, 3.8, (14.0, 20.0), 0.4, 0.9, 0.0) },
+        Kind::JunkGolem => Def {
+            r: 0.7,
+            reach: 1.6,
+            boss: true,
+            ..d("boss_junkgolem", "THE JUNK GOLEM", 900.0, 1.6, (24.0, 34.0), 0.8, 1.7, 1400.0)
+        },
+        Kind::ScrapPile => Def { r: 0.45, reach: 0.0, ..d("scrap_pile", "SCRAP HEAP", 30.0, 0.0, (0.0, 0.0), 9.0, 99.0, 0.0) },
         Kind::Gravedigger => Def {
             r: 0.6,
             reach: 1.5,
@@ -1498,6 +1513,20 @@ fn boss_specials(
                     fired: false,
                     kind: HazardKind::Poison,
                 });
+            }
+        }
+        Kind::JunkGolem => {
+            // Both fists down, and loose scarabs skittering out of the scrap.
+            if m.special <= 0.0 && dist < 3.4 {
+                m.special = if m.enraged { 3.0 } else { 4.4 };
+                hazards.push(Hazard { x: m.x, y: m.y, r: 2.8, warn: 0.9, live: 0.0, dps: 0.0, burst: 24.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Quake });
+                texts.push((m.x, m.y, "CRUSH!"));
+            }
+            if m.special2 <= 0.0 && m.boss {
+                m.special2 = if m.enraged { 8.0 } else { 11.0 };
+                if summons < 6 {
+                    around(rng, 3, Kind::Scarab, m.tier, spawns);
+                }
             }
         }
         Kind::Gravedigger => {

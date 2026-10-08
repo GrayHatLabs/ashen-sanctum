@@ -313,6 +313,17 @@ Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`;
     a skill point) and Abelard's Pale Huntsman (his charm).
   - **Super uniques:** the Pale Huntsman, Sister Mournwail and Blackmoor the Gibbet-Hanged.
   - **Lore:** five pages.
+  - **Act 4:**
+    - the **Broken Automaton**: five gears in Mechanus's areas rebuild a brass knight that fights at your side
+      for the act;
+    - the **Unlawful Court** (the Piston Flats): fight, bribe or argue; a writ frees you from the laws;
+    - the **Scrapyard Lottery**: smash scrap heaps for loot, or a junk golem;
+    - the **Timeless Vault** (the Archive Stacks): it opens only while its clock is stopped.
+- **Act 4's side content:**
+  - **The Scrapheap Labyrinth**, with the Junk Golem, who rebuilds itself twice.
+  - **Side quests:** Brother Piston's Oil for the Saint, Tally's Count and Vesper's Grand Inquisitor.
+  - **Super uniques:** Mainspring, Grand Inquisitor Halvane and Tick-Tock Jack.
+  - **Lore:** five pages.
 - **Act 2's side content:**
   - **The Icebound Longship**, the optional dungeon in the Raiders' Fjord, with Hrolf Ice-Beard.
   - **Side quests:** Sigurd's Axe (a socket), Brenna's Lost Patrol (thaw three frozen scouts, for a ward)

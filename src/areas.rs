@@ -428,7 +428,7 @@ pub const AREAS: &[AreaDef] = &[
         tier: 8.0,
         size: (64, 64),
         exits: &[(Side::W, 0.5, 1)],
-        doors: &[],
+        doors: &[(crate::world::SCRAPHEAP, (44, 18))],
         pass: None,
         monsters: &[Kind::Scarab, Kind::ClockCrow],
         packs: 8,

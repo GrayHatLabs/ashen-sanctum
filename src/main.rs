@@ -39,6 +39,7 @@ mod dragon;
 mod errands;
 mod features;
 mod mist;
+mod gears;
 mod world;
 
 use game::{Game, Input};

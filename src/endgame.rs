@@ -278,7 +278,8 @@ impl Game {
 
     fn spawn_guardian(&mut self, tier: u16) {
         // Any of the six acts' bosses, risen from the ash, stronger with every tier.
-        let bosses: Vec<Kind> = DUNGEONS.iter().map(|d| d.boss).collect();
+        // (The story bosses: the optional dungeons' have their own rules, like the sleeping wyrm.)
+        let bosses: Vec<Kind> = DUNGEONS.iter().take(24).map(|d| d.boss).collect();
         let kind = bosses[self.rng.range(0, bosses.len() as i32) as usize];
         let (px, py) = (self.p.x, self.p.y);
         let spot = (0..32)

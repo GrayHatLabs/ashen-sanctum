@@ -246,7 +246,7 @@ The user took every idea offered and added two of their own (marked *).
 
 **Order:**
 1. Act 1's extras and all of Act 2: the extras above, plus the planned optional dungeon, side quests, super uniques and pages. *(done 2026-10-08, `src/features.rs`)*
-2. Then Acts 3, 4, 5 and 6, in turn. *(Act 3 done 2026-10-08, `src/mist.rs`)*
+2. Then Acts 3, 4, 5 and 6, in turn. *(Act 3 done 2026-10-08, `src/mist.rs`; Act 4 done, `src/gears.rs`)*
 3. Then the all-act systems.
 
 ## 3. Phases (stop for a review after each)

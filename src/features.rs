@@ -109,6 +109,19 @@ pub struct Feats {
     pub bell_spot: [(f32, f32); 3],
     pub brides: u8,
     pub keepsakes: u8,
+    // ---- Act 4 (gears.rs) ----
+    pub gear_placed: Vec<LevelId>,
+    /// Gears found (bits), and whether the automaton is yours.
+    pub gears: u8,
+    pub automaton: bool,
+    /// The court: 0 not ruled, 1 writ (bribed or acquitted), 2 fought; whether it's called you yet; its place.
+    pub court: u8,
+    pub court_called: bool,
+    pub court_spot: (f32, f32),
+    pub writ: bool,
+    /// The Timeless Vault's door tile, and whether it's been emptied.
+    pub vault_door: (i32, i32),
+    pub vault_looted: bool,
 }
 
 impl Game {
@@ -700,6 +713,7 @@ impl Game {
                 Some(d)
             }
             Role::BogWitch => Some(self.witch_dialog()),
+            Role::Magistrate => Some(if self.feats.court == 0 { self.court_dialog() } else { Dialog::new("MAGISTRATE KORVEL", &["THE COURT HAS RULED. MOVE ALONG, CITIZEN."]) }),
             Role::YetiCub => Some(Dialog::new("A LOST YETI CUB", &["MRRR. (IT SNIFFS YOUR HAND AND WON'T LEAVE YOUR SIDE.)"])),
             Role::Rescue(_) => Some(Dialog::new("TRAPPED VILLAGER", &["HELP! THE FIRE! GET ME OUT OF HERE!"])),
             _ => None,

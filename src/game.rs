@@ -184,6 +184,8 @@ pub enum Drop {
     Clue,
     /// One of Lady Elspeth's keepsakes in the Hollow Manor (mist.rs).
     Keepsake(u8),
+    /// One of the brass automaton's five gears (gears.rs).
+    Gear(u8),
     /// Equipment.
     Item(Box<crate::items::Item>),
 }
@@ -1331,6 +1333,7 @@ impl Game {
         self.errand_enter();
         self.features_enter();
         self.mist_enter();
+        self.gears_enter();
         if let Some(mut w) = wolf {
             let (wx, wy) = if self.d.blocked(x + 1.0, y, 0.35) { (x, y) } else { (x + 1.0, y) };
             w.x = wx;
@@ -1753,6 +1756,7 @@ impl Game {
         self.update_errands();
         self.update_features();
         self.update_mist();
+        self.update_gears();
         self.update_sky();
         self.update_rift();
         self.second_wind_t = (self.second_wind_t - DT).max(0.0);
@@ -2119,6 +2123,7 @@ impl Game {
             Some(Act::BuyStock(k)) => self.buy_stock(k as usize),
             Some(Act::Duel) => self.start_duel(),
             Some(Act::Pact(k)) => self.make_pact(k as usize),
+            Some(Act::Court(k)) => self.court_act(k),
             Some(Act::Side(q)) => {
                 // Leaving the story conversation still counts as having heard it.
                 if let Some(stage) = self.dialog.as_ref().and_then(|d| d.advance_to) {
@@ -2637,6 +2642,7 @@ impl Game {
                 Drop::Hoard(n) => self.grab_hoard(n),
                 Drop::Herb | Drop::Heirloom | Drop::Clue => self.errand_pick(&k),
                 Drop::Keepsake(n) => self.pick_keepsake(n),
+                Drop::Gear(n) => self.pick_gear(n),
                 Drop::Key(i) => {
                     self.quest.keys[i] = true;
                     self.p.skills.points += 1;
@@ -3170,6 +3176,10 @@ impl Game {
     }
 
     pub(crate) fn kill(&mut self, i: usize) {
+        // The Junk Golem pulls itself back together twice (gears.rs).
+        if self.golem_rebuilds(i) {
+            return;
+        }
         // A crate, barrel or urn: it breaks (no XP, no kill hooks).
         if crate::breakables::is_prop(self.mobs[i].kind) {
             self.break_prop(i);
@@ -3218,6 +3228,10 @@ impl Game {
             self.bride_killed(su, x, y);
         }
         self.moon_kill(kind, x, y);
+        // The Scrapyard's lottery (gears.rs).
+        if kind == Kind::ScrapPile {
+            self.scrap_lottery(x, y);
+        }
         if shatter {
             self.shatter(x, y);
         }

@@ -1423,6 +1423,61 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             save(&mut g, scr, "mist_manor");
         }
     }
+    // Act 4's set pieces (gears.rs): a gear, the brass knight at your side, the court, the scrapyard, the vault.
+    {
+        let mut g = Game::new(7, h);
+        g.p.base_hp = 9999.0;
+        g.p.recalc();
+        g.p.hp = 9999.0;
+        let quiet = |g: &mut Game| {
+            g.banner_t = 0.0;
+            g.event_cd = 9999.0;
+            g.message = None;
+        };
+        g.debug_goto(LevelId::Area(3, 1));
+        quiet(&mut g);
+        if let Some((x, y)) = g.pickups.iter().find(|k| matches!(k.kind, crate::game::Drop::Gear(_))).map(|k| (k.x, k.y)) {
+            g.mobs.retain(|m| (m.x - x).powi(2) + (m.y - y).powi(2) > 100.0);
+            g.debug_place_near(x, y, 2.5);
+            idle(&mut g, 20);
+            save(&mut g, scr, "gear_gear");
+        }
+        for k in 0..5 {
+            g.pick_gear(k);
+        }
+        quiet(&mut g);
+        idle(&mut g, 60);
+        save(&mut g, scr, "gear_knight");
+        g.debug_goto(crate::gears::COURT);
+        quiet(&mut g);
+        if let Some((x, y)) = g.npcs.iter().find(|n| n.role == Role::Magistrate).map(|n| (n.x, n.y)) {
+            (g.p.x, g.p.y) = (x + 1.5, y + 2.5);
+            idle(&mut g, 10);
+            g.dialog = None;
+            g.court_act(2);
+            save(&mut g, scr, "gear_court");
+            g.dialog = None;
+        }
+        g.debug_goto(crate::gears::SCRAPYARD);
+        quiet(&mut g);
+        if let Some((x, y)) = g.mobs.iter().find(|m| m.kind == crate::mobs::Kind::ScrapPile).map(|m| (m.x, m.y)) {
+            g.debug_place_near(x, y, 3.0);
+            idle(&mut g, 30);
+            save(&mut g, scr, "gear_scrap");
+        }
+        g.debug_goto(crate::gears::VAULT);
+        quiet(&mut g);
+        let (dx, dy) = g.feats.vault_door;
+        if dx > 0 {
+            g.mobs.retain(|m| m.kind == crate::mobs::Kind::Automaton || (m.x - dx as f32).powi(2) + (m.y - dy as f32).powi(2) > 25.0 || m.kind == crate::mobs::Kind::Marshal);
+            (g.p.x, g.p.y) = (dx as f32 + 1.5, dy as f32 + 4.0);
+            if let Some(c) = g.clocks.iter_mut().find(|c| (c.y - dy as f32 - 2.5).abs() < 0.2) {
+                c.field = 6.0;
+            }
+            idle(&mut g, 20);
+            save(&mut g, scr, "gear_vault");
+        }
+    }
     // Side content (side.rs): a shrine and its blessing, Skrat One-Ear and his gang, the Charnel Well, the
     // Well-Witch, a lore page and the journal on the map.
     {

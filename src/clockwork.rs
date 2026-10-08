@@ -155,6 +155,10 @@ impl Game {
 
     /// How much of a blow on monster `i` the laws allow (1 outside any zone).
     pub(crate) fn law_scale(&self, i: usize) -> f32 {
+        // A writ from Magistrate Korvel's court (gears.rs): the laws don't bind you.
+        if self.feats.writ {
+            return 1.0;
+        }
         let m = &self.mobs[i];
         let Some(z) = self.laws.iter().find(|z| (z.x - m.x).powi(2) + (z.y - m.y).powi(2) < LAW_R * LAW_R) else { return 1.0 };
         let d = ((m.x - self.p.x).powi(2) + (m.y - self.p.y).powi(2)).sqrt();

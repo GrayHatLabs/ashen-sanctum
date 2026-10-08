@@ -165,6 +165,7 @@ pub fn to_text(g: &Game) -> String {
     let f = &g.feats;
     s += &format!("feats={},{},{},{},{},{},{},{},{},{}\n", f.barn_over as u8, f.market_hostile as u8, f.jarl, f.merchant_free as u8, f.cub, f.scouts, f.shade, f.shade_known as u8, f.bells, f.brides);
     s += &format!("pacts={}\n", g.p.pacts);
+    s += &format!("mech={},{},{},{},{}\n", f.gears, f.automaton as u8, f.court, f.writ as u8, f.vault_looted as u8);
     s += &format!("act={}\n", g.level.act());
     s += &p.skills.save_text();
     s += &format!("waypoints={}\n", g.waypoints.iter().map(|w| crate::levels::id_string(*w)).collect::<Vec<_>>().join(","));
@@ -258,6 +259,16 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
         }
     }
     g.p.pacts = (num("pacts").unwrap_or(0.0) as u8) & 7;
+    if let Some(v) = get("mech") {
+        let n: Vec<u8> = v.split(',').filter_map(|x| x.parse().ok()).collect();
+        if n.len() >= 5 {
+            g.feats.gears = n[0] & 31;
+            g.feats.automaton = n[1] != 0;
+            g.feats.court = n[2].min(2);
+            g.feats.writ = n[3] != 0;
+            g.feats.vault_looted = n[4] != 0;
+        }
+    }
     if let Some(v) = get("errands") {
         for e in v.split(',').filter(|e| !e.is_empty()) {
             if let Some((l, k)) = e.rsplit_once('/') {
