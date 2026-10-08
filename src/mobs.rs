@@ -107,6 +107,10 @@ pub enum Kind {
     WellWitch,
     /// A gold-thief laden with loot (an event): it flees, and gets away in the end.
     Hoarder,
+    /// Vaurath, the Ember Wyrm asleep on its hoard (dragon.rs): a heist, not a fight.
+    FireWyrm,
+    /// A bone totem raising the dead (a random errand, errands.rs): it doesn't move or fight.
+    Totem,
     // ---- breakables (breakables.rs): no mind, smashed by any hit; the act is in `Mob::form` ----
     Crate,
     Barrel,
@@ -291,6 +295,13 @@ pub fn def(k: Kind) -> Def {
             ranged: true,
             ..d("boss_wellwitch", "THE WELL-WITCH", 380.0, 1.6, (9.0, 13.0), 0.6, 2.0, 420.0)
         },
+        Kind::FireWyrm => Def {
+            r: 1.0,
+            reach: 2.2,
+            boss: true,
+            ..d("boss_firewyrm", "VAURATH THE EMBER WYRM", 9000.0, 2.6, (45.0, 65.0), 0.8, 1.6, 9000.0)
+        },
+        Kind::Totem => Def { r: 0.4, reach: 0.0, ..d("totem", "BONE TOTEM", 120.0, 0.0, (0.0, 0.0), 9.0, 99.0, 40.0) },
         Kind::Hoarder => Def { r: 0.26, ..d("hoarder", "GOLD-THIEF", 60.0, 3.3, (1.0, 2.0), 0.4, 1.5, 40.0) },
         Kind::Crate => Def { r: 0.34, ..d("crate", "CRATE", 4.0, 0.0, (0.0, 0.0), 1.0, 9.0, 0.0) },
         Kind::Barrel => Def { r: 0.34, ..d("barrel", "BARREL", 4.0, 0.0, (0.0, 0.0), 1.0, 9.0, 0.0) },
@@ -511,6 +522,10 @@ pub struct Mob {
     /// A super unique (side.rs SUPERS index + 1; 0 = not one), and whether it has shouted its line yet.
     pub superu: u8,
     pub shouted: bool,
+    /// Asleep (the Ember Wyrm on its hoard, dragon.rs): drawn curled up.
+    pub asleep: bool,
+    /// A random errand's own (errands.rs: 1 its target, 2 a guard, 3 a siege wave).
+    pub errand: u8,
 }
 
 impl Mob {
@@ -582,6 +597,8 @@ impl Mob {
             holy_t: 0.0,
             superu: 0,
             shouted: false,
+            asleep: false,
+            errand: 0,
         }
     }
 
@@ -1434,6 +1451,33 @@ fn boss_specials(
                     fired: false,
                     kind: HazardKind::Poison,
                 });
+            }
+        }
+        Kind::FireWyrm => {
+            // A torrent of fire down its line of sight, burning pools where it lands, and a tail sweep up close.
+            if m.special <= 0.0 && dist < 10.0 {
+                m.special = if m.enraged { 2.6 } else { 3.6 };
+                let a = (py - m.y).atan2(px - m.x);
+                for k in 0..8 {
+                    let dd = 1.8 + k as f32 * 1.1;
+                    for side in [-1.0f32, 0.0, 1.0] {
+                        if k < 2 && side != 0.0 {
+                            continue;
+                        }
+                        let aa = a + side * 0.16 * (k as f32 * 0.5 + 0.5);
+                        let (x, y) = (m.x + aa.cos() * dd, m.y + aa.sin() * dd);
+                        if d.blocked(x, y, 0.1) {
+                            continue;
+                        }
+                        hazards.push(Hazard { x, y, r: 0.75 + k as f32 * 0.06, warn: 0.6 + k as f32 * 0.05, live: 2.5, dps: 30.0 * m.tier.powf(0.8), burst: 0.0, t: 0.0, fired: false, kind: HazardKind::Slag });
+                    }
+                }
+                texts.push((m.x, m.y, "FIRE!"));
+            }
+            if m.special2 <= 0.0 && dist < 3.4 {
+                m.special2 = if m.enraged { 2.5 } else { 3.5 };
+                hazards.push(Hazard { x: m.x, y: m.y, r: 3.0, warn: 0.7, live: 0.0, dps: 0.0, burst: 40.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Quake });
+                texts.push((m.x, m.y, "TAIL SWEEP!"));
             }
         }
         Kind::WellWitch => {

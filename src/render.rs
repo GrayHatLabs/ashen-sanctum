@@ -142,6 +142,23 @@ impl Game {
                 blend_ellipse(scr, sx, sy, 12, 4, rgb(0x6080ff), 0.25 + 0.2 * pulse);
             }
         }
+        if let Some((kind, (x, y), open)) = self.errand_marker() {
+            let (sx, sy) = to_scr(x, y);
+            let pulse = 0.5 + 0.5 * ((self.tick as f32) * 0.08).sin();
+            if kind == crate::errands::ErrandKind::Siege {
+                blend_ellipse(scr, sx, sy, 22, 9, rgb(0x101820), 0.8);
+                let c = if open { mix(rgb(0x4080c0), rgb(0xa0e0ff), pulse) } else { rgb(0x506070) };
+                ring(scr, sx, sy, 20, 8, c);
+                scr.fill(sx - 3, sy - 22, 7, 22, rgb(0x707880));
+                scr.fill(sx - 2, sy - 20, 5, 2, c);
+            } else {
+                let c = mix(rgb(0xa02010), rgb(0xff4020), pulse);
+                for k in -5..=5 {
+                    scr.fill(sx + k * 2, sy + k, 2, 1, c);
+                    scr.fill(sx + k * 2, sy - k, 2, 1, c);
+                }
+            }
+        }
         for k in &self.pickups {
             let (sx, sy) = to_scr(k.x, k.y);
             draw_pickup(scr, k, sx, sy, self.tick, &self.art);
@@ -1365,6 +1382,13 @@ impl Game {
                 scr.fill(sx - 2, sy - 2, 5, 5, rgb(0xffb040));
             }
         }
+        if let Some((x, y)) = self.errand_x() {
+            let (sx, sy) = proj(x, y);
+            for k in -3..=3 {
+                scr.fill(sx + k, sy + k, 1, 1, rgb(0xff3020));
+                scr.fill(sx + k, sy - k, 1, 1, rgb(0xff3020));
+            }
+        }
         let (sx, sy) = proj(px, py);
         scr.fill(sx - 1, sy - 2, 3, 4, WHITE);
         scr.text("MAP", scr.w - 30, 8, rgb(0xc8b088), Align::Center, 1);
@@ -1544,6 +1568,23 @@ impl Game {
         if crate::breakables::is_prop(m.kind) {
             return self.draw_prop(scr, i, sx, sy);
         }
+        if m.kind == crate::mobs::Kind::Totem {
+            if !m.alive() {
+                return;
+            }
+            blend_ellipse(scr, sx, sy, 10, 4, BLACK, 0.45);
+            let pulse = 0.4 + 0.25 * ((self.tick as f32) * 0.1).sin();
+            scr.glow(sx, sy - 22, 16.0, rgb(0x80ff60), pulse);
+            let bone = if m.flash > 0.0 { WHITE } else { rgb(0xd8ccb0) };
+            scr.fill(sx - 1, sy - 26, 3, 26, bone);
+            scr.fill(sx - 6, sy - 18, 13, 2, bone);
+            scr.disc(sx, sy - 29, 5, bone);
+            scr.fill(sx - 2, sy - 30, 1, 2, rgb(0x60ff40));
+            scr.fill(sx + 2, sy - 30, 1, 2, rgb(0x60ff40));
+            scr.fill(sx - 4, sy - 14, 2, 4, rgb(0x8a7a60));
+            scr.fill(sx + 3, sy - 12, 2, 4, rgb(0x8a7a60));
+            return;
+        }
         // Count Vardak's last form is a giant bat.
         let name = match (m.kind, m.form) {
             (crate::mobs::Kind::Vardak, 1) => "boss_vardak_bat",
@@ -1591,6 +1632,9 @@ impl Game {
                 return;
             }
             MobState::Attack(t) => CharFrame::At("attack", m.dir, 1.0 - t / m.windup),
+            // The Ember Wyrm curled up on its hoard (a slow breathing loop).
+            // (Its "sleep" clip came out standing; a still idle frame reads better.)
+            _ if m.asleep => CharFrame::Loop("idle", m.dir, 0.0),
             _ if m.moving => CharFrame::Loop("walk", m.dir, m.anim_t),
             _ => CharFrame::Loop("idle", m.dir, 0.0),
         };
@@ -1624,6 +1668,11 @@ impl Game {
         if self.hover == Some(i) && fx.tint_a == 0.0 {
             fx.tint = rgb(0xffe0a0);
             fx.tint_a = 0.15;
+        }
+        // Asleep (the Ember Wyrm): dim and still.
+        if m.asleep && fx.tint_a == 0.0 {
+            fx.tint = rgb(0x10080c);
+            fx.tint_a = 0.35;
         }
         if m.enraged && fx.tint_a == 0.0 {
             fx.tint = rgb(0xff2010);
@@ -1950,10 +1999,28 @@ impl Game {
         if let Some(side) = self.side_log() {
             scr.text(&side, 6, 27, rgb(0x7a8a68), Align::Left, 1);
         }
+        if let Some((t, col)) = self.errand_log() {
+            let y = if self.side_log().is_some() { 38 } else { 27 };
+            scr.text(&t, 6, y, col, Align::Left, 1);
+        }
+        // In the Ember Wyrm's lair: how close it is to waking, and the sack.
+        if let Some((noise, awake, sack)) = self.wyrm_hud() {
+            let (bw, bx) = (160, w / 2 - 80);
+            let label = if awake { "VAURATH IS AWAKE: RUN!".to_string() } else { format!("THE WYRM SLEEPS   SACK: {sack} GOLD") };
+            let col = if awake { if (self.tick / 10) % 2 == 0 { rgb(0xff4020) } else { rgb(0xffa040) } } else { rgb(0xe8c070) };
+            scr.text(&label, w / 2, 46, col, Align::Center, 1);
+            if !awake {
+                scr.fill(bx - 1, 57, bw + 2, 6, rgb(0x1a0c06));
+                let c = if noise > 0.7 { rgb(0xff4020) } else if noise > 0.4 { rgb(0xffa030) } else { rgb(0x80a040) };
+                scr.fill(bx, 58, (bw as f32 * noise) as i32, 4, c);
+            } else if sack > 0 {
+                scr.text(&format!("SACK: {sack} GOLD"), w / 2, 57, rgb(0xffd040), Align::Center, 1);
+            }
+        }
         if let Some((b, t)) = self.blessing() {
             let label = format!("{}  {}", b.name(), t.ceil() as i32);
             let col = if t < 10.0 && (self.tick / 15) % 2 == 0 { rgb(0x806050) } else { rgb(b.col()) };
-            scr.text(&label, 6, 38, col, Align::Left, 1);
+            scr.text(&label, 6, 49, col, Align::Left, 1);
         }
 
         // Boss bar (big, top centre) while a boss is fighting you; else the hovered monster.
@@ -2355,6 +2422,44 @@ fn draw_pickup(scr: &mut Screen, k: &Pickup, sx: i32, sy: i32, tick: u32, art: &
             scr.disc(sx, y, 5, rgb(0x203038));
             scr.disc(sx, y, 4, tint);
             scr.disc(sx - 1, y - 1, 1, rgb(0xffffff));
+        }
+        &Drop::Hoard(_) => {
+            // A heap of the Ember Wyrm's gold, glinting.
+            let y = sy - 4;
+            scr.glow(sx, y - 4, 16.0, rgb(0xffc040), 0.35 + 0.15 * ((tick as f32) * 0.05 + sx as f32).sin());
+            match art.item("hoard_gold") {
+                Some(s) => scr.blit(s, sx, y + 6, Fx::default()),
+                None => {
+                    for k in 0..4 {
+                        scr.fill(sx - 7 + k * 2, y - k * 2, 14 - k * 4, 2, if k % 2 == 0 { rgb(0xe0a020) } else { rgb(0xffd860) });
+                    }
+                }
+            }
+        }
+        &Drop::Herb => {
+            // A glowing herb.
+            let y = sy - 6 + bob;
+            scr.glow(sx, y, 14.0, rgb(0x80ff80), 0.55);
+            scr.fill(sx, y - 6, 1, 8, rgb(0x2a7a2a));
+            scr.fill(sx - 3, y - 3, 3, 2, rgb(0x60c060));
+            scr.fill(sx + 1, y - 5, 3, 2, rgb(0x60c060));
+            scr.disc(sx, y - 7, 2, rgb(0xd0ff80));
+        }
+        &Drop::Heirloom => {
+            let y = sy - 8 - pop + bob;
+            scr.glow(sx, y, 18.0, rgb(0xd0a0ff), 0.7);
+            scr.disc(sx, y, 4, rgb(0xe8c040));
+            scr.disc(sx, y, 2, rgb(0x402008));
+            scr.pset(sx, y - 4, rgb(0xc080ff));
+        }
+        &Drop::Clue => {
+            let y = sy - 8 - pop + bob;
+            scr.glow(sx, y, 16.0, rgb(0xffe0a0), 0.6);
+            scr.fill(sx - 6, y - 4, 12, 9, rgb(0xd8c090));
+            scr.fill(sx - 4, y - 2, 3, 1, rgb(0x806040));
+            scr.fill(sx + 1, y + 1, 3, 1, rgb(0x806040));
+            scr.fill(sx + 2, y - 2, 1, 1, rgb(0xc02020));
+            scr.fill(sx + 3, y - 1, 1, 1, rgb(0xc02020));
         }
         &Drop::Page(_) => {
             let y = sy - 8 - pop + bob;

@@ -185,7 +185,7 @@ pub const SUPER_SCALE: f32 = 1.25;
 // ------------------------------------------------------------------ side quests
 
 #[derive(Clone, Copy, PartialEq, Debug)]
-#[allow(dead_code)] // Ward, Respec and Gold are for the later acts' quests (phases 2-3).
+#[allow(dead_code)] // Respec and Gold are for the later acts' quests (phases 2-3).
 pub enum Reward {
     SkillPoint,
     /// Permanent extra life.
@@ -218,6 +218,8 @@ pub enum Goal {
     Boss(Kind),
     /// Kill this super unique (index into SUPERS).
     Super(usize),
+    /// Get out of the Ember Wyrm's cave with a sack of its gold (dragon.rs).
+    Heist,
 }
 
 pub struct SideDef {
@@ -292,6 +294,22 @@ pub const SIDES: &[SideDef] = &[
         goal: Goal::Super(2),
         reward: Reward::Life(20),
         todo: "PUT THE HOLLOW SHEPHERD TO REST (SHEPHERD'S VALE, WEST OF THE ASHLANDS)",
+    },
+    SideDef {
+        name: "THE EMBER WYRM",
+        act: 0,
+        giver: Role::Guard,
+        giver_name: "CAPTAIN ROLF",
+        ask: "ASK ABOUT THE SMOKE IN THE HILLS",
+        offer: &[
+            "SEE THAT SMOKE OVER THE CINDER HILLS? A DRAGON. VAURATH, THE EMBER WYRM. IT CAME DOWN FROM THE NORTH WITH THE ASH AND CRAWLED INTO A CAVE IN EMBERPEAK PASS, AND IT SLEEPS ON A HILL OF GOLD.",
+            "DON'T FIGHT IT. I MEAN IT. BUT A QUIET PAIR OF HANDS... WALK, DON'T RUN. DON'T CAST. GRAB WHAT YOU CAN CARRY AND GET OUT BEFORE IT OPENS ITS EYES. BRING BACK FIVE HUNDRED IN GOLD AND I'LL DRINK TO YOUR NAME.",
+        ],
+        remind: "EMBERPEAK PASS, NORTH OFF THE CINDER HILLS. WALK SOFT, GRAB FAST, RUN WHEN IT WAKES. THE GOLD ISN'T YOURS TILL YOU'RE OUT.",
+        thanks: &["YOU WALKED INTO A DRAGON'S BEDROOM AND WALKED OUT RICH! HERE, THE GUARD'S OLD CHARM. IT'S TURNED A FEW BLADES IN ITS TIME."],
+        goal: Goal::Heist,
+        reward: Reward::Ward,
+        todo: "STEAL 500 GOLD FROM THE EMBER WYRM AND GET OUT (EMBERPEAK PASS, NORTH OF THE CINDER HILLS)",
     },
 ];
 
@@ -612,7 +630,7 @@ impl Game {
     }
 
     /// The monsters that live here (for ambushes): the level's own, not bosses or breakables.
-    fn local_kinds(&self) -> Vec<Kind> {
+    pub(crate) fn local_kinds(&self) -> Vec<Kind> {
         let mut kinds: Vec<Kind> = vec![];
         for m in &self.mobs {
             if !m.boss && m.superu == 0 && m.charm <= 0.0 && !crate::breakables::is_prop(m.kind) && m.kind != Kind::Hoarder && def_is_wild(m.kind) && !kinds.contains(&m.kind) {
@@ -745,7 +763,7 @@ impl Game {
     }
 
     /// A side quest's goal was reached.
-    fn side_progress(&mut self, goal: Goal) {
+    pub(crate) fn side_progress(&mut self, goal: Goal) {
         for (q, s) in SIDES.iter().enumerate() {
             if s.goal == goal && self.quest.side[q] < S_DONE {
                 self.quest.side[q] = S_DONE;
@@ -897,6 +915,12 @@ impl Game {
         for (i, s) in SUPERS.iter().enumerate().filter(|(_, s)| s.home.act() == act) {
             let slain = self.p.supers & (1 << i) != 0;
             out.push((if slain { format!("  {}  SLAIN", s.name) } else { "  ???".into() }, if slain { rgb(0xd8a850) } else { rgb(0x6a5a48) }));
+        }
+        let errands = self.errand_journal();
+        if !errands.is_empty() {
+            out.push((String::new(), 0));
+            out.push(("AREA TASKS".into(), rgb(0xe8d8b0)));
+            out.extend(errands);
         }
         out.push((String::new(), 0));
         out.push((format!("SHRINES USED  {}", self.p.shrines_used), rgb(0xa8a0c0)));

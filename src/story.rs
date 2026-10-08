@@ -7,6 +7,8 @@ pub enum Role {
     Healer,
     Guard,
     Villager(u8),
+    /// Someone held by monsters out in the wilds (a random errand, errands.rs).
+    Captive,
     // ---- Kaldholm (Act 2) ----
     /// Captain Brenna: the Act 2 story.
     Captain,
@@ -782,6 +784,7 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
             ];
             Dialog::new(if k == 2 { "FISHERWIFE" } else { "FISHERMAN" }, &[lines[k as usize % 3]])
         }
+        Role::Captive => Dialog::new("CAPTIVE", &["PLEASE... THEY'RE ALL AROUND ME. KILL THEM AND I CAN RUN FOR IT!"]),
         Role::Guard => {
             let line = if q.stage == 0 {
                 "HALT- OH, A TRAVELLER. ELDER MAREN WILL WANT TO SEE YOU. SHE'S BY THE FIRE."

@@ -207,6 +207,29 @@ Random encounters on overlands and in dungeons. At most one is active at a time.
   - Stormwing (thunderbird, lightning enchanted + fast);
   - the Astronomer (as boss).
 
+## 2b. Added with the user (2026-10-08)
+
+- **The Ember Wyrm's hoard** (Act 1, fixed every playthrough; `src/dragon.rs`). Vaurath, a fire dragon,
+  sleeps on its gold in a cave in Emberpeak Pass (area 9, north off the Cinder Hills). It's a heist:
+  - Gold goes into a **hoard sack**. The sack slows you (up to 25%) and is banked only when you leave the
+    cave; if you die in there, it goes back on the heap.
+  - **Noise** wakes the dragon: grabbing gold (+22), casting near it (+5 each), standing close
+    (+14/s within 5 tiles, +4/s within 10), and running nearby (+6/s). Being quiet lets it fade (-5/s).
+    Wounding it wakes it at once.
+  - Awake, it hunts you through the cave with fire breath (burning pools) and a tail sweep.
+  - Come back later and it's asleep again, at full health.
+  - Killing it is possible: 9000 base life, far beyond Act 1. Its unique is EMBERSCALE.
+  - Captain Rolf's dare: get out with 500 gold or more, for a ward.
+- **Random errands** (every playthrough; `src/errands.rs`).
+  - Each outdoor area rolls one task, and an act that is still one overland rolls two. Rolls depend on the
+    hero's world seed and the difficulty, and no kind repeats within an act until all eight have come up.
+  - The eight kinds: a bounty on a named champion, a cull of N of one monster, a captive to free from
+    guards, 5 herbs to gather, a lost heirloom on a corpse, a bone totem raising the dead, a ward stone
+    held through 3 waves, and a treasure map then the X to dig at.
+  - Twists: about 1 in 6 is timed (4-6 minutes), about 1 in 6 pays double gold.
+  - Each one pays gold, XP and an item on the spot (bounties, sieges and treasure always give a rare).
+  - They show in the quest log and in the journal under AREA TASKS.
+
 ## 3. Phases (stop for a review after each)
 
 1. **Systems + Act 1 as the proof.** *(done 2026-10-08)*

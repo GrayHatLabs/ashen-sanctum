@@ -176,6 +176,12 @@ pub enum Drop {
     Shard(usize),
     /// A lore page (side.rs LORE index).
     Page(u8),
+    /// A heap of the Ember Wyrm's gold: into the hoard sack (dragon.rs).
+    Hoard(i32),
+    /// Random errands' things (errands.rs): an herb to gather, a lost heirloom, a treasure map.
+    Herb,
+    Heirloom,
+    Clue,
     /// Equipment.
     Item(Box<crate::items::Item>),
 }
@@ -220,6 +226,8 @@ pub struct Player {
     pub pages: u64,
     pub supers: u64,
     pub shrines_used: u32,
+    /// Gold in the hoard sack (dragon.rs): yours once you're out of the Ember Wyrm's cave.
+    pub sack: i32,
     pub x: f32,
     pub y: f32,
     pub hp: f32,
@@ -340,6 +348,7 @@ impl Player {
             pages: 0,
             supers: 0,
             shrines_used: 0,
+            sack: 0,
             x: 0.0,
             y: 0.0,
             hp: 70.0,
@@ -663,6 +672,13 @@ pub struct Game {
     /// Side content (side.rs): this level's shrines, and seconds until the next event out in the wilds.
     pub(crate) shrines: Vec<crate::side::Shrine>,
     pub(crate) event_cd: f32,
+    /// The Ember Wyrm (dragon.rs): noise toward waking it, whether you were in its lair last tick, casts seen.
+    pub(crate) wyrm_noise: f32,
+    pub(crate) wyrm_in: bool,
+    pub(crate) wyrm_casts: u32,
+    /// Random errands (errands.rs): rolled per act as you get there; the ones done this difficulty (saved).
+    pub(crate) errands: Vec<crate::errands::Errand>,
+    pub(crate) errands_done: Vec<(LevelId, crate::errands::ErrandKind)>,
     pub(crate) tide: f32,
     pub(crate) blind_t: f32,
     pub(crate) dark_t: f32,
@@ -789,6 +805,11 @@ impl Game {
             tide_t: 0.0,
             shrines: vec![],
             event_cd: 60.0,
+            wyrm_noise: 0.0,
+            wyrm_in: false,
+            wyrm_casts: 0,
+            errands: vec![],
+            errands_done: vec![],
             tide: 0.0,
             blind_t: 0.0,
             dark_t: 0.0,
@@ -1173,6 +1194,9 @@ impl Game {
         let d = (self.quest.difficulty + 1).min(2);
         self.quest = Quest { stage: 1, seals: [false; 3], difficulty: d, stage2: 0, runes: [false; 3], stage3: 0, sigils: [false; 3], stage4: 0, keys: [false; 3], stage5: 0, pearls: [false; 3], stage6: 0, shards: [false; 3], side: [0; 18] };
         self.parked.clear();
+        // New tasks on the new difficulty.
+        self.errands.clear();
+        self.errands_done.clear();
         self.waypoints = vec![LevelId::Overworld];
         self.shop_stale = true;
         let lv = world::build_at(LevelId::Overworld, self.world_seed, d);
@@ -1286,6 +1310,8 @@ impl Game {
         let (x, y) = spot.unwrap_or(self.start);
         self.p.x = x;
         self.p.y = y;
+        // This area's random errand starts as you arrive.
+        self.errand_enter();
         if let Some(mut w) = wolf {
             let (wx, wy) = if self.d.blocked(x + 1.0, y, 0.35) { (x, y) } else { (x + 1.0, y) };
             w.x = wx;
@@ -1704,6 +1730,8 @@ impl Game {
         self.update_hazards();
         self.update_deep();
         self.update_side();
+        self.update_wyrm();
+        self.update_errands();
         self.update_sky();
         self.update_rift();
         self.second_wind_t = (self.second_wind_t - DT).max(0.0);
@@ -2503,7 +2531,7 @@ impl Game {
         let base = if run { RUN_SPEED } else { WALK_SPEED };
         let base = if self.p.phoenix_t > 0.0 || self.p.embrace_t > 0.0 { base * 1.4 } else if self.p.suit_t > 0.0 { base * 1.2 } else { base };
         let base = base * (1.0 + gear.frac(crate::items::Stat::Move, 50)) * self.ember_speed() * if self.has_power(crate::items::P_ASHWALKER) { 1.2 } else { 1.0 };
-        let base = base * self.bless_speed();
+        let base = base * self.bless_speed() * self.sack_slow();
         let base = if self.p.chill > 0.0 { base * 0.6 } else { base };
         let base = if self.flooded(self.p.x, self.p.y) { base * crate::tides::WADE } else { base };
         let speed = if casting { base * 0.25 } else { base };
@@ -2580,6 +2608,8 @@ impl Game {
                     let _ = self.p.gear.add(*it);
                 }
                 Drop::Page(i) => self.read_page(i),
+                Drop::Hoard(n) => self.grab_hoard(n),
+                Drop::Herb | Drop::Heirloom | Drop::Clue => self.errand_pick(&k),
                 Drop::Key(i) => {
                     self.quest.keys[i] = true;
                     self.p.skills.points += 1;
@@ -3144,8 +3174,10 @@ impl Game {
         }
         let (rank, mods) = (self.mobs[i].rank, self.mobs[i].mods);
         self.drop_gear(x, y, boss, kind, rank);
-        // Super uniques, gold-thieves and side quests (side.rs).
+        // Super uniques, gold-thieves and side quests (side.rs), and random errands (errands.rs).
         self.side_kill(i);
+        let tag = self.mobs[i].errand;
+        self.errand_kill(kind, tag);
         if shatter {
             self.shatter(x, y);
         }
@@ -3382,6 +3414,7 @@ impl Game {
                 Kind::OphanPrime => "ophan",
                 Kind::Solanthos => "solanthos",
                 Kind::WellWitch => "wellwitch",
+                Kind::FireWyrm => "firewyrm",
                 _ => "ashking",
             };
             drops.extend(items::boss_unique(key));

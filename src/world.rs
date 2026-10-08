@@ -225,7 +225,7 @@ pub struct DungeonDef {
     pub act: usize,
 }
 
-pub const DUNGEONS: [DungeonDef; 25] = [
+pub const DUNGEONS: [DungeonDef; 26] = [
     DungeonDef {
         name: "THE BONE CRYPT",
         floors: 2,
@@ -479,6 +479,16 @@ pub const DUNGEONS: [DungeonDef; 25] = [
         entrance: (57, 100),
         act: 0,
     },
+    DungeonDef {
+        name: "THE WYRM'S HOARD",
+        floors: 1,
+        theme: Theme::Sanctum,
+        boss: Kind::FireWyrm,
+        monsters: &[Kind::Goblin],
+        tier: 2.2,
+        entrance: (0, 0),
+        act: 0,
+    },
 ];
 
 /// The Ashen Sanctum (needs all three seals).
@@ -495,6 +505,8 @@ pub const ABYSS: usize = 19;
 pub const ZENITH: usize = 23;
 /// Act 1's optional dungeon (side.rs): under the old well south of Hollowmere.
 pub const CHARNEL: usize = 24;
+/// The Ember Wyrm's cave in Emberpeak Pass (dragon.rs), off the Cinder Hills.
+pub const WYRM: usize = 25;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum PortalKind {
@@ -631,6 +643,7 @@ impl PropKind {
             PropKind::Entrance(21) => "ent_spire",
             PropKind::Entrance(22) => "ent_wheel",
             PropKind::Entrance(CHARNEL) => "ent_charnel",
+            PropKind::Entrance(WYRM) => "ent_wyrm",
             PropKind::Entrance(_) => "ent_zenith",
             PropKind::Shrine(a) => crate::side::shrine_art(a),
             PropKind::StairsDown => "stairs_down",
@@ -803,6 +816,8 @@ pub fn build_at(id: LevelId, seed: u64, difficulty: u8) -> Level {
     add_elites(&mut lv, seed);
     // Shrines, super uniques and lore pages (side.rs).
     crate::side::place(&mut lv, seed);
+    // The Ember Wyrm's cavern and hoard (dragon.rs).
+    crate::dragon::place(&mut lv, seed, difficulty);
     let (hp, dmg, xp, tier) = match difficulty {
         0 => (1.0, 1.0, 1.0, 1.0),
         1 => (3.5, 2.0, 2.8, 2.0),

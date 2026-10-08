@@ -1218,6 +1218,61 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             save(&mut g, scr, "area_exit");
         }
     }
+    // The Ember Wyrm's lair (dragon.rs): asleep on its hoard, then awake; and some random errands (errands.rs).
+    {
+        let mut g = Game::new(7, h);
+        g.p.base_hp = 9999.0;
+        g.p.recalc();
+        g.p.hp = 9999.0;
+        g.debug_goto(crate::areas::dungeon_home(crate::world::WYRM));
+        g.banner_t = 0.0;
+        g.event_cd = 9999.0;
+        if let Some((x, y)) = g.portals.iter().find(|p| p.kind == crate::world::PortalKind::Entrance(crate::world::WYRM)).map(|p| (p.x, p.y)) {
+            g.mobs.retain(|m| (m.x - x).powi(2) + (m.y - y).powi(2) > 100.0);
+            (g.p.x, g.p.y) = (x + 1.0, y + 3.0);
+            g.message = None;
+            idle(&mut g, 20);
+            save(&mut g, scr, "wyrm_cave");
+        }
+        g.debug_goto(LevelId::Dungeon(crate::world::WYRM, 0));
+        g.banner_t = 0.0;
+        g.event_cd = 9999.0;
+        if let Some((x, y)) = g.mobs.iter().find(|m| m.kind == crate::mobs::Kind::FireWyrm).map(|m| (m.x, m.y)) {
+            (g.p.x, g.p.y) = (x + 5.5, y + 3.0);
+            g.p.running = false;
+            g.message = None;
+            idle(&mut g, 30);
+            g.grab_hoard(180);
+            g.wyrm_noise = 55.0;
+            idle(&mut g, 2);
+            save(&mut g, scr, "wyrm_asleep");
+            g.wyrm_noise = 200.0;
+            idle(&mut g, 70);
+            save(&mut g, scr, "wyrm_awake");
+        }
+        // Errands: force a few kinds in the Rotwood and show them.
+        for (n, kind) in [(3u8, crate::errands::ErrandKind::Totem), (4, crate::errands::ErrandKind::Siege), (5, crate::errands::ErrandKind::Bounty)] {
+            g.debug_goto(LevelId::Area(0, n));
+            g.banner_t = 0.0;
+            g.event_cd = 9999.0;
+            if let Some(i) = g.errands.iter().position(|e| e.level == LevelId::Area(0, n)) {
+                g.errands[i].kind = kind;
+                g.errands[i].state = 0;
+                g.errands[i].got = 0;
+                g.mobs.retain(|m| m.errand == 0);
+                g.debug_place_errand(i);
+                let (x, y) = g.errands[i].spot;
+                g.mobs.retain(|m| m.errand != 0 || (m.x - x).powi(2) + (m.y - y).powi(2) > 144.0);
+                (g.p.x, g.p.y) = (x + 4.0, y + 1.0);
+                if g.d.blocked(g.p.x, g.p.y, 0.4) {
+                    g.debug_place_near(x, y, 4.0);
+                }
+                g.message = None;
+                idle(&mut g, 30);
+                save(&mut g, scr, &format!("errand_{}", n));
+            }
+        }
+    }
     // Side content (side.rs): a shrine and its blessing, Skrat One-Ear and his gang, the Charnel Well, the
     // Well-Witch, a lore page and the journal on the map.
     {

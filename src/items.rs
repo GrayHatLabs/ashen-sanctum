@@ -876,6 +876,7 @@ pub static UNIQUES: &[UniqueDef] = &[
     UniqueDef { name: "SKRAT'S LUCKY EAR", base: "amulet", req: 4, stats: &[(Stat::Gold, 40), (Stat::Magic, 25), (Stat::Move, 10)], boss: Some("skrat") },
     UniqueDef { name: "BONEJAW'S GRIN", base: "ring", req: 5, stats: &[(Stat::LifeOnKill, 4), (Stat::Armor, 6), (Stat::Cast, 10)], boss: Some("bonejaw") },
     UniqueDef { name: "THE SHEPHERD'S GIRDLE", base: "hbelt", req: 5, stats: &[(Stat::Life, 30), (Stat::LifeRegen, 3), (Stat::Hunger, 30)], boss: Some("shepherd") },
+    UniqueDef { name: "EMBERSCALE", base: "chain", req: 18, stats: &[(Stat::Armor, 30), (Stat::Life, 60), (Stat::Fire, 40), (Stat::LifeRegen, 6), (Stat::Gold, 50)], boss: Some("firewyrm") },
     UniqueDef { name: "WELL-WITCH'S CHARM", base: "amulet", req: 6, stats: &[(Stat::Skills, 1), (Stat::Mana, 25), (Stat::ManaRegen, 30), (Stat::Life, 10)], boss: Some("wellwitch") },
     UniqueDef { name: "CINDERWALKERS", base: "cboots", req: 3, stats: &[(Stat::Armor, 6), (Stat::Move, 20), (Stat::Stamina, 50), (Stat::Fire, 10)], boss: None },
     UniqueDef { name: "EMBERHEART", base: "amulet", req: 6, stats: &[(Stat::Fire, 25), (Stat::ManaRegen, 30), (Stat::Life, 15)], boss: None },

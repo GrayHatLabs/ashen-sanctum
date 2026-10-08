@@ -35,6 +35,8 @@ mod sky;
 mod endgame;
 mod side;
 mod areas;
+mod dragon;
+mod errands;
 mod world;
 
 use game::{Game, Input};

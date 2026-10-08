@@ -280,6 +280,15 @@ Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`;
   earned again on each difficulty. Act 1: Brother Aldric's *The Well Runs Red*, Gerta's *Caravan*
   and a farmer's *Hollow Shepherd*.
 - **The Charnel Well**, Act 1's optional dungeon in the Ashlands, and the Well-Witch at its bottom.
+- **The Ember Wyrm** (Act 1): Vaurath, a great fire dragon, sleeps on a hoard of gold in a cave in
+  **Emberpeak Pass** (north off the Cinder Hills). It's a heist, not a fight: gold goes into a **hoard
+  sack** that slows you and is only yours once you're out; walk, don't run, don't cast, and watch the
+  noise meter. Wake it and run. Captain Rolf dares you to bring back 500 gold. (Killing it is possible,
+  for a far stronger hero.)
+- **Random errands**: every area rolls a task of its own, different each playthrough (each hero, each
+  difficulty): a bounty on a named champion, a cull, a captive to free, herbs to gather, a lost heirloom,
+  a bone totem raising the dead, a ward stone to hold against three waves, or a treasure map and an X to
+  dig at. Some are timed; some pay double. They pay out on the spot.
 - **Events** out in the wilds: ambushes, a fleeing gold-thief with its hoard, fallen adventurers.
 - **Lore pages**, five per act; all five give +5% experience in that act. The map (Tab / M) shows the
   **journal**: pages, side quests, super uniques and shrines.

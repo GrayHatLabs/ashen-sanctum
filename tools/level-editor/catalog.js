@@ -225,6 +225,15 @@ window.CATALOG = {
       "slug": "charnel_well",
       "theme": "warrens",
       "tier": 1.899999976158142
+    },
+    {
+      "act": 0,
+      "boss": "boss_firewyrm",
+      "floors": 1,
+      "name": "THE WYRM'S HOARD",
+      "slug": "wyrms_hoard",
+      "theme": "sanctum",
+      "tier": 2.200000047683716
     }
   ],
   "lands": {
@@ -330,6 +339,10 @@ window.CATALOG = {
         [
           5,
           "THE CINDER WASTE"
+        ],
+        [
+          9,
+          "EMBERPEAK PASS"
         ]
       ],
       "name": "THE CINDER HILLS",
@@ -434,6 +447,29 @@ window.CATALOG = {
       "story": null,
       "theme": "overworld",
       "tier": 1.5,
+      "town": false
+    },
+    "area:0:9": {
+      "act": 0,
+      "doors": [
+        25
+      ],
+      "exits": [
+        [
+          4,
+          "THE CINDER HILLS"
+        ]
+      ],
+      "name": "EMBERPEAK PASS",
+      "passes": [],
+      "shops": [],
+      "size": [
+        72,
+        80
+      ],
+      "story": null,
+      "theme": "overworld",
+      "tier": 2.0,
       "town": false
     },
     "deep": {
@@ -1027,6 +1063,18 @@ window.CATALOG = {
       "boss": false,
       "kind": "hoarder",
       "name": "GOLD-THIEF",
+      "prop": false
+    },
+    {
+      "boss": true,
+      "kind": "boss_firewyrm",
+      "name": "VAURATH THE EMBER WYRM",
+      "prop": false
+    },
+    {
+      "boss": false,
+      "kind": "totem",
+      "name": "BONE TOTEM",
       "prop": false
     }
   ],
@@ -1659,6 +1707,11 @@ window.CATALOG = {
       "w": 3
     },
     {
+      "h": 3,
+      "kind": "ent_wyrm",
+      "w": 3
+    },
+    {
       "h": 1,
       "kind": "shrine_ash",
       "w": 1
@@ -1672,7 +1725,8 @@ window.CATALOG = {
     "area:0:5": "the_cinder_waste",
     "area:0:6": "the_ashen_steppe",
     "area:0:7": "shepherds_vale",
-    "area:0:8": "skrats_gulch"
+    "area:0:8": "skrats_gulch",
+    "area:0:9": "emberpeak_pass"
   },
   "themes": [
     {

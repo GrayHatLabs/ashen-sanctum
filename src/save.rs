@@ -160,6 +160,8 @@ pub fn to_text(g: &Game) -> String {
     s += &format!("rekindles={}\nrift_best={}\nrift_runs={}\nembers={}\nember_points={}\n", list(&p.rekindles), p.rift_best, p.rift_runs, list(&p.embers.map(|e| e as u32)), p.ember_points);
     let side: String = g.quest.side.iter().map(|n| char::from(b'0' + n.min(&3))).collect();
     s += &format!("side={side}\npages={}\nsupers={}\nshrines_used={}\nward={}\n", p.pages, p.supers, p.shrines_used, p.ward);
+    let done: Vec<String> = g.errands_done.iter().map(|(l, k)| format!("{}/{}", crate::levels::id_string(*l), crate::errands::KINDS.iter().position(|x| x == k).unwrap_or(0))).collect();
+    s += &format!("errands={}\n", done.join(","));
     s += &format!("act={}\n", g.level.act());
     s += &p.skills.save_text();
     s += &format!("waypoints={}\n", g.waypoints.iter().map(|w| crate::levels::id_string(*w)).collect::<Vec<_>>().join(","));
@@ -235,6 +237,15 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
     g.p.supers = get("supers").and_then(|v| v.parse().ok()).unwrap_or(0);
     g.p.shrines_used = num("shrines_used").unwrap_or(0.0) as u32;
     g.p.ward = (num("ward").unwrap_or(0.0) as u8).min(6);
+    if let Some(v) = get("errands") {
+        for e in v.split(',').filter(|e| !e.is_empty()) {
+            if let Some((l, k)) = e.rsplit_once('/') {
+                if let (Some(l), Some(&k)) = (crate::levels::parse_id(l), k.parse::<usize>().ok().and_then(|k| crate::errands::KINDS.get(k))) {
+                    g.errands_done.push((l, k));
+                }
+            }
+        }
+    }
     if let Some(s) = get("shards") {
         for (i, c) in s.chars().take(3).enumerate() {
             g.quest.shards[i] = c == '1';
