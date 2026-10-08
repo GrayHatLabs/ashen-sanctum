@@ -69,7 +69,8 @@ impl Game {
         let dark = if self.dark_t > 0.0 { 0.35 } else { 1.0 };
         // An Eclipse rift.
         let eclipse = if self.rift_has(crate::endgame::RiftMod::Eclipse) { 0.55 } else { 1.0 };
-        blind.min(dark).min(eclipse)
+        // An ash storm (features.rs).
+        blind.min(dark).min(eclipse).min(self.storm_light())
     }
 
     pub(crate) fn update_deep(&mut self) {

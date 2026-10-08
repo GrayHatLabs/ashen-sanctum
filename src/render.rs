@@ -142,6 +142,38 @@ impl Game {
                 blend_ellipse(scr, sx, sy, 12, 4, rgb(0x6080ff), 0.25 + 0.2 * pulse);
             }
         }
+        // The White Waste's thin ice: cracks where it's stressed, and black water where it broke.
+        if self.level == crate::features::LAKE && !self.feats.ice.lake.is_empty() {
+            for &(hx, hy) in &self.feats.ice.holes {
+                let (sx, sy) = to_scr(hx as f32 + 0.5, hy as f32 + 0.5);
+                blend_ellipse(scr, sx, sy, 16, 8, rgb(0x0a1a28), 0.85);
+                blend_ellipse(scr, sx, sy, 10, 4, rgb(0x305878), 0.4);
+            }
+            for ty in y0..=y1 {
+                for tx in x0..=x1 {
+                    let s = self.feats.ice.stress_at(tx, ty);
+                    if s > 0.3 {
+                        let (sx, sy) = to_scr(tx as f32 + 0.5, ty as f32 + 0.5);
+                        let c = mix(rgb(0x6890b0), rgb(0x0a1828), s.min(1.0));
+                        let k = (tx * 7 + ty * 13) & 3;
+                        for j in -7..=7 {
+                            scr.pset(sx + j, sy + (j * (k - 1)) / 4, c);
+                            scr.pset(sx + j, sy + 1 + (j * (k - 1)) / 4, c);
+                        }
+                        if s > 0.6 {
+                            for j in -4..=4 {
+                                scr.pset(sx + j / 2 + 2, sy + j, c);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        // The yeti cub's den.
+        if self.level == crate::features::CUB && self.feats.cub < 2 && self.feats.den != (0.0, 0.0) {
+            let (sx, sy) = to_scr(self.feats.den.0, self.feats.den.1);
+            ring(scr, sx, sy, 24, 10, rgb(0xa0c8e0));
+        }
         if let Some((kind, (x, y), open)) = self.errand_marker() {
             let (sx, sy) = to_scr(x, y);
             let pulse = 0.5 + 0.5 * ((self.tick as f32) * 0.08).sin();
@@ -1382,6 +1414,10 @@ impl Game {
                 scr.fill(sx - 2, sy - 2, 5, 5, rgb(0xffb040));
             }
         }
+        if self.level == crate::features::CUB && self.feats.cub == 1 {
+            let (sx, sy) = proj(self.feats.den.0, self.feats.den.1);
+            scr.fill(sx - 2, sy - 2, 5, 5, rgb(0xa0e0ff));
+        }
         if let Some((x, y)) = self.errand_x() {
             let (sx, sy) = proj(x, y);
             for k in -3..=3 {
@@ -1567,6 +1603,24 @@ impl Game {
         let m = &self.mobs[i];
         if crate::breakables::is_prop(m.kind) {
             return self.draw_prop(scr, i, sx, sy);
+        }
+        if m.kind == crate::mobs::Kind::IceBlock {
+            if !m.alive() {
+                return;
+            }
+            // Someone frozen in a block of ice: their figure, pale blue, and the ice around them.
+            let who = if m.form == crate::features::ICE_SCOUT { "npc_guard" } else { "npc_trader" };
+            let mut fx = Fx { tint: rgb(0xa8d8ff), tint_a: 0.55, ..Fx::default() };
+            if m.flash > 0.0 {
+                fx.tint = WHITE;
+                fx.tint_a = 0.8;
+            }
+            self.blit_char(scr, who, CharFrame::Loop("idle", 2, 0.0), (sx, sy), fx, false);
+            scr.blend(sx - 14, sy - 52, 28, 54, rgb(0x9ad0ff), 0.32);
+            scr.fill(sx - 14, sy - 52, 28, 1, rgb(0xe0f4ff));
+            scr.fill(sx - 14, sy - 52, 1, 54, rgb(0xc8ecff));
+            scr.fill(sx + 13, sy - 52, 1, 54, rgb(0x80b8e0));
+            return;
         }
         if m.kind == crate::mobs::Kind::Totem {
             if !m.alive() {

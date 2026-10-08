@@ -234,6 +234,15 @@ window.CATALOG = {
       "slug": "wyrms_hoard",
       "theme": "sanctum",
       "tier": 2.200000047683716
+    },
+    {
+      "act": 1,
+      "boss": "boss_hrolf",
+      "floors": 2,
+      "name": "THE ICEBOUND LONGSHIP",
+      "slug": "icebound_longship",
+      "theme": "wreck",
+      "tier": 4.400000095367432
     }
   ],
   "lands": {
@@ -609,7 +618,9 @@ window.CATALOG = {
     },
     "area:1:6": {
       "act": 1,
-      "doors": [],
+      "doors": [
+        26
+      ],
       "exits": [
         [
           1,
@@ -1850,6 +1861,24 @@ window.CATALOG = {
       "kind": "totem",
       "name": "BONE TOTEM",
       "prop": false
+    },
+    {
+      "boss": false,
+      "kind": "ash_elemental",
+      "name": "ASH ELEMENTAL",
+      "prop": false
+    },
+    {
+      "boss": false,
+      "kind": "ice_block",
+      "name": "BLOCK OF ICE",
+      "prop": false
+    },
+    {
+      "boss": true,
+      "kind": "boss_hrolf",
+      "name": "HROLF ICE-BEARD",
+      "prop": false
     }
   ],
   "npcs": [
@@ -2484,6 +2513,16 @@ window.CATALOG = {
       "h": 3,
       "kind": "ent_wyrm",
       "w": 3
+    },
+    {
+      "h": 3,
+      "kind": "ent_longship",
+      "w": 3
+    },
+    {
+      "h": 1,
+      "kind": "shrine_frost",
+      "w": 1
     },
     {
       "h": 1,

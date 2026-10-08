@@ -37,6 +37,7 @@ mod side;
 mod areas;
 mod dragon;
 mod errands;
+mod features;
 mod world;
 
 use game::{Game, Input};

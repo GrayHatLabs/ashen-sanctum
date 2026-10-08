@@ -290,6 +290,21 @@ Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`;
   a bone totem raising the dead, a ward stone to hold against three waves, or a treasure map and an X to
   dig at. Some are timed; some pay double. They pay out on the spot.
 - **Events** out in the wilds: ambushes, a fleeing gold-thief with its hoard, fallen adventurers.
+- **Set pieces** (built so far: Acts 1 and 2):
+  - **Act 1:** the **Burning Barn** in the Barrow Fields (save three villagers before the roof falls); the
+    **Goblin Market** in Skrat's Gulch (a neutral camp trading stolen goods, until you attack it);
+    **ash storms** that dim the light and bring ash elementals.
+  - **Act 2:** **thin ice** on the White Waste (it cracks under fighting and heavy feet; you can fall
+    in, monsters drown); **Jarl Hrogar's longhall** in the Raiders' Fjord (duel him, or steal his war
+    horn); the **frozen merchant** in the Rime Woods (thaw him and he sells rare goods once); a lost
+    **yeti cub** in the Howling Tundra (lead it home and the yetis leave you be).
+  - Out in the wilds, Enter / confirm talks to whoever is close.
+- **Act 2's side content:**
+  - **The Icebound Longship**, the optional dungeon in the Raiders' Fjord, with Hrolf Ice-Beard.
+  - **Side quests:** Sigurd's Axe (a socket), Brenna's Lost Patrol (thaw three frozen scouts, for a ward)
+    and Ylva's Frozen Bride (a respec).
+  - **Super uniques:** Grimfang the White, the Frozen Bride and Jarl Hrogar.
+  - **Lore:** five pages.
 - **Lore pages**, five per act; all five give +5% experience in that act. The map (Tab / M) shows the
   **journal**: pages, side quests, super uniques and shrines.
 

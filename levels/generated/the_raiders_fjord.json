@@ -18,59 +18,59 @@
     "ooooo....ooo.ooooooo.oo..................o.o.................ooo",
     "ooo.ooo.oo...ooo.oooo.oooo.o..o..............................ooo",
     "oooo.o..o...oooo.ooooo.oo......................o.............oo.",
-    "oo...ooooo.oooo.o..o.oo........................o.............ooo",
-    "oooooooooo.o...o.oo.o.o..................o................o..ooo",
-    "o.o.o..oo.oo...oo..o.............o...........o...........o.ooooo",
-    "o.o....oooo.........................................o.ooooooo.oo",
-    "ooo...oo.......o.o...o....o........................oo.oo.o.oooo.",
-    "oooo.o.............................o.................o......oooo",
-    "ooo.................o....o................o.......o.o.oo.oo.oooo",
-    "ooo..........................o.........................o..o.ooo.",
-    "ooo...........................o.....o..o...........o...o.ooo.ooo",
-    "ooo....o...oo......................o..o........o...oo.o.o...oooo",
-    "ooo......o....o.......................o...........oo...o.oo..ooo",
-    "ooo..............ooo....................oo........oo.o...ooooooo",
-    "ooo...o.......o.oo......o..o................o......ooo.o.....oo.",
-    "ooo........................................o.o...............ooo",
-    "ooo.......................................oooooooo...........ooo",
-    "ooo.....................................o...oo......o........ooo",
-    ".oo......................................o.o.oo.oo............oo",
-    "oo..........................................o.o..............ooo",
-    "....................o..oo................o....o.o...oo.......ooo",
-    "..................o..oo...................oo.ooo.o...........o..",
-    "...............................o.....o...o....o..o...........ooo",
-    "................o..o........o.............oo.oo.oo.o.....o...ooo",
-    "..........................................o.o...o..........ooooo",
-    ".............o....o.....o....................ooo...........o.ooo",
-    "............o.o..o.o.o....................o...o..............ooo",
-    "o.............o....o.o...............o.....o...oo........oo.oooo",
-    "oooooo.........................oo.........oo.ooo......o..oo..ooo",
-    "ooo..o..o......o..o................o.......oo.o..............ooo",
-    "o.o.o................o..........o.......oooo..oo....o......ooooo",
-    "ooo..............o........o...........o.o...o..oo...........oooo",
-    "oo........................oo.o.o...oo.....o.oo.oo.....o.....oooo",
-    "oooo..o..........oo.o....ooo...oo.o..oooo.....o.oo...........ooo",
-    "ooo........o................o.o.ooo...o.oo.....oo.o.o........ooo",
-    "oo.o....................o..o.ooooo.oooooooo...oo.......o.....ooo",
-    "ooo.........................oo.o..oooooo.ooo.o...o........o..ooo",
-    "ooo..............o......o..oo....oo.o.o..o.o.oooo.oo..........oo",
-    "ooo....................oo.oo..o.o...o.....o...ooo...o.o......ooo",
-    "ooo..........o.........o.o..o.o.ooo....ooo..o..o......o......o.o",
-    "ooo.......o...........o....o..o.oo.....o..o.........o........ooo",
-    "ooo...o...........ooo.o.o..ooo..o.....................o......ooo",
-    "ooo........o...oo.oo.ooo.....o....................o..o.......ooo",
-    "o.o.............o....o.......oo.....o.....o.................oooo",
-    "ooo.......o.....ooo..o.....oo.o.......o......................ooo",
-    "ooo..................ooooo.oo.oo.......o.....................ooo",
-    "ooo............o...oo..ooo.o.................................ooo",
-    "ooo.............o..ooooo..ooooo.....................o........ooo",
-    "ooo...........o...o.oo.ooooo...............o..............o..ooo",
-    "ooo............o.o..o.o.o..oo....................o...........oo.",
-    ".oo...........ooo.oo..o..o.oo.........o.......o........o.....ooo",
-    "ooo............oo.oo....oo............o.o....................ooo",
-    ".o.ooooo.o.oooooooooooooo.ooooooooooooooooooooo.ooooooooooooooo.",
-    "oo.oooooooo.ooooooooooooooooooooooooooooo..oo.ooooooooo.oooooooo",
-    "oooo.oooooooooooooo.ooooooooooooooo.oooooooo.ooooooooooo.ooooooo"
+    "oo...ooooo.oooo.o..o.oo...................................o..ooo",
+    "ooo.o...oo.ooooooo.o..............o..........................ooo",
+    "ooo.....o.o....o........o..................ooo..........o....o.o",
+    "ooo......ooo...........o.oo................ooo.......oooo..o.ooo",
+    ".oo.........................o..o...........ooo.....oo...o....ooo",
+    "ooo..o.o...o....o..................................o.o.oo.o.oooo",
+    ".oo..o.o.............................o............ooo.oo..o..ooo",
+    "ooo........o..................o....o..................oo.....ooo",
+    "....................................................o.o...o.oo..",
+    "ooo.o.............................................o.o.o...oooooo",
+    "ooo..............o.....o..o........................o.o...o.ooooo",
+    "ooo.......o...oo..oo.........................o..o..o....o..ooooo",
+    "ooo.............o..o.oo............................o.o.o......oo",
+    "oo...........o.o.......................o...o.................o.o",
+    "ooo.....................................ooooo.o.o............ooo",
+    "ooo.....o................................ooooo...oo..o.......ooo",
+    "oo.......................................o.o.o.o.o...........ooo",
+    "oo.......................................o.o.o...............ooo",
+    ".....................oooo................o...ooooo...o...o...oo.",
+    "................o...oo...................o.o...oo......o.....ooo",
+    "................................o..o.......oo.o.o............ooo",
+    "..................o....................o...ooooo....o......oooo.",
+    "...........................o..............o.ooo.o.........o.o.oo",
+    ".......................o.....o.............o.o.o......o..oo.oooo",
+    "................o.......................o.ooo..ooo...........ooo",
+    "oo.................................o..........oo........oo..oooo",
+    "ooo.o.....................................oo.o.oo............ooo",
+    "ooo.o..................o.......o....o.o...ooo..o..o..........ooo",
+    "ooooo...........o...o...o...............ooooo.oo............oooo",
+    "ooo..oo....o................o......o..o.oooo.o.oo..........ooooo",
+    "ooo............o............o.oo....oo..oo...o.oo...........oooo",
+    ".oo.o.....o.................o.o....o....oo..o.o..............ooo",
+    "ooo.....................oooo...oo.o.o...oo.....o.o.o.........ooo",
+    "oooo....o..o..o.........oo.o..oooo..oo.o..oooo...............ooo",
+    "ooo...o............o...........o...o.o.ooo...o.oo..........o.o.o",
+    "ooo.........o..............o..oo..o.ooooo.ooooooo............ooo",
+    "ooo......................o.o...o...oo.o..oooooo.oo....o......ooo",
+    "ooo......................oooooo.oo.....ooo.o..o....o........oooo",
+    "oo..o..................o....o.oo.............................ooo",
+    "o.o................o....oo.oooooo.....o......................ooo",
+    "ooo.o...........o...oo.o.o.o..o..................o.....o..o..ooo",
+    "o.o............o.ooo.o.o.o..o.oo.............................ooo",
+    "ooo..............ooooo.ooo..oo.o.............................ooo",
+    "oo.......o........ooooo.o....o................o.....o........ooo",
+    "ooo...o.o.......oo.....ooo..o.....o............o.............ooo",
+    "ooo...o........ooo.o......ooooo.................o............ooo",
+    "o.o...........oo..oooo..oo..ooo.o............................ooo",
+    "ooo...........o.o..o..ooooo..oo...........................o...oo",
+    "ooo...........o.o.o....o.oo.o....o..................o........ooo",
+    "oo...o..........oo.o.o.o..o.....o...........................oooo",
+    "ooooo.oooo.ooooooooo.ooo.oooooo.ooooo.o.ooo.oooooooooooooooooo.o",
+    "ooooo.oo.oooooo.oooo.o.oo.o.ooooo.o.oooooooooooooo.ooooooooooooo",
+    "oooooooo.ooooooooooooooo.oo.oooooooo.ooooooooooooooooooooooooooo"
   ],
   "ground": [
     "gggggggggggddddddddddddddddddddddddddddddddddddggggggggggggggggg",
@@ -89,18 +89,18 @@
     "ddggggggggddddddddddddddddddddddgggggggggggggggdddddddgggggddddd",
     "dddgggggggddddddddddddddddddddddggggggggggggggggddddddgggggddddd",
     "dddgggggggddddddddddddddddddddddggggggggggggggggdddddggggggddddd",
-    "ddddggggggddddddddddddddddddddddddgggggggggggggggdgggggggggddddd",
-    "dddddgggggggdddddddddddddddddddddddddggggggggggggggggggggggddddd",
-    "dddddddddggggggggdddddddddddddddddddddgggggggggggggggggggggddddd",
-    "ddddddddddggggggggdddddddddddddddddddddggggggggggggggggggggddddd",
-    "ddddddddddgggggggggddddddddddddddddddddggggggggggggggggggggddddd",
-    "ddddddddddgggggggggddddddddddddddddddddggggggggggggggggggggddddd",
-    "ddddddddddgggggggggddddddddddddddddddddggggggggggggggggggggddddd",
-    "dddddddddgggggggggdddddddddddddddddddddgggggggggggggggggggggdddd",
-    "dddddggggggggggggdddddddddddddddddddddggggggggggggggggggggggdddd",
-    "ggggggggggggdddddddddddddddddddddggggggggggggggggdggggggggggdddd",
-    "gggggggggggdddddddrrrrrrrrrrddddggggggggggggggddddddgggggggggddd",
-    "gggggggggggdddrrrrrrrrrrrrrrrrrrrrrggggggggggddddddddgggggggggdd",
+    "ddddggggggddddddddddddddddddddddddgggggggggrrrgggdgggggggggddddd",
+    "dddddgggggggdddddddddddddddddddddddddgggggrrrrgggggggggggggddddd",
+    "dddddddddggggggggdddddddddddddddddddddgggrrrgggggggggggggggddddd",
+    "ddddddddddggggggggdddddddddddddddddddddgrrrrgggggggggggggggddddd",
+    "ddddddddddgggggggggdddddddddddddddddddrrrrgggggggggggggggggddddd",
+    "ddddddddddgggggggggddddddddddddddddddrrrrggggggggggggggggggddddd",
+    "ddddddddddgggggggggdddddddddddddddddrrrrgggggggggggggggggggddddd",
+    "dddddddddgggggggggddddddddddddddddddrrdgggggggggggggggggggggdddd",
+    "dddddggggggggggggddddddddddddddddddrrrggggggggggggggggggggggdddd",
+    "ggggggggggggdddddddddddddddddddddgrrrggggggggggggdggggggggggdddd",
+    "gggggggggggdddddddrrrrrrrrrrddddggrrggggggggggddddddgggggggggddd",
+    "gggggggggggdddrrrrrrrrrrrrrrrrrrrrrrgggggggggddddddddgggggggggdd",
     "gggggggggggdrrrrrrrddddddddrrrrrrrrggggggggggddddddddgggggggggdd",
     "ggggggggggdrrrrddddddddddddddddggggggggggggggddddddddgggggggggdd",
     "gggggggggrrrrrddddddddddddddddddggggggggggggggdddddddgggggggggdd",
@@ -145,6 +145,13 @@
   "safe": null,
   "props": [
     {
+      "kind": "ent_longship",
+      "x": 43.0,
+      "y": 13.0,
+      "w": 3,
+      "h": 3
+    },
+    {
       "kind": "tree_snowpine",
       "x": 1.0,
       "y": 0.0,
@@ -2701,7 +2708,7 @@
     },
     {
       "kind": "rock_snow",
-      "x": 47.0,
+      "x": 58.0,
       "y": 11.0,
       "w": 1,
       "h": 1
@@ -2714,7 +2721,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 62.0,
       "y": 11.0,
       "w": 1,
@@ -2728,7 +2735,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 0.0,
       "y": 12.0,
       "w": 1,
@@ -2749,42 +2756,14 @@
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
-      "x": 3.0,
-      "y": 12.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 4.0,
       "y": 12.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
-      "x": 5.0,
-      "y": 12.0,
-      "w": 1,
-      "h": 1
-    },
-    {
       "kind": "tree_snowpine",
-      "x": 6.0,
-      "y": 12.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 7.0,
-      "y": 12.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
       "x": 8.0,
       "y": 12.0,
       "w": 1,
@@ -2798,8 +2777,29 @@
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 11.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 12.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 13.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 14.0,
       "y": 12.0,
       "w": 1,
       "h": 1
@@ -2812,43 +2812,29 @@
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
+      "x": 16.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
       "x": 17.0,
       "y": 12.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
-      "x": 18.0,
-      "y": 12.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 20.0,
+      "kind": "tree_snowdead",
+      "x": 19.0,
       "y": 12.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "rock_snow",
-      "x": 22.0,
-      "y": 12.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 41.0,
-      "y": 12.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 58.0,
+      "x": 34.0,
       "y": 12.0,
       "w": 1,
       "h": 1
@@ -2861,7 +2847,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 62.0,
       "y": 12.0,
       "w": 1,
@@ -2883,21 +2869,14 @@
     },
     {
       "kind": "tree_snowpine",
+      "x": 1.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
       "x": 2.0,
-      "y": 13.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "ice_crystal",
-      "x": 4.0,
-      "y": 13.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 7.0,
       "y": 13.0,
       "w": 1,
       "h": 1
@@ -2918,63 +2897,21 @@
     },
     {
       "kind": "tree_snowpine",
-      "x": 11.0,
-      "y": 13.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
       "x": 15.0,
       "y": 13.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
-      "x": 16.0,
-      "y": 13.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 19.0,
-      "y": 13.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 33.0,
-      "y": 13.0,
-      "w": 1,
-      "h": 1
-    },
-    {
       "kind": "ice_crystal",
-      "x": 45.0,
+      "x": 24.0,
       "y": 13.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "rock_snow",
-      "x": 57.0,
-      "y": 13.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "ice_crystal",
-      "x": 59.0,
-      "y": 13.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 60.0,
+      "x": 56.0,
       "y": 13.0,
       "w": 1,
       "h": 1
@@ -2982,13 +2919,6 @@
     {
       "kind": "tree_snowpine",
       "x": 61.0,
-      "y": 13.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
       "y": 13.0,
       "w": 1,
       "h": 1
@@ -3009,6 +2939,13 @@
     },
     {
       "kind": "tree_snowpine",
+      "x": 1.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
       "x": 2.0,
       "y": 14.0,
       "w": 1,
@@ -3016,20 +2953,6 @@
     },
     {
       "kind": "tree_snowdead",
-      "x": 7.0,
-      "y": 14.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 8.0,
-      "y": 14.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
       "x": 9.0,
       "y": 14.0,
       "w": 1,
@@ -3043,8 +2966,36 @@
       "h": 1
     },
     {
+      "kind": "tree_snowdead",
+      "x": 11.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 23.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
       "kind": "ice_crystal",
-      "x": 52.0,
+      "x": 25.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 26.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 53.0,
       "y": 14.0,
       "w": 1,
       "h": 1
@@ -3057,14 +3008,14 @@
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 55.0,
       "y": 14.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 56.0,
       "y": 14.0,
       "w": 1,
@@ -3072,20 +3023,6 @@
     },
     {
       "kind": "tree_snowpine",
-      "x": 57.0,
-      "y": 14.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 58.0,
-      "y": 14.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
       "x": 59.0,
       "y": 14.0,
       "w": 1,
@@ -3093,29 +3030,22 @@
     },
     {
       "kind": "tree_snowpine",
-      "x": 60.0,
+      "x": 61.0,
       "y": 14.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 62.0,
       "y": 14.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 63.0,
       "y": 14.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 0.0,
-      "y": 15.0,
       "w": 1,
       "h": 1
     },
@@ -3127,7 +3057,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 2.0,
       "y": 15.0,
       "w": 1,
@@ -3135,42 +3065,14 @@
     },
     {
       "kind": "ice_crystal",
-      "x": 6.0,
+      "x": 28.0,
       "y": 15.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "rock_snow",
-      "x": 7.0,
-      "y": 15.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 15.0,
-      "y": 15.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 17.0,
-      "y": 15.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "ice_crystal",
-      "x": 21.0,
-      "y": 15.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 26.0,
+      "x": 31.0,
       "y": 15.0,
       "w": 1,
       "h": 1
@@ -3191,49 +3093,28 @@
     },
     {
       "kind": "tree_snowpine",
-      "x": 54.0,
+      "x": 56.0,
       "y": 15.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowdead",
-      "x": 55.0,
-      "y": 15.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 57.0,
-      "y": 15.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 59.0,
-      "y": 15.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 60.0,
-      "y": 15.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
       "x": 61.0,
       "y": 15.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 62.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 63.0,
       "y": 15.0,
       "w": 1,
       "h": 1
@@ -3261,21 +3142,35 @@
     },
     {
       "kind": "rock_snow",
-      "x": 3.0,
-      "y": 16.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
       "x": 5.0,
       "y": 16.0,
       "w": 1,
       "h": 1
     },
     {
+      "kind": "tree_snowpine",
+      "x": 7.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "ice_crystal",
+      "x": 11.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
       "kind": "rock_snow",
-      "x": 35.0,
+      "x": 16.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 51.0,
       "y": 16.0,
       "w": 1,
       "h": 1
@@ -3289,4613 +3184,4557 @@
     },
     {
       "kind": "tree_snowpine",
-      "x": 60.0,
-      "y": 16.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 16.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 16.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 63.0,
-      "y": 16.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 0.0,
-      "y": 17.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 17.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 2.0,
-      "y": 17.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 20.0,
-      "y": 17.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 25.0,
-      "y": 17.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "ice_crystal",
-      "x": 42.0,
-      "y": 17.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 50.0,
-      "y": 17.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 52.0,
-      "y": 17.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 54.0,
-      "y": 17.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
       "x": 55.0,
-      "y": 17.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 57.0,
-      "y": 17.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 58.0,
-      "y": 17.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 60.0,
-      "y": 17.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 17.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 17.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 63.0,
-      "y": 17.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 0.0,
-      "y": 18.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 1.0,
-      "y": 18.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 2.0,
-      "y": 18.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 29.0,
-      "y": 18.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 55.0,
-      "y": 18.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 58.0,
-      "y": 18.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 60.0,
-      "y": 18.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 18.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 18.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 0.0,
-      "y": 19.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 1.0,
-      "y": 19.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 2.0,
-      "y": 19.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 30.0,
-      "y": 19.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 36.0,
-      "y": 19.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 39.0,
-      "y": 19.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 51.0,
-      "y": 19.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 55.0,
-      "y": 19.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 57.0,
-      "y": 19.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 58.0,
-      "y": 19.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 59.0,
-      "y": 19.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 61.0,
-      "y": 19.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 19.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 63.0,
-      "y": 19.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 0.0,
-      "y": 20.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 20.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 2.0,
-      "y": 20.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 7.0,
-      "y": 20.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 11.0,
-      "y": 20.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "ice_crystal",
-      "x": 12.0,
-      "y": 20.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 35.0,
-      "y": 20.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 38.0,
-      "y": 20.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 47.0,
-      "y": 20.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 51.0,
-      "y": 20.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 52.0,
-      "y": 20.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 54.0,
-      "y": 20.0,
+      "y": 16.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowdead",
       "x": 56.0,
-      "y": 20.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 60.0,
-      "y": 20.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 20.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 20.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 63.0,
-      "y": 20.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 0.0,
-      "y": 21.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 1.0,
-      "y": 21.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 2.0,
-      "y": 21.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "ice_crystal",
-      "x": 9.0,
-      "y": 21.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 14.0,
-      "y": 21.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 38.0,
-      "y": 21.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 50.0,
-      "y": 21.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 51.0,
-      "y": 21.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 55.0,
-      "y": 21.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 57.0,
-      "y": 21.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 58.0,
-      "y": 21.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 61.0,
-      "y": 21.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 62.0,
-      "y": 21.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 63.0,
-      "y": 21.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 0.0,
-      "y": 22.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 22.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 2.0,
-      "y": 22.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 17.0,
-      "y": 22.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 18.0,
-      "y": 22.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 19.0,
-      "y": 22.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 40.0,
-      "y": 22.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 41.0,
-      "y": 22.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 50.0,
-      "y": 22.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 51.0,
-      "y": 22.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 53.0,
-      "y": 22.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 57.0,
-      "y": 22.0,
+      "y": 16.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 58.0,
-      "y": 22.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 59.0,
-      "y": 22.0,
+      "y": 16.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 60.0,
-      "y": 22.0,
+      "y": 16.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 61.0,
-      "y": 22.0,
+      "y": 16.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 62.0,
-      "y": 22.0,
+      "y": 16.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 63.0,
-      "y": 22.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 0.0,
-      "y": 23.0,
+      "y": 16.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 1.0,
-      "y": 23.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 2.0,
-      "y": 23.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 6.0,
-      "y": 23.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 14.0,
-      "y": 23.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 16.0,
-      "y": 23.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 17.0,
-      "y": 23.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 24.0,
-      "y": 23.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 27.0,
-      "y": 23.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "ice_crystal",
-      "x": 44.0,
-      "y": 23.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 51.0,
-      "y": 23.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 52.0,
-      "y": 23.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 53.0,
-      "y": 23.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 55.0,
-      "y": 23.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 23.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 23.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 0.0,
-      "y": 24.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 24.0,
+      "y": 17.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 2.0,
-      "y": 24.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 43.0,
-      "y": 24.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 45.0,
-      "y": 24.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 61.0,
-      "y": 24.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 62.0,
-      "y": 24.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 63.0,
-      "y": 24.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 0.0,
-      "y": 25.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 1.0,
-      "y": 25.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 2.0,
-      "y": 25.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 42.0,
-      "y": 25.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 43.0,
-      "y": 25.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 44.0,
-      "y": 25.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 45.0,
-      "y": 25.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 46.0,
-      "y": 25.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 47.0,
-      "y": 25.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 48.0,
-      "y": 25.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 49.0,
-      "y": 25.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 25.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 25.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 63.0,
-      "y": 25.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 0.0,
-      "y": 26.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 26.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 2.0,
-      "y": 26.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 40.0,
-      "y": 26.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 44.0,
-      "y": 26.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 45.0,
-      "y": 26.0,
+      "y": 17.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "rock_snow",
-      "x": 52.0,
-      "y": 26.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 26.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 26.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 63.0,
-      "y": 26.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 27.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 2.0,
-      "y": 27.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 41.0,
-      "y": 27.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 43.0,
-      "y": 27.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 45.0,
-      "y": 27.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 46.0,
-      "y": 27.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 48.0,
-      "y": 27.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 49.0,
-      "y": 27.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 27.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 63.0,
-      "y": 27.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 0.0,
-      "y": 28.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 28.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 44.0,
-      "y": 28.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 46.0,
-      "y": 28.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 28.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 28.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 63.0,
-      "y": 28.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 20.0,
-      "y": 29.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 23.0,
-      "y": 29.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 24.0,
-      "y": 29.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 41.0,
-      "y": 29.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 46.0,
-      "y": 29.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 48.0,
-      "y": 29.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 52.0,
-      "y": 29.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 53.0,
-      "y": 29.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 29.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 62.0,
-      "y": 29.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 63.0,
-      "y": 29.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 18.0,
-      "y": 30.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 21.0,
-      "y": 30.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 22.0,
-      "y": 30.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 42.0,
-      "y": 30.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 43.0,
-      "y": 30.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 45.0,
-      "y": 30.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 46.0,
-      "y": 30.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 47.0,
-      "y": 30.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 49.0,
-      "y": 30.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 61.0,
-      "y": 30.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 31.0,
-      "y": 31.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 37.0,
-      "y": 31.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 41.0,
-      "y": 31.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 46.0,
-      "y": 31.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 49.0,
-      "y": 31.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 61.0,
-      "y": 31.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 31.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 63.0,
-      "y": 31.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 16.0,
-      "y": 32.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "ice_crystal",
-      "x": 19.0,
-      "y": 32.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 28.0,
-      "y": 32.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 42.0,
-      "y": 32.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 43.0,
-      "y": 32.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 45.0,
-      "y": 32.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 46.0,
-      "y": 32.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 48.0,
-      "y": 32.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 49.0,
-      "y": 32.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 51.0,
-      "y": 32.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 57.0,
-      "y": 32.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 32.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 32.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 63.0,
-      "y": 32.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 42.0,
-      "y": 33.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 44.0,
-      "y": 33.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 48.0,
-      "y": 33.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 59.0,
-      "y": 33.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 60.0,
-      "y": 33.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 33.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 33.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 63.0,
-      "y": 33.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 13.0,
-      "y": 34.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 18.0,
-      "y": 34.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "ice_crystal",
-      "x": 24.0,
-      "y": 34.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 45.0,
-      "y": 34.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 46.0,
-      "y": 34.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 47.0,
-      "y": 34.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 59.0,
-      "y": 34.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 34.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 34.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 63.0,
-      "y": 34.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "ice_crystal",
-      "x": 12.0,
-      "y": 35.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 14.0,
-      "y": 35.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 17.0,
-      "y": 35.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 19.0,
-      "y": 35.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 21.0,
-      "y": 35.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 42.0,
-      "y": 35.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 46.0,
-      "y": 35.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 35.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 62.0,
-      "y": 35.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 63.0,
-      "y": 35.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 0.0,
-      "y": 36.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 14.0,
-      "y": 36.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 19.0,
-      "y": 36.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 21.0,
-      "y": 36.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 37.0,
-      "y": 36.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 43.0,
-      "y": 36.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 47.0,
-      "y": 36.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 48.0,
-      "y": 36.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 57.0,
-      "y": 36.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 58.0,
-      "y": 36.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 60.0,
-      "y": 36.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 36.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 36.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 63.0,
-      "y": 36.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 0.0,
-      "y": 37.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 37.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 2.0,
-      "y": 37.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 3.0,
-      "y": 37.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 4.0,
-      "y": 37.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
       "x": 5.0,
-      "y": 37.0,
+      "y": 17.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "rock_snow",
-      "x": 31.0,
-      "y": 37.0,
+      "x": 7.0,
+      "y": 17.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "rock_snow",
-      "x": 32.0,
-      "y": 37.0,
+      "x": 37.0,
+      "y": 17.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowdead",
-      "x": 42.0,
-      "y": 37.0,
+      "x": 50.0,
+      "y": 17.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
-      "x": 43.0,
-      "y": 37.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 45.0,
-      "y": 37.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 46.0,
-      "y": 37.0,
+      "x": 51.0,
+      "y": 17.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
-      "x": 47.0,
-      "y": 37.0,
+      "x": 52.0,
+      "y": 17.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 54.0,
-      "y": 37.0,
+      "y": 17.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
-      "x": 57.0,
-      "y": 37.0,
+      "x": 55.0,
+      "y": 17.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 58.0,
-      "y": 37.0,
+      "y": 17.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 61.0,
-      "y": 37.0,
+      "y": 17.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 62.0,
-      "y": 37.0,
+      "y": 17.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 63.0,
-      "y": 37.0,
+      "y": 17.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 0.0,
-      "y": 38.0,
+      "y": 18.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 1.0,
-      "y": 38.0,
+      "y": 18.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 2.0,
-      "y": 38.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 11.0,
+      "y": 18.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
-      "x": 5.0,
-      "y": 38.0,
+      "x": 30.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 35.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 54.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 55.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 61.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 62.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 63.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 52.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 54.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 58.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 60.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 61.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 0.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 1.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 4.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 50.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 52.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 54.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 58.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 59.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 60.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 61.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 0.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 1.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 17.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 23.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 26.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 51.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 53.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 57.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 59.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 60.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 61.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 62.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 63.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 0.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 1.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 10.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 14.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "ice_crystal",
+      "x": 15.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 18.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 19.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 45.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 48.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 51.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 56.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 59.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 60.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 61.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 63.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 0.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 1.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 2.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 16.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 19.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 21.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 22.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 51.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 53.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 55.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 62.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 0.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 1.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 13.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 15.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 39.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 43.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 61.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 0.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 1.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 40.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 41.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 42.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 43.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 44.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 46.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 48.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 61.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 0.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 1.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 26.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "rock_snow",
       "x": 8.0,
-      "y": 38.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 15.0,
-      "y": 38.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 18.0,
-      "y": 38.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 35.0,
-      "y": 38.0,
+      "y": 26.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowdead",
-      "x": 43.0,
-      "y": 38.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 44.0,
-      "y": 38.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 46.0,
-      "y": 38.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 38.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 38.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 63.0,
-      "y": 38.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 0.0,
-      "y": 39.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 2.0,
-      "y": 39.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 4.0,
-      "y": 39.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 21.0,
-      "y": 39.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 32.0,
-      "y": 39.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 40.0,
-      "y": 39.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
       "x": 41.0,
-      "y": 39.0,
+      "y": 26.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 42.0,
-      "y": 39.0,
+      "y": 26.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 43.0,
-      "y": 39.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 46.0,
-      "y": 39.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 47.0,
-      "y": 39.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 52.0,
-      "y": 39.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 59.0,
-      "y": 39.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 60.0,
-      "y": 39.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 61.0,
-      "y": 39.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 39.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 63.0,
-      "y": 39.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 0.0,
-      "y": 40.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 40.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 2.0,
-      "y": 40.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 17.0,
-      "y": 40.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "ice_crystal",
-      "x": 26.0,
-      "y": 40.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 38.0,
-      "y": 40.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 40.0,
-      "y": 40.0,
+      "y": 26.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 44.0,
-      "y": 40.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 47.0,
-      "y": 40.0,
+      "y": 26.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
-      "x": 48.0,
-      "y": 40.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 60.0,
-      "y": 40.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 40.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 40.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 63.0,
-      "y": 40.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 0.0,
-      "y": 41.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 41.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 26.0,
-      "y": 41.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 27.0,
-      "y": 41.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 29.0,
-      "y": 41.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 31.0,
-      "y": 41.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 35.0,
-      "y": 41.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 36.0,
-      "y": 41.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 42.0,
-      "y": 41.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 44.0,
-      "y": 41.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
       "x": 45.0,
-      "y": 41.0,
+      "y": 26.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
-      "x": 47.0,
-      "y": 41.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 48.0,
-      "y": 41.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "ice_crystal",
-      "x": 54.0,
-      "y": 41.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 60.0,
-      "y": 41.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 41.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 62.0,
-      "y": 41.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 63.0,
-      "y": 41.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 0.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 2.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "ice_crystal",
-      "x": 3.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 6.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 17.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 18.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "ice_crystal",
-      "x": 20.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 25.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 26.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 27.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 31.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 32.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 34.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 37.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 38.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 39.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 40.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 46.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 48.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
       "x": 49.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 62.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 63.0,
-      "y": 42.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 0.0,
-      "y": 43.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 43.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 2.0,
-      "y": 43.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 11.0,
-      "y": 43.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 28.0,
-      "y": 43.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 30.0,
-      "y": 43.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 32.0,
-      "y": 43.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 33.0,
-      "y": 43.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 34.0,
-      "y": 43.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 38.0,
-      "y": 43.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 40.0,
-      "y": 43.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 41.0,
-      "y": 43.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 47.0,
-      "y": 43.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 48.0,
-      "y": 43.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 50.0,
-      "y": 43.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 52.0,
-      "y": 43.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 43.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 43.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 63.0,
-      "y": 43.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 0.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 3.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 24.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 27.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 29.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 30.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 31.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 32.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 33.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 35.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 36.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 37.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 38.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 39.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 40.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 41.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 42.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 46.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 47.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 55.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 63.0,
-      "y": 44.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 0.0,
-      "y": 45.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 45.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 2.0,
-      "y": 45.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 28.0,
-      "y": 45.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 29.0,
-      "y": 45.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 31.0,
-      "y": 45.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 34.0,
-      "y": 45.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 35.0,
-      "y": 45.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 36.0,
-      "y": 45.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 37.0,
-      "y": 45.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 38.0,
-      "y": 45.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 39.0,
-      "y": 45.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 41.0,
-      "y": 45.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 42.0,
-      "y": 45.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 43.0,
-      "y": 45.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 45.0,
-      "y": 45.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 49.0,
-      "y": 45.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 58.0,
-      "y": 45.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 45.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 45.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 63.0,
-      "y": 45.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 0.0,
-      "y": 46.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 46.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 2.0,
-      "y": 46.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 17.0,
-      "y": 46.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 24.0,
-      "y": 46.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 27.0,
-      "y": 46.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 28.0,
-      "y": 46.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 33.0,
-      "y": 46.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 34.0,
-      "y": 46.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 36.0,
-      "y": 46.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 38.0,
-      "y": 46.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 41.0,
-      "y": 46.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 43.0,
-      "y": 46.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 45.0,
-      "y": 46.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 46.0,
-      "y": 46.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 47.0,
-      "y": 46.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 48.0,
-      "y": 46.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "ice_crystal",
-      "x": 50.0,
-      "y": 46.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 51.0,
-      "y": 46.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 62.0,
-      "y": 46.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 63.0,
-      "y": 46.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 0.0,
-      "y": 47.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 47.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 2.0,
-      "y": 47.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 23.0,
-      "y": 47.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 24.0,
-      "y": 47.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 26.0,
-      "y": 47.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 27.0,
-      "y": 47.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 30.0,
-      "y": 47.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 32.0,
-      "y": 47.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 36.0,
-      "y": 47.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 42.0,
-      "y": 47.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 46.0,
-      "y": 47.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 47.0,
-      "y": 47.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 48.0,
-      "y": 47.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 52.0,
-      "y": 47.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 54.0,
-      "y": 47.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 61.0,
-      "y": 47.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 47.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 63.0,
-      "y": 47.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 0.0,
-      "y": 48.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 48.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 2.0,
-      "y": 48.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 13.0,
-      "y": 48.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 23.0,
-      "y": 48.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 25.0,
-      "y": 48.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 28.0,
-      "y": 48.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 30.0,
-      "y": 48.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 32.0,
-      "y": 48.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 33.0,
-      "y": 48.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 34.0,
-      "y": 48.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 39.0,
-      "y": 48.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 40.0,
-      "y": 48.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 41.0,
-      "y": 48.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 44.0,
-      "y": 48.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 47.0,
-      "y": 48.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 54.0,
-      "y": 48.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 61.0,
-      "y": 48.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 63.0,
-      "y": 48.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 0.0,
-      "y": 49.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 49.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 2.0,
-      "y": 49.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "ice_crystal",
-      "x": 10.0,
-      "y": 49.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 22.0,
-      "y": 49.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 27.0,
-      "y": 49.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 30.0,
-      "y": 49.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 32.0,
-      "y": 49.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 33.0,
-      "y": 49.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 39.0,
-      "y": 49.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 42.0,
-      "y": 49.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 52.0,
-      "y": 49.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 49.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 49.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 63.0,
-      "y": 49.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 0.0,
-      "y": 50.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 50.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 2.0,
-      "y": 50.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 6.0,
-      "y": 50.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 18.0,
-      "y": 50.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 19.0,
-      "y": 50.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 20.0,
-      "y": 50.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 22.0,
-      "y": 50.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 24.0,
-      "y": 50.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 27.0,
-      "y": 50.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 28.0,
-      "y": 50.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 29.0,
-      "y": 50.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 32.0,
-      "y": 50.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "ice_crystal",
-      "x": 54.0,
-      "y": 50.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 50.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 50.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 63.0,
-      "y": 50.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 0.0,
-      "y": 51.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 1.0,
-      "y": 51.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 2.0,
-      "y": 51.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "ice_crystal",
-      "x": 11.0,
-      "y": 51.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "ice_crystal",
-      "x": 15.0,
-      "y": 51.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 16.0,
-      "y": 51.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 18.0,
-      "y": 51.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 19.0,
-      "y": 51.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 21.0,
-      "y": 51.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 22.0,
-      "y": 51.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 23.0,
-      "y": 51.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 29.0,
-      "y": 51.0,
+      "y": 26.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "rock_snow",
       "x": 50.0,
-      "y": 51.0,
+      "y": 26.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "ice_crystal",
+      "kind": "rock_snow",
       "x": 53.0,
-      "y": 51.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 61.0,
-      "y": 51.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 51.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 63.0,
-      "y": 51.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 0.0,
-      "y": 52.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 2.0,
-      "y": 52.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 16.0,
-      "y": 52.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 21.0,
-      "y": 52.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 29.0,
-      "y": 52.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 30.0,
-      "y": 52.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 36.0,
-      "y": 52.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 42.0,
-      "y": 52.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 60.0,
-      "y": 52.0,
+      "y": 26.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 61.0,
-      "y": 52.0,
+      "y": 26.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 62.0,
-      "y": 52.0,
+      "y": 26.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 63.0,
-      "y": 52.0,
+      "y": 26.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 0.0,
-      "y": 53.0,
+      "y": 27.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowdead",
       "x": 1.0,
-      "y": 53.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 2.0,
-      "y": 53.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "ice_crystal",
-      "x": 10.0,
-      "y": 53.0,
+      "y": 27.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
-      "x": 16.0,
-      "y": 53.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 17.0,
-      "y": 53.0,
+      "x": 41.0,
+      "y": 27.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
-      "x": 18.0,
-      "y": 53.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 21.0,
-      "y": 53.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 27.0,
-      "y": 53.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 28.0,
-      "y": 53.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 30.0,
-      "y": 53.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 38.0,
-      "y": 53.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 61.0,
-      "y": 53.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 53.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 63.0,
-      "y": 53.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 0.0,
-      "y": 54.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 1.0,
-      "y": 54.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 2.0,
-      "y": 54.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 21.0,
-      "y": 54.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 22.0,
-      "y": 54.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 23.0,
-      "y": 54.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 24.0,
-      "y": 54.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 25.0,
-      "y": 54.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 27.0,
-      "y": 54.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 28.0,
-      "y": 54.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 30.0,
-      "y": 54.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 31.0,
-      "y": 54.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 39.0,
-      "y": 54.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 54.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 54.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 63.0,
-      "y": 54.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 0.0,
-      "y": 55.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 55.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 2.0,
-      "y": 55.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 15.0,
-      "y": 55.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 19.0,
-      "y": 55.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 20.0,
-      "y": 55.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 23.0,
-      "y": 55.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 24.0,
-      "y": 55.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 25.0,
-      "y": 55.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 27.0,
-      "y": 55.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 55.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 62.0,
-      "y": 55.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 63.0,
-      "y": 55.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 0.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 2.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 16.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 19.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 20.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 21.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 22.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 23.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 26.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 27.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 28.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 29.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 30.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "ice_crystal",
-      "x": 52.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 61.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 62.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 63.0,
-      "y": 56.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 0.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 2.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 14.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 18.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 20.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 21.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 23.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 24.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 25.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 26.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 27.0,
-      "y": 57.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "ice_crystal",
       "x": 43.0,
-      "y": 57.0,
+      "y": 27.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "rock_snow",
-      "x": 58.0,
-      "y": 57.0,
+      "kind": "tree_snowpine",
+      "x": 45.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 47.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 49.0,
+      "y": 27.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 61.0,
-      "y": 57.0,
+      "y": 27.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 62.0,
-      "y": 57.0,
+      "y": 27.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 63.0,
-      "y": 57.0,
+      "y": 27.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 0.0,
-      "y": 58.0,
+      "y": 28.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 1.0,
-      "y": 58.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 2.0,
-      "y": 58.0,
+      "y": 28.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
-      "x": 15.0,
-      "y": 58.0,
+      "x": 41.0,
+      "y": 28.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowdead",
-      "x": 17.0,
-      "y": 58.0,
+      "x": 43.0,
+      "y": 28.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowdead",
-      "x": 20.0,
-      "y": 58.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 22.0,
-      "y": 58.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 24.0,
-      "y": 58.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 27.0,
-      "y": 58.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 28.0,
-      "y": 58.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock_snow",
-      "x": 49.0,
-      "y": 58.0,
+      "x": 45.0,
+      "y": 28.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowdead",
       "x": 61.0,
-      "y": 58.0,
+      "y": 28.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 62.0,
-      "y": 58.0,
+      "y": 28.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowdead",
-      "x": 1.0,
-      "y": 59.0,
+      "x": 63.0,
+      "y": 28.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
-      "x": 2.0,
-      "y": 59.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 14.0,
-      "y": 59.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 15.0,
-      "y": 59.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 16.0,
-      "y": 59.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 18.0,
-      "y": 59.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 19.0,
-      "y": 59.0,
+      "x": 21.0,
+      "y": 29.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 22.0,
-      "y": 59.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 23.0,
+      "y": 29.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowdead",
-      "x": 25.0,
-      "y": 59.0,
+      "x": 24.0,
+      "y": 29.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
-      "x": 27.0,
-      "y": 59.0,
+      "x": 41.0,
+      "y": 29.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
-      "x": 28.0,
-      "y": 59.0,
+      "x": 45.0,
+      "y": 29.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "ice_crystal",
-      "x": 38.0,
-      "y": 59.0,
+      "kind": "tree_snowpine",
+      "x": 46.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 47.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 48.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 49.0,
+      "y": 29.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "rock_snow",
-      "x": 46.0,
-      "y": 59.0,
+      "x": 53.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 57.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 61.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 16.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 20.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 21.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 41.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 43.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 47.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 48.0,
+      "y": 30.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "rock_snow",
       "x": 55.0,
-      "y": 59.0,
+      "y": 30.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 61.0,
-      "y": 59.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 62.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "ice_crystal",
+      "x": 32.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 35.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 43.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 44.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 46.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 48.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 61.0,
+      "y": 31.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 62.0,
-      "y": 59.0,
+      "y": 31.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 63.0,
-      "y": 59.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 0.0,
-      "y": 60.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 1.0,
-      "y": 60.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 2.0,
-      "y": 60.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 15.0,
-      "y": 60.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 16.0,
-      "y": 60.0,
+      "y": 31.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 18.0,
-      "y": 60.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 19.0,
-      "y": 60.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 24.0,
-      "y": 60.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 25.0,
-      "y": 60.0,
+      "y": 32.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "rock_snow",
-      "x": 38.0,
-      "y": 60.0,
+      "x": 39.0,
+      "y": 32.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "ice_crystal",
-      "x": 40.0,
-      "y": 60.0,
+      "kind": "tree_snowpine",
+      "x": 43.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 44.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 45.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 46.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 47.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 52.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 59.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 60.0,
+      "y": 32.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 61.0,
-      "y": 60.0,
+      "y": 32.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 62.0,
-      "y": 60.0,
+      "y": 32.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
+      "x": 27.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 42.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 44.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 45.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 46.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 48.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 58.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 60.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
       "x": 63.0,
-      "y": 60.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 23.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 29.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 43.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 45.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 47.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 54.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 57.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 58.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 60.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 61.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 63.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 16.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 40.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 42.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 43.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 44.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 47.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 48.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 49.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 61.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 62.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 63.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 0.0,
+      "y": 36.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowdead",
       "x": 1.0,
-      "y": 61.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "ice_crystal",
+      "x": 35.0,
+      "y": 36.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
-      "x": 3.0,
-      "y": 61.0,
+      "x": 46.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 47.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 56.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 57.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 60.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 61.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 62.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 0.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 1.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 37.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 4.0,
-      "y": 61.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 42.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 43.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 45.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 47.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 48.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 61.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 0.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 1.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 4.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "ice_crystal",
+      "x": 23.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 31.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 36.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 38.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 42.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 43.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 44.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 47.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 50.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 61.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 62.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 0.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 1.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 3.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 4.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 16.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 20.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 24.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 40.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 41.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 42.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 43.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 44.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 46.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 47.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 60.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 61.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 0.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 1.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 40.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
       "x": 5.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 6.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 11.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 28.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 35.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 38.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 40.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 41.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 42.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 43.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 45.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 47.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 48.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 59.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 60.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 61.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 0.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 1.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 15.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 28.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 30.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 31.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 36.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 37.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 40.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 41.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 45.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 47.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 48.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 60.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 61.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 62.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 1.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 4.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 10.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 28.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 30.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 35.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 40.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 41.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 44.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 46.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 61.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 0.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 1.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 24.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 25.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 26.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 27.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 31.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 32.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 34.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 36.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 40.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 41.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 47.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 49.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 51.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 61.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 0.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 1.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 3.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 8.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "ice_crystal",
+      "x": 11.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 14.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 24.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 25.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 27.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 30.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 31.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 32.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 33.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 36.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 37.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 39.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 42.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 43.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 44.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 45.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 61.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 0.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 1.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 2.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 6.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 19.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 31.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 35.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 37.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 39.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 40.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 41.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 45.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 47.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 48.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 59.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 61.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 0.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 1.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 12.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 27.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 30.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 31.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 34.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 36.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 37.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 38.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 39.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 40.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 42.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 43.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 44.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 45.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 46.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 47.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 48.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 61.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 0.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 1.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 25.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 27.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 31.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 35.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 36.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 38.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 41.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 42.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 43.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 44.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 45.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 46.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 48.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 49.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 54.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 61.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 0.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 1.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 25.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 26.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 27.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 28.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 29.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 30.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 32.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 33.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 39.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 40.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 41.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 43.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 46.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 51.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "ice_crystal",
+      "x": 60.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 61.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 62.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 0.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 1.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 4.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 23.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 28.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 30.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 31.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 61.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 62.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 0.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 19.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 24.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 25.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 27.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 28.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 29.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 30.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 31.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 32.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 38.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 61.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 0.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 1.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 4.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 16.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 20.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 21.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 23.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 25.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 27.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 30.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 49.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 55.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 58.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 61.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 0.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 15.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 17.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 18.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 19.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 21.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 23.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 25.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 28.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 30.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 31.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 61.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 0.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 1.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 17.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 18.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 19.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 20.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 21.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 23.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 24.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 25.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 28.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 29.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 31.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 61.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 63.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 0.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 1.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 9.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 18.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 19.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 20.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 21.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 22.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 24.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 29.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 46.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 52.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 61.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 0.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 1.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "ice_crystal",
+      "x": 6.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 8.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 16.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 17.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 23.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 24.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 25.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 28.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 34.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 47.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 61.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 63.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 0.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 1.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 2.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 6.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 15.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 16.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 17.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 19.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 26.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 27.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 28.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 29.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 30.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 48.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 61.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 63.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 0.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 14.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 15.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 18.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 19.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 20.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 21.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 24.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 25.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 28.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 29.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 30.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 32.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 61.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 0.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 1.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 14.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 16.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 19.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 22.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 23.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 24.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 25.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 26.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 29.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 30.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "ice_crystal",
+      "x": 58.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 62.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 0.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 1.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 14.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 16.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 18.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 23.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 25.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 26.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 28.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 33.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "ice_crystal",
+      "x": 52.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 61.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 0.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 1.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 5.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 16.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 17.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 19.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 21.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 23.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "ice_crystal",
+      "x": 26.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "ice_crystal",
+      "x": 32.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock_snow",
+      "x": 60.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 61.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 62.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 63.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 0.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 1.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 2.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 3.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
+      "x": 4.0,
       "y": 61.0,
       "w": 1,
       "h": 1
@@ -7908,8 +7747,15 @@
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 7.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 8.0,
       "y": 61.0,
       "w": 1,
       "h": 1
@@ -7929,14 +7775,14 @@
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 12.0,
       "y": 61.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 13.0,
       "y": 61.0,
       "w": 1,
@@ -7985,13 +7831,6 @@
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
-      "x": 20.0,
-      "y": 61.0,
-      "w": 1,
-      "h": 1
-    },
-    {
       "kind": "tree_snowpine",
       "x": 21.0,
       "y": 61.0,
@@ -8006,21 +7845,21 @@
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 23.0,
       "y": 61.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
-      "x": 24.0,
+      "kind": "tree_snowpine",
+      "x": 25.0,
       "y": 61.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 26.0,
       "y": 61.0,
       "w": 1,
@@ -8041,7 +7880,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 29.0,
       "y": 61.0,
       "w": 1,
@@ -8055,21 +7894,14 @@
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
-      "x": 31.0,
-      "y": 61.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 32.0,
       "y": 61.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 33.0,
       "y": 61.0,
       "w": 1,
@@ -8083,7 +7915,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 35.0,
       "y": 61.0,
       "w": 1,
@@ -8098,21 +7930,7 @@
     },
     {
       "kind": "tree_snowpine",
-      "x": 37.0,
-      "y": 61.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
       "x": 38.0,
-      "y": 61.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 39.0,
       "y": 61.0,
       "w": 1,
       "h": 1
@@ -8125,7 +7943,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 41.0,
       "y": 61.0,
       "w": 1,
@@ -8140,28 +7958,28 @@
     },
     {
       "kind": "tree_snowpine",
-      "x": 43.0,
-      "y": 61.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
       "x": 44.0,
       "y": 61.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 45.0,
       "y": 61.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 46.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 47.0,
       "y": 61.0,
       "w": 1,
       "h": 1
@@ -8188,7 +8006,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 51.0,
       "y": 61.0,
       "w": 1,
@@ -8202,7 +8020,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 53.0,
       "y": 61.0,
       "w": 1,
@@ -8216,7 +8034,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 55.0,
       "y": 61.0,
       "w": 1,
@@ -8244,7 +8062,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 59.0,
       "y": 61.0,
       "w": 1,
@@ -8258,7 +8076,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 61.0,
       "y": 61.0,
       "w": 1,
@@ -8266,13 +8084,13 @@
     },
     {
       "kind": "tree_snowpine",
-      "x": 62.0,
+      "x": 63.0,
       "y": 61.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 0.0,
       "y": 62.0,
       "w": 1,
@@ -8281,6 +8099,13 @@
     {
       "kind": "tree_snowpine",
       "x": 1.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 2.0,
       "y": 62.0,
       "w": 1,
       "h": 1
@@ -8301,13 +8126,6 @@
     },
     {
       "kind": "tree_snowpine",
-      "x": 5.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
       "x": 6.0,
       "y": 62.0,
       "w": 1,
@@ -8321,14 +8139,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
-      "x": 8.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 9.0,
       "y": 62.0,
       "w": 1,
@@ -8343,13 +8154,20 @@
     },
     {
       "kind": "tree_snowpine",
-      "x": 12.0,
+      "x": 11.0,
       "y": 62.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowpine",
+      "x": 12.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
       "x": 13.0,
       "y": 62.0,
       "w": 1,
@@ -8364,42 +8182,28 @@
     },
     {
       "kind": "tree_snowpine",
-      "x": 15.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
       "x": 16.0,
       "y": 62.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 17.0,
       "y": 62.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 18.0,
       "y": 62.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 19.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 20.0,
       "y": 62.0,
       "w": 1,
       "h": 1
@@ -8407,13 +8211,6 @@
     {
       "kind": "tree_snowpine",
       "x": 21.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 22.0,
       "y": 62.0,
       "w": 1,
       "h": 1
@@ -8433,22 +8230,8 @@
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
-      "x": 25.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 26.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
       "kind": "tree_snowdead",
-      "x": 27.0,
+      "x": 26.0,
       "y": 62.0,
       "w": 1,
       "h": 1
@@ -8482,7 +8265,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 32.0,
       "y": 62.0,
       "w": 1,
@@ -8490,21 +8273,7 @@
     },
     {
       "kind": "tree_snowpine",
-      "x": 33.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
       "x": 34.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowdead",
-      "x": 35.0,
       "y": 62.0,
       "w": 1,
       "h": 1
@@ -8546,6 +8315,20 @@
     },
     {
       "kind": "tree_snowpine",
+      "x": 41.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 42.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
       "x": 43.0,
       "y": 62.0,
       "w": 1,
@@ -8559,6 +8342,13 @@
       "h": 1
     },
     {
+      "kind": "tree_snowdead",
+      "x": 45.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
       "kind": "tree_snowpine",
       "x": 46.0,
       "y": 62.0,
@@ -8566,35 +8356,28 @@
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 47.0,
       "y": 62.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 48.0,
       "y": 62.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 49.0,
       "y": 62.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
-      "x": 50.0,
-      "y": 62.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 51.0,
       "y": 62.0,
       "w": 1,
@@ -8623,13 +8406,20 @@
     },
     {
       "kind": "tree_snowpine",
+      "x": 55.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
       "x": 56.0,
       "y": 62.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 57.0,
       "y": 62.0,
       "w": 1,
@@ -8664,7 +8454,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 62.0,
       "y": 62.0,
       "w": 1,
@@ -8685,7 +8475,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 1.0,
       "y": 63.0,
       "w": 1,
@@ -8707,13 +8497,20 @@
     },
     {
       "kind": "tree_snowpine",
+      "x": 4.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
       "x": 5.0,
       "y": 63.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 6.0,
       "y": 63.0,
       "w": 1,
@@ -8727,13 +8524,6 @@
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
-      "x": 8.0,
-      "y": 63.0,
-      "w": 1,
-      "h": 1
-    },
-    {
       "kind": "tree_snowpine",
       "x": 9.0,
       "y": 63.0,
@@ -8741,28 +8531,28 @@
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 10.0,
       "y": 63.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 11.0,
       "y": 63.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 12.0,
       "y": 63.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 13.0,
       "y": 63.0,
       "w": 1,
@@ -8790,7 +8580,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 17.0,
       "y": 63.0,
       "w": 1,
@@ -8804,7 +8594,14 @@
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
+      "x": 19.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
       "x": 20.0,
       "y": 63.0,
       "w": 1,
@@ -8832,14 +8629,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
-      "x": 24.0,
-      "y": 63.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 25.0,
       "y": 63.0,
       "w": 1,
@@ -8848,13 +8638,6 @@
     {
       "kind": "tree_snowpine",
       "x": 26.0,
-      "y": 63.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_snowpine",
-      "x": 27.0,
       "y": 63.0,
       "w": 1,
       "h": 1
@@ -8888,7 +8671,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 32.0,
       "y": 63.0,
       "w": 1,
@@ -8910,7 +8693,7 @@
     },
     {
       "kind": "tree_snowpine",
-      "x": 36.0,
+      "x": 35.0,
       "y": 63.0,
       "w": 1,
       "h": 1
@@ -8923,14 +8706,14 @@
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 38.0,
       "y": 63.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 39.0,
       "y": 63.0,
       "w": 1,
@@ -8944,7 +8727,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 41.0,
       "y": 63.0,
       "w": 1,
@@ -8965,14 +8748,21 @@
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
-      "x": 45.0,
+      "kind": "tree_snowdead",
+      "x": 44.0,
       "y": 63.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_snowdead",
+      "x": 45.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowpine",
       "x": 46.0,
       "y": 63.0,
       "w": 1,
@@ -8993,7 +8783,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 49.0,
       "y": 63.0,
       "w": 1,
@@ -9014,7 +8804,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 52.0,
       "y": 63.0,
       "w": 1,
@@ -9035,8 +8825,15 @@
       "h": 1
     },
     {
-      "kind": "tree_snowdead",
+      "kind": "tree_snowpine",
       "x": 55.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_snowdead",
+      "x": 56.0,
       "y": 63.0,
       "w": 1,
       "h": 1
@@ -9063,7 +8860,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 60.0,
       "y": 63.0,
       "w": 1,
@@ -9084,7 +8881,7 @@
       "h": 1
     },
     {
-      "kind": "tree_snowpine",
+      "kind": "tree_snowdead",
       "x": 63.0,
       "y": 63.0,
       "w": 1,
@@ -9096,13 +8893,132 @@
       "kind": "exit1",
       "x": 2.5,
       "y": 32.5
+    },
+    {
+      "kind": "entrance26",
+      "x": 44.5,
+      "y": 16.5
     }
   ],
   "monsters": [
     {
+      "kind": "raider",
+      "x": 34.22,
+      "y": 25.89,
+      "tier": 4.226
+    },
+    {
+      "kind": "raider",
+      "x": 32.25,
+      "y": 28.04,
+      "tier": 4.226
+    },
+    {
+      "kind": "raider",
+      "x": 32.26,
+      "y": 27.14,
+      "tier": 4.226
+    },
+    {
+      "kind": "raider",
+      "x": 52.59,
+      "y": 24.44,
+      "tier": 4.077
+    },
+    {
+      "kind": "raider",
+      "x": 51.91,
+      "y": 25.24,
+      "tier": 4.077
+    },
+    {
+      "kind": "raider",
+      "x": 52.07,
+      "y": 26.98,
+      "tier": 4.077
+    },
+    {
       "kind": "frost_wolf",
-      "x": 52.67,
-      "y": 59.33,
+      "x": 10.05,
+      "y": 16.94,
+      "tier": 3.983
+    },
+    {
+      "kind": "frost_wolf",
+      "x": 8.87,
+      "y": 16.48,
+      "tier": 3.983
+    },
+    {
+      "kind": "frost_wolf",
+      "x": 9.09,
+      "y": 15.89,
+      "tier": 3.983
+    },
+    {
+      "kind": "frost_wolf",
+      "x": 8.74,
+      "y": 16.16,
+      "tier": 3.983
+    },
+    {
+      "kind": "frost_wolf",
+      "x": 28.92,
+      "y": 17.81,
+      "tier": 4.203
+    },
+    {
+      "kind": "frost_wolf",
+      "x": 28.73,
+      "y": 17.34,
+      "tier": 4.203
+    },
+    {
+      "kind": "frost_wolf",
+      "x": 30.27,
+      "y": 19.69,
+      "tier": 4.203
+    },
+    {
+      "kind": "frost_wolf",
+      "x": 27.39,
+      "y": 18.38,
+      "tier": 4.203
+    },
+    {
+      "kind": "frost_wolf",
+      "x": 37.5,
+      "y": 10.24,
+      "tier": 3.885
+    },
+    {
+      "kind": "frost_wolf",
+      "x": 36.5,
+      "y": 10.92,
+      "tier": 3.885
+    },
+    {
+      "kind": "frost_wolf",
+      "x": 35.26,
+      "y": 9.98,
+      "tier": 3.885
+    },
+    {
+      "kind": "frost_wolf",
+      "x": 35.25,
+      "y": 11.03,
+      "tier": 3.885
+    },
+    {
+      "kind": "frost_wolf",
+      "x": 35.32,
+      "y": 9.67,
+      "tier": 3.885
+    },
+    {
+      "kind": "frost_wolf",
+      "x": 50.54,
+      "y": 56.62,
       "tier": 3.971
     },
     {
@@ -9113,228 +9029,102 @@
     },
     {
       "kind": "frost_wolf",
-      "x": 52.55,
-      "y": 58.18,
+      "x": 51.82,
+      "y": 57.13,
       "tier": 3.971
     },
     {
       "kind": "frost_wolf",
-      "x": 51.23,
-      "y": 56.83,
+      "x": 52.43,
+      "y": 56.49,
       "tier": 3.971
     },
     {
       "kind": "raider",
-      "x": 37.21,
-      "y": 43.63,
-      "tier": 3.873
+      "x": 19.87,
+      "y": 4.61,
+      "tier": 3.918
     },
     {
       "kind": "raider",
-      "x": 35.52,
-      "y": 43.55,
-      "tier": 3.873
+      "x": 19.35,
+      "y": 7.19,
+      "tier": 3.918
     },
     {
       "kind": "raider",
-      "x": 35.63,
-      "y": 42.81,
-      "tier": 3.873
+      "x": 20.08,
+      "y": 6.18,
+      "tier": 3.918
     },
     {
       "kind": "raider",
-      "x": 36.41,
-      "y": 43.48,
-      "tier": 3.873
+      "x": 21.08,
+      "y": 5.4,
+      "tier": 3.918
     },
     {
       "kind": "raider",
-      "x": 36.01,
-      "y": 43.43,
-      "tier": 3.873
-    },
-    {
-      "kind": "frost_wolf",
-      "x": 39.5,
-      "y": 13.49,
-      "tier": 3.746
-    },
-    {
-      "kind": "frost_wolf",
-      "x": 39.35,
-      "y": 13.26,
-      "tier": 3.746
-    },
-    {
-      "kind": "frost_wolf",
-      "x": 38.36,
-      "y": 13.38,
-      "tier": 3.746
-    },
-    {
-      "kind": "frost_wolf",
-      "x": 41.21,
-      "y": 13.71,
-      "tier": 3.746
-    },
-    {
-      "kind": "frost_wolf",
-      "x": 37.61,
-      "y": 13.61,
-      "tier": 3.746
-    },
-    {
-      "kind": "frost_wolf",
-      "x": 20.29,
-      "y": 47.9,
-      "tier": 4.298
-    },
-    {
-      "kind": "frost_wolf",
-      "x": 20.79,
-      "y": 46.65,
-      "tier": 4.298
-    },
-    {
-      "kind": "frost_wolf",
-      "x": 19.85,
-      "y": 48.33,
-      "tier": 4.298
+      "x": 20.08,
+      "y": 5.11,
+      "tier": 3.918
     },
     {
       "kind": "raider",
-      "x": 12.48,
-      "y": 19.05,
-      "tier": 3.932
+      "x": 36.94,
+      "y": 42.64,
+      "tier": 4.088
     },
     {
       "kind": "raider",
-      "x": 9.98,
-      "y": 18.43,
-      "tier": 3.932
+      "x": 33.96,
+      "y": 41.63,
+      "tier": 4.088
     },
     {
       "kind": "raider",
-      "x": 9.91,
-      "y": 18.81,
-      "tier": 3.932
+      "x": 34.92,
+      "y": 44.59,
+      "tier": 4.088
     },
     {
       "kind": "raider",
-      "x": 9.04,
-      "y": 18.8,
-      "tier": 3.932
-    },
-    {
-      "kind": "frost_wolf",
-      "x": 34.83,
-      "y": 10.97,
-      "tier": 4.213
-    },
-    {
-      "kind": "frost_wolf",
-      "x": 37.46,
-      "y": 8.96,
-      "tier": 4.213
-    },
-    {
-      "kind": "frost_wolf",
-      "x": 36.29,
-      "y": 12.34,
-      "tier": 4.213
-    },
-    {
-      "kind": "frost_wolf",
-      "x": 34.24,
-      "y": 50.89,
-      "tier": 3.648
-    },
-    {
-      "kind": "frost_wolf",
-      "x": 34.14,
-      "y": 51.18,
-      "tier": 3.648
-    },
-    {
-      "kind": "frost_wolf",
-      "x": 33.73,
-      "y": 51.33,
-      "tier": 3.648
-    },
-    {
-      "kind": "frost_wolf",
-      "x": 36.4,
-      "y": 50.31,
-      "tier": 3.648
-    },
-    {
-      "kind": "frost_wolf",
-      "x": 34.94,
-      "y": 47.55,
-      "tier": 3.648
-    },
-    {
-      "kind": "raider",
-      "x": 14.6,
-      "y": 15.01,
-      "tier": 4.121
-    },
-    {
-      "kind": "raider",
-      "x": 14.64,
-      "y": 15.37,
-      "tier": 4.121
-    },
-    {
-      "kind": "raider",
-      "x": 16.09,
-      "y": 14.46,
-      "tier": 4.121
-    },
-    {
-      "kind": "raider",
-      "x": 17.64,
-      "y": 14.45,
-      "tier": 4.121
-    },
-    {
-      "kind": "raider",
-      "x": 18.43,
-      "y": 15.24,
-      "tier": 4.121
+      "x": 36.67,
+      "y": 42.41,
+      "tier": 4.088
     }
   ],
   "npcs": [],
   "items": [
     {
-      "kind": "apple",
-      "x": 18.5,
-      "y": 23.5
+      "kind": "bread",
+      "x": 24.5,
+      "y": 7.5
     },
     {
       "kind": "apple",
-      "x": 42.5,
-      "y": 18.5
+      "x": 51.5,
+      "y": 13.5
     },
     {
       "kind": "apple",
-      "x": 12.5,
-      "y": 48.5
+      "x": 33.5,
+      "y": 25.5
     },
     {
       "kind": "apple",
-      "x": 35.5,
-      "y": 12.5
+      "x": 32.5,
+      "y": 29.5
     },
     {
       "kind": "apple",
-      "x": 41.5,
+      "x": 13.5,
       "y": 14.5
     },
     {
-      "kind": "bread",
-      "x": 39.5,
-      "y": 10.5
+      "kind": "apple",
+      "x": 34.5,
+      "y": 35.5
     }
   ]
 }

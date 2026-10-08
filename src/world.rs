@@ -225,7 +225,7 @@ pub struct DungeonDef {
     pub act: usize,
 }
 
-pub const DUNGEONS: [DungeonDef; 26] = [
+pub const DUNGEONS: [DungeonDef; 27] = [
     DungeonDef {
         name: "THE BONE CRYPT",
         floors: 2,
@@ -489,6 +489,16 @@ pub const DUNGEONS: [DungeonDef; 26] = [
         entrance: (0, 0),
         act: 0,
     },
+    DungeonDef {
+        name: "THE ICEBOUND LONGSHIP",
+        floors: 2,
+        theme: Theme::Wreck,
+        boss: Kind::Hrolf,
+        monsters: &[Kind::Raider, Kind::IceWraith, Kind::FrostWolf],
+        tier: 4.4,
+        entrance: (0, 0),
+        act: 1,
+    },
 ];
 
 /// The Ashen Sanctum (needs all three seals).
@@ -507,6 +517,8 @@ pub const ZENITH: usize = 23;
 pub const CHARNEL: usize = 24;
 /// The Ember Wyrm's cave in Emberpeak Pass (dragon.rs), off the Cinder Hills.
 pub const WYRM: usize = 25;
+/// Act 2's optional dungeon (side.rs): Hrolf Ice-Beard's longship, frozen into the Raiders' Fjord.
+pub const LONGSHIP: usize = 26;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum PortalKind {
@@ -644,6 +656,7 @@ impl PropKind {
             PropKind::Entrance(22) => "ent_wheel",
             PropKind::Entrance(CHARNEL) => "ent_charnel",
             PropKind::Entrance(WYRM) => "ent_wyrm",
+            PropKind::Entrance(LONGSHIP) => "ent_longship",
             PropKind::Entrance(_) => "ent_zenith",
             PropKind::Shrine(a) => crate::side::shrine_art(a),
             PropKind::StairsDown => "stairs_down",

@@ -9,6 +9,13 @@ pub enum Role {
     Villager(u8),
     /// Someone held by monsters out in the wilds (a random errand, errands.rs).
     Captive,
+    /// Set pieces' people (features.rs): villagers in the burning barn, the goblin fence, the Jarl, the thawed
+    /// merchant, the yeti cub.
+    Rescue(u8),
+    GoblinTrader,
+    Jarl,
+    FrozenMerchant,
+    YetiCub,
     // ---- Kaldholm (Act 2) ----
     /// Captain Brenna: the Act 2 story.
     Captain,
@@ -116,7 +123,7 @@ pub struct Quest {
     /// Sun-shards from Vael, the Tempest Drake and the Ophan Prime.
     pub shards: [bool; 3],
     /// Side quests (side.rs SIDES): 0 not given, 1 given, 2 done, 3 rewarded. Per difficulty, like D2.
-    pub side: [u8; 18],
+    pub side: [u8; 32],
 }
 
 pub const DIFFICULTIES: [&str; 3] = ["NORMAL", "NIGHTMARE", "HELL"];
@@ -317,6 +324,10 @@ pub enum Act {
     Ember(u8),
     /// Talk about a side quest (side.rs SIDES index).
     Side(u8),
+    /// Buy a trader's item (features.rs).
+    BuyStock(u8),
+    /// Challenge Jarl Hrogar (features.rs).
+    Duel,
 }
 
 pub struct Dialog {
@@ -784,6 +795,7 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
             ];
             Dialog::new(if k == 2 { "FISHERWIFE" } else { "FISHERMAN" }, &[lines[k as usize % 3]])
         }
+        Role::Rescue(_) | Role::GoblinTrader | Role::Jarl | Role::FrozenMerchant | Role::YetiCub => Dialog::new("", &["..."]),
         Role::Captive => Dialog::new("CAPTIVE", &["PLEASE... THEY'RE ALL AROUND ME. KILL THEM AND I CAN RUN FOR IT!"]),
         Role::Guard => {
             let line = if q.stage == 0 {

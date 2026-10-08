@@ -110,8 +110,11 @@ impl Shrine {
 }
 
 /// The shrine art of an act (one style per act; later acts use the ash shrine until theirs exists).
-pub fn shrine_art(_act: u8) -> &'static str {
-    "shrine_ash"
+pub fn shrine_art(act: u8) -> &'static str {
+    match act {
+        1 => "shrine_frost",
+        _ => "shrine_ash",
+    }
 }
 
 // ------------------------------------------------------------------ super uniques
@@ -177,7 +180,51 @@ pub const SUPERS: &[SuperDef] = &[
         page: Some(2),
         camp: None,
     },
+    // ---- Act 2: the Frostmarch ----
+    SuperDef {
+        name: "GRIMFANG THE WHITE",
+        kind: Kind::FrostWolf,
+        home: LevelId::Area(1, 2),
+        spot: (0, 0),
+        mods: M_FAST | M_STRONG,
+        gang: (Kind::FrostWolf, 4),
+        tint: 0xf0f8ff,
+        line: "(A HOWL THAT FREEZES YOUR BLOOD)",
+        unique: "grimfang",
+        page: Some(6),
+        camp: None,
+    },
+    SuperDef {
+        name: "THE FROZEN BRIDE",
+        kind: Kind::IceWraith,
+        home: LevelId::Area(1, 3),
+        spot: (0, 0),
+        mods: crate::mobs::M_MANABURN | M_FAST,
+        gang: (Kind::IceWraith, 2),
+        tint: 0xb0d8ff,
+        line: "WHERE IS MY GROOM? WHERE IS HE?",
+        unique: "frozenbride",
+        page: Some(7),
+        camp: None,
+    },
+    // (The Jarl isn't placed with the others: features.rs brings him out of his hall.)
+    SuperDef {
+        name: "JARL HROGAR",
+        kind: Kind::Raider,
+        home: LevelId::Area(1, 99),
+        spot: (0, 0),
+        mods: M_STRONG | M_STONE,
+        gang: (Kind::Raider, 0),
+        tint: 0xd09060,
+        line: "COME ON, THEN!",
+        unique: "jarl",
+        page: Some(8),
+        camp: None,
+    },
 ];
+
+/// Jarl Hrogar's index in SUPERS (features.rs).
+pub const JARL: usize = 5;
 
 /// Super uniques are drawn this much bigger than their kind.
 pub const SUPER_SCALE: f32 = 1.25;
@@ -185,7 +232,7 @@ pub const SUPER_SCALE: f32 = 1.25;
 // ------------------------------------------------------------------ side quests
 
 #[derive(Clone, Copy, PartialEq, Debug)]
-#[allow(dead_code)] // Respec and Gold are for the later acts' quests (phases 2-3).
+#[allow(dead_code)] // Gold is for the later acts' quests.
 pub enum Reward {
     SkillPoint,
     /// Permanent extra life.
@@ -194,6 +241,8 @@ pub enum Reward {
     Rare(i32),
     /// Permanent -5% damage taken (stacks).
     Ward,
+    /// A socket punched into your weapon (or armour, if the weapon is full).
+    Socket,
     Respec,
     Gold(i32),
 }
@@ -205,6 +254,7 @@ impl Reward {
             Reward::Life(n) => format!("+{n} LIFE, FOR GOOD"),
             Reward::Rare(g) => format!("A RARE ITEM AND {g} GOLD"),
             Reward::Ward => "-5% DAMAGE TAKEN, FOR GOOD".into(),
+            Reward::Socket => "A SOCKET IN YOUR GEAR".into(),
             Reward::Respec => "A FREE RESPEC".into(),
             Reward::Gold(g) => format!("{g} GOLD"),
         }
@@ -220,6 +270,8 @@ pub enum Goal {
     Super(usize),
     /// Get out of the Ember Wyrm's cave with a sack of its gold (dragon.rs).
     Heist,
+    /// Thaw Brenna's three frozen scouts (features.rs).
+    Scouts,
 }
 
 pub struct SideDef {
@@ -311,6 +363,49 @@ pub const SIDES: &[SideDef] = &[
         reward: Reward::Ward,
         todo: "STEAL 500 GOLD FROM THE EMBER WYRM AND GET OUT (EMBERPEAK PASS, NORTH OF THE CINDER HILLS)",
     },
+    // ---- Act 2 ----
+    SideDef {
+        name: "SIGURD'S AXE",
+        act: 1,
+        giver: Role::Trader,
+        giver_name: "OLD SIGURD",
+        ask: "ASK ABOUT THE SHIP IN THE ICE",
+        offer: &[
+            "MY FATHER SAILED WITH HROLF ICE-BEARD, BACK WHEN HROLF WAS A MAN. THE WINTER TOOK THEIR LONGSHIP IN THE FJORD, AND HROLF WOULDN'T LET IT GO. HE'S STILL ABOARD, THEY SAY. AND MY FATHER'S AXE WITH HIM.",
+            "THE ICEBOUND LONGSHIP, IN THE RAIDERS' FJORD EAST OF THE FROZEN SHORE. PUT HROLF DOWN AND I'LL SHOW YOU WHAT AN OLD SMITH CAN STILL DO.",
+        ],
+        remind: "THE LONGSHIP'S FROZEN IN THE RAIDERS' FJORD, EAST OFF THE FROZEN SHORE. HROLF WAITS BELOW DECKS.",
+        thanks: &["HROLF'S DEAD, AND THE AXE IS HOME. GIVE ME YOUR GEAR A MOMENT... THERE. A SOCKET, CUT CLEAN. MY FATHER WOULD HAVE LIKED YOU."],
+        goal: Goal::Boss(Kind::Hrolf),
+        reward: Reward::Socket,
+        todo: "SLAY HROLF ICE-BEARD IN THE ICEBOUND LONGSHIP (THE RAIDERS' FJORD)",
+    },
+    SideDef {
+        name: "THE LOST PATROL",
+        act: 1,
+        giver: Role::Captain,
+        giver_name: "CAPTAIN BRENNA",
+        ask: "ASK ABOUT HER MISSING SCOUTS",
+        offer: &["THREE OF MY SCOUTS NEVER CAME BACK. A HUNTER SAW ONE STANDING STILL AS A STATUE, ICE ALL OVER HIM, WITH WRAITHS CIRCLING. THE WRAITHS KEEP THEM FROZEN. BREAK THE ICE AND BRING MY PEOPLE HOME. ONE ON THE FROZEN SHORE, ONE IN THE RIME WOODS, ONE OUT ON THE WHITE WASTE."],
+        remind: "THE FROZEN SHORE, THE RIME WOODS, THE WHITE WASTE. LOOK FOR ICE WITH A MAN INSIDE IT, AND WRAITHS AROUND IT.",
+        thanks: &["ALL THREE, HOME AND WARM. TAKE THIS: THE CAPTAIN'S CLOAK-PIN. IT'S TURNED MORE THAN ONE BLADE."],
+        goal: Goal::Scouts,
+        reward: Reward::Ward,
+        todo: "THAW BRENNA'S THREE SCOUTS (FROZEN SHORE, RIME WOODS, WHITE WASTE)",
+    },
+    SideDef {
+        name: "THE FROZEN BRIDE",
+        act: 1,
+        giver: Role::Seer,
+        giver_name: "MOTHER YLVA",
+        ask: "ASK ABOUT THE WEEPING IN THE WOODS",
+        offer: &["A BRIDE WALKED INTO THE RIME WOODS ON HER WEDDING NIGHT, LOOKING FOR A GROOM WHO NEVER CAME. THE COLD KEPT HER. NOW SHE WALKS THERE STILL, AND ANYONE SHE TOUCHES FORGETS. LAY HER TO REST, AND I'LL HELP YOU FORGET SOMETHING OF YOUR OWN."],
+        remind: "THE RIME WOODS. LISTEN FOR THE WEEPING.",
+        thanks: &["SHE'S AT PEACE. NOW, SIT. CLOSE YOUR EYES. LET YOUR SKILLS RUN OUT OF YOU LIKE MELTWATER... AND LEARN THEM AGAIN AS YOU WILL."],
+        goal: Goal::Super(4),
+        reward: Reward::Respec,
+        todo: "LAY THE FROZEN BRIDE TO REST (THE RIME WOODS)",
+    },
 ];
 
 // ------------------------------------------------------------------ lore
@@ -322,6 +417,11 @@ pub const LORE: &[(u8, &str, &str)] = &[
     (0, "THE SHEPHERD'S PRAYER", "LORD OF THE GREEN FIELDS, KEEP MY FLOCK FROM THE ASH. I WILL FEED THEM. I WILL ALWAYS FEED THEM. WHATEVER THEY HUNGER FOR."),
     (0, "THE DROWNING", "THEY TIED STONES TO HER FEET AND DROPPED HER IN THE WELL. SHE DID NOT SCREAM. SHE LAUGHED, AND SAID SHE WOULD BE THIRSTY WHEN SHE CAME BACK."),
     (0, "MAREN'S LETTER", "HOLLOWMERE WAS BUILT ON A BURIAL GROUND. EVERY ELDER KNOWS IT. I PRAY THE DEAD UNDER US STAY QUIET, BUT THE ASH HAS WOKEN EVERYTHING ELSE."),
+    (1, "THE RAIDER'S SAGA", "WE SAILED WITH HROLF WHEN THE SEA STILL MOVED. THEN THE COLD CAME DOWN FROM THE NORTH ALL AT ONCE, AND THE FJORD BECAME A FLOOR. HROLF SAID WE WOULD WAIT FOR THE THAW. THAT WAS FORTY WINTERS AGO."),
+    (1, "GRIMFANG", "THE WHITE WOLF TOOK MY DOGS, THEN MY SHEEP, THEN MY BROTHER. IT DOES NOT HUNT TO EAT. IT HUNTS TO TEACH THE PACK."),
+    (1, "THE BRIDE'S VEIL", "SHE WORE HER MOTHER'S VEIL INTO THE WOODS. THEY FOUND IT ON A BRANCH IN SPRING, FROZEN STIFF, AND HER FOOTPRINTS GOING ON INTO THE TREES. JUST HERS."),
+    (1, "THE JARL'S BOAST", "HROGAR CLAIMS HE TOOK HIS HORN FROM A FROST GIANT'S CORPSE. HIS MEN SAY HE WON IT AT DICE. THE GIANT IS NOT AVAILABLE FOR COMMENT."),
+    (1, "THE LONGSHIP'S LOG", "DAY 3 OF THE ICE. THE CAPTAIN WILL NOT LEAVE THE SHIP. DAY 40. THE CAPTAIN'S BEARD HAS FROZEN TO HIS CHEST. HE LAUGHED. DAY ???. THE CAPTAIN DOES NOT SLEEP NOW. NONE OF US DO."),
 ];
 
 pub fn pages_of(act: usize) -> impl Iterator<Item = usize> {
@@ -452,7 +552,7 @@ pub fn place(lv: &mut Level, seed: u64) {
 }
 
 /// The optional dungeons: (dungeon index, the lore page on its first floor).
-pub const OPTIONAL: &[(usize, u8)] = &[(crate::world::CHARNEL, 3)];
+pub const OPTIONAL: &[(usize, u8)] = &[(crate::world::CHARNEL, 3), (crate::world::LONGSHIP, 9)];
 
 // ------------------------------------------------------------------ the game side
 
@@ -843,6 +943,17 @@ impl Game {
                 }
             }
             Reward::Ward => self.p.ward = (self.p.ward + 1).min(6),
+            Reward::Socket => {
+                // The weapon first, then the armour.
+                for slot in 0..self.p.gear.worn.len() {
+                    if let Some(it) = self.p.gear.worn[slot].as_mut() {
+                        if it.sockets < crate::items::max_sockets(it.slot()) && matches!(it.slot(), crate::items::Slot::Weapon | crate::items::Slot::Armor) {
+                            it.sockets += 1;
+                            break;
+                        }
+                    }
+                }
+            }
             Reward::Respec => {
                 self.p.skills.respec();
             }

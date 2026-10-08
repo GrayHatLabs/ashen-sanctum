@@ -162,6 +162,8 @@ pub fn to_text(g: &Game) -> String {
     s += &format!("side={side}\npages={}\nsupers={}\nshrines_used={}\nward={}\n", p.pages, p.supers, p.shrines_used, p.ward);
     let done: Vec<String> = g.errands_done.iter().map(|(l, k)| format!("{}/{}", crate::levels::id_string(*l), crate::errands::KINDS.iter().position(|x| x == k).unwrap_or(0))).collect();
     s += &format!("errands={}\n", done.join(","));
+    let f = &g.feats;
+    s += &format!("feats={},{},{},{},{},{}\n", f.barn_over as u8, f.market_hostile as u8, f.jarl, f.merchant_free as u8, f.cub, f.scouts);
     s += &format!("act={}\n", g.level.act());
     s += &p.skills.save_text();
     s += &format!("waypoints={}\n", g.waypoints.iter().map(|w| crate::levels::id_string(*w)).collect::<Vec<_>>().join(","));
@@ -229,7 +231,7 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
     }
     g.p.ember_points = num("ember_points").unwrap_or(0.0) as u32;
     if let Some(s) = get("side") {
-        for (i, c) in s.chars().take(18).enumerate() {
+        for (i, c) in s.chars().take(32).enumerate() {
             g.quest.side[i] = c.to_digit(10).unwrap_or(0).min(3) as u8;
         }
     }
@@ -237,6 +239,17 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
     g.p.supers = get("supers").and_then(|v| v.parse().ok()).unwrap_or(0);
     g.p.shrines_used = num("shrines_used").unwrap_or(0.0) as u32;
     g.p.ward = (num("ward").unwrap_or(0.0) as u8).min(6);
+    if let Some(v) = get("feats") {
+        let n: Vec<u8> = v.split(',').filter_map(|x| x.parse().ok()).collect();
+        if n.len() >= 6 {
+            g.feats.barn_over = n[0] != 0;
+            g.feats.market_hostile = n[1] != 0;
+            g.feats.jarl = n[2].min(3);
+            g.feats.merchant_free = n[3] != 0;
+            g.feats.cub = n[4].min(2);
+            g.feats.scouts = n[5].min(3);
+        }
+    }
     if let Some(v) = get("errands") {
         for e in v.split(',').filter(|e| !e.is_empty()) {
             if let Some((l, k)) = e.rsplit_once('/') {

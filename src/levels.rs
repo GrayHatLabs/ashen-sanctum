@@ -65,7 +65,7 @@ pub struct LevelFile {
 
 // ---------------------------------------------------------------- names
 
-pub const DUNGEON_SLUGS: [&str; 26] = [
+pub const DUNGEON_SLUGS: [&str; 27] = [
     "bone_crypt",
     "rotting_warrens",
     "hexed_catacombs",
@@ -92,6 +92,7 @@ pub const DUNGEON_SLUGS: [&str; 26] = [
     "true_sanctum",
     "charnel_well",
     "wyrms_hoard",
+    "icebound_longship",
 ];
 
 /// File name (without .json) for a level.
@@ -209,7 +210,7 @@ const THEMES: [(&str, Theme); 30] = [
     ("zenith", Theme::Zenith),
 ];
 
-const PROPS: [PropKind; 85] = [
+const PROPS: [PropKind; 87] = [
     PropKind::TreeOak,
     PropKind::TreePine,
     PropKind::TreeDead,
@@ -294,10 +295,12 @@ const PROPS: [PropKind; 85] = [
     PropKind::Entrance(23),
     PropKind::Entrance(24),
     PropKind::Entrance(25),
+    PropKind::Entrance(26),
+    PropKind::Shrine(1),
     PropKind::Shrine(0),
 ];
 
-const KINDS: [Kind; 70] = [
+const KINDS: [Kind; 73] = [
     Kind::Zombie,
     Kind::Skeleton,
     Kind::Wolf,
@@ -368,6 +371,9 @@ const KINDS: [Kind; 70] = [
     Kind::Hoarder,
     Kind::FireWyrm,
     Kind::Totem,
+    Kind::AshElemental,
+    Kind::IceBlock,
+    Kind::Hrolf,
 ];
 
 fn portal_name(k: PortalKind) -> String {
@@ -805,7 +811,7 @@ mod tests {
             assert_eq!(parse_id(&id_string(id)), Some(id));
             assert_eq!(id_from_name(&format!("levels/{}.json", file_name(id))), Some(id));
         }
-        assert_eq!(parse_id("dungeon:26:0"), None);
+        assert_eq!(parse_id("dungeon:27:0"), None);
     }
 
     #[test]

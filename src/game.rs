@@ -679,6 +679,9 @@ pub struct Game {
     /// Random errands (errands.rs): rolled per act as you get there; the ones done this difficulty (saved).
     pub(crate) errands: Vec<crate::errands::Errand>,
     pub(crate) errands_done: Vec<(LevelId, crate::errands::ErrandKind)>,
+    /// Set pieces (features.rs), and casts seen on the thin ice.
+    pub(crate) feats: crate::features::Feats,
+    pub(crate) ice_casts: u32,
     pub(crate) tide: f32,
     pub(crate) blind_t: f32,
     pub(crate) dark_t: f32,
@@ -810,6 +813,8 @@ impl Game {
             wyrm_casts: 0,
             errands: vec![],
             errands_done: vec![],
+            feats: Default::default(),
+            ice_casts: 0,
             tide: 0.0,
             blind_t: 0.0,
             dark_t: 0.0,
@@ -1172,7 +1177,7 @@ impl Game {
             pearls: [done(4); 3],
             stage6: 0,
             shards: [false; 3],
-            side: [0; 18],
+            side: [0; 32],
         };
         self.waypoints = (0..=act).map(LevelId::land).collect();
         self.go_to(LevelId::land(act), None);
@@ -1192,11 +1197,12 @@ impl Game {
     /// Nightmare / Hell: the world is rebuilt harder, the quests start over, your hero carries on.
     pub(crate) fn next_difficulty(&mut self) {
         let d = (self.quest.difficulty + 1).min(2);
-        self.quest = Quest { stage: 1, seals: [false; 3], difficulty: d, stage2: 0, runes: [false; 3], stage3: 0, sigils: [false; 3], stage4: 0, keys: [false; 3], stage5: 0, pearls: [false; 3], stage6: 0, shards: [false; 3], side: [0; 18] };
+        self.quest = Quest { stage: 1, seals: [false; 3], difficulty: d, stage2: 0, runes: [false; 3], stage3: 0, sigils: [false; 3], stage4: 0, keys: [false; 3], stage5: 0, pearls: [false; 3], stage6: 0, shards: [false; 3], side: [0; 32] };
         self.parked.clear();
         // New tasks on the new difficulty.
         self.errands.clear();
         self.errands_done.clear();
+        self.feats = Default::default();
         self.waypoints = vec![LevelId::Overworld];
         self.shop_stale = true;
         let lv = world::build_at(LevelId::Overworld, self.world_seed, d);
@@ -1310,8 +1316,9 @@ impl Game {
         let (x, y) = spot.unwrap_or(self.start);
         self.p.x = x;
         self.p.y = y;
-        // This area's random errand starts as you arrive.
+        // This area's random errand and its set pieces start as you arrive.
         self.errand_enter();
+        self.features_enter();
         if let Some(mut w) = wolf {
             let (wx, wy) = if self.d.blocked(x + 1.0, y, 0.35) { (x, y) } else { (x + 1.0, y) };
             w.x = wx;
@@ -1351,7 +1358,7 @@ impl Game {
         self.mobs
             .iter()
             // Not your own allies (wolves, thralls, rats...), nor crates and barrels.
-            .filter(|m| m.alive() && m.charm <= 0.0 && !crate::breakables::is_prop(m.kind))
+            .filter(|m| m.alive() && m.charm <= 0.0 && m.neutral == 0 && !crate::breakables::is_prop(m.kind))
             .map(|m| (m.x, m.y, ((m.x - self.p.x).powi(2) + (m.y - self.p.y).powi(2)).sqrt()))
             .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap())
             .map(|(x, y, d)| (x, y, d, self.d.los(self.p.x, self.p.y, x, y)))
@@ -1732,6 +1739,7 @@ impl Game {
         self.update_side();
         self.update_wyrm();
         self.update_errands();
+        self.update_features();
         self.update_sky();
         self.update_rift();
         self.second_wind_t = (self.second_wind_t - DT).max(0.0);
@@ -1978,7 +1986,8 @@ impl Game {
 
     pub(crate) fn open_dialog(&mut self, i: usize) {
         let role = self.npcs[i].role;
-        let mut d = self.endgame_dialog(role).unwrap_or_else(|| story::talk(role, &self.quest));
+        let fd = self.feature_dialog(role);
+        let mut d = fd.or_else(|| self.endgame_dialog(role)).unwrap_or_else(|| story::talk(role, &self.quest));
         if d.heals {
             // Aldric can also make you forget your skills, for a price.
             let price = 50 * self.p.clvl as i32;
@@ -2094,6 +2103,8 @@ impl Game {
                     self.save_due = true;
                 }
             }
+            Some(Act::BuyStock(k)) => self.buy_stock(k as usize),
+            Some(Act::Duel) => self.start_duel(),
             Some(Act::Side(q)) => {
                 // Leaving the story conversation still counts as having heard it.
                 if let Some(stage) = self.dialog.as_ref().and_then(|d| d.advance_to) {
@@ -2368,7 +2379,8 @@ impl Game {
                 return;
             }
         }
-        if in_town && (p_cast || inp.confirm) {
+        // In town the cast button talks too; out in the wilds, confirm talks to someone close (set pieces).
+        if in_town && (p_cast || inp.confirm) || !in_town && inp.confirm && self.nearest_npc(TALK_RANGE).is_some() {
             if let Some(i) = self.nearest_npc(TALK_RANGE) {
                 self.open_dialog(i);
                 return;
@@ -2818,7 +2830,7 @@ impl Game {
         self.mobs
             .iter()
             .enumerate()
-            .filter(|(_, m)| m.alive() && m.charm <= 0.0)
+            .filter(|(_, m)| m.alive() && m.charm <= 0.0 && m.neutral == 0)
             .map(|(i, m)| (i, (m.x - self.p.x).powi(2) + (m.y - self.p.y).powi(2)))
             .filter(|&(i, d2)| d2 < range * range && self.d.los(self.p.x, self.p.y, self.mobs[i].x, self.mobs[i].y))
             .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
@@ -3178,6 +3190,10 @@ impl Game {
         self.side_kill(i);
         let tag = self.mobs[i].errand;
         self.errand_kill(kind, tag);
+        if kind == Kind::IceBlock {
+            let form = self.mobs[i].form;
+            self.ice_broken(form, x, y);
+        }
         if shatter {
             self.shatter(x, y);
         }

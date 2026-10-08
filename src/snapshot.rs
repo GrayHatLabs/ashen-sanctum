@@ -1284,6 +1284,79 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             }
         }
     }
+    // Set pieces (features.rs): the burning barn, the goblin market, an ash storm, the thin ice, the Jarl's
+    // longhall, the frozen merchant, the yeti cub; and Act 2's frost shrine.
+    {
+        let mut g = Game::new(7, h);
+        g.p.base_hp = 9999.0;
+        g.p.recalc();
+        g.p.hp = 9999.0;
+        let near_npc = |g: &mut Game, role: Role, dx: f32, dy: f32| {
+            if let Some((x, y)) = g.npcs.iter().find(|n| n.role == role).map(|n| (n.x, n.y)) {
+                (g.p.x, g.p.y) = (x + dx, y + dy);
+                if g.d.blocked(g.p.x, g.p.y, 0.4) {
+                    g.debug_place_near(x, y, 3.0);
+                }
+            }
+        };
+        for (id, role, name) in [
+            (crate::features::BARN, Role::Rescue(0), "feat_barn"),
+            (crate::features::MARKET, Role::GoblinTrader, "feat_market"),
+            (crate::features::HALL, Role::Jarl, "feat_hall"),
+            (crate::features::CUB, Role::YetiCub, "feat_cub"),
+        ] {
+            g.debug_goto(id);
+            g.banner_t = 0.0;
+            g.event_cd = 9999.0;
+            near_npc(&mut g, role, 3.0, 2.5);
+            g.mobs.retain(|m| m.neutral > 0 || (m.x - g.p.x).powi(2) + (m.y - g.p.y).powi(2) > 100.0);
+            g.message = None;
+            idle(&mut g, 40);
+            save(&mut g, scr, name);
+        }
+        g.debug_goto(crate::features::MERCHANT);
+        g.banner_t = 0.0;
+        g.event_cd = 9999.0;
+        if let Some((x, y)) = g.mobs.iter().find(|m| m.kind == crate::mobs::Kind::IceBlock).map(|m| (m.x, m.y)) {
+            g.mobs.retain(|m| m.kind == crate::mobs::Kind::IceBlock || (m.x - x).powi(2) + (m.y - y).powi(2) > 100.0);
+            g.debug_place_near(x, y, 3.0);
+            g.message = None;
+            idle(&mut g, 20);
+            save(&mut g, scr, "feat_merchant");
+        }
+        g.debug_goto(crate::features::LAKE);
+        g.banner_t = 0.0;
+        g.event_cd = 9999.0;
+        let lake = g.feats.ice.lake.iter().position(|l| *l);
+        if let Some(i) = lake {
+            let w = g.feats.ice.w;
+            let _ = i;
+            let tiles: Vec<usize> = (0..g.feats.ice.lake.len()).filter(|&k| g.feats.ice.lake[k]).collect();
+            let n = tiles.len() as f32;
+            let (x, y) = (tiles.iter().map(|&k| (k as i32 % w) as f32).sum::<f32>() / n + 0.5, tiles.iter().map(|&k| (k as i32 / w) as f32).sum::<f32>() / n + 0.5);
+            g.mobs.retain(|m| (m.x - x).powi(2) + (m.y - y).powi(2) > 64.0);
+            (g.p.x, g.p.y) = (x, y);
+            for k in 0..g.feats.ice.stress.len() {
+                if g.feats.ice.lake[k] {
+                    let (tx, ty) = ((k as i32 % w) as f32, (k as i32 / w) as f32);
+                    let d = ((tx - x).powi(2) + (ty - y).powi(2)).sqrt();
+                    g.feats.ice.stress[k] = (0.95 - d * 0.1).max(0.0);
+                    if d < 1.5 && (tx as i32 + ty as i32) % 3 == 0 && d > 0.9 {
+                        g.feats.ice.holes.push((tx as i32, ty as i32));
+                    }
+                }
+            }
+            g.message = None;
+            idle(&mut g, 10);
+            save(&mut g, scr, "feat_ice");
+        }
+        g.debug_goto(LevelId::Area(0, 1));
+        g.banner_t = 0.0;
+        g.event_cd = 9999.0;
+        g.start_storm();
+        idle(&mut g, 60);
+        save(&mut g, scr, "feat_storm");
+    }
     // Side content (side.rs): a shrine and its blessing, Skrat One-Ear and his gang, the Charnel Well, the
     // Well-Witch, a lore page and the journal on the map.
     {
@@ -1337,7 +1410,9 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         g.dialog = None;
         g.p.pages |= 0b1011;
         g.p.supers |= 0b001;
-        g.quest.side = [3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        g.quest.side = [0; 32];
+        g.quest.side[0] = 3;
+        g.quest.side[1] = 1;
         g.message = None;
         g.show_map = true;
         idle(&mut g, 2);

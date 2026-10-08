@@ -260,7 +260,7 @@ pub const AREAS: &[AreaDef] = &[
         tier: 4.0,
         size: (64, 64),
         exits: &[(Side::W, 0.5, 1)],
-        doors: &[],
+        doors: &[(crate::world::LONGSHIP, (44, 16))],
         pass: None,
         monsters: &[Kind::Raider, Kind::FrostWolf],
         packs: 8,

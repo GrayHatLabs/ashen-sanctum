@@ -511,6 +511,9 @@ impl Art {
             // ---- side content ----
             "boss_wellwitch" => ("boss_witch", 1.0, 0x70b050, 0.55),
             "hoarder" => ("goblin", 0.85, 0xffd040, 0.45),
+            "yeti_cub" => ("yeti", 0.55, 0xffffff, 0.15),
+            "boss_hrolf" => ("raider", 1.5, 0xc0e8ff, 0.4),
+            "ash_elemental" => ("ice_wraith", 1.05, 0x4a3c34, 0.75),
             "boss_angler" => ("yeti", 1.4, 0x102838, 0.7),
             "boss_leviathan" => ("boss_dragon", 1.3, 0x105060, 0.6),
             // ---- Act 6 stand-ins (until the PixelLab art is approved) ----

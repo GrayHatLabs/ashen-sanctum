@@ -111,6 +111,12 @@ pub enum Kind {
     FireWyrm,
     /// A bone totem raising the dead (a random errand, errands.rs): it doesn't move or fight.
     Totem,
+    /// Ash elementals that roam in an ash storm (features.rs).
+    AshElemental,
+    /// A block of ice with someone frozen inside (features.rs: the frozen merchant, Brenna's scouts).
+    IceBlock,
+    /// Hrolf Ice-Beard, raider-king of the Icebound Longship (Act 2's optional dungeon).
+    Hrolf,
     // ---- breakables (breakables.rs): no mind, smashed by any hit; the act is in `Mob::form` ----
     Crate,
     Barrel,
@@ -300,6 +306,16 @@ pub fn def(k: Kind) -> Def {
             reach: 2.2,
             boss: true,
             ..d("boss_firewyrm", "VAURATH THE EMBER WYRM", 9000.0, 2.6, (45.0, 65.0), 0.8, 1.6, 9000.0)
+        },
+        Kind::AshElemental => Def { r: 0.34, ..d("ash_elemental", "ASH ELEMENTAL", 38.0, 2.6, (5.0, 9.0), 0.45, 1.2, 28.0) },
+        Kind::IceBlock => Def { r: 0.45, reach: 0.0, cold: true, ..d("ice_block", "BLOCK OF ICE", 150.0, 0.0, (0.0, 0.0), 9.0, 99.0, 20.0) },
+        Kind::Hrolf => Def {
+            r: 0.65,
+            reach: 1.5,
+            boss: true,
+            cold: true,
+            chills: true,
+            ..d("boss_hrolf", "HROLF ICE-BEARD", 520.0, 1.8, (18.0, 26.0), 0.7, 1.6, 900.0)
         },
         Kind::Totem => Def { r: 0.4, reach: 0.0, ..d("totem", "BONE TOTEM", 120.0, 0.0, (0.0, 0.0), 9.0, 99.0, 40.0) },
         Kind::Hoarder => Def { r: 0.26, ..d("hoarder", "GOLD-THIEF", 60.0, 3.3, (1.0, 2.0), 0.4, 1.5, 40.0) },
@@ -526,6 +542,8 @@ pub struct Mob {
     pub asleep: bool,
     /// A random errand's own (errands.rs: 1 its target, 2 a guard, 3 a siege wave).
     pub errand: u8,
+    /// Neutral (features.rs): a group that stands by until one of them is hurt (0: hostile).
+    pub neutral: u8,
 }
 
 impl Mob {
@@ -599,6 +617,7 @@ impl Mob {
             shouted: false,
             asleep: false,
             errand: 0,
+            neutral: 0,
         }
     }
 
@@ -815,6 +834,11 @@ impl Game {
             m.broken = (m.broken - DT).max(0.0);
             if m.stun > 0.0 {
                 m.stun -= DT;
+                m.moving = false;
+                continue;
+            }
+            // Neutral ones stand by (features.rs turns the group on you when one is hurt).
+            if m.neutral > 0 {
                 m.moving = false;
                 continue;
             }
@@ -1451,6 +1475,28 @@ fn boss_specials(
                     fired: false,
                     kind: HazardKind::Poison,
                 });
+            }
+        }
+        Kind::Hrolf => {
+            // A ground slam with his frozen axe, and ice shards shaken from the frozen rigging.
+            if m.special <= 0.0 && dist < 3.0 {
+                m.special = if m.enraged { 3.5 } else { 5.0 };
+                hazards.push(Hazard { x: m.x, y: m.y, r: 2.4, warn: 0.9, live: 0.0, dps: 0.0, burst: 18.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Quake });
+                texts.push((m.x, m.y, "FOR THE JARLS OF OLD!"));
+            }
+            if m.special2 <= 0.0 && dist < 10.0 {
+                m.special2 = if m.enraged { 4.5 } else { 6.5 };
+                for _ in 0..4 {
+                    let (a, rr) = (rng.f() * std::f32::consts::TAU, rng.rf(0.0, 2.4));
+                    let (x, y) = (px + a.cos() * rr, py + a.sin() * rr);
+                    if !d.blocked(x, y, 0.2) {
+                        hazards.push(Hazard { x, y, r: 0.9, warn: 1.1, live: 0.0, dps: 0.0, burst: 13.0 * m.tier.powf(0.8), t: 0.0, fired: false, kind: HazardKind::Icicle });
+                    }
+                }
+            }
+            if m.enraged && summons < 4 && rng.chance(DT / 9.0) {
+                around(rng, 2, Kind::Raider, m.tier, spawns);
+                texts.push((m.x, m.y, "TO ME, MY CREW!"));
             }
         }
         Kind::FireWyrm => {

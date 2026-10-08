@@ -230,6 +230,25 @@ Random encounters on overlands and in dungeons. At most one is active at a time.
   - Each one pays gold, XP and an item on the spot (bounties, sieges and treasure always give a rare).
   - They show in the quest log and in the journal under AREA TASKS.
 
+## 2c. The user's picks (2026-10-08): extras per act, built act by act with a review after each
+
+The user took every idea offered and added two of their own (marked *).
+
+| Act | Extras |
+|---|---|
+| 1 | **Burning Barn**: a burning farm in the Barrow Fields; pull the villagers out before the roof falls. **Goblin Market**: a neutral goblin camp in Skrat's Gulch that trades stolen goods, until you attack. **Ash Storm**: random weather; you can barely see, and ash elementals roam until it passes. |
+| 2 | **Thin Ice**: a frozen lake that cracks under fighting and heavy feet; fall in and you're hurt and chilled, monsters drown. **Raider Longhall**: the mead-chief's hall in the Raiders' Fjord; steal his war horn, or challenge him to a duel. **Frozen Merchant**: thaw him (fire is best) and he sells rare goods once. **Yeti Cubs**: lead a lost cub home and that area's yetis stop hunting you. |
+| 3 | **Witch of the Bog**: deals with an upside and a downside. **Wolf Moon**: werewolf packs, double pelt bounty. **Haunted Manor**: three keepsakes lay a ghost to rest. **Vardak's Brides**: three brides, a unique ring if all fall before the Count. *A ghost that haunts you: chase it down and lay it to rest in a random tomb. |
+| 4 | **Broken Automaton**: five gears for a clockwork companion. **Unlawful Court**: fight, bribe or argue. **Scrapyard Lottery**: scrap piles, and a junk golem. **Timeless Vault**: opens only while time is stopped. |
+| 5 | **Low Tide Treasure**: wrecks and chests at low tide. **Siren's Song**: a choir in the Sunken Galleon. **Kraken's Arm**: a tentacle in the Bone Reef. **Message in a Bottle**: a chain of bottles to a pirate's cache. |
+| 6 | **Island Hopping**: islands that crumble behind you. **Storm Chase**: charge a lightning relic. **Fallen Star**: star-spawn and star-metal. **The Last Choir**: three singers open a hidden sanctum. |
+| All | **Bestiary**: kills per monster, small bonuses per tier. *Rival adventurer: an opt-in quest; beat them and they leave, and a new rival can come later. **Merchant caravans** between towns. **Arena challenges** with a best-time board. |
+
+**Order:**
+1. Act 1's extras and all of Act 2: the extras above, plus the planned optional dungeon, side quests, super uniques and pages. *(done 2026-10-08, `src/features.rs`)*
+2. Then Acts 3, 4, 5 and 6, in turn.
+3. Then the all-act systems.
+
 ## 3. Phases (stop for a review after each)
 
 1. **Systems + Act 1 as the proof.** *(done 2026-10-08)*
