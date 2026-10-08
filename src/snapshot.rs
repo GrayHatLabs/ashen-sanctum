@@ -272,6 +272,73 @@ fn bench(g: &mut Game) {
     );
 }
 
+/// A rival duel or an arena run for the bot (extras.rs balance): prints one line.
+fn trial(g: &mut Game, kind: &str) {
+    let act = g.level.act();
+    let mut bot = Bot { path: vec![], goal: (0.0, 0.0), repath: 0, reach_cache: ((i32::MIN, 0), false, 0), whiff: (0, 0, 0) };
+    let class = g.p.skills.class.key();
+    let arena = kind == "arena";
+    if act == 0 {
+        while g.p.clvl < 8 {
+            let need = crate::game::xp_to_next(g.p.clvl) - g.p.xp + 1.0;
+            g.gain_xp(need);
+        }
+        g.p.hp = g.p.max_hp;
+    }
+    let mut low = 1.0f32;
+    let k = std::env::var("ASHEN_RIVAL").ok().and_then(|v| v.parse::<u8>().ok()).unwrap_or(0) % 8;
+    if arena {
+        g.arena_choice(act as u8);
+    } else {
+        g.ex.rival_next = k;
+        g.ex.rival_state = 1;
+        g.rival_answer(true);
+        let at = g.ex.rival_area.unwrap();
+        g.debug_goto(at);
+        if let Some((x, y)) = g.mobs.iter().find(|m| m.kind == crate::mobs::Kind::Rival).map(|m| (m.x, m.y)) {
+            g.mobs.retain(|m| m.kind == crate::mobs::Kind::Rival || (m.x - x).powi(2) + (m.y - y).powi(2) > 400.0);
+            g.debug_place_near(x, y, 7.0);
+        }
+    }
+    if std::env::var("ASHEN_TRIALWATCH").is_ok() {
+        let r = g.mobs.iter().find(|m| m.kind == crate::mobs::Kind::Rival);
+        println!("  hero clvl={} hp={:.0} level tier={:.1} rival={:?}", g.p.clvl, g.p.max_hp, g.tier, r.map(|m| (m.tier, m.max_hp, m.dmg, m.rank)));
+    }
+    let what = if arena { format!("arena{}", act + 1) } else { format!("rival{k} {}", crate::extras::RIVALS[k as usize].0) };
+    let deaths0 = g.stats.deaths;
+    for t in 0..60 * 60 * 8 {
+        let inp = bot.act(g, t);
+        g.update(&inp);
+        g.sfx.clear();
+        let secs = t as f32 / 60.0;
+        if let Some(m) = g.mobs.iter().find(|m| m.kind == crate::mobs::Kind::Rival && m.alive()) {
+            low = low.min(m.hp / m.max_hp);
+        }
+        if arena {
+            if let Some(r) = g.ex.arena.as_ref().filter(|r| r.done) {
+                println!("trial {what:<26} {class:<10} WON  {:>6.1}s deaths={}", r.time, g.stats.deaths - deaths0);
+                return;
+            }
+            if g.stats.deaths > deaths0 {
+                let wave = g.ex.arena.as_ref().map_or(0, |r| r.wave);
+                println!("trial {what:<26} {class:<10} LOST {secs:>6.1}s at wave {wave}");
+                return;
+            }
+        } else {
+            if g.ex.rival_state == 0 {
+                println!("trial {what:<26} {class:<10} WON  {secs:>6.1}s deaths={}", g.stats.deaths - deaths0);
+                return;
+            }
+            if g.stats.deaths > deaths0 {
+                println!("trial {what:<26} {class:<10} LOST {secs:>6.1}s (rival down to {:.0}%)", low * 100.0);
+                return;
+            }
+        }
+    }
+    let alive: Vec<String> = g.mobs.iter().filter(|m| m.alive()).map(|m| format!("{:?} charm={:.0}", m.kind, m.charm)).collect();
+    println!("trial {what:<26} {class:<10} TIMEOUT in {} wave={:?} alive={alive:?} clvl={}", g.level_name, g.ex.arena.as_ref().map(|r| r.wave), g.p.clvl);
+}
+
 pub fn run(dir: Option<&str>, tall: bool) -> i32 {
     let h = if tall { SH_TALL } else { SH_WIDE };
     let mut g = Game::new(7, h);
@@ -290,6 +357,11 @@ pub fn run(dir: Option<&str>, tall: bool) -> i32 {
         let points = g.p.skills.points;
         g.p.skills = skills;
         g.p.skills.points = points;
+    }
+    // ASHEN_TRIAL=rival|arena (scripts/trials.sh): the bot fights a rival duel or runs the act's arena.
+    if let Ok(kind) = std::env::var("ASHEN_TRIAL") {
+        trial(&mut g, &kind);
+        return 0;
     }
     // ASHEN_BENCH=1 (scripts/balance-bench.sh): a fixed fight instead of a run, so heroes compare fairly.
     if std::env::var("ASHEN_BENCH").is_ok() {

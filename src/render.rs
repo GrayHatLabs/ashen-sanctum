@@ -2200,7 +2200,9 @@ impl Game {
         }
 
         // Boss bar (big, top centre) while a boss is fighting you; else the hovered monster.
-        let boss = self.mobs.iter().position(|m| m.boss && m.alive() && m.state != MobState::Idle);
+        // Bosses, and a rival in a duel (extras.rs), get the bar across the top.
+        let duel = |m: &crate::mobs::Mob| m.kind == crate::mobs::Kind::Rival && (m.x - self.p.x).powi(2) + (m.y - self.p.y).powi(2) < 196.0;
+        let boss = self.mobs.iter().position(|m| (m.boss || duel(m)) && m.alive() && m.state != MobState::Idle);
         if let Some(i) = boss {
             let m = &self.mobs[i];
             let bw = 260;

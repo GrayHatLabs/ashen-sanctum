@@ -37,6 +37,30 @@ def find(name):
     return hits[0] if hits else None
 
 
+# Things the game draws in code, pictured by the nearest real sprite.
+ALIAS = {"scrap_pile": "cog_pile", "ice_block": ("npc_guard", 0xa8d8ff, 0.55), "totem": ("skeleton", 0xd8ccb0, 0.3)}
+
+
+def stand_ins():
+    """The game's stand-ins (src/art.rs): "name" => ("other sheet", scale, 0xtint, strength)."""
+    src = (HERE.parent.parent / "src" / "art.rs").read_text(encoding="utf8")
+    out = {}
+    for m in re.finditer(r'"(\w+)" => \("(\w+)", [\d.]+, 0x([0-9a-fA-F]{6}), ([\d.]+)\)', src):
+        out[m.group(1)] = (m.group(2), int(m.group(3), 16), float(m.group(4)))
+    return out
+
+
+def tinted(src, name, col, a):
+    im = Image.open(src).convert("RGBA")
+    box = im.getbbox()
+    if box:
+        im = im.crop(box)
+    tint = Image.new("RGBA", im.size, ((col >> 16) & 255, (col >> 8) & 255, col & 255, 255))
+    mixed = Image.blend(im, tint, a)
+    mixed.putalpha(im.getchannel("A"))
+    mixed.save(OUT / f"{name}.png")
+
+
 def main():
     OUT.mkdir(exist_ok=True)
     text = (HERE / "catalog.js").read_text(encoding="utf8")
@@ -44,10 +68,23 @@ def main():
     names = EXTRA + [p["kind"] for p in cat["props"]] + [m["kind"] for m in cat["monsters"]] + [n["img"] for n in cat["npcs"]]
     names = list(dict.fromkeys(names))
     missing = []
+    subs = stand_ins()
     for n in names:
         src = find(n)
         if src:
             save(src, n)
+            continue
+        # A stand-in: follow the chain to a sheet that exists, tinting as the game does.
+        alias = ALIAS.get(n) or subs.get(n)
+        seen = set()
+        while isinstance(alias, tuple) and not find(alias[0]) and alias[0] not in seen:
+            seen.add(alias[0])
+            nxt = ALIAS.get(alias[0]) or subs.get(alias[0])
+            alias = (nxt[0], alias[1], alias[2]) if isinstance(nxt, tuple) else nxt
+        if isinstance(alias, str) and find(alias):
+            save(find(alias), n)
+        elif isinstance(alias, tuple) and find(alias[0]):
+            tinted(find(alias[0]), n, alias[1], alias[2])
         else:
             missing.append(n)
     sheets = ART / "sheets"

@@ -360,14 +360,20 @@ impl Game {
             }
         }
         let Some((x, y)) = spot else { return };
-        // A rival is about your match: tougher than the area's elites, scaled to your level.
-        let tier = self.tier.max(1.0 + self.p.clvl as f32 * 0.27);
+        // A rival is a match for a hero at this point in the act: a little above the area's own monsters.
+        let tier = self.tier * 1.1;
         let mut m = Mob::new(Kind::Rival, x, y, tier, &mut self.rng);
         m.form = k as u8;
         let mods = [crate::mobs::M_FIERY, crate::mobs::M_VAMPIRE, crate::mobs::M_STONE, crate::mobs::M_FAST, crate::mobs::M_STRONG, crate::mobs::M_MANABURN, crate::mobs::M_STONE, crate::mobs::M_FIERY][k];
         m.promote(Rank::Elite, mods, Some(name.into()));
-        m.max_hp *= 2.0;
+        // A duel should last: about half a minute against a hero geared for the act (scripts/trials.sh).
+        let act = self.level.act() as f32;
+        m.max_hp *= if act < 1.0 { 1.0 } else { 2.5 + 0.3 * act };
         m.hp = m.max_hp;
+        // Act 1's rival meets a hero still in their first gear: they pull their punches a little.
+        if act < 1.0 {
+            m.dmg = (m.dmg.0 * 0.7, m.dmg.1 * 0.7);
+        }
         self.mobs.push(m);
         self.ex.rival_t = 3.0;
         // Clear the ground around them: this is a duel.
@@ -398,7 +404,7 @@ impl Game {
         self.ex.rival_t = if hurt { 1.6 } else { 2.3 };
         self.ex.rival_moves += 1;
         let tier = self.mobs[i].tier;
-        let dmg = 12.0 * tier.powf(0.8);
+        let dmg = 9.0 * tier.powf(0.8) * if self.level.act() == 0 { 0.7 } else { 1.0 };
         let a0 = (py - y).atan2(px - x);
         let fan = |g: &mut Game, n: i32, spread: f32, speed: f32, kind: ShotKind| {
             for k in -(n / 2)..=(n / 2) {
@@ -641,7 +647,7 @@ impl Game {
         if run.wave > 0 {
             run.time += DT;
         }
-        let alive = self.mobs.iter().filter(|m| m.alive() && !crate::breakables::is_prop(m.kind)).count();
+        let alive = self.mobs.iter().filter(|m| m.alive() && m.charm <= 0.0 && !crate::breakables::is_prop(m.kind)).count();
         if alive == 0 {
             if run.wave >= ARENA_WAVES + 1 {
                 run.done = true;

@@ -2222,7 +2222,9 @@ pub fn arena(act: u8, _seed: u64) -> Level {
     }
     d.rooms = vec![Room { x: 8, y: 8, w: 21, h: 21 }];
     let look = DUNGEONS.iter().find(|x| x.act == act as usize).unwrap_or(&DUNGEONS[0]);
-    let tier = DUNGEONS.iter().filter(|x| x.act == act as usize).map(|x| x.tier).fold(0.0f32, f32::max).max(1.5);
+    // The act's heralds' dungeons, on average: open to a hero part-way through the act.
+    let tiers: Vec<f32> = DUNGEONS.iter().filter(|x| x.act == act as usize).take(4).map(|x| x.tier).collect();
+    let tier = (tiers.iter().sum::<f32>() / tiers.len().max(1) as f32).max(1.5);
     let mut lv = Level::new(LevelId::Arena(act), crate::extras::ARENAS[act as usize % 6].into(), look.theme, tier, d);
     lv.start = (18.5, 26.5);
     lv.portals.push(Portal { x: 18.5, y: 28.5, kind: PortalKind::TownPortal });
