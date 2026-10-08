@@ -1477,6 +1477,12 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             idle(&mut g, 20);
             save(&mut g, scr, "gear_vault");
         }
+        g.debug_goto(LevelId::Dungeon(crate::world::SCRAPHEAP, 1));
+        quiet(&mut g);
+        if g.debug_near_boss() {
+            idle(&mut g, 40);
+            save(&mut g, scr, "gear_golem");
+        }
     }
     // Side content (side.rs): a shrine and its blessing, Skrat One-Ear and his gang, the Charnel Well, the
     // Well-Witch, a lore page and the journal on the map.
