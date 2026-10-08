@@ -1636,15 +1636,15 @@ impl Game {
                 return;
             }
             // A great coil of tentacle out of the reef, swaying.
-            let s = self.art.prop("leviathan_coil");
+            let s = self.art.prop("kraken_arm");
             let sway = ((self.tick as f32) * 0.05 + i as f32).sin();
-            let mut fx = Fx { tint: rgb(0x406858), tint_a: 0.3, ..Fx::default() };
+            let mut fx = Fx::default();
             if m.flash > 0.0 {
                 fx.tint = WHITE;
                 fx.tint_a = 0.6;
             }
             blend_ellipse(scr, sx, sy, 26, 9, BLACK, 0.45);
-            scr.blit_scaled(s, sx + (sway * 3.0) as i32, sy + 8, 1.2 + 0.05 * sway, fx);
+            scr.blit_scaled(s, sx + (sway * 3.0) as i32, sy + 8, 1.6 + 0.04 * sway, fx);
             return;
         }
         if m.kind == crate::mobs::Kind::ScrapPile {
