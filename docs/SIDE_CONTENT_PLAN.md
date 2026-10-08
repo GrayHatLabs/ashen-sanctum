@@ -12,6 +12,14 @@ after each phase.
 **What's missing:** anything optional. Every dungeon is on the critical path, and nothing in the world is
 there just to be found.
 
+**Changed while building phase 1:**
+- The game has no resistances, so the "+10% resists" rewards became **wards**: -5% damage taken for good,
+  each (up to six).
+- Gerta pays a rare item and gold instead of a shop discount.
+- The optional dungeons are always open (like D2's Den of Evil); killing the boss before taking the quest
+  still counts, and the reward waits for you.
+- Ambushes: two packs, each led by one champion (six champions at once were too much early in Act 1).
+
 **Goal:** each act gets a few things worth leaving the road for: an optional dungeon with a quest and a real
 reward, two side quests, named monsters with their own loot, and things that happen while you explore.
 Rewards follow Diablo II: skill points, permanent life/resist bonuses, sockets, a free rare item, a respec.
@@ -201,7 +209,7 @@ Random encounters on overlands and in dungeons. At most one is active at a time.
 
 ## 3. Phases (stop for a review after each)
 
-1. **Systems + Act 1 as the proof.**
+1. **Systems + Act 1 as the proof.** *(done 2026-10-08)*
    - Shrines (art for Act 1's shrine), super uniques, the side-quest engine, events (ambush, hoarder, fallen
      adventurer), lore pages and the journal tab.
    - Act 1's content: the Charnel Well, both side quests, three super uniques, five pages.

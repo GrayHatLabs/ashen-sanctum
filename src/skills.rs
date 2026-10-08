@@ -1531,7 +1531,7 @@ impl Game {
         if self.p.hp < self.p.max_hp / 3.0 && self.has_power(crate::items::P_LONG_NIGHT) {
             power *= 1.5;
         }
-        let dmg = dmg * self.taken(kind) * law * ranks * shell * class_damage(self.p.skills.class) * power;
+        let dmg = dmg * self.taken(kind) * law * ranks * shell * class_damage(self.p.skills.class) * power * self.bless_damage();
         if self.has_power(crate::items::P_BLOODTHIRST) {
             self.p.hp = (self.p.hp + dmg * 0.04).min(self.p.max_hp);
         }

@@ -65,7 +65,7 @@ pub struct LevelFile {
 
 // ---------------------------------------------------------------- names
 
-pub const DUNGEON_SLUGS: [&str; 24] = [
+pub const DUNGEON_SLUGS: [&str; 25] = [
     "bone_crypt",
     "rotting_warrens",
     "hexed_catacombs",
@@ -90,6 +90,7 @@ pub const DUNGEON_SLUGS: [&str; 24] = [
     "storm_spire",
     "wheel_of_eyes",
     "true_sanctum",
+    "charnel_well",
 ];
 
 /// File name (without .json) for a level.
@@ -197,7 +198,7 @@ const THEMES: [(&str, Theme); 30] = [
     ("zenith", Theme::Zenith),
 ];
 
-const PROPS: [PropKind; 82] = [
+const PROPS: [PropKind; 84] = [
     PropKind::TreeOak,
     PropKind::TreePine,
     PropKind::TreeDead,
@@ -280,9 +281,11 @@ const PROPS: [PropKind; 82] = [
     PropKind::Entrance(21),
     PropKind::Entrance(22),
     PropKind::Entrance(23),
+    PropKind::Entrance(24),
+    PropKind::Shrine(0),
 ];
 
-const KINDS: [Kind; 66] = [
+const KINDS: [Kind; 68] = [
     Kind::Zombie,
     Kind::Skeleton,
     Kind::Wolf,
@@ -349,6 +352,8 @@ const KINDS: [Kind; 66] = [
     Kind::Tempest,
     Kind::OphanPrime,
     Kind::Solanthos,
+    Kind::WellWitch,
+    Kind::Hoarder,
 ];
 
 fn portal_name(k: PortalKind) -> String {
@@ -434,7 +439,7 @@ fn item_name(d: &Drop) -> Option<String> {
         Drop::Health => "health_potion".into(),
         Drop::Mana => "mana_potion".into(),
         Drop::Gold(n) => format!("gold{n}"),
-        Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Pearl(_) | Drop::Shard(_) | Drop::Item(_) => return None,
+        Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Pearl(_) | Drop::Shard(_) | Drop::Page(_) | Drop::Item(_) => return None,
     })
 }
 
@@ -560,6 +565,11 @@ pub fn from_file(f: &LevelFile, seed: u64) -> Result<Level, String> {
                     }
                 }
                 lv.props.push(Prop::on(kind, x0, y0, fw, fh));
+                // A shrine placed by hand gives a random blessing.
+                if let PropKind::Shrine(_) = kind {
+                    let b = crate::side::BLESSINGS[rng.range(0, crate::side::BLESSINGS.len() as i32) as usize];
+                    lv.shrines.push(crate::side::Shrine { x: x0, y: y0, kind: b, used: false });
+                }
             }
             None => warn.push(format!("prop {:?}", p.kind)),
         }
@@ -646,7 +656,8 @@ pub fn export_all(out: &str, seed: u64) -> std::io::Result<usize> {
     std::fs::create_dir_all(out)?;
     let mut n = 0;
     for id in all_ids() {
-        let lv = world::build(id, seed);
+        // The plain map: no elites, shrines or super uniques (the game adds those to every level as it loads).
+        let lv = load(id, seed).unwrap_or_else(|| world::generate(id, seed));
         let json = serde_json::to_string_pretty(&to_file(&lv)).expect("serialize level");
         std::fs::write(std::path::Path::new(out).join(format!("{}.json", file_name(id))), json)?;
         n += 1;
@@ -772,7 +783,7 @@ mod tests {
             assert_eq!(parse_id(&id_string(id)), Some(id));
             assert_eq!(id_from_name(&format!("levels/{}.json", file_name(id))), Some(id));
         }
-        assert_eq!(parse_id("dungeon:24:0"), None);
+        assert_eq!(parse_id("dungeon:25:0"), None);
     }
 
     #[test]

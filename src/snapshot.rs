@@ -344,7 +344,7 @@ pub fn run(dir: Option<&str>, tall: bool) -> i32 {
                 .mobs
                 .iter()
                 .filter(|m| m.alive() && m.charm <= 0.0 && (m.x - g.p.x).powi(2) + (m.y - g.p.y).powi(2) < 100.0)
-                .map(|m| format!("{:?}", m.kind))
+                .map(|m| format!("{:?}{}", m.kind, match (m.superu, m.rank) { (u, _) if u > 0 => "*SUPER", (_, crate::mobs::Rank::Champion) => "*C", (_, crate::mobs::Rank::Elite) => "*E", (_, crate::mobs::Rank::Minion) => "*m", _ => "" }))
                 .collect();
             near.sort();
             let shots: Vec<String> = g.shots.iter().map(|s| format!("{:?}", s.kind)).collect();
@@ -1171,6 +1171,62 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         }
         idle(&mut g, 90);
         save(&mut g, scr, "endgame_guardian");
+    }
+    // Side content (side.rs): a shrine and its blessing, Skrat One-Ear and his gang, the Charnel Well, the
+    // Well-Witch, a lore page and the journal on the map.
+    {
+        let mut g = Game::new(7, h);
+        g.p.base_hp = 9999.0;
+        g.p.recalc();
+        g.p.hp = 9999.0;
+        g.debug_goto(LevelId::Dungeon(0, 0));
+        g.banner_t = 0.0;
+        g.event_cd = 9999.0;
+        if let Some((x, y)) = g.shrines.first().map(|s| s.at()) {
+            g.mobs.retain(|m| (m.x - x).powi(2) + (m.y - y).powi(2) > 100.0);
+            (g.p.x, g.p.y) = (x + 1.8, y - 1.0);
+            idle(&mut g, 20);
+            save(&mut g, scr, "side_shrine");
+            (g.p.x, g.p.y) = (x + 0.9, y);
+            idle(&mut g, 2);
+            (g.p.x, g.p.y) = (x + 1.8, y - 1.0);
+            idle(&mut g, 60);
+            save(&mut g, scr, "side_blessed");
+        }
+        g.debug_goto(LevelId::Overworld);
+        g.banner_t = 0.0;
+        g.event_cd = 9999.0;
+        if let Some((x, y)) = g.mobs.iter().find(|m| m.superu == 1).map(|m| (m.x, m.y)) {
+            g.debug_place_near(x, y, 4.5);
+            idle(&mut g, 45);
+            save(&mut g, scr, "side_skrat");
+        }
+        if let Some((x, y)) = g.portals.iter().find(|p| p.kind == crate::world::PortalKind::Entrance(crate::world::CHARNEL)).map(|p| (p.x, p.y)) {
+            g.mobs.retain(|m| (m.x - x).powi(2) + (m.y - y).powi(2) > 100.0);
+            (g.p.x, g.p.y) = (x + 1.5, y + 2.5);
+            idle(&mut g, 20);
+            save(&mut g, scr, "side_charnel");
+        }
+        g.debug_goto(LevelId::Dungeon(crate::world::CHARNEL, 1));
+        g.banner_t = 0.0;
+        g.event_cd = 9999.0;
+        if let Some((x, y)) = g.mobs.iter().find(|m| m.boss).map(|m| (m.x, m.y)) {
+            g.debug_place_near(x, y, 4.0);
+            idle(&mut g, 70);
+            save(&mut g, scr, "side_witch");
+        }
+        g.debug_goto(LevelId::Overworld);
+        g.banner_t = 0.0;
+        g.read_page(3);
+        save(&mut g, scr, "side_page");
+        g.dialog = None;
+        g.p.pages |= 0b1011;
+        g.p.supers |= 0b001;
+        g.quest.side = [3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        g.message = None;
+        g.show_map = true;
+        idle(&mut g, 2);
+        save(&mut g, scr, "side_journal");
     }
     // Act 6: Windward Anchorage, the Skyreach in a gust, the heralds of the sky and Solanthos.
     {

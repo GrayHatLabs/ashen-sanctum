@@ -235,7 +235,18 @@ impl Game {
                     // Trees and houses between the camera and the player turn see-through.
                     let front = *depth > player_depth + 0.2;
                     let over = (sx - psx).abs() < s.w / 2 + 6 && psy - 44 < sy + 6 && psy > top + 4;
-                    scr.blit(s, sx, sy + 8, Fx { dither: front && over, ..Fx::default() });
+                    // A shrine glows in its blessing's colour until it's used; then it goes dark.
+                    let shrine = match pr.kind {
+                        PropKind::Shrine(_) => self.shrines.iter().find(|k| (k.x, k.y) == (pr.foot.0, pr.foot.1)),
+                        _ => None,
+                    };
+                    let dark = shrine.map_or(false, |k| k.used);
+                    let fx = if dark { Fx { dither: front && over, tint: rgb(0x282830), tint_a: 0.55, ..Fx::default() } } else { Fx { dither: front && over, ..Fx::default() } };
+                    scr.blit(s, sx, sy + 8, fx);
+                    if let Some(k) = shrine.filter(|k| !k.used) {
+                        let pulse = 0.45 + 0.2 * ((self.tick as f32) * 0.07 + pr.x).sin();
+                        scr.glow(sx, sy - s.ay / 2 + 4, 18.0, rgb(k.kind.col()), pulse);
+                    }
                     if pr.kind == PropKind::Entrance(SANCTUM) && self.quest.stage < 2 {
                         // The ash barrier.
                         let k = ((self.tick as f32) * 0.08).sin() * 0.15 + 0.45;
@@ -1326,9 +1337,36 @@ impl Game {
                 scr.fill(sx - s / 2, sy - s / 2, s, s, rgb(0xe02020));
             }
         }
+        for s in &self.shrines {
+            let seen = self.explored.get((s.y * self.d.w + s.x) as usize).copied().unwrap_or(false);
+            if seen {
+                let (sx, sy) = proj(s.x as f32 + 0.5, s.y as f32 + 0.5);
+                let col = if s.used { rgb(0x505060) } else { rgb(s.kind.col()) };
+                scr.fill(sx - 1, sy - 3, 3, 6, col);
+            }
+        }
+        for m in self.mobs.iter().filter(|m| m.superu > 0 && m.alive()) {
+            let seen = self.explored.get((m.y as i32 * self.d.w + m.x as i32) as usize).copied().unwrap_or(false);
+            if seen {
+                let (sx, sy) = proj(m.x, m.y);
+                scr.fill(sx - 2, sy - 2, 5, 5, rgb(0xffb040));
+            }
+        }
         let (sx, sy) = proj(px, py);
         scr.fill(sx - 1, sy - 2, 3, 4, WHITE);
         scr.text("MAP", scr.w - 30, 8, rgb(0xc8b088), Align::Center, 1);
+        // The journal (side.rs): this act's lore pages, side quests, super uniques and shrines.
+        let lines = self.journal();
+        let (jw, lh) = (196, 10);
+        let (jx, jy) = (8, 40);
+        let jh = lines.len() as i32 * lh + 22;
+        scr.blend(jx - 4, jy - 4, jw, jh, rgb(0x0c0a08), 0.72);
+        scr.text("JOURNAL", jx, jy, rgb(0xffd080), Align::Left, 1);
+        for (k, (t, col)) in lines.iter().enumerate() {
+            if !t.is_empty() {
+                scr.text(t, jx, jy + 14 + k as i32 * lh, *col, Align::Left, 1);
+            }
+        }
     }
 
     /// The class select screen: the hero carousel (shared with the menu).
@@ -1343,8 +1381,15 @@ impl Game {
     }
 
     /// Draws a character sprite, using another sheet scaled and tinted while its own art is missing.
-    fn blit_char(&self, scr: &mut Screen, art_name: &str, anim: CharFrame, (sx, sy): (i32, i32), mut fx: Fx, bob: bool) {
+    fn blit_char(&self, scr: &mut Screen, art_name: &str, anim: CharFrame, pos: (i32, i32), fx: Fx, bob: bool) {
+        self.blit_char_x(scr, art_name, anim, pos, fx, bob, 1.0);
+    }
+
+    /// `blit_char`, drawn `extra` times bigger (super uniques).
+    #[allow(clippy::too_many_arguments)]
+    fn blit_char_x(&self, scr: &mut Screen, art_name: &str, anim: CharFrame, (sx, sy): (i32, i32), mut fx: Fx, bob: bool, extra: f32) {
         let (art, scale, tint, tint_a) = self.art.char_art(art_name);
+        let scale = scale * extra;
         let spr = anim.pick(art);
         if tint_a > 0.0 && fx.tint_a == 0.0 {
             fx.tint = tint;
@@ -1586,13 +1631,26 @@ impl Game {
                 fx.tint = rgb(0x4060ff);
                 fx.tint_a = 0.22;
             }
+            crate::mobs::Rank::Elite if m.superu > 0 => {
+                let tint = crate::side::SUPERS[m.superu as usize - 1].tint;
+                blend_ellipse(scr, sx, sy, 20, 8, rgb(tint), 0.4);
+                if fx.tint_a == 0.0 {
+                    fx.tint = rgb(tint);
+                    fx.tint_a = 0.28;
+                }
+            }
             crate::mobs::Rank::Elite => blend_ellipse(scr, sx, sy, 16, 6, rgb(0xd8a040), 0.35),
             _ => {}
+        }
+        // A gold-thief glitters.
+        if m.kind == crate::mobs::Kind::Hoarder && (self.tick / 5 + i as u32) % 4 == 0 {
+            scr.glow(sx, sy - 10, 9.0, rgb(0xffd040), 0.6);
         }
         if m.mods & crate::mobs::M_FIERY != 0 && (self.tick / 6 + i as u32) % 5 == 0 {
             scr.glow(sx, sy - 14, 10.0, rgb(0xff6020), 0.5);
         }
-        self.blit_char(scr, name, anim, (sx, sy), fx, m.moving);
+        let extra = if m.superu > 0 { crate::side::SUPER_SCALE } else { 1.0 };
+        self.blit_char_x(scr, name, anim, (sx, sy), fx, m.moving, extra);
     }
 
     /// Draws the HUD; returns the clickable skill button rectangles.
@@ -1876,6 +1934,14 @@ impl Game {
         scr.text(&self.level_name, 6, 6, rgb(0xd8b878), Align::Left, 1);
         let log = self.quest_log();
         scr.text(&log, 6, 17, rgb(0x9a8a78), Align::Left, 1);
+        if let Some(side) = self.side_log() {
+            scr.text(&side, 6, 27, rgb(0x7a8a68), Align::Left, 1);
+        }
+        if let Some((b, t)) = self.blessing() {
+            let label = format!("{}  {}", b.name(), t.ceil() as i32);
+            let col = if t < 10.0 && (self.tick / 15) % 2 == 0 { rgb(0x806050) } else { rgb(b.col()) };
+            scr.text(&label, 6, 38, col, Align::Left, 1);
+        }
 
         // Boss bar (big, top centre) while a boss is fighting you; else the hovered monster.
         let boss = self.mobs.iter().position(|m| m.boss && m.alive() && m.state != MobState::Idle);
@@ -2276,6 +2342,17 @@ fn draw_pickup(scr: &mut Screen, k: &Pickup, sx: i32, sy: i32, tick: u32, art: &
             scr.disc(sx, y, 5, rgb(0x203038));
             scr.disc(sx, y, 4, tint);
             scr.disc(sx - 1, y - 1, 1, rgb(0xffffff));
+        }
+        &Drop::Page(_) => {
+            let y = sy - 8 - pop + bob;
+            scr.glow(sx, y, 18.0, rgb(0xffe8b0), 0.6);
+            scr.fill(sx - 5, y - 4, 10, 8, rgb(0x3a2a18));
+            scr.fill(sx - 4, y - 3, 8, 6, rgb(0xe8d8a8));
+            for k in 0..3 {
+                scr.fill(sx - 3, y - 2 + k * 2, 6, 1, rgb(0x8a7050));
+            }
+            scr.fill(sx - 5, y - 5, 2, 10, rgb(0xc8a870));
+            scr.fill(sx + 4, y - 5, 2, 10, rgb(0xc8a870));
         }
         &Drop::Key(i) => {
             let tint = [rgb(0xff9040), rgb(0xe0c060), rgb(0x80b0ff)][i];

@@ -217,7 +217,7 @@ pub struct DungeonDef {
     pub act: usize,
 }
 
-pub const DUNGEONS: [DungeonDef; 24] = [
+pub const DUNGEONS: [DungeonDef; 25] = [
     DungeonDef {
         name: "THE BONE CRYPT",
         floors: 2,
@@ -460,6 +460,17 @@ pub const DUNGEONS: [DungeonDef; 24] = [
         entrance: (54, 14),
         act: 5,
     },
+    // ---- optional dungeons (side.rs) ----
+    DungeonDef {
+        name: "THE CHARNEL WELL",
+        floors: 2,
+        theme: Theme::Warrens,
+        boss: Kind::WellWitch,
+        monsters: &[Kind::Zombie, Kind::Skeleton, Kind::Goblin],
+        tier: 1.9,
+        entrance: (57, 100),
+        act: 0,
+    },
 ];
 
 /// The Ashen Sanctum (needs all three seals).
@@ -474,6 +485,8 @@ pub const HEART: usize = 15;
 pub const ABYSS: usize = 19;
 /// The True Sanctum, Solanthos's (needs the three sun-shards).
 pub const ZENITH: usize = 23;
+/// Act 1's optional dungeon (side.rs): under the old well south of Hollowmere.
+pub const CHARNEL: usize = 24;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum PortalKind {
@@ -509,6 +522,8 @@ pub enum PropKind {
     Campfire,
     Well,
     Entrance(usize),
+    /// A shrine (side.rs), in its act's style.
+    Shrine(u8),
     StairsDown,
     StairsUp,
     // ---- Act 2 ----
@@ -605,7 +620,9 @@ impl PropKind {
             PropKind::Entrance(20) => "ent_brokenchoir",
             PropKind::Entrance(21) => "ent_spire",
             PropKind::Entrance(22) => "ent_wheel",
+            PropKind::Entrance(CHARNEL) => "ent_charnel",
             PropKind::Entrance(_) => "ent_zenith",
+            PropKind::Shrine(a) => crate::side::shrine_art(a),
             PropKind::StairsDown => "stairs_down",
             PropKind::StairsUp => "stairs_up",
             PropKind::SnowPine => "tree_snowpine",
@@ -706,6 +723,8 @@ pub struct Level {
     pub props: Vec<Prop>,
     pub portals: Vec<Portal>,
     pub npcs: Vec<Npc>,
+    /// Shrines (side.rs); their props are in `props`.
+    pub shrines: Vec<crate::side::Shrine>,
     /// Safe zone (town): x0, y0, x1, y1.
     pub safe: Option<(f32, f32, f32, f32)>,
     /// Where you wake up / arrive when there's no matching portal (town square on the overworld).
@@ -728,6 +747,7 @@ impl Level {
             props: vec![],
             portals: vec![],
             npcs: vec![],
+            shrines: vec![],
             safe: None,
             start: (0.0, 0.0),
         }
@@ -759,6 +779,7 @@ pub fn generate(id: LevelId, seed: u64) -> Level {
 }
 
 /// A level as the game plays it: the hand-made file if there is one, else generated.
+#[allow(dead_code)] // the tests' way in (the game goes through build_at)
 pub fn build(id: LevelId, seed: u64) -> Level {
     build_at(id, seed, 0)
 }
@@ -769,6 +790,8 @@ pub fn build_at(id: LevelId, seed: u64, difficulty: u8) -> Level {
     let seed = seed.wrapping_add(difficulty as u64 * 7919);
     let mut lv = crate::levels::load(id, seed).unwrap_or_else(|| generate(id, seed));
     add_elites(&mut lv, seed);
+    // Shrines, super uniques and lore pages (side.rs).
+    crate::side::place(&mut lv, seed);
     let (hp, dmg, xp, tier) = match difficulty {
         0 => (1.0, 1.0, 1.0, 1.0),
         1 => (3.5, 2.0, 2.8, 2.0),
@@ -2467,7 +2490,7 @@ mod tests {
         let pass = ow.portal(PortalKind::Pass(1)).expect("pass north");
         let (cx, cy) = town_center();
         assert!(ow.d.path((cx as i32, cy as i32), (pass.x as i32, pass.y as i32), 100_000).is_some());
-        assert!(ow.portals.iter().all(|p| !matches!(p.kind, PortalKind::Entrance(k) if k >= 4)));
+        assert!(ow.portals.iter().all(|p| !matches!(p.kind, PortalKind::Entrance(k) if k >= 4 && k != CHARNEL)));
     }
 
     #[test]

@@ -216,6 +216,15 @@ window.CATALOG = {
       "slug": "true_sanctum",
       "theme": "zenith",
       "tier": 13.600000381469727
+    },
+    {
+      "act": 0,
+      "boss": "boss_wellwitch",
+      "floors": 2,
+      "name": "THE CHARNEL WELL",
+      "slug": "charnel_well",
+      "theme": "warrens",
+      "tier": 1.899999976158142
     }
   ],
   "lands": {
@@ -364,7 +373,8 @@ window.CATALOG = {
         0,
         1,
         2,
-        3
+        3,
+        24
       ],
       "name": "THE ASHLANDS",
       "passes": [
@@ -782,6 +792,18 @@ window.CATALOG = {
       "boss": true,
       "kind": "boss_solanthos",
       "name": "SOLANTHOS, THE BURNT-OUT SUN",
+      "prop": false
+    },
+    {
+      "boss": true,
+      "kind": "boss_wellwitch",
+      "name": "THE WELL-WITCH",
+      "prop": false
+    },
+    {
+      "boss": false,
+      "kind": "hoarder",
+      "name": "GOLD-THIEF",
       "prop": false
     }
   ],
@@ -1407,6 +1429,16 @@ window.CATALOG = {
       "h": 3,
       "kind": "ent_zenith",
       "w": 4
+    },
+    {
+      "h": 3,
+      "kind": "ent_charnel",
+      "w": 3
+    },
+    {
+      "h": 1,
+      "kind": "shrine_ash",
+      "w": 1
     }
   ],
   "themes": [

@@ -102,6 +102,11 @@ pub enum Kind {
     Rat,
     MossWolf,
     ThornWarden,
+    // ---- side content (side.rs) ----
+    /// The Charnel Well's witch (Act 1's optional dungeon).
+    WellWitch,
+    /// A gold-thief laden with loot (an event): it flees, and gets away in the end.
+    Hoarder,
     // ---- breakables (breakables.rs): no mind, smashed by any hit; the act is in `Mob::form` ----
     Crate,
     Barrel,
@@ -280,6 +285,13 @@ pub fn def(k: Kind) -> Def {
         Kind::Rat => Def { r: 0.2, ..d("plague_rat", "PLAGUE RAT", 14.0, 4.5, (3.0, 5.0), 0.25, 0.7, 0.0) },
         Kind::MossWolf => Def { r: 0.36, ..d("moss_wolf", "MOSS WOLF", 80.0, 4.4, (5.0, 8.0), 0.3, 0.8, 0.0) },
         Kind::ThornWarden => Def { r: 0.6, reach: 1.4, ..d("thorn_warden", "THORN WARDEN", 300.0, 2.2, (16.0, 24.0), 0.6, 1.4, 0.0) },
+        Kind::WellWitch => Def {
+            r: 0.5,
+            boss: true,
+            ranged: true,
+            ..d("boss_wellwitch", "THE WELL-WITCH", 380.0, 1.6, (9.0, 13.0), 0.6, 2.0, 420.0)
+        },
+        Kind::Hoarder => Def { r: 0.26, ..d("hoarder", "GOLD-THIEF", 60.0, 3.3, (1.0, 2.0), 0.4, 1.5, 40.0) },
         Kind::Crate => Def { r: 0.34, ..d("crate", "CRATE", 4.0, 0.0, (0.0, 0.0), 1.0, 9.0, 0.0) },
         Kind::Barrel => Def { r: 0.34, ..d("barrel", "BARREL", 4.0, 0.0, (0.0, 0.0), 1.0, 9.0, 0.0) },
         Kind::Urn => Def { r: 0.3, ..d("urn", "URN", 4.0, 0.0, (0.0, 0.0), 1.0, 9.0, 0.0) },
@@ -496,6 +508,9 @@ pub struct Mob {
     /// Her holy fire: damage per second, seconds left. It ignores fire resistance.
     pub holy: f32,
     pub holy_t: f32,
+    /// A super unique (side.rs SUPERS index + 1; 0 = not one), and whether it has shouted its line yet.
+    pub superu: u8,
+    pub shouted: bool,
 }
 
 impl Mob {
@@ -565,6 +580,8 @@ impl Mob {
             brand_t: 0.0,
             holy: 0.0,
             holy_t: 0.0,
+            superu: 0,
+            shouted: false,
         }
     }
 
@@ -1054,7 +1071,7 @@ impl Game {
                                     shots.push((m.x, m.y, a.cos() * 7.0, a.sin() * 7.0, dmg, ShotKind::Necro));
                                 }
                             }
-                            Kind::Banshee | Kind::Wisp | Kind::Cultist => shots.push((m.x, m.y, ux * 7.0, uy * 7.0, dmg, ShotKind::Necro)),
+                            Kind::Banshee | Kind::Wisp | Kind::Cultist | Kind::WellWitch => shots.push((m.x, m.y, ux * 7.0, uy * 7.0, dmg, ShotKind::Necro)),
                             Kind::Inquisitor => {
                                 for k in 0..3 {
                                     let a = uy.atan2(ux) + (k as f32 - 1.0) * 0.18;
@@ -1417,6 +1434,20 @@ fn boss_specials(
                     fired: false,
                     kind: HazardKind::Poison,
                 });
+            }
+        }
+        Kind::WellWitch => {
+            // Pools of foul well-water under you, and the drowned dead climbing out after her.
+            if m.special <= 0.0 && dist < 9.0 {
+                m.special = if m.enraged { 3.5 } else { 5.0 };
+                hazards.push(Hazard { x: px, y: py, r: 1.2, warn: 0.9, live: 5.0, dps: 6.0 * m.tier, burst: 0.0, t: 0.0, fired: false, kind: HazardKind::Poison });
+            }
+            if m.special2 <= 0.0 {
+                m.special2 = if m.enraged { 8.0 } else { 11.0 };
+                if summons < 6 {
+                    around(rng, 3, Kind::Zombie, m.tier, spawns);
+                    texts.push((m.x, m.y, "UP, MY DROWNED DARLINGS!"));
+                }
             }
         }
         Kind::HexWarden => {

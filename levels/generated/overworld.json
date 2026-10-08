@@ -84,41 +84,41 @@
     "ooo..o....o.....oo.ooo...................................................................o..................oooo",
     "ooooo..o......o.o.o.oo...o..................................................................................oooo",
     "oooo.o........o.o..oo..o.............o.o...................................................o...........o.o..o.oo",
-    "oo.o...............o...................o....oooooo...o...o.....oo.o.....................................o...oooo",
-    "ooo.....o..............................o.oooooo....o........o..oooo........................o.....o..o.......oooo",
-    "oooo.o.................o................o.....oo.o...........o...oo...o......................o..o...ooooo...ooo.",
-    ".ooo................o................o....o.oo....o.........o..ooo....o.o......................o..oooooo.o..oooo",
-    "o................o...............o...o..o.oooo..oo..........o.o..o.o..o..........................ooo..oooo..o.oo",
-    "oo.o...o........o.................o.....oo.o.oo..o..........oooo..oo.o.............o........o..oooo..ooooo...ooo",
-    "o.oo....................................oo..ooooo.o.........o..ooo.............o.................o..oo......oooo",
-    ".ooo.o................................o....o.ooo.o..........ooo.oo.............................oo.ooo.oo.o..oo.o",
-    "oooo...............o.............o........oo...oo..........o....o................................o.o..........o.",
-    "oooo............o...................o.....oooooo............o.o.oo.................o........................oo.o",
-    "oo.o.........o.............................o.oo.............ooo.ooo...........o.o....o................o......ooo",
-    "oooo................................o........oo.............o.oo.oo.............oo.o.o..................o...oooo",
-    "ooo....o......o....ooo.......................................oooo...o..oo....ooo.o..oo.......ooo..........o.oo.o",
-    "oooo..........o....ooo.................................o.........oo.........oo.ooooooo.......ooo............ooo.",
-    "o.oo...............ooo.....................................o...o............oo....o..o.o.....ooo............oooo",
-    "oooo.........oo................o...................o..o......................ooo.oo.oo.o....................oooo",
-    "oooo.......................................................o..............o.oo..oo.oo........................ooo",
-    "oooo..oo..o...o.........................................o.............o..........o.....o....................oooo",
-    ".ooooo.....oooo........................o............o...o....o..............................................oooo",
-    "oooo.o.o...ooo..............................o..........oo...................o...............................oooo",
-    "oooooo..oo.o.o.....................................o.ooo.............o......o...............................o.oo",
-    "o.o.oo..o.oo.....................o....o............o....o.o.................................................oo.o",
-    "ooo.ooo..oo........................................ooo.o........o........o........................o..o......oo.o",
-    "oooo.oooo.o................o...........................oo.o......................o........................o.ooo.",
-    "o.oo.o.o..oo...oo...................o................o...o.......................o..........................o.o.",
-    "oooo.o.oo...oooo................o....................o..o...............o..............o....................oooo",
-    "oooo..o...o.o........................o....................o.......o.....o........o...........................ooo",
-    "oo.o....o.o..................................................o..o...o..............o..............o.o.......oo.o",
-    "ooo.o.oo..o.....................................................................................oo.oooo...o.ooo.",
-    "oo.o..oo.oooo..............o..................................................................o.oo.ooo......oo.o",
-    "oo.o....oo.oo...............................................................o................o.o...oo.oo....ooo.",
-    "ooooo.o.oooooooooooooooooooooooooooooooooo.ooo.o.oooooooooooooo.oooo.oo.oooooooooooo.oooo..o.ooooooooooooooooooo",
-    "oooo.oooooooo.o.o.oooo.oo.ooooo.oooooooooooooooooo.ooooooo.ooooooooooo.ooooooo..ooooooooooooooo.ooooooooooooo..o",
-    "..o.oooooooooooo.oo..ooooo.oooooo.ooooooooo.ooooooooo..oooooooooo.oooooooooooooooooooooooooooooo.oo.ooo.oooooooo",
-    "o.ooooooooooo.oooo.ooooooo.oooooooooooooooooo.ooooooooooooooooooooooooooooooooooo..ooooo..oooooooooo.oooooo.oooo"
+    "oo.o...............o...................o....oooooo........o...o..o..........o.................o.............oooo",
+    "oooo..o.........o.o....................oo..oooo.oo..o........ooo....................................o.oo....o.oo",
+    "oooo..........o....................o...o.....oo.............o.....o.............o.................o...o.....o.o.",
+    "oooo.......................................ooo.................ooooo.........o.....................ooo....o.oooo",
+    "oooo.......o.......................o.....o.o..ooo..........oo.oo..o.....o.o.......................o.o.ooo...o.oo",
+    "o..o...................................o.o.o.o.oo.............o.o.o...............o.............o..ooo.oo.o.oooo",
+    "oo.o......o..........o............o....oooo..oooo..........oo.oooo....o.........................ooo.o..ooo..oooo",
+    "oo.o................................o..o.o.ooo..o...........oo...oo..........o..................ooooo.oo....o.oo",
+    "oooo..............oo.............o.......ooo...oo.........ooooo.oo.................................o........oooo",
+    "o.o....o........o.o.......................o.oo.o............ooo.o...........o..o............o...............oo.o",
+    "o.ooo......................................o.o.o............o.oo..............o.o............................ooo",
+    "oooo........................................ooo.............o..oo.............o.oo...o.....................ooooo",
+    "ooo..........o.....ooo.........................................o..o..........o.oo.oooo.......ooo............oooo",
+    "oooo.........oo....ooo......o....o...............................oooo........o.o.oo...o......ooo............o.oo",
+    "oooo.........o.....ooo......................................o.oo......o.....o.ooo.oooooo.....ooo............oooo",
+    "oooo...............................................................o............o...ooo.....................oooo",
+    "oo.o.........o......................o......o.......................o..o..........oooooooo...................oooo",
+    "oooo.o....o.o...............................................................o..........o..............o.....oooo",
+    ".oo.o.o.o..oo.o.............oo................................................o............................oo.oo",
+    ".ooooo..o...o....................o......o......o...o..............o.........................................ooo.",
+    "ooo..oo...ooo......................................o....ooo..........o.......o..............................ooo.",
+    "oo....ooo.oo.o...o......................................ooo..............................o.....o............oooo",
+    "oo.ooo.o.oo.o...o......................o....o......o....ooo.................................................o.oo",
+    "oo.oo..oo..........................................o..............................................o.........ooo.",
+    "ooooo.oo....oo....o......o.............................................................o..o.................oooo",
+    "oooo.....oooo...............................o......o.........................o..............................oooo",
+    "ooooooo.o.oo.o.....o..............................................o...............o.........................oooo",
+    "oooooooooo..o...............o.....................................................................o....o....o.o.",
+    "oo.ooo..o.............o............................o..............................................oo..o.....ooo.",
+    "oo.o......o..o............................o....o......................o.....................o..oo.oo...o....oooo",
+    "oooo.oo.oo.o..........................................................................o.....ooo.......ooo...oo.o",
+    ".oooooooooooooooooooo.o.oooooooooo.oo.ooooooooooooooooooooooooooooo.oo.o.oo.o..ooo..ooo.oooo.oooooooooo.oooo..o.",
+    "ooooooooooooooo..o.oooo.oo...o.oooo.oooooooo.oooooooooooo.oooooo.ooooooo.ooooooooooooooooooooooooo.oooo..oooo.oo",
+    "ooo.oooooooooo.o.ooo.oooooooooo.oooooooooooo.o.oooooooo.ooooooooooooooooooooooooooooooo.ooooooooooooooooooo.oooo",
+    "ooo.ooo..oooooooooo.ooooo.oooooo.o..o.oooooo.ooo.oooooooo.oooooooooooo.oooooo.oooooooooooooooooooooooooooooooooo"
   ],
   "ground": [
     "ggggggggggggdgggggddddgggggggggggggggggggggggggggggggggggggggggggggggdddgggdggggggggggggddggdgddgdggggddddgggddd",
@@ -192,47 +192,47 @@
     "ggggggggggggggggggggggggggggggggggrrggggggggdddddddddddrrddddddddddddgggrrrggggggggggggggggggggggdggddggdggggggg",
     "gggggggggggggggggggggggggggggggggrrrggggggggdddddddddddrrddddddddddddggggrrrggggggggggggggggggdgggggdggddgdggddd",
     "ggggggggggggggggggggggggggggggggrrrgggggggggdddddddddddrrddddddddddddgggggrrrggggggggggggggggggdgdggddggggggdgdg",
-    "gggggggggggggggggggggggggggggggrrrgggggggggggggggggggggggggggggggggggggggggrrrgggggggggggggggggdggdgdgdgddgggggd",
-    "gggggggggggggggggggggggggggggggrrgggggggggggggggggggggggggggggggggggggggggggrrrrggggggggggggggggdgdgdddggggddgdd",
-    "gggggggggggggggggggggggggggggggrrggggggggggggggggggggggggggggggggggggggggggggrrrrgggggggggggggggdgdgggggdddggggd",
-    "ggggggggggggggggggggggggggggggrrrggggggggggggggggggggggggggggggggggggggggggggggrrrrgggggggggggggggggdgddggdgdggd",
-    "ggggggggggggggggggggggggggggggrrggggggggggggggggggggggggggggggggggggggggggggggggrrrrggggggggggggggggggdgddgddggd",
-    "ggggggggdgdgggggggggggggggggggrrgggggggggggggggggggggggggggggggggggggggggggggggggrrrrggggggggggggggggggggddgdddg",
-    "gggggggddgggdggggggggggggggggrrrgggggggggggggggggggggddggdgggggggggggggggggggggggggrrrggdggdgggggggggggggggggggd",
-    "ggggggddggddgdgggggggggggggggrrggggggggggggggggggggggdgggggggggggggggggggdggggggggggrrgggddddggggggggggggggggggg",
-    "ggggggggggddgdgggggggggggggggrrggggggggggggggggggggggdggggggggggggggggggggdgggggggggrrrgggggdggggggggggggggggggg",
-    "gggggggdgggggdgdggggggggggggrrrggggggggggggggggggggggdggdgggggggggggggggddgggdgggggggrrrgggggggggggggggggggggggg",
-    "gggggggdggdgdddgggggggggggggrrgggggggggggggggggggggggddggggggggggggggggggddgdgggggggggrrgggggggggggggggggggggggg",
-    "ggggggggggggddgggggggggggggrrrggggggggggggggggggggggggdddgggggggggggggggddggggggggggggrrrgggddgggggggggggggggggg",
-    "ggggggdggdggdggggggggggggggrrgggggggggggggggggggggggggdggggggggggggggggggddgdggggggggggrrggdgggggggggggggggggggg",
-    "ggggggdgdgdggdggggggggggggrrrgggggggggggggggggggggggggggggggggggggggggdgddgdgggggggggggrrggggggggggggggggggggggg",
-    "gggggggggggggggggggggggggrrrgggggggggggggggggggggggggdgggggggggggggggggdgggggggggggggggrrrgggggggggggggggggggggg",
-    "gggggggggdgggggggggggggrrrrggggggggggdggggggggggggggggggggggggggggggggggggggggggggggggggrrgggggggggggggggggggggg",
-    "gggggggggggggggggggggggrrrggggggggggdgdgggggggggggggggggggggggggggggggggggggggggggggggggrrrgggggggggggggggdggggg",
-    "gggggggggggggggggggggrrrrggggggggdgdgdgdgggggggggggggggggggggggggggggggggggggggggggggggggrrggggggggggggggggdgggg",
-    "dgggggggggggggggggggrrrrgggggggggggddgdddggggggggggggggggggggggggggggggggggggggggggggggggrrrrgggggggggggdddggdgg",
-    "ddggggggggggggggggggrrggggggggggddggddggggggggggggggggggggggggggggggggggggggggggggggggggggrrrgggggggddggggggdggg",
-    "gggggggggggggggggggrrrggggggggggdgggggdggggggggggggggggggggggggggggggggggggggggggggggggggggrrrrgggggggggddgdddgg",
-    "gggggggggggggggggggrrgggggggggggdggggdggggggggggggggggggggggggggggggggggggggggggggggggggggggrrrgggggdggdgdgggdgg",
-    "ggggggggggggggggggggggggggggggggddgdggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggdddgddgggg",
-    "ggggggggggggggggggggggggggggggdggddggggddgdggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggddgggdgdg",
-    "gggggggggggggggggggggggggggdddggdgggggggdggdggdgggggggggggggggggggggggggggggggggggggggggggggggggggggggggdggdddgg",
-    "ggggggggggggggggggggggggggdgggdgddggggdgdddgdgddgggggggggggggggdggddgggdggdggggggggggggggggggggggggggddddgddddgg",
-    "ggggggggggggggggggggggggggggdgdgggggggdgggdddgdgdgggggggggggggddgdgggggddgdgdgggddgddggggggggggggggggggggdggdggg",
-    "ggggggggggggggggggggdddgdgddggdgdgddggdddddgdddgdggggggggggggdggdgdggggddddggggdggdgggdgggggggdgggdgdgdggggdddgg",
-    "gggggggggggggggggggdgggggggdggdggggdgggdgdddddddggggggggggggdggdgddggggddgdgdggdgggdddggggggggggddggdgggddggdggg",
-    "gggggggggggggggggdggdgddddggggggdddggggggdddgggddgggggggggggdggdggdggdgdggdgggggddggdgggggggggdgdgggdggddgggdggg",
-    "gggggggggggggggggggggdggddgdddgdgggdgdgggdggggdgggggggggggggggggggggggdgdggdgddggdggdddgggggggggdggdgggggggdgggg",
-    "gggggggggggggggggdddgggdddgdgdddggggddgddddgdgdddggggggggggggddgddgggggdgdggdddgggdgdgggggggggggggdgdgdggggggggg",
-    "gggggggggggggggggggdggggddggdggdggdggggdddgdggdggggggggggggggggdggdgdgggdgggdggddggdgggggggggggggggggggggggggggg",
-    "ggggggggggggggggggdddgdggdggdgdgggggdgggdgggggggggggggggggggggddgggdgdggdggggdgggggggggggggggggggggggggggggggggg",
-    "gggggggggggggggggddgdggggdgdgddgggdgggggggggggggggggggdgdggggggggggdggggggdgdggggggggggggggggggggggggggggggggggg",
-    "gggggggggggggggggggddggdgdggddgggdggggggggggggggggggggddggdggggggggggdggggdggggggggggggggggggggggggggggggggggggg",
-    "ddgggggggggggggggdgdddgggdggdgdgggggggggggggggggggdgdggdggggggggggggddgdggggdggggggggggggggggggggggggggggggggggg",
-    "gdgggggggggggggggggggddggggdddgggdggggggggggggggggdgggggdgggggggggggddggdgdggggggggggggggggggggggggggggggggggggg",
-    "gggggggggggggggggdggggdgggddggdggggggggggggggggggggggdgggddggggggggdgddgdgddgggggggggggggggggggggggggggggggggggg",
-    "gggggggggggggggggggdggdggdgddddddggggggggggggggggggdggdddgddggggggggddgdgggdgggggggggggggggggggggggggggggggggggg",
-    "gggggggggggggggggggggggggdgggggggggggggggggggggggdgddggdgggggggggggggggggggggggggggggggggggggggggggggggggggggggg"
+    "gggggggggggggggggggggggggggggggrrrgggggggggggggggggggggrrggggggggggggggggggrrrgggggggggggggggggdggdgdgdgddgggggd",
+    "gggggggggggggggggggggggggggggggrrggggggggggggggggggggggrrgggggggggggggggggggrrrrggggggggggggggggdgdgdddggggddgdd",
+    "gggggggggggggggggggggggggggggggrrggggggggggggggggggggggrrggggggggggggggggggggrrrrgggggggggggggggdgdgggggdddggggd",
+    "ggggggggggggggggggggggggggggggrrrggggggggggggggggggggggrrggggggggggggggggggggggrrrrgggggggggggggggggdgddggdgdggd",
+    "ggggggggggggggggggggggggggggggrrgggggggggggggggggggggggrrgggggggggggggggggggggggrrrrggggggggggggggggggdgddgddggd",
+    "ggggggggdgdgggggggggggggggggggrrgggggggggggggggggggggggrrggggggggggggggggggggggggrrrrggggggggggggggggggggddgdddg",
+    "gggggggddgggdggggggggggggggggrrrgggggggggggggggggggggggrrggggggggggggggggggggggggggrrrggddgdggggggggggggggggggdg",
+    "gggggggdddggddgggggggggggggggrrggggggggggggggggggggggggrrggggggggggggggdggdgggggggggrrgggggggggggggggggggggggggg",
+    "ggggggddgggdgddggggggggggggggrrgggggggggggggggggggggdggrrgggggggggggggggdgggggggggggrrrgggdgddgggggggggggggggggg",
+    "gggggggggdddggdgggggggggggggrrrgggggggggggggggggggggdggrrgggggggggggggdgggdggggggggggrrrggggdggggggggggggggggggg",
+    "ggggggggggdgdddgggggggggggggrrgggggggggggggggggggggggggrrggggggggggggggdgdgdgdggggggggrrgggdgggggggggggggggggggg",
+    "ggggggggddggggddgggggggggggrrrgggggggggggggggggggggggggrrgggggggggggggdddddgddggggggggrrrggggggggggggggggggggggg",
+    "ggggggdggggdggdggggggggggggrrggggggggggggggggggggggggggrrgggggggggggggdgdggdgggggggggggrrggggggggggggggggggggggg",
+    "ggggggdgdgddggggggggggggggrrrgggggggggggggggggggggggggrrrgggggggggggggddgdgggggggggggggrrggggggggggggggggggggggg",
+    "ggggggggggddgggggggggggggrrrggggggggggggggggggggggggggrrggggggggggggggggddgggggggggggggrrrgggggggggggggggggggggg",
+    "gggggggggggggggggggggggrrrrggggggggggdggggggggggggggggrrggggggggggggggggggggggggggggggggrrgggggggggggggggggggggg",
+    "gggggggggggggggggggggggrrrgggggggddddddgggggggggggggggrrggggggggggggggggggggggggggggggggrrrggggggggggggggggggdgg",
+    "gggggggggggggggggggggrrrrggggggggdddggggggggggggggggggrrgggggggggggggggggggggggggggggggggrrggggggggggggdgdggggdg",
+    "ddggggggggggggggggggrrrrgggggggggggggggddgggggggggggggrrgggggggggggggggggggggggggggggggggrrrrgggggggddgggdgddggg",
+    "gdggggggggggggggggggrrgggggggggggggddggdggggggggggggggrrggggggggggggggggggggggggggggggggggrrrggggggggddddgggdggg",
+    "dggggggggggggggggggrrrggggggggggdddgdggddgggggggggggggrrgggggggggggggggggggggggggggggggggggrrrrgggggdgggdggggdgg",
+    "gggggggggggggggggggrrgggggggggggdggdgdggggggggggggggggrrrgggggggggggggggggggggggggggggggggggrrrgggggggddggggggdg",
+    "ggggggggggggggggggggggggggggggggdggggdgggggggggggggggggrrgggggggggggggggggggggggggggggggggggggggggggdggddggggdgg",
+    "ggggggggggggggggggggggggggggggdgggdddgdddggggggggggggggrrrggggggggggggggggggggggggggggggggggggggggggdgddggddgggg",
+    "gggggggggggggggggggggggggggdgddgggdgdgdggddggggdgggggggrrrggggggggggggggggggggggggggggggggggggggggggddgdgggdddgg",
+    "gggggggggggggggggggggggggggdggggddgggggdgggggdddggggggggrrrggggggggdggdggdgdgdgdggddgggggggggggggggggggggggdgdgg",
+    "gggggggggggggggggggggggggggggdddgggddggdgggdgddggggggggggrrggggdgdddgdgdddggddggdgdggdggggggggggggggggggggddgggg",
+    "gggggggggggggggggdgddggddggddggdgdddgggdggdggggggggggggggrrggggdddgdgddgddggggggdddddggggggggggdgggddgddggdggggg",
+    "gggggggggggggggggggdggggggdddgdgddggdgdgddggdddddggggggggrrggggddgdddgggdggdgdggdgdggdggggggggggdggdgggdgggggggg",
+    "gggggggggggggggggdddddggddgdgddggdgggggggdggdggggggggggggrrggggggdgdddddddgdggggdgdgdddgggggggggddgdgdggdggggggg",
+    "gggggggggggggggggdgggddgggggdggddggggdgdggddgdgdgggggggggggggggggdddggggggdddgggddgggggggggggggdggdggdgdggdggggg",
+    "gggggggggggggggggdddddgggddgggdggdgddggggdgddddggggggggggggggggggddgdddgdgggdgdgggdgggggggggggggggggdddggggggggg",
+    "gggggggggggggggggggdggdddgggggdggdgggggggdgdgdggdggggggggggggggdddddddgggdddgdgdddgggggggggggggggggggggggggggggg",
+    "ggggggggggggggggdggggddggggggggdgdgddgdggdgdgddggggggggggggggggggdgdggggggggdggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggdggggddggddgggggdgggggggggggggggggggggggggggggggdddddggggggdgggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggdgggdgggggggdgggggggggggggggggdddgdggdgggggggggggdgggggdgggggggggggggggggggggggggggggggggggg",
+    "ddgggggggggggggggddgggdggdddggddggggggggggggggggggdggggggdgdggggggggddgdgddggggggggggggggggggggggggggggggggggggg",
+    "gdgggggggggggggggddgdggddgddddgddggggggggggggggggggggdgddggdgggggggggggddggdgggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggdgggddgggggdgggggggggggggggggggggddgggdddggggggggggdgggggdggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggdddddgddgdgggggggggggggggggggdgggddggggggggggddgdgggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggdgdggdggggggggggggggggggggggdggdgdggggggggggggggggggggggggggggggggggggggggggggggggggggg"
   ],
   "start": [
     56.5,
@@ -319,6 +319,13 @@
       "kind": "ent_sanctum",
       "x": 21.0,
       "y": 17.0,
+      "w": 3,
+      "h": 3
+    },
+    {
+      "kind": "ent_charnel",
+      "x": 56.0,
+      "y": 97.0,
       "w": 3,
       "h": 3
     },
@@ -15115,42 +15122,35 @@
     },
     {
       "kind": "bush1",
-      "x": 53.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "bush1",
-      "x": 57.0,
+      "x": 58.0,
       "y": 77.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
-      "x": 63.0,
+      "x": 62.0,
       "y": 77.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 64.0,
-      "y": 77.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "bush1",
-      "x": 66.0,
+      "kind": "tree_dead",
+      "x": 65.0,
       "y": 77.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "bush1",
-      "x": 104.0,
+      "x": 76.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock1",
+      "x": 94.0,
       "y": 77.0,
       "w": 1,
       "h": 1
@@ -15170,7 +15170,7 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 110.0,
       "y": 77.0,
       "w": 1,
@@ -15205,8 +15205,29 @@
       "h": 1
     },
     {
-      "kind": "rock1",
-      "x": 8.0,
+      "kind": "tree_oak",
+      "x": 3.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "bush1",
+      "x": 6.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "bush1",
+      "x": 16.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 18.0,
       "y": 78.0,
       "w": 1,
       "h": 1
@@ -15219,15 +15240,8 @@
       "h": 1
     },
     {
-      "kind": "tree_pine",
-      "x": 41.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 42.0,
+      "kind": "tree_oak",
+      "x": 40.0,
       "y": 78.0,
       "w": 1,
       "h": 1
@@ -15261,15 +15275,36 @@
       "h": 1
     },
     {
+      "kind": "tree_pine",
+      "x": 48.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
+      "x": 49.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
       "kind": "bush1",
-      "x": 51.0,
+      "x": 52.0,
       "y": 78.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
-      "x": 60.0,
+      "x": 61.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 62.0,
       "y": 78.0,
       "w": 1,
       "h": 1
@@ -15277,41 +15312,6 @@
     {
       "kind": "tree_oak",
       "x": 63.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 64.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 65.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 66.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock1",
-      "x": 91.0,
-      "y": 78.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 97.0,
       "y": 78.0,
       "w": 1,
       "h": 1
@@ -15325,14 +15325,21 @@
     },
     {
       "kind": "tree_oak",
-      "x": 108.0,
+      "x": 102.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
+      "x": 103.0,
       "y": 78.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
-      "x": 109.0,
+      "x": 108.0,
       "y": 78.0,
       "w": 1,
       "h": 1
@@ -15359,7 +15366,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 1.0,
       "y": 79.0,
       "w": 1,
@@ -15373,7 +15380,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 3.0,
       "y": 79.0,
       "w": 1,
@@ -15381,21 +15388,28 @@
     },
     {
       "kind": "tree_oak",
-      "x": 5.0,
+      "x": 14.0,
       "y": 79.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "rock1",
-      "x": 23.0,
+      "kind": "bush1",
+      "x": 35.0,
       "y": 79.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 40.0,
+      "kind": "tree_dead",
+      "x": 39.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 45.0,
       "y": 79.0,
       "w": 1,
       "h": 1
@@ -15408,71 +15422,29 @@
       "h": 1
     },
     {
-      "kind": "tree_pine",
-      "x": 47.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
       "kind": "tree_oak",
-      "x": 49.0,
+      "x": 60.0,
       "y": 79.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_dead",
-      "x": 61.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 65.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
       "x": 66.0,
       "y": 79.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "bush1",
-      "x": 70.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "bush1",
-      "x": 93.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 96.0,
+      "kind": "rock1",
+      "x": 80.0,
       "y": 79.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_pine",
-      "x": 100.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 101.0,
+      "x": 98.0,
       "y": 79.0,
       "w": 1,
       "h": 1
@@ -15486,28 +15458,7 @@
     },
     {
       "kind": "tree_oak",
-      "x": 103.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 104.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
       "x": 108.0,
-      "y": 79.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 109.0,
       "y": 79.0,
       "w": 1,
       "h": 1
@@ -15521,13 +15472,20 @@
     },
     {
       "kind": "tree_oak",
-      "x": 1.0,
+      "x": 0.0,
       "y": 80.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
+      "x": 1.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
       "x": 2.0,
       "y": 80.0,
       "w": 1,
@@ -15541,22 +15499,8 @@
       "h": 1
     },
     {
-      "kind": "bush1",
-      "x": 20.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "bush1",
-      "x": 37.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
       "kind": "tree_pine",
-      "x": 42.0,
+      "x": 43.0,
       "y": 80.0,
       "w": 1,
       "h": 1
@@ -15571,20 +15515,6 @@
     {
       "kind": "tree_pine",
       "x": 45.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock1",
-      "x": 50.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 60.0,
       "y": 80.0,
       "w": 1,
       "h": 1
@@ -15612,231 +15542,217 @@
     },
     {
       "kind": "tree_oak",
-      "x": 70.0,
+      "x": 66.0,
       "y": 80.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
+      "x": 67.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock1",
+      "x": 77.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 99.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 100.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 101.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 106.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 108.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 109.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 110.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 111.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 0.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 1.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 2.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 3.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "bush1",
+      "x": 11.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock1",
+      "x": 35.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 41.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 43.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 46.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 47.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 48.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
+      "x": 59.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
+      "x": 60.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 62.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 63.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
+      "x": 66.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "bush1",
       "x": 72.0,
-      "y": 80.0,
+      "y": 81.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "bush1",
-      "x": 95.0,
-      "y": 80.0,
+      "kind": "tree_oak",
+      "x": 74.0,
+      "y": 81.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_pine",
       "x": 98.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 99.0,
-      "y": 80.0,
+      "y": 81.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_pine",
       "x": 100.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 101.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 102.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 103.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 105.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 108.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 109.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 110.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 111.0,
-      "y": 80.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 0.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock1",
-      "x": 17.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "bush1",
-      "x": 33.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 37.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 40.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 42.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 43.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 44.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 45.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 48.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 49.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 60.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 62.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 65.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 67.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "bush1",
-      "x": 70.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 97.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 98.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 99.0,
       "y": 81.0,
       "w": 1,
       "h": 1
@@ -15864,27 +15780,20 @@
     },
     {
       "kind": "tree_oak",
-      "x": 105.0,
-      "y": 81.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
       "x": 108.0,
       "y": 81.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 110.0,
       "y": 81.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 111.0,
       "y": 81.0,
       "w": 1,
@@ -15899,42 +15808,14 @@
     },
     {
       "kind": "tree_oak",
-      "x": 1.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
       "x": 3.0,
       "y": 82.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "bush1",
-      "x": 7.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "bush1",
-      "x": 16.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "bush1",
-      "x": 34.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
       "kind": "tree_oak",
-      "x": 40.0,
+      "x": 39.0,
       "y": 82.0,
       "w": 1,
       "h": 1
@@ -15962,28 +15843,14 @@
     },
     {
       "kind": "tree_pine",
-      "x": 46.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 49.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 60.0,
+      "x": 47.0,
       "y": 82.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_pine",
-      "x": 61.0,
+      "x": 48.0,
       "y": 82.0,
       "w": 1,
       "h": 1
@@ -15997,7 +15864,7 @@
     },
     {
       "kind": "tree_pine",
-      "x": 63.0,
+      "x": 64.0,
       "y": 82.0,
       "w": 1,
       "h": 1
@@ -16010,36 +15877,8 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 67.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 69.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock1",
-      "x": 83.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 92.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 95.0,
+      "kind": "bush1",
+      "x": 82.0,
       "y": 82.0,
       "w": 1,
       "h": 1
@@ -16052,15 +15891,15 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 97.0,
+      "kind": "tree_pine",
+      "x": 99.0,
       "y": 82.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_pine",
-      "x": 98.0,
+      "x": 100.0,
       "y": 82.0,
       "w": 1,
       "h": 1
@@ -16073,14 +15912,7 @@
       "h": 1
     },
     {
-      "kind": "tree_pine",
-      "x": 102.0,
-      "y": 82.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 103.0,
       "y": 82.0,
       "w": 1,
@@ -16094,8 +15926,15 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 105.0,
+      "kind": "bush1",
+      "x": 106.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 108.0,
       "y": 82.0,
       "w": 1,
       "h": 1
@@ -16130,14 +15969,42 @@
     },
     {
       "kind": "tree_oak",
-      "x": 2.0,
+      "x": 1.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 3.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock1",
+      "x": 10.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock1",
+      "x": 21.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 34.0,
       "y": 83.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_dead",
-      "x": 3.0,
+      "x": 39.0,
       "y": 83.0,
       "w": 1,
       "h": 1
@@ -16150,7 +16017,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 41.0,
       "y": 83.0,
       "w": 1,
@@ -16158,7 +16025,7 @@
     },
     {
       "kind": "tree_pine",
-      "x": 44.0,
+      "x": 42.0,
       "y": 83.0,
       "w": 1,
       "h": 1
@@ -16192,8 +16059,8 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 50.0,
+      "kind": "tree_oak",
+      "x": 59.0,
       "y": 83.0,
       "w": 1,
       "h": 1
@@ -16201,6 +16068,13 @@
     {
       "kind": "tree_oak",
       "x": 60.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 62.0,
       "y": 83.0,
       "w": 1,
       "h": 1
@@ -16227,8 +16101,15 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 79.0,
+      "kind": "bush1",
+      "x": 70.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 96.0,
       "y": 83.0,
       "w": 1,
       "h": 1
@@ -16242,6 +16123,13 @@
     },
     {
       "kind": "tree_pine",
+      "x": 98.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
       "x": 100.0,
       "y": 83.0,
       "w": 1,
@@ -16249,27 +16137,41 @@
     },
     {
       "kind": "tree_oak",
-      "x": 101.0,
+      "x": 103.0,
       "y": 83.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
+      "x": 104.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock1",
+      "x": 105.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
       "x": 108.0,
       "y": 83.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 109.0,
       "y": 83.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 110.0,
       "y": 83.0,
       "w": 1,
@@ -16284,14 +16186,14 @@
     },
     {
       "kind": "tree_dead",
-      "x": 1.0,
+      "x": 0.0,
       "y": 84.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
-      "x": 2.0,
+      "x": 1.0,
       "y": 84.0,
       "w": 1,
       "h": 1
@@ -16305,14 +16207,21 @@
     },
     {
       "kind": "bush1",
-      "x": 5.0,
+      "x": 36.0,
       "y": 84.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "rock1",
-      "x": 38.0,
+      "kind": "tree_dead",
+      "x": 39.0,
+      "y": 84.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 41.0,
       "y": 84.0,
       "w": 1,
       "h": 1
@@ -16326,28 +16235,21 @@
     },
     {
       "kind": "tree_pine",
+      "x": 44.0,
+      "y": 84.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
       "x": 45.0,
       "y": 84.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_pine",
-      "x": 46.0,
-      "y": 84.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 47.0,
-      "y": 84.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 49.0,
+      "kind": "tree_dead",
+      "x": 48.0,
       "y": 84.0,
       "w": 1,
       "h": 1
@@ -16368,20 +16270,6 @@
     },
     {
       "kind": "tree_pine",
-      "x": 62.0,
-      "y": 84.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 64.0,
-      "y": 84.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
       "x": 65.0,
       "y": 84.0,
       "w": 1,
@@ -16389,7 +16277,14 @@
     },
     {
       "kind": "tree_oak",
-      "x": 95.0,
+      "x": 66.0,
+      "y": 84.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "bush1",
+      "x": 77.0,
       "y": 84.0,
       "w": 1,
       "h": 1
@@ -16403,20 +16298,27 @@
     },
     {
       "kind": "tree_dead",
+      "x": 97.0,
+      "y": 84.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 98.0,
       "y": 84.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 99.0,
       "y": 84.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 100.0,
       "y": 84.0,
       "w": 1,
@@ -16437,13 +16339,6 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 105.0,
-      "y": 84.0,
-      "w": 1,
-      "h": 1
-    },
-    {
       "kind": "tree_oak",
       "x": 108.0,
       "y": 84.0,
@@ -16452,13 +16347,13 @@
     },
     {
       "kind": "tree_oak",
-      "x": 109.0,
+      "x": 110.0,
       "y": 84.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 111.0,
       "y": 84.0,
       "w": 1,
@@ -16493,15 +16388,29 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
+      "x": 18.0,
+      "y": 85.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 19.0,
       "y": 85.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "bush1",
+      "kind": "tree_oak",
       "x": 33.0,
+      "y": 85.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 41.0,
       "y": 85.0,
       "w": 1,
       "h": 1
@@ -16535,8 +16444,36 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "bush1",
+      "x": 58.0,
+      "y": 85.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 59.0,
+      "y": 85.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 60.0,
+      "y": 85.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 61.0,
+      "y": 85.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 62.0,
       "y": 85.0,
       "w": 1,
       "h": 1
@@ -16549,8 +16486,8 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 97.0,
+      "kind": "tree_dead",
+      "x": 65.0,
       "y": 85.0,
       "w": 1,
       "h": 1
@@ -16564,21 +16501,35 @@
     },
     {
       "kind": "tree_dead",
+      "x": 108.0,
+      "y": 85.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 109.0,
+      "y": 85.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 110.0,
       "y": 85.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 0.0,
-      "y": 86.0,
+      "kind": "tree_oak",
+      "x": 111.0,
+      "y": 85.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
-      "x": 1.0,
+      "x": 0.0,
       "y": 86.0,
       "w": 1,
       "h": 1
@@ -16591,8 +16542,8 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 3.0,
+      "kind": "tree_oak",
+      "x": 7.0,
       "y": 86.0,
       "w": 1,
       "h": 1
@@ -16606,7 +16557,7 @@
     },
     {
       "kind": "tree_oak",
-      "x": 36.0,
+      "x": 18.0,
       "y": 86.0,
       "w": 1,
       "h": 1
@@ -16614,13 +16565,6 @@
     {
       "kind": "tree_oak",
       "x": 42.0,
-      "y": 86.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 43.0,
       "y": 86.0,
       "w": 1,
       "h": 1
@@ -16640,14 +16584,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 46.0,
-      "y": 86.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 47.0,
       "y": 86.0,
       "w": 1,
@@ -16662,6 +16599,13 @@
     },
     {
       "kind": "tree_oak",
+      "x": 61.0,
+      "y": 86.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 62.0,
       "y": 86.0,
       "w": 1,
@@ -16675,28 +16619,35 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 65.0,
+      "kind": "bush1",
+      "x": 76.0,
       "y": 86.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 83.0,
+      "kind": "bush1",
+      "x": 79.0,
       "y": 86.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 108.0,
+      "kind": "bush1",
+      "x": 92.0,
       "y": 86.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_dead",
+      "x": 108.0,
+      "y": 86.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 109.0,
       "y": 86.0,
       "w": 1,
@@ -16718,7 +16669,7 @@
     },
     {
       "kind": "tree_oak",
-      "x": 1.0,
+      "x": 2.0,
       "y": 87.0,
       "w": 1,
       "h": 1
@@ -16731,8 +16682,8 @@
       "h": 1
     },
     {
-      "kind": "bush1",
-      "x": 13.0,
+      "kind": "tree_oak",
+      "x": 4.0,
       "y": 87.0,
       "w": 1,
       "h": 1
@@ -16753,21 +16704,14 @@
     },
     {
       "kind": "tree_oak",
-      "x": 46.0,
+      "x": 47.0,
       "y": 87.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 60.0,
-      "y": 87.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 61.0,
       "y": 87.0,
       "w": 1,
       "h": 1
@@ -16781,27 +16725,13 @@
     },
     {
       "kind": "tree_oak",
-      "x": 64.0,
+      "x": 63.0,
       "y": 87.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
-      "x": 65.0,
-      "y": 87.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 66.0,
-      "y": 87.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
       "x": 78.0,
       "y": 87.0,
       "w": 1,
@@ -16815,28 +16745,14 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 85.0,
-      "y": 87.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock1",
-      "x": 102.0,
-      "y": 87.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 109.0,
       "y": 87.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 110.0,
       "y": 87.0,
       "w": 1,
@@ -16850,14 +16766,14 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 0.0,
       "y": 88.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 1.0,
       "y": 88.0,
       "w": 1,
@@ -16878,8 +16794,8 @@
       "h": 1
     },
     {
-      "kind": "rock1",
-      "x": 36.0,
+      "kind": "tree_oak",
+      "x": 44.0,
       "y": 88.0,
       "w": 1,
       "h": 1
@@ -16899,7 +16815,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 60.0,
       "y": 88.0,
       "w": 1,
@@ -16907,175 +16823,119 @@
     },
     {
       "kind": "tree_oak",
-      "x": 62.0,
-      "y": 88.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
       "x": 63.0,
       "y": 88.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 65.0,
-      "y": 88.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 66.0,
-      "y": 88.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 80.0,
-      "y": 88.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 81.0,
-      "y": 88.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 83.0,
-      "y": 88.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 85.0,
-      "y": 88.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock1",
-      "x": 104.0,
-      "y": 88.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 108.0,
-      "y": 88.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 109.0,
-      "y": 88.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 110.0,
-      "y": 88.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 111.0,
-      "y": 88.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 0.0,
-      "y": 89.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 1.0,
-      "y": 89.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 2.0,
-      "y": 89.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 7.0,
-      "y": 89.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 14.0,
-      "y": 89.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 61.0,
-      "y": 89.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 62.0,
-      "y": 89.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 63.0,
-      "y": 89.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
       "x": 64.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 78.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
+      "x": 80.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 81.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 85.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 107.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
+      "x": 108.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 109.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 110.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 111.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 0.0,
       "y": 89.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
-      "x": 68.0,
+      "x": 1.0,
       "y": 89.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
-      "x": 71.0,
+      "x": 2.0,
       "y": 89.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "rock1",
-      "x": 72.0,
+      "kind": "tree_oak",
+      "x": 13.0,
+      "y": 89.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 63.0,
+      "y": 89.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 66.0,
       "y": 89.0,
       "w": 1,
       "h": 1
@@ -17089,13 +16949,6 @@
     },
     {
       "kind": "tree_oak",
-      "x": 78.0,
-      "y": 89.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
       "x": 79.0,
       "y": 89.0,
       "w": 1,
@@ -17103,7 +16956,21 @@
     },
     {
       "kind": "tree_pine",
-      "x": 81.0,
+      "x": 80.0,
+      "y": 89.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 82.0,
+      "y": 89.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 83.0,
       "y": 89.0,
       "w": 1,
       "h": 1
@@ -17123,13 +16990,6 @@
       "h": 1
     },
     {
-      "kind": "bush1",
-      "x": 106.0,
-      "y": 89.0,
-      "w": 1,
-      "h": 1
-    },
-    {
       "kind": "tree_oak",
       "x": 108.0,
       "y": 89.0,
@@ -17144,7 +17004,14 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
+      "x": 110.0,
+      "y": 89.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
       "x": 111.0,
       "y": 89.0,
       "w": 1,
@@ -17165,7 +17032,7 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 2.0,
       "y": 90.0,
       "w": 1,
@@ -17180,14 +17047,28 @@
     },
     {
       "kind": "tree_oak",
+      "x": 13.0,
+      "y": 90.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 14.0,
       "y": 90.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "bush1",
-      "x": 55.0,
+      "kind": "rock1",
+      "x": 28.0,
+      "y": 90.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock1",
+      "x": 33.0,
       "y": 90.0,
       "w": 1,
       "h": 1
@@ -17200,15 +17081,22 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 66.0,
       "y": 90.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 76.0,
+      "kind": "tree_oak",
+      "x": 67.0,
+      "y": 90.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock1",
+      "x": 68.0,
       "y": 90.0,
       "w": 1,
       "h": 1
@@ -17229,13 +17117,6 @@
     },
     {
       "kind": "tree_pine",
-      "x": 80.0,
-      "y": 90.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
       "x": 81.0,
       "y": 90.0,
       "w": 1,
@@ -17250,21 +17131,7 @@
     },
     {
       "kind": "tree_pine",
-      "x": 83.0,
-      "y": 90.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 84.0,
-      "y": 90.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 85.0,
+      "x": 86.0,
       "y": 90.0,
       "w": 1,
       "h": 1
@@ -17278,13 +17145,6 @@
     },
     {
       "kind": "tree_oak",
-      "x": 109.0,
-      "y": 90.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
       "x": 110.0,
       "y": 90.0,
       "w": 1,
@@ -17292,28 +17152,56 @@
     },
     {
       "kind": "tree_dead",
+      "x": 111.0,
+      "y": 90.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 0.0,
       "y": 91.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 2.0,
+      "kind": "tree_oak",
+      "x": 1.0,
       "y": 91.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
-      "x": 3.0,
+      "x": 2.0,
       "y": 91.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_dead",
-      "x": 59.0,
+      "x": 3.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 13.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "bush1",
+      "x": 60.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
+      "x": 62.0,
       "y": 91.0,
       "w": 1,
       "h": 1
@@ -17326,15 +17214,36 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 76.0,
+      "kind": "bush1",
+      "x": 70.0,
       "y": 91.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_dead",
-      "x": 77.0,
+      "x": 76.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 78.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
+      "x": 79.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 80.0,
       "y": 91.0,
       "w": 1,
       "h": 1
@@ -17348,7 +17257,28 @@
     },
     {
       "kind": "tree_pine",
+      "x": 83.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 84.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
       "x": 85.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 86.0,
       "y": 91.0,
       "w": 1,
       "h": 1
@@ -17361,7 +17291,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 108.0,
       "y": 91.0,
       "w": 1,
@@ -17382,7 +17312,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 111.0,
       "y": 91.0,
       "w": 1,
@@ -17410,78 +17340,22 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 3.0,
       "y": 92.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 13.0,
-      "y": 92.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 14.0,
-      "y": 92.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock1",
-      "x": 31.0,
-      "y": 92.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock1",
-      "x": 51.0,
-      "y": 92.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "bush1",
-      "x": 54.0,
-      "y": 92.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 77.0,
-      "y": 92.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 78.0,
-      "y": 92.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 79.0,
-      "y": 92.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 81.0,
-      "y": 92.0,
-      "w": 1,
-      "h": 1
-    },
-    {
       "kind": "tree_dead",
-      "x": 82.0,
+      "x": 67.0,
+      "y": 92.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 80.0,
       "y": 92.0,
       "w": 1,
       "h": 1
@@ -17502,7 +17376,7 @@
     },
     {
       "kind": "tree_pine",
-      "x": 87.0,
+      "x": 86.0,
       "y": 92.0,
       "w": 1,
       "h": 1
@@ -17522,7 +17396,7 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 110.0,
       "y": 92.0,
       "w": 1,
@@ -17543,7 +17417,7 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 1.0,
       "y": 93.0,
       "w": 1,
@@ -17551,56 +17425,56 @@
     },
     {
       "kind": "tree_oak",
-      "x": 2.0,
-      "y": 93.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
       "x": 3.0,
       "y": 93.0,
       "w": 1,
       "h": 1
     },
     {
+      "kind": "tree_dead",
+      "x": 13.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock1",
+      "x": 36.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
       "kind": "bush1",
-      "x": 59.0,
+      "x": 43.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock1",
+      "x": 67.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "bush1",
+      "x": 70.0,
       "y": 93.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_dead",
-      "x": 74.0,
-      "y": 93.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock1",
-      "x": 76.0,
-      "y": 93.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock1",
-      "x": 77.0,
-      "y": 93.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 80.0,
-      "y": 93.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
       "x": 81.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 82.0,
       "y": 93.0,
       "w": 1,
       "h": 1
@@ -17613,14 +17487,49 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 84.0,
       "y": 93.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
+      "x": 85.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 86.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 87.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 88.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 108.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 109.0,
       "y": 93.0,
       "w": 1,
@@ -17641,7 +17550,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 0.0,
       "y": 94.0,
       "w": 1,
@@ -17655,29 +17564,22 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 2.0,
       "y": 94.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 3.0,
       "y": 94.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 6.0,
-      "y": 94.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 7.0,
+      "kind": "bush1",
+      "x": 5.0,
       "y": 94.0,
       "w": 1,
       "h": 1
@@ -17690,49 +17592,42 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 14.0,
+      "kind": "tree_oak",
+      "x": 12.0,
       "y": 94.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "rock1",
-      "x": 56.0,
-      "y": 94.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock1",
-      "x": 70.0,
+      "kind": "bush1",
+      "x": 76.0,
       "y": 94.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
-      "x": 81.0,
-      "y": 94.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
       "x": 87.0,
       "y": 94.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "rock1",
+      "x": 102.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 108.0,
       "y": 94.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 109.0,
       "y": 94.0,
       "w": 1,
@@ -17768,21 +17663,21 @@
     },
     {
       "kind": "tree_dead",
-      "x": 3.0,
-      "y": 95.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
       "x": 4.0,
       "y": 95.0,
       "w": 1,
       "h": 1
     },
     {
+      "kind": "tree_oak",
+      "x": 6.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
       "kind": "tree_dead",
-      "x": 5.0,
+      "x": 8.0,
       "y": 95.0,
       "w": 1,
       "h": 1
@@ -17803,42 +17698,35 @@
     },
     {
       "kind": "tree_dead",
-      "x": 13.0,
-      "y": 95.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock1",
       "x": 14.0,
       "y": 95.0,
       "w": 1,
       "h": 1
     },
     {
+      "kind": "tree_oak",
+      "x": 28.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
       "kind": "rock1",
-      "x": 39.0,
+      "x": 29.0,
       "y": 95.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 52.0,
+      "kind": "rock1",
+      "x": 78.0,
       "y": 95.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 56.0,
-      "y": 95.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 61.0,
+      "kind": "tree_oak",
+      "x": 107.0,
       "y": 95.0,
       "w": 1,
       "h": 1
@@ -17846,13 +17734,6 @@
     {
       "kind": "tree_oak",
       "x": 108.0,
-      "y": 95.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 109.0,
       "y": 95.0,
       "w": 1,
       "h": 1
@@ -17868,13 +17749,6 @@
       "kind": "tree_oak",
       "x": 111.0,
       "y": 95.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 0.0,
-      "y": 96.0,
       "w": 1,
       "h": 1
     },
@@ -17900,6 +17774,13 @@
       "h": 1
     },
     {
+      "kind": "tree_pine",
+      "x": 4.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
       "kind": "tree_dead",
       "x": 5.0,
       "y": 96.0,
@@ -17908,14 +17789,7 @@
     },
     {
       "kind": "tree_oak",
-      "x": 7.0,
-      "y": 96.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 11.0,
+      "x": 8.0,
       "y": 96.0,
       "w": 1,
       "h": 1
@@ -17924,285 +17798,236 @@
       "kind": "tree_oak",
       "x": 12.0,
       "y": 96.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 13.0,
-      "y": 96.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock1",
-      "x": 44.0,
-      "y": 96.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 55.0,
-      "y": 96.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 56.0,
-      "y": 96.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock1",
-      "x": 76.0,
-      "y": 96.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 108.0,
-      "y": 96.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 109.0,
-      "y": 96.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 110.0,
-      "y": 96.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 111.0,
-      "y": 96.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 0.0,
-      "y": 97.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 1.0,
-      "y": 97.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 2.0,
-      "y": 97.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 3.0,
-      "y": 97.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 4.0,
-      "y": 97.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 5.0,
-      "y": 97.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 8.0,
-      "y": 97.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 9.0,
-      "y": 97.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 11.0,
-      "y": 97.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 13.0,
-      "y": 97.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 51.0,
-      "y": 97.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 53.0,
-      "y": 97.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 54.0,
-      "y": 97.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 55.0,
-      "y": 97.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "bush1",
-      "x": 69.0,
-      "y": 97.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 76.0,
-      "y": 97.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 108.0,
-      "y": 97.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 110.0,
-      "y": 97.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 111.0,
-      "y": 97.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 0.0,
-      "y": 98.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 2.0,
-      "y": 98.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 4.0,
-      "y": 98.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 5.0,
-      "y": 98.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 8.0,
-      "y": 98.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 10.0,
-      "y": 98.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 11.0,
-      "y": 98.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "bush1",
       "x": 33.0,
-      "y": 98.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock1",
+      "x": 40.0,
+      "y": 96.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "bush1",
-      "x": 38.0,
-      "y": 98.0,
+      "x": 47.0,
+      "y": 96.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
       "x": 51.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock1",
+      "x": 66.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 108.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 109.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 110.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 0.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 1.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 2.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 5.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 6.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 10.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 11.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 12.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 51.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock1",
+      "x": 69.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "bush1",
+      "x": 77.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 108.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 109.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 110.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 0.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 1.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 6.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 7.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 8.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 10.0,
       "y": 98.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
-      "x": 56.0,
+      "x": 11.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "bush1",
+      "x": 13.0,
       "y": 98.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_dead",
-      "x": 58.0,
+      "x": 17.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock1",
+      "x": 89.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
+      "x": 95.0,
       "y": 98.0,
       "w": 1,
       "h": 1
@@ -18217,6 +18042,13 @@
     {
       "kind": "tree_oak",
       "x": 109.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 110.0,
       "y": 98.0,
       "w": 1,
       "h": 1
@@ -18244,7 +18076,7 @@
     },
     {
       "kind": "tree_pine",
-      "x": 2.0,
+      "x": 3.0,
       "y": 99.0,
       "w": 1,
       "h": 1
@@ -18265,7 +18097,7 @@
     },
     {
       "kind": "tree_pine",
-      "x": 6.0,
+      "x": 7.0,
       "y": 99.0,
       "w": 1,
       "h": 1
@@ -18286,62 +18118,41 @@
     },
     {
       "kind": "tree_oak",
+      "x": 12.0,
+      "y": 99.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "bush1",
+      "x": 16.0,
+      "y": 99.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "bush1",
+      "x": 39.0,
+      "y": 99.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "bush1",
+      "x": 44.0,
+      "y": 99.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
       "x": 51.0,
       "y": 99.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 52.0,
-      "y": 99.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 53.0,
-      "y": 99.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 55.0,
-      "y": 99.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock1",
-      "x": 64.0,
-      "y": 99.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock1",
-      "x": 73.0,
-      "y": 99.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "bush1",
-      "x": 98.0,
-      "y": 99.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock1",
-      "x": 101.0,
-      "y": 99.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 108.0,
       "y": 99.0,
       "w": 1,
@@ -18349,13 +18160,13 @@
     },
     {
       "kind": "tree_oak",
-      "x": 109.0,
+      "x": 110.0,
       "y": 99.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 111.0,
       "y": 99.0,
       "w": 1,
@@ -18377,13 +18188,6 @@
     },
     {
       "kind": "tree_pine",
-      "x": 2.0,
-      "y": 100.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
       "x": 3.0,
       "y": 100.0,
       "w": 1,
@@ -18391,14 +18195,7 @@
     },
     {
       "kind": "tree_pine",
-      "x": 5.0,
-      "y": 100.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 6.0,
+      "x": 4.0,
       "y": 100.0,
       "w": 1,
       "h": 1
@@ -18418,70 +18215,35 @@
       "h": 1
     },
     {
-      "kind": "tree_pine",
-      "x": 10.0,
-      "y": 100.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "bush1",
-      "x": 27.0,
-      "y": 100.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 55.0,
-      "y": 100.0,
-      "w": 1,
-      "h": 1
-    },
-    {
       "kind": "tree_oak",
-      "x": 56.0,
-      "y": 100.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 58.0,
-      "y": 100.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "bush1",
-      "x": 81.0,
+      "x": 51.0,
       "y": 100.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "rock1",
-      "x": 106.0,
-      "y": 100.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 108.0,
-      "y": 100.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 109.0,
+      "x": 98.0,
       "y": 100.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_dead",
+      "x": 108.0,
+      "y": 100.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
+      "x": 109.0,
+      "y": 100.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 110.0,
       "y": 100.0,
       "w": 1,
@@ -18490,6 +18252,13 @@
     {
       "kind": "tree_pine",
       "x": 0.0,
+      "y": 101.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 1.0,
       "y": 101.0,
       "w": 1,
       "h": 1
@@ -18510,7 +18279,14 @@
     },
     {
       "kind": "tree_pine",
-      "x": 5.0,
+      "x": 4.0,
+      "y": 101.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 6.0,
       "y": 101.0,
       "w": 1,
       "h": 1
@@ -18523,120 +18299,120 @@
       "h": 1
     },
     {
+      "kind": "tree_oak",
+      "x": 12.0,
+      "y": 101.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
+      "x": 13.0,
+      "y": 101.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock1",
+      "x": 18.0,
+      "y": 101.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "bush1",
+      "x": 25.0,
+      "y": 101.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
+      "x": 87.0,
+      "y": 101.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "bush1",
+      "x": 90.0,
+      "y": 101.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 108.0,
+      "y": 101.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 109.0,
+      "y": 101.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 110.0,
+      "y": 101.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 111.0,
+      "y": 101.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 0.0,
+      "y": 102.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 1.0,
+      "y": 102.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 2.0,
+      "y": 102.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 3.0,
+      "y": 102.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 9.0,
+      "y": 102.0,
+      "w": 1,
+      "h": 1
+    },
+    {
       "kind": "tree_pine",
       "x": 10.0,
-      "y": 101.0,
+      "y": 102.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_pine",
       "x": 11.0,
-      "y": 101.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 15.0,
-      "y": 101.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 16.0,
-      "y": 101.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "bush1",
-      "x": 36.0,
-      "y": 101.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 53.0,
-      "y": 101.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 57.0,
-      "y": 101.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock1",
-      "x": 81.0,
-      "y": 101.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 108.0,
-      "y": 101.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 110.0,
-      "y": 101.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 0.0,
-      "y": 102.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 1.0,
-      "y": 102.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 2.0,
-      "y": 102.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 3.0,
-      "y": 102.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 5.0,
-      "y": 102.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 7.0,
-      "y": 102.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 8.0,
       "y": 102.0,
       "w": 1,
       "h": 1
@@ -18650,56 +18426,21 @@
     },
     {
       "kind": "tree_oak",
-      "x": 13.0,
+      "x": 44.0,
       "y": 102.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "bush1",
-      "x": 14.0,
-      "y": 102.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 15.0,
-      "y": 102.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock1",
-      "x": 32.0,
-      "y": 102.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 53.0,
-      "y": 102.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 56.0,
-      "y": 102.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock1",
-      "x": 72.0,
+      "x": 51.0,
       "y": 102.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "bush1",
-      "x": 87.0,
+      "x": 77.0,
       "y": 102.0,
       "w": 1,
       "h": 1
@@ -18719,14 +18460,14 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 110.0,
       "y": 102.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 111.0,
       "y": 102.0,
       "w": 1,
@@ -18756,6 +18497,20 @@
     {
       "kind": "tree_oak",
       "x": 3.0,
+      "y": 103.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 4.0,
+      "y": 103.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 5.0,
       "y": 103.0,
       "w": 1,
       "h": 1
@@ -18769,62 +18524,69 @@
     },
     {
       "kind": "tree_pine",
+      "x": 8.0,
+      "y": 103.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
       "x": 10.0,
       "y": 103.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 12.0,
-      "y": 103.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "bush1",
-      "x": 37.0,
+      "kind": "tree_pine",
+      "x": 11.0,
       "y": 103.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
-      "x": 58.0,
+      "x": 13.0,
       "y": 103.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "rock1",
+      "x": 19.0,
+      "y": 103.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 66.0,
       "y": 103.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "bush1",
-      "x": 72.0,
+      "kind": "rock1",
+      "x": 82.0,
       "y": 103.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
-      "x": 81.0,
-      "y": 103.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 109.0,
+      "x": 108.0,
       "y": 103.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_dead",
+      "x": 109.0,
+      "y": 103.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 110.0,
       "y": 103.0,
       "w": 1,
@@ -18853,7 +18615,42 @@
     },
     {
       "kind": "tree_oak",
+      "x": 2.0,
+      "y": 104.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 3.0,
+      "y": 104.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
+      "x": 4.0,
+      "y": 104.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 5.0,
+      "y": 104.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 6.0,
+      "y": 104.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 7.0,
       "y": 104.0,
       "w": 1,
       "h": 1
@@ -18867,49 +18664,35 @@
     },
     {
       "kind": "tree_pine",
-      "x": 10.0,
-      "y": 104.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "rock1",
-      "x": 61.0,
-      "y": 104.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "bush1",
-      "x": 64.0,
+      "x": 9.0,
       "y": 104.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
-      "x": 68.0,
+      "x": 12.0,
       "y": 104.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 83.0,
+      "kind": "tree_oak",
+      "x": 28.0,
       "y": 104.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 98.0,
       "y": 104.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 100.0,
+      "kind": "bush1",
+      "x": 103.0,
       "y": 104.0,
       "w": 1,
       "h": 1
@@ -18922,15 +18705,8 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 109.0,
-      "y": 104.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 111.0,
+      "kind": "tree_oak",
+      "x": 110.0,
       "y": 104.0,
       "w": 1,
       "h": 1
@@ -18943,7 +18719,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 1.0,
       "y": 105.0,
       "w": 1,
@@ -18951,7 +18727,7 @@
     },
     {
       "kind": "tree_oak",
-      "x": 2.0,
+      "x": 3.0,
       "y": 105.0,
       "w": 1,
       "h": 1
@@ -18964,36 +18740,36 @@
       "h": 1
     },
     {
-      "kind": "tree_pine",
-      "x": 6.0,
+      "kind": "tree_oak",
+      "x": 5.0,
       "y": 105.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_pine",
-      "x": 7.0,
-      "y": 105.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 10.0,
-      "y": 105.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 96.0,
+      "x": 8.0,
       "y": 105.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
-      "x": 97.0,
+      "x": 22.0,
+      "y": 105.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 51.0,
+      "y": 105.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 98.0,
       "y": 105.0,
       "w": 1,
       "h": 1
@@ -19006,21 +18782,7 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 100.0,
-      "y": 105.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 101.0,
-      "y": 105.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 102.0,
       "y": 105.0,
       "w": 1,
@@ -19028,34 +18790,27 @@
     },
     {
       "kind": "tree_dead",
-      "x": 106.0,
-      "y": 105.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
       "x": 108.0,
       "y": 105.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 109.0,
       "y": 105.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 110.0,
       "y": 105.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 0.0,
       "y": 106.0,
       "w": 1,
@@ -19077,56 +18832,49 @@
     },
     {
       "kind": "tree_pine",
-      "x": 6.0,
-      "y": 106.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 7.0,
-      "y": 106.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 9.0,
-      "y": 106.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
       "x": 10.0,
       "y": 106.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_pine",
-      "x": 11.0,
+      "kind": "tree_oak",
+      "x": 13.0,
       "y": 106.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 12.0,
+      "kind": "rock1",
+      "x": 42.0,
       "y": 106.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 27.0,
+      "kind": "bush1",
+      "x": 47.0,
       "y": 106.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 94.0,
+      "kind": "tree_dead",
+      "x": 70.0,
+      "y": 106.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "rock1",
+      "x": 92.0,
+      "y": 106.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
+      "x": 95.0,
       "y": 106.0,
       "w": 1,
       "h": 1
@@ -19140,7 +18888,7 @@
     },
     {
       "kind": "tree_pine",
-      "x": 97.0,
+      "x": 98.0,
       "y": 106.0,
       "w": 1,
       "h": 1
@@ -19153,15 +18901,8 @@
       "h": 1
     },
     {
-      "kind": "tree_pine",
-      "x": 100.0,
-      "y": 106.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 101.0,
+      "kind": "tree_oak",
+      "x": 103.0,
       "y": 106.0,
       "w": 1,
       "h": 1
@@ -19181,7 +18922,14 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
+      "x": 110.0,
+      "y": 106.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 111.0,
       "y": 106.0,
       "w": 1,
@@ -19195,7 +18943,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 1.0,
       "y": 107.0,
       "w": 1,
@@ -19203,7 +18951,28 @@
     },
     {
       "kind": "tree_oak",
+      "x": 2.0,
+      "y": 107.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 3.0,
+      "y": 107.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 5.0,
+      "y": 107.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 6.0,
       "y": 107.0,
       "w": 1,
       "h": 1
@@ -19230,15 +18999,15 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 12.0,
+      "kind": "tree_dead",
+      "x": 86.0,
       "y": 107.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "bush1",
-      "x": 76.0,
+      "kind": "rock1",
+      "x": 92.0,
       "y": 107.0,
       "w": 1,
       "h": 1
@@ -19251,22 +19020,8 @@
       "h": 1
     },
     {
-      "kind": "tree_pine",
-      "x": 95.0,
-      "y": 107.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 99.0,
-      "y": 107.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 100.0,
+      "kind": "tree_oak",
+      "x": 94.0,
       "y": 107.0,
       "w": 1,
       "h": 1
@@ -19286,7 +19041,14 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
+      "x": 104.0,
+      "y": 107.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
       "x": 108.0,
       "y": 107.0,
       "w": 1,
@@ -19301,20 +19063,13 @@
     },
     {
       "kind": "tree_oak",
-      "x": 110.0,
+      "x": 111.0,
       "y": 107.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 0.0,
-      "y": 108.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 1.0,
       "y": 108.0,
       "w": 1,
@@ -19342,8 +19097,22 @@
       "h": 1
     },
     {
+      "kind": "tree_oak",
+      "x": 5.0,
+      "y": 108.0,
+      "w": 1,
+      "h": 1
+    },
+    {
       "kind": "tree_pine",
       "x": 6.0,
+      "y": 108.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 7.0,
       "y": 108.0,
       "w": 1,
       "h": 1
@@ -19391,7 +19160,7 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 14.0,
       "y": 108.0,
       "w": 1,
@@ -19419,7 +19188,7 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 18.0,
       "y": 108.0,
       "w": 1,
@@ -19433,7 +19202,7 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 20.0,
       "y": 108.0,
       "w": 1,
@@ -19441,21 +19210,7 @@
     },
     {
       "kind": "tree_oak",
-      "x": 21.0,
-      "y": 108.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
       "x": 22.0,
-      "y": 108.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 23.0,
       "y": 108.0,
       "w": 1,
       "h": 1
@@ -19503,14 +19258,14 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 30.0,
       "y": 108.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 31.0,
       "y": 108.0,
       "w": 1,
@@ -19532,13 +19287,6 @@
     },
     {
       "kind": "tree_oak",
-      "x": 34.0,
-      "y": 108.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
       "x": 35.0,
       "y": 108.0,
       "w": 1,
@@ -19547,13 +19295,6 @@
     {
       "kind": "tree_oak",
       "x": 36.0,
-      "y": 108.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 37.0,
       "y": 108.0,
       "w": 1,
       "h": 1
@@ -19588,6 +19329,13 @@
     },
     {
       "kind": "tree_oak",
+      "x": 42.0,
+      "y": 108.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 43.0,
       "y": 108.0,
       "w": 1,
@@ -19601,7 +19349,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 45.0,
       "y": 108.0,
       "w": 1,
@@ -19609,6 +19357,13 @@
     },
     {
       "kind": "tree_oak",
+      "x": 46.0,
+      "y": 108.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
       "x": 47.0,
       "y": 108.0,
       "w": 1,
@@ -19616,13 +19371,20 @@
     },
     {
       "kind": "tree_dead",
+      "x": 48.0,
+      "y": 108.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 49.0,
       "y": 108.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 50.0,
       "y": 108.0,
       "w": 1,
@@ -19636,14 +19398,14 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 52.0,
       "y": 108.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 53.0,
       "y": 108.0,
       "w": 1,
@@ -19678,7 +19440,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 58.0,
       "y": 108.0,
       "w": 1,
@@ -19713,7 +19475,14 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
+      "x": 63.0,
+      "y": 108.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 64.0,
       "y": 108.0,
       "w": 1,
@@ -19735,13 +19504,13 @@
     },
     {
       "kind": "tree_oak",
-      "x": 67.0,
+      "x": 68.0,
       "y": 108.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 69.0,
       "y": 108.0,
       "w": 1,
@@ -19749,14 +19518,7 @@
     },
     {
       "kind": "tree_oak",
-      "x": 70.0,
-      "y": 108.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 72.0,
+      "x": 71.0,
       "y": 108.0,
       "w": 1,
       "h": 1
@@ -19769,15 +19531,8 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 74.0,
-      "y": 108.0,
-      "w": 1,
-      "h": 1
-    },
-    {
       "kind": "tree_oak",
-      "x": 75.0,
+      "x": 74.0,
       "y": 108.0,
       "w": 1,
       "h": 1
@@ -19791,27 +19546,13 @@
     },
     {
       "kind": "tree_oak",
-      "x": 77.0,
-      "y": 108.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 78.0,
-      "y": 108.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
       "x": 79.0,
       "y": 108.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 80.0,
       "y": 108.0,
       "w": 1,
@@ -19825,15 +19566,8 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 82.0,
-      "y": 108.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 83.0,
+      "kind": "tree_dead",
+      "x": 84.0,
       "y": 108.0,
       "w": 1,
       "h": 1
@@ -19854,13 +19588,6 @@
     },
     {
       "kind": "tree_oak",
-      "x": 87.0,
-      "y": 108.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
       "x": 88.0,
       "y": 108.0,
       "w": 1,
@@ -19868,6 +19595,20 @@
     },
     {
       "kind": "tree_oak",
+      "x": 89.0,
+      "y": 108.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 90.0,
+      "y": 108.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
       "x": 91.0,
       "y": 108.0,
       "w": 1,
@@ -19881,7 +19622,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 94.0,
       "y": 108.0,
       "w": 1,
@@ -19945,49 +19686,28 @@
     },
     {
       "kind": "tree_oak",
-      "x": 103.0,
-      "y": 108.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
       "x": 104.0,
       "y": 108.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 105.0,
       "y": 108.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 106.0,
       "y": 108.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 107.0,
-      "y": 108.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 108.0,
-      "y": 108.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 109.0,
       "y": 108.0,
       "w": 1,
       "h": 1
@@ -19995,13 +19715,6 @@
     {
       "kind": "tree_oak",
       "x": 110.0,
-      "y": 108.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 111.0,
       "y": 108.0,
       "w": 1,
       "h": 1
@@ -20021,14 +19734,14 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 2.0,
       "y": 109.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 3.0,
       "y": 109.0,
       "w": 1,
@@ -20036,13 +19749,20 @@
     },
     {
       "kind": "tree_oak",
-      "x": 5.0,
+      "x": 4.0,
       "y": 109.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_dead",
+      "x": 5.0,
+      "y": 109.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 6.0,
       "y": 109.0,
       "w": 1,
@@ -20084,29 +19804,29 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 12.0,
       "y": 109.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 14.0,
-      "y": 109.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 16.0,
+      "kind": "tree_oak",
+      "x": 13.0,
       "y": 109.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
-      "x": 18.0,
+      "x": 14.0,
+      "y": 109.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 17.0,
       "y": 109.0,
       "w": 1,
       "h": 1
@@ -20133,8 +19853,8 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 23.0,
+      "kind": "tree_oak",
+      "x": 22.0,
       "y": 109.0,
       "w": 1,
       "h": 1
@@ -20148,21 +19868,7 @@
     },
     {
       "kind": "tree_oak",
-      "x": 26.0,
-      "y": 109.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 27.0,
-      "y": 109.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 28.0,
+      "x": 25.0,
       "y": 109.0,
       "w": 1,
       "h": 1
@@ -20176,13 +19882,13 @@
     },
     {
       "kind": "tree_oak",
-      "x": 30.0,
+      "x": 31.0,
       "y": 109.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 32.0,
       "y": 109.0,
       "w": 1,
@@ -20204,20 +19910,13 @@
     },
     {
       "kind": "tree_oak",
-      "x": 35.0,
-      "y": 109.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
       "x": 36.0,
       "y": 109.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 37.0,
       "y": 109.0,
       "w": 1,
@@ -20252,7 +19951,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 42.0,
       "y": 109.0,
       "w": 1,
@@ -20261,13 +19960,6 @@
     {
       "kind": "tree_oak",
       "x": 43.0,
-      "y": 109.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 44.0,
       "y": 109.0,
       "w": 1,
       "h": 1
@@ -20301,7 +19993,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 49.0,
       "y": 109.0,
       "w": 1,
@@ -20309,6 +20001,13 @@
     },
     {
       "kind": "tree_oak",
+      "x": 50.0,
+      "y": 109.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
       "x": 51.0,
       "y": 109.0,
       "w": 1,
@@ -20322,7 +20021,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 53.0,
       "y": 109.0,
       "w": 1,
@@ -20351,7 +20050,7 @@
     },
     {
       "kind": "tree_oak",
-      "x": 57.0,
+      "x": 58.0,
       "y": 109.0,
       "w": 1,
       "h": 1
@@ -20364,7 +20063,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 60.0,
       "y": 109.0,
       "w": 1,
@@ -20387,13 +20086,6 @@
     {
       "kind": "tree_oak",
       "x": 63.0,
-      "y": 109.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 64.0,
       "y": 109.0,
       "w": 1,
       "h": 1
@@ -20434,15 +20126,15 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 71.0,
+      "kind": "tree_oak",
+      "x": 70.0,
       "y": 109.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
-      "x": 72.0,
+      "x": 71.0,
       "y": 109.0,
       "w": 1,
       "h": 1
@@ -20455,7 +20147,7 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 74.0,
       "y": 109.0,
       "w": 1,
@@ -20483,14 +20175,28 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 80.0,
+      "kind": "tree_oak",
+      "x": 78.0,
       "y": 109.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_dead",
+      "x": 79.0,
+      "y": 109.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 80.0,
+      "y": 109.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 81.0,
       "y": 109.0,
       "w": 1,
@@ -20504,7 +20210,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 83.0,
       "y": 109.0,
       "w": 1,
@@ -20518,7 +20224,7 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 85.0,
       "y": 109.0,
       "w": 1,
@@ -20532,7 +20238,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 87.0,
       "y": 109.0,
       "w": 1,
@@ -20560,7 +20266,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 91.0,
       "y": 109.0,
       "w": 1,
@@ -20574,7 +20280,7 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 93.0,
       "y": 109.0,
       "w": 1,
@@ -20589,6 +20295,13 @@
     },
     {
       "kind": "tree_pine",
+      "x": 95.0,
+      "y": 109.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
       "x": 96.0,
       "y": 109.0,
       "w": 1,
@@ -20597,13 +20310,6 @@
     {
       "kind": "tree_pine",
       "x": 97.0,
-      "y": 109.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 98.0,
       "y": 109.0,
       "w": 1,
       "h": 1
@@ -20637,21 +20343,7 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 103.0,
-      "y": 109.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 104.0,
-      "y": 109.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 105.0,
       "y": 109.0,
       "w": 1,
@@ -20665,7 +20357,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 107.0,
       "y": 109.0,
       "w": 1,
@@ -20680,8 +20372,29 @@
     },
     {
       "kind": "tree_oak",
+      "x": 110.0,
+      "y": 109.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 111.0,
       "y": 109.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 0.0,
+      "y": 110.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
+      "x": 1.0,
+      "y": 110.0,
       "w": 1,
       "h": 1
     },
@@ -20700,7 +20413,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 5.0,
       "y": 110.0,
       "w": 1,
@@ -20749,7 +20462,7 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 12.0,
       "y": 110.0,
       "w": 1,
@@ -20758,13 +20471,6 @@
     {
       "kind": "tree_oak",
       "x": 13.0,
-      "y": 110.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
-      "x": 14.0,
       "y": 110.0,
       "w": 1,
       "h": 1
@@ -20792,13 +20498,20 @@
     },
     {
       "kind": "tree_dead",
+      "x": 19.0,
+      "y": 110.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 21.0,
       "y": 110.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 22.0,
       "y": 110.0,
       "w": 1,
@@ -20827,13 +20540,20 @@
     },
     {
       "kind": "tree_oak",
-      "x": 27.0,
+      "x": 26.0,
       "y": 110.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
+      "x": 27.0,
+      "y": 110.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
       "x": 28.0,
       "y": 110.0,
       "w": 1,
@@ -20847,7 +20567,7 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 30.0,
       "y": 110.0,
       "w": 1,
@@ -20855,13 +20575,6 @@
     },
     {
       "kind": "tree_oak",
-      "x": 31.0,
-      "y": 110.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
       "x": 32.0,
       "y": 110.0,
       "w": 1,
@@ -20869,13 +20582,20 @@
     },
     {
       "kind": "tree_oak",
-      "x": 34.0,
+      "x": 33.0,
       "y": 110.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_dead",
+      "x": 34.0,
+      "y": 110.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 35.0,
       "y": 110.0,
       "w": 1,
@@ -20896,7 +20616,7 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 38.0,
       "y": 110.0,
       "w": 1,
@@ -20917,7 +20637,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 41.0,
       "y": 110.0,
       "w": 1,
@@ -20931,14 +20651,14 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
-      "x": 44.0,
+      "kind": "tree_dead",
+      "x": 43.0,
       "y": 110.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 45.0,
       "y": 110.0,
       "w": 1,
@@ -20946,13 +20666,6 @@
     },
     {
       "kind": "tree_oak",
-      "x": 46.0,
-      "y": 110.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
       "x": 47.0,
       "y": 110.0,
       "w": 1,
@@ -20966,7 +20679,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 49.0,
       "y": 110.0,
       "w": 1,
@@ -20980,7 +20693,7 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 51.0,
       "y": 110.0,
       "w": 1,
@@ -20994,8 +20707,15 @@
       "h": 1
     },
     {
+      "kind": "tree_dead",
+      "x": 53.0,
+      "y": 110.0,
+      "w": 1,
+      "h": 1
+    },
+    {
       "kind": "tree_oak",
-      "x": 55.0,
+      "x": 54.0,
       "y": 110.0,
       "w": 1,
       "h": 1
@@ -21008,7 +20728,7 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 57.0,
       "y": 110.0,
       "w": 1,
@@ -21022,14 +20742,14 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 59.0,
       "y": 110.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 60.0,
       "y": 110.0,
       "w": 1,
@@ -21064,7 +20784,14 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
+      "x": 65.0,
+      "y": 110.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 66.0,
       "y": 110.0,
       "w": 1,
@@ -21078,7 +20805,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 68.0,
       "y": 110.0,
       "w": 1,
@@ -21113,14 +20840,14 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 73.0,
       "y": 110.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 74.0,
       "y": 110.0,
       "w": 1,
@@ -21141,14 +20868,14 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 77.0,
       "y": 110.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 78.0,
       "y": 110.0,
       "w": 1,
@@ -21162,7 +20889,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 80.0,
       "y": 110.0,
       "w": 1,
@@ -21212,13 +20939,6 @@
     },
     {
       "kind": "tree_oak",
-      "x": 87.0,
-      "y": 110.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
       "x": 88.0,
       "y": 110.0,
       "w": 1,
@@ -21246,14 +20966,14 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 92.0,
       "y": 110.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 93.0,
       "y": 110.0,
       "w": 1,
@@ -21267,8 +20987,15 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 95.0,
+      "y": 110.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 96.0,
       "y": 110.0,
       "w": 1,
       "h": 1
@@ -21283,6 +21010,13 @@
     {
       "kind": "tree_pine",
       "x": 98.0,
+      "y": 110.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 99.0,
       "y": 110.0,
       "w": 1,
       "h": 1
@@ -21304,6 +21038,13 @@
     {
       "kind": "tree_pine",
       "x": 102.0,
+      "y": 110.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
+      "x": 103.0,
       "y": 110.0,
       "w": 1,
       "h": 1
@@ -21331,34 +21072,27 @@
     },
     {
       "kind": "tree_dead",
-      "x": 107.0,
-      "y": 110.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
       "x": 108.0,
       "y": 110.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 109.0,
       "y": 110.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 110.0,
       "y": 110.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 111.0,
       "y": 110.0,
       "w": 1,
@@ -21373,14 +21107,14 @@
     },
     {
       "kind": "tree_oak",
-      "x": 2.0,
+      "x": 1.0,
       "y": 111.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
-      "x": 3.0,
+      "x": 2.0,
       "y": 111.0,
       "w": 1,
       "h": 1
@@ -21393,7 +21127,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 5.0,
       "y": 111.0,
       "w": 1,
@@ -21402,20 +21136,6 @@
     {
       "kind": "tree_oak",
       "x": 6.0,
-      "y": 111.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 7.0,
-      "y": 111.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_pine",
-      "x": 8.0,
       "y": 111.0,
       "w": 1,
       "h": 1
@@ -21442,8 +21162,15 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 12.0,
+      "y": 111.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 13.0,
       "y": 111.0,
       "w": 1,
       "h": 1
@@ -21470,15 +21197,15 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 17.0,
       "y": 111.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 19.0,
+      "kind": "tree_oak",
+      "x": 18.0,
       "y": 111.0,
       "w": 1,
       "h": 1
@@ -21498,7 +21225,7 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 22.0,
       "y": 111.0,
       "w": 1,
@@ -21520,7 +21247,7 @@
     },
     {
       "kind": "tree_oak",
-      "x": 25.0,
+      "x": 26.0,
       "y": 111.0,
       "w": 1,
       "h": 1
@@ -21533,7 +21260,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 28.0,
       "y": 111.0,
       "w": 1,
@@ -21554,15 +21281,8 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 31.0,
-      "y": 111.0,
-      "w": 1,
-      "h": 1
-    },
-    {
       "kind": "tree_oak",
-      "x": 32.0,
+      "x": 31.0,
       "y": 111.0,
       "w": 1,
       "h": 1
@@ -21576,20 +21296,6 @@
     },
     {
       "kind": "tree_oak",
-      "x": 34.0,
-      "y": 111.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 35.0,
-      "y": 111.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
       "x": 36.0,
       "y": 111.0,
       "w": 1,
@@ -21597,27 +21303,20 @@
     },
     {
       "kind": "tree_dead",
-      "x": 37.0,
-      "y": 111.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
       "x": 38.0,
       "y": 111.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 39.0,
       "y": 111.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 40.0,
       "y": 111.0,
       "w": 1,
@@ -21646,13 +21345,13 @@
     },
     {
       "kind": "tree_oak",
-      "x": 44.0,
+      "x": 45.0,
       "y": 111.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 46.0,
       "y": 111.0,
       "w": 1,
@@ -21661,13 +21360,6 @@
     {
       "kind": "tree_oak",
       "x": 47.0,
-      "y": 111.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
-      "x": 48.0,
       "y": 111.0,
       "w": 1,
       "h": 1
@@ -21694,21 +21386,21 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 52.0,
       "y": 111.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 53.0,
       "y": 111.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 54.0,
       "y": 111.0,
       "w": 1,
@@ -21729,13 +21421,6 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 57.0,
-      "y": 111.0,
-      "w": 1,
-      "h": 1
-    },
-    {
       "kind": "tree_oak",
       "x": 58.0,
       "y": 111.0,
@@ -21743,7 +21428,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 59.0,
       "y": 111.0,
       "w": 1,
@@ -21757,7 +21442,7 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 61.0,
       "y": 111.0,
       "w": 1,
@@ -21785,7 +21470,7 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 65.0,
       "y": 111.0,
       "w": 1,
@@ -21813,7 +21498,7 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 69.0,
       "y": 111.0,
       "w": 1,
@@ -21821,13 +21506,6 @@
     },
     {
       "kind": "tree_oak",
-      "x": 70.0,
-      "y": 111.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_dead",
       "x": 71.0,
       "y": 111.0,
       "w": 1,
@@ -21870,13 +21548,6 @@
     },
     {
       "kind": "tree_oak",
-      "x": 77.0,
-      "y": 111.0,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "kind": "tree_oak",
       "x": 78.0,
       "y": 111.0,
       "w": 1,
@@ -21897,14 +21568,28 @@
       "h": 1
     },
     {
+      "kind": "tree_dead",
+      "x": 81.0,
+      "y": 111.0,
+      "w": 1,
+      "h": 1
+    },
+    {
       "kind": "tree_oak",
-      "x": 83.0,
+      "x": 82.0,
       "y": 111.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_dead",
+      "x": 83.0,
+      "y": 111.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
       "x": 84.0,
       "y": 111.0,
       "w": 1,
@@ -21932,14 +21617,28 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
-      "x": 90.0,
+      "kind": "tree_oak",
+      "x": 88.0,
       "y": 111.0,
       "w": 1,
       "h": 1
     },
     {
       "kind": "tree_oak",
+      "x": 89.0,
+      "y": 111.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_oak",
+      "x": 90.0,
+      "y": 111.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
       "x": 91.0,
       "y": 111.0,
       "w": 1,
@@ -21953,14 +21652,14 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 93.0,
       "y": 111.0,
       "w": 1,
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 94.0,
       "y": 111.0,
       "w": 1,
@@ -21974,7 +21673,7 @@
       "h": 1
     },
     {
-      "kind": "tree_oak",
+      "kind": "tree_dead",
       "x": 96.0,
       "y": 111.0,
       "w": 1,
@@ -21997,6 +21696,13 @@
     {
       "kind": "tree_pine",
       "x": 99.0,
+      "y": 111.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_pine",
+      "x": 100.0,
       "y": 111.0,
       "w": 1,
       "h": 1
@@ -22030,7 +21736,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 105.0,
       "y": 111.0,
       "w": 1,
@@ -22045,6 +21751,13 @@
     },
     {
       "kind": "tree_oak",
+      "x": 107.0,
+      "y": 111.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "tree_dead",
       "x": 108.0,
       "y": 111.0,
       "w": 1,
@@ -22058,7 +21771,7 @@
       "h": 1
     },
     {
-      "kind": "tree_dead",
+      "kind": "tree_oak",
       "x": 110.0,
       "y": 111.0,
       "w": 1,
@@ -22094,6 +21807,11 @@
       "y": 20.5
     },
     {
+      "kind": "entrance24",
+      "x": 57.5,
+      "y": 100.5
+    },
+    {
       "kind": "pass1",
       "x": 57.5,
       "y": 7.5
@@ -22101,51 +21819,213 @@
   ],
   "monsters": [
     {
-      "kind": "zombie",
-      "x": 94.72,
-      "y": 86.32,
+      "kind": "goblin",
+      "x": 24.37,
+      "y": 97.64,
       "tier": 1.1
     },
     {
-      "kind": "zombie",
-      "x": 93.82,
-      "y": 85.17,
+      "kind": "goblin",
+      "x": 25.23,
+      "y": 96.6,
       "tier": 1.1
     },
     {
-      "kind": "zombie",
-      "x": 93.14,
-      "y": 86.48,
+      "kind": "goblin",
+      "x": 24.93,
+      "y": 99.65,
       "tier": 1.1
     },
     {
-      "kind": "zombie",
-      "x": 95.13,
-      "y": 86.32,
+      "kind": "wolf",
+      "x": 82.51,
+      "y": 63.64,
+      "tier": 0.8
+    },
+    {
+      "kind": "wolf",
+      "x": 80.94,
+      "y": 64.39,
+      "tier": 0.8
+    },
+    {
+      "kind": "wolf",
+      "x": 82.59,
+      "y": 63.15,
+      "tier": 0.8
+    },
+    {
+      "kind": "skeleton",
+      "x": 15.96,
+      "y": 104.56,
       "tier": 1.1
     },
     {
       "kind": "skeleton",
-      "x": 87.1,
-      "y": 88.72,
+      "x": 14.69,
+      "y": 105.52,
       "tier": 1.1
     },
     {
       "kind": "skeleton",
-      "x": 86.76,
-      "y": 86.15,
+      "x": 15.29,
+      "y": 103.57,
       "tier": 1.1
     },
     {
       "kind": "skeleton",
-      "x": 87.55,
-      "y": 86.37,
+      "x": 16.61,
+      "y": 106.45,
       "tier": 1.1
     },
     {
-      "kind": "skeleton",
-      "x": 87.82,
-      "y": 88.62,
+      "kind": "wolf",
+      "x": 87.52,
+      "y": 60.89,
+      "tier": 0.8
+    },
+    {
+      "kind": "wolf",
+      "x": 86.54,
+      "y": 62.75,
+      "tier": 0.8
+    },
+    {
+      "kind": "wolf",
+      "x": 86.51,
+      "y": 61.91,
+      "tier": 0.8
+    },
+    {
+      "kind": "wolf",
+      "x": 41.59,
+      "y": 86.61,
+      "tier": 0.8
+    },
+    {
+      "kind": "wolf",
+      "x": 41.64,
+      "y": 88.14,
+      "tier": 0.8
+    },
+    {
+      "kind": "wolf",
+      "x": 41.51,
+      "y": 87.82,
+      "tier": 0.8
+    },
+    {
+      "kind": "wolf",
+      "x": 44.54,
+      "y": 85.46,
+      "tier": 0.8
+    },
+    {
+      "kind": "goblin",
+      "x": 31.95,
+      "y": 77.56,
+      "tier": 0.8
+    },
+    {
+      "kind": "goblin",
+      "x": 33.41,
+      "y": 80.37,
+      "tier": 0.8
+    },
+    {
+      "kind": "goblin",
+      "x": 30.41,
+      "y": 79.64,
+      "tier": 0.8
+    },
+    {
+      "kind": "goblin",
+      "x": 32.97,
+      "y": 80.33,
+      "tier": 0.8
+    },
+    {
+      "kind": "goblin",
+      "x": 30.85,
+      "y": 78.12,
+      "tier": 0.8
+    },
+    {
+      "kind": "goblin",
+      "x": 36.61,
+      "y": 37.38,
+      "tier": 0.8
+    },
+    {
+      "kind": "goblin",
+      "x": 38.94,
+      "y": 34.09,
+      "tier": 0.8
+    },
+    {
+      "kind": "goblin",
+      "x": 35.54,
+      "y": 37.41,
+      "tier": 0.8
+    },
+    {
+      "kind": "wolf",
+      "x": 34.14,
+      "y": 73.25,
+      "tier": 0.8
+    },
+    {
+      "kind": "wolf",
+      "x": 34.78,
+      "y": 74.34,
+      "tier": 0.8
+    },
+    {
+      "kind": "wolf",
+      "x": 33.39,
+      "y": 72.12,
+      "tier": 0.8
+    },
+    {
+      "kind": "wolf",
+      "x": 32.79,
+      "y": 70.83,
+      "tier": 0.8
+    },
+    {
+      "kind": "wolf",
+      "x": 36.14,
+      "y": 73.37,
+      "tier": 0.8
+    },
+    {
+      "kind": "wolf",
+      "x": 97.07,
+      "y": 101.96,
+      "tier": 1.1
+    },
+    {
+      "kind": "wolf",
+      "x": 96.18,
+      "y": 105.42,
+      "tier": 1.1
+    },
+    {
+      "kind": "wolf",
+      "x": 96.36,
+      "y": 103.81,
+      "tier": 1.1
+    },
+    {
+      "kind": "wolf",
+      "x": 95.97,
+      "y": 102.44,
+      "tier": 1.1
+    },
+    {
+      "kind": "wolf",
+      "x": 97.01,
+      "y": 105.35,
       "tier": 1.1
     },
     {
@@ -22288,140 +22168,92 @@
     },
     {
       "kind": "goblin",
-      "x": 76.97,
-      "y": 77.35,
+      "x": 77.61,
+      "y": 77.0,
       "tier": 0.8
     },
     {
       "kind": "goblin",
-      "x": 77.13,
-      "y": 77.89,
+      "x": 76.58,
+      "y": 74.94,
       "tier": 0.8
     },
     {
       "kind": "goblin",
-      "x": 77.59,
-      "y": 74.69,
+      "x": 77.55,
+      "y": 77.39,
+      "tier": 0.8
+    },
+    {
+      "kind": "goblin",
+      "x": 97.26,
+      "y": 9.53,
+      "tier": 1.1
+    },
+    {
+      "kind": "goblin",
+      "x": 98.8,
+      "y": 8.06,
+      "tier": 1.1
+    },
+    {
+      "kind": "goblin",
+      "x": 99.33,
+      "y": 9.66,
+      "tier": 1.1
+    },
+    {
+      "kind": "goblin",
+      "x": 98.92,
+      "y": 9.67,
+      "tier": 1.1
+    },
+    {
+      "kind": "goblin",
+      "x": 97.19,
+      "y": 7.49,
+      "tier": 1.1
+    },
+    {
+      "kind": "wolf",
+      "x": 36.38,
+      "y": 40.79,
       "tier": 0.8
     },
     {
       "kind": "wolf",
-      "x": 67.59,
-      "y": 30.31,
+      "x": 37.52,
+      "y": 41.59,
+      "tier": 0.8
+    },
+    {
+      "kind": "wolf",
+      "x": 36.37,
+      "y": 40.84,
+      "tier": 0.8
+    },
+    {
+      "kind": "wolf",
+      "x": 35.97,
+      "y": 38.88,
+      "tier": 0.8
+    },
+    {
+      "kind": "wolf",
+      "x": 91.29,
+      "y": 45.41,
       "tier": 1.1
     },
     {
       "kind": "wolf",
-      "x": 68.42,
-      "y": 29.95,
+      "x": 92.27,
+      "y": 45.64,
       "tier": 1.1
     },
     {
       "kind": "wolf",
-      "x": 69.57,
-      "y": 28.44,
-      "tier": 1.1
-    },
-    {
-      "kind": "skeleton",
-      "x": 93.86,
-      "y": 65.54,
-      "tier": 1.1
-    },
-    {
-      "kind": "skeleton",
-      "x": 93.99,
-      "y": 67.84,
-      "tier": 1.1
-    },
-    {
-      "kind": "skeleton",
-      "x": 94.3,
-      "y": 68.6,
-      "tier": 1.1
-    },
-    {
-      "kind": "skeleton",
-      "x": 95.38,
-      "y": 67.79,
-      "tier": 1.1
-    },
-    {
-      "kind": "skeleton",
-      "x": 96.52,
-      "y": 68.59,
-      "tier": 1.1
-    },
-    {
-      "kind": "wolf",
-      "x": 31.35,
-      "y": 88.44,
-      "tier": 1.1
-    },
-    {
-      "kind": "wolf",
-      "x": 31.96,
-      "y": 88.45,
-      "tier": 1.1
-    },
-    {
-      "kind": "wolf",
-      "x": 29.92,
-      "y": 88.58,
-      "tier": 1.1
-    },
-    {
-      "kind": "wolf",
-      "x": 21.68,
-      "y": 96.13,
-      "tier": 1.1
-    },
-    {
-      "kind": "wolf",
-      "x": 23.07,
-      "y": 96.19,
-      "tier": 1.1
-    },
-    {
-      "kind": "wolf",
-      "x": 22.33,
-      "y": 94.87,
-      "tier": 1.1
-    },
-    {
-      "kind": "wolf",
-      "x": 22.97,
-      "y": 93.58,
-      "tier": 1.1
-    },
-    {
-      "kind": "wolf",
-      "x": 23.51,
-      "y": 97.05,
-      "tier": 1.1
-    },
-    {
-      "kind": "goblin",
-      "x": 69.53,
-      "y": 95.12,
-      "tier": 1.1
-    },
-    {
-      "kind": "goblin",
-      "x": 68.52,
-      "y": 94.97,
-      "tier": 1.1
-    },
-    {
-      "kind": "goblin",
-      "x": 69.81,
-      "y": 96.21,
-      "tier": 1.1
-    },
-    {
-      "kind": "goblin",
-      "x": 70.39,
-      "y": 95.61,
+      "x": 89.53,
+      "y": 43.12,
       "tier": 1.1
     },
     {
@@ -22576,285 +22408,117 @@
     },
     {
       "kind": "skeleton",
-      "x": 55.52,
-      "y": 94.97,
+      "x": 54.78,
+      "y": 97.55,
       "tier": 1.1
     },
     {
       "kind": "skeleton",
-      "x": 53.45,
-      "y": 96.63,
+      "x": 53.27,
+      "y": 96.03,
       "tier": 1.1
     },
     {
       "kind": "skeleton",
-      "x": 54.18,
-      "y": 95.49,
+      "x": 53.36,
+      "y": 94.67,
       "tier": 1.1
     },
     {
       "kind": "skeleton",
-      "x": 53.28,
-      "y": 96.29,
-      "tier": 1.1
-    },
-    {
-      "kind": "zombie",
-      "x": 13.4,
-      "y": 69.9,
-      "tier": 1.1
-    },
-    {
-      "kind": "zombie",
-      "x": 14.89,
-      "y": 68.53,
-      "tier": 1.1
-    },
-    {
-      "kind": "zombie",
-      "x": 12.51,
-      "y": 70.68,
-      "tier": 1.1
-    },
-    {
-      "kind": "zombie",
-      "x": 13.15,
-      "y": 70.02,
-      "tier": 1.1
-    },
-    {
-      "kind": "wolf",
-      "x": 82.47,
-      "y": 63.46,
-      "tier": 0.8
-    },
-    {
-      "kind": "wolf",
-      "x": 80.63,
-      "y": 64.39,
-      "tier": 0.8
-    },
-    {
-      "kind": "wolf",
-      "x": 81.0,
-      "y": 64.43,
-      "tier": 0.8
-    },
-    {
-      "kind": "wolf",
-      "x": 84.48,
-      "y": 60.8,
-      "tier": 0.8
-    },
-    {
-      "kind": "wolf",
-      "x": 49.92,
-      "y": 24.19,
-      "tier": 1.1
-    },
-    {
-      "kind": "wolf",
-      "x": 51.6,
-      "y": 22.83,
-      "tier": 1.1
-    },
-    {
-      "kind": "wolf",
-      "x": 51.79,
-      "y": 25.48,
-      "tier": 1.1
-    },
-    {
-      "kind": "wolf",
-      "x": 50.19,
-      "y": 23.04,
-      "tier": 1.1
-    },
-    {
-      "kind": "wolf",
-      "x": 49.69,
-      "y": 23.25,
-      "tier": 1.1
-    },
-    {
-      "kind": "goblin",
-      "x": 10.36,
-      "y": 21.19,
-      "tier": 1.1
-    },
-    {
-      "kind": "goblin",
-      "x": 8.85,
-      "y": 21.93,
-      "tier": 1.1
-    },
-    {
-      "kind": "goblin",
-      "x": 10.41,
-      "y": 21.71,
-      "tier": 1.1
-    },
-    {
-      "kind": "goblin",
-      "x": 9.89,
-      "y": 23.67,
-      "tier": 1.1
-    },
-    {
-      "kind": "goblin",
-      "x": 11.32,
-      "y": 21.39,
+      "x": 54.97,
+      "y": 94.89,
       "tier": 1.1
     },
     {
       "kind": "skeleton",
-      "x": 96.83,
-      "y": 15.19,
+      "x": 20.76,
+      "y": 26.58,
       "tier": 1.1
     },
     {
       "kind": "skeleton",
-      "x": 96.76,
-      "y": 15.73,
+      "x": 19.56,
+      "y": 26.39,
       "tier": 1.1
     },
     {
       "kind": "skeleton",
-      "x": 98.71,
-      "y": 13.77,
+      "x": 18.46,
+      "y": 29.38,
       "tier": 1.1
     },
     {
       "kind": "goblin",
-      "x": 97.29,
-      "y": 86.58,
+      "x": 7.77,
+      "y": 28.58,
       "tier": 1.1
     },
     {
       "kind": "goblin",
-      "x": 96.7,
-      "y": 86.8,
+      "x": 5.58,
+      "y": 26.87,
       "tier": 1.1
     },
     {
       "kind": "goblin",
-      "x": 95.22,
-      "y": 85.98,
+      "x": 6.57,
+      "y": 29.14,
       "tier": 1.1
     },
     {
-      "kind": "goblin",
-      "x": 95.83,
-      "y": 85.53,
+      "kind": "skeleton",
+      "x": 94.38,
+      "y": 14.55,
       "tier": 1.1
     },
     {
-      "kind": "zombie",
-      "x": 70.45,
-      "y": 16.31,
-      "tier": 1.1
-    },
-    {
-      "kind": "zombie",
-      "x": 72.34,
-      "y": 14.2,
-      "tier": 1.1
-    },
-    {
-      "kind": "zombie",
-      "x": 68.55,
-      "y": 15.57,
-      "tier": 1.1
-    },
-    {
-      "kind": "zombie",
-      "x": 71.41,
-      "y": 14.51,
-      "tier": 1.1
-    },
-    {
-      "kind": "zombie",
-      "x": 41.98,
-      "y": 98.4,
-      "tier": 1.1
-    },
-    {
-      "kind": "zombie",
-      "x": 42.14,
-      "y": 99.83,
-      "tier": 1.1
-    },
-    {
-      "kind": "zombie",
-      "x": 40.9,
-      "y": 100.78,
-      "tier": 1.1
-    },
-    {
-      "kind": "zombie",
-      "x": 21.65,
-      "y": 95.86,
-      "tier": 1.1
-    },
-    {
-      "kind": "zombie",
-      "x": 22.18,
-      "y": 97.21,
-      "tier": 1.1
-    },
-    {
-      "kind": "zombie",
-      "x": 20.21,
-      "y": 98.45,
-      "tier": 1.1
-    },
-    {
-      "kind": "zombie",
-      "x": 20.07,
-      "y": 95.84,
-      "tier": 1.1
-    },
-    {
-      "kind": "zombie",
-      "x": 21.12,
-      "y": 99.44,
-      "tier": 1.1
-    },
-    {
-      "kind": "barrel",
-      "x": 25.44,
-      "y": 92.35,
-      "tier": 1.0
-    },
-    {
-      "kind": "urn",
-      "x": 17.41,
-      "y": 90.94,
-      "tier": 1.0
-    },
-    {
-      "kind": "barrel",
-      "x": 23.36,
-      "y": 95.18,
-      "tier": 1.0
-    },
-    {
-      "kind": "urn",
-      "x": 96.21,
-      "y": 88.4,
-      "tier": 1.0
-    },
-    {
-      "kind": "urn",
+      "kind": "skeleton",
       "x": 91.14,
-      "y": 27.24,
-      "tier": 1.0
+      "y": 11.91,
+      "tier": 1.1
     },
     {
-      "kind": "barrel",
-      "x": 26.05,
-      "y": 20.15,
-      "tier": 1.0
+      "kind": "skeleton",
+      "x": 91.16,
+      "y": 12.22,
+      "tier": 1.1
+    },
+    {
+      "kind": "skeleton",
+      "x": 91.0,
+      "y": 15.43,
+      "tier": 1.1
+    },
+    {
+      "kind": "zombie",
+      "x": 8.21,
+      "y": 74.69,
+      "tier": 1.1
+    },
+    {
+      "kind": "zombie",
+      "x": 6.6,
+      "y": 72.83,
+      "tier": 1.1
+    },
+    {
+      "kind": "zombie",
+      "x": 6.46,
+      "y": 75.15,
+      "tier": 1.1
+    },
+    {
+      "kind": "zombie",
+      "x": 6.45,
+      "y": 73.78,
+      "tier": 1.1
+    },
+    {
+      "kind": "zombie",
+      "x": 6.33,
+      "y": 75.38,
+      "tier": 1.1
     }
   ],
   "npcs": [
@@ -22907,63 +22571,63 @@
   "items": [
     {
       "kind": "apple",
-      "x": 47.5,
-      "y": 82.5
+      "x": 9.5,
+      "y": 64.5
+    },
+    {
+      "kind": "bread",
+      "x": 35.5,
+      "y": 33.5
     },
     {
       "kind": "apple",
-      "x": 97.5,
-      "y": 66.5
+      "x": 81.5,
+      "y": 56.5
+    },
+    {
+      "kind": "apple",
+      "x": 71.5,
+      "y": 31.5
+    },
+    {
+      "kind": "apple",
+      "x": 89.5,
+      "y": 89.5
+    },
+    {
+      "kind": "apple",
+      "x": 34.5,
+      "y": 35.5
     },
     {
       "kind": "apple",
       "x": 39.5,
-      "y": 105.5
+      "y": 22.5
     },
     {
-      "kind": "bread",
-      "x": 43.5,
+      "kind": "apple",
+      "x": 31.5,
+      "y": 83.5
+    },
+    {
+      "kind": "apple",
+      "x": 97.5,
       "y": 15.5
     },
     {
       "kind": "apple",
-      "x": 65.5,
-      "y": 40.5
+      "x": 85.5,
+      "y": 60.5
     },
     {
       "kind": "apple",
-      "x": 66.5,
-      "y": 97.5
+      "x": 19.5,
+      "y": 81.5
     },
     {
       "kind": "apple",
-      "x": 95.5,
-      "y": 64.5
-    },
-    {
-      "kind": "apple",
-      "x": 45.5,
-      "y": 46.5
-    },
-    {
-      "kind": "apple",
-      "x": 38.5,
-      "y": 13.5
-    },
-    {
-      "kind": "apple",
-      "x": 65.5,
-      "y": 11.5
-    },
-    {
-      "kind": "bread",
-      "x": 88.5,
-      "y": 45.5
-    },
-    {
-      "kind": "apple",
-      "x": 95.5,
-      "y": 8.5
+      "x": 82.5,
+      "y": 7.5
     }
   ]
 }

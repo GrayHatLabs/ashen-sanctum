@@ -113,6 +113,8 @@ pub struct Quest {
     pub stage6: u8,
     /// Sun-shards from Vael, the Tempest Drake and the Ophan Prime.
     pub shards: [bool; 3],
+    /// Side quests (side.rs SIDES): 0 not given, 1 given, 2 done, 3 rewarded. Per difficulty, like D2.
+    pub side: [u8; 18],
 }
 
 pub const DIFFICULTIES: [&str; 3] = ["NORMAL", "NIGHTMARE", "HELL"];
@@ -311,6 +313,8 @@ pub enum Act {
     OpenRift(u16),
     /// The Riftwarden: put an Ember into this track (0 damage, 1 life, 2 fortune, 3 speed).
     Ember(u8),
+    /// Talk about a side quest (side.rs SIDES index).
+    Side(u8),
 }
 
 pub struct Dialog {

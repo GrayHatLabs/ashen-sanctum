@@ -261,6 +261,22 @@ Like Diablo 2, beating the game opens **Nightmare**, then **Hell**: talk to Tall
 world is rebuilt with much tougher monsters and richer drops, and the quests start over, while
 your character, skills and gear carry on.
 
+## Off the beaten path
+
+Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`; Act 1 so far):
+- **Shrines** on overlands, dungeon floors and in the rifts. Walk up to one for a 90-second blessing
+  (armor, combat, mana, experience, skill, haste) or an instant gift (a refill, a gem). It goes dark
+  once used.
+- **Super uniques**: named monsters with their own powers, gang, line and loot (a rare, a lore page and
+  sometimes their own unique): Skrat One-Ear, Old Bonejaw and the Hollow Shepherd in Act 1.
+- **Side quests** from the townsfolk, with D2-style rewards (a skill point, permanent life, a rare item),
+  earned again on each difficulty. Act 1: Brother Aldric's *The Well Runs Red*, Gerta's *Caravan*
+  and a farmer's *Hollow Shepherd*.
+- **The Charnel Well**, Act 1's optional dungeon south of Hollowmere, and the Well-Witch at its bottom.
+- **Events** out in the wilds: ambushes, a fleeing gold-thief with its hoard, fallen adventurers.
+- **Lore pages**, five per act; all five give +5% experience in that act. The map (Tab / M) shows the
+  **journal**: pages, side quests, super uniques and shrines.
+
 ## Controls
 
 | Action | Mouse + keyboard | Gamepad / handheld |

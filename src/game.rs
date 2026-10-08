@@ -174,6 +174,8 @@ pub enum Drop {
     Pearl(usize),
     /// A sun-shard from a herald of the sky (0 Vael, 1 the Tempest Drake, 2 the Ophan Prime).
     Shard(usize),
+    /// A lore page (side.rs LORE index).
+    Page(u8),
     /// Equipment.
     Item(Box<crate::items::Item>),
 }
@@ -210,6 +212,14 @@ pub struct Player {
     pub rift_runs: u32,
     pub embers: [u8; 4],
     pub ember_points: u32,
+    /// Side content (side.rs): a shrine's blessing (Blessing id, 0 none) and its time left, wards from
+    /// side quests (-5% damage taken each), lore pages found and super uniques slain (bit sets), shrines used.
+    pub blessing: u8,
+    pub bless_t: f32,
+    pub ward: u8,
+    pub pages: u64,
+    pub supers: u64,
+    pub shrines_used: u32,
     pub x: f32,
     pub y: f32,
     pub hp: f32,
@@ -324,6 +334,12 @@ impl Player {
             rift_runs: 0,
             embers: [0; 4],
             ember_points: 0,
+            blessing: 0,
+            bless_t: 0.0,
+            ward: 0,
+            pages: 0,
+            supers: 0,
+            shrines_used: 0,
             x: 0.0,
             y: 0.0,
             hp: 70.0,
@@ -520,7 +536,9 @@ impl Player {
         self.max_mana = self.base_mana + self.bonus.get(Stat::Mana) as f32;
         self.hp = self.hp.min(self.max_hp);
         self.mana = self.mana.min(self.max_mana);
-        self.skills.bonus = self.bonus.get(Stat::Skills).clamp(0, 5) as u8;
+        // A Skill shrine adds one more.
+        let shrine = (self.bless_t > 0.0 && crate::side::Blessing::from_id(self.blessing) == Some(crate::side::Blessing::Skill)) as i32;
+        self.skills.bonus = (self.bonus.get(Stat::Skills).clamp(0, 5) + shrine) as u8;
         self.skills.gear_fire = self.bonus.frac(Stat::Fire, 300);
     }
 
@@ -642,6 +660,9 @@ pub struct Game {
     /// Act 5 (tides.rs): the tide's clock and depth, ink in your eyes, the Angler's dark, and a pull
     /// toward a point (x, y, time left).
     pub(crate) tide_t: f32,
+    /// Side content (side.rs): this level's shrines, and seconds until the next event out in the wilds.
+    pub(crate) shrines: Vec<crate::side::Shrine>,
+    pub(crate) event_cd: f32,
     pub(crate) tide: f32,
     pub(crate) blind_t: f32,
     pub(crate) dark_t: f32,
@@ -766,6 +787,8 @@ impl Game {
             whip_combo: 0,
             whip_combo_t: 0.0,
             tide_t: 0.0,
+            shrines: vec![],
+            event_cd: 60.0,
             tide: 0.0,
             blind_t: 0.0,
             dark_t: 0.0,
@@ -836,6 +859,7 @@ impl Game {
             props: std::mem::take(&mut self.props),
             portals: std::mem::take(&mut self.portals),
             npcs: std::mem::take(&mut self.npcs),
+            shrines: std::mem::take(&mut self.shrines),
             safe: self.safe.take(),
             start: self.start,
         }
@@ -854,6 +878,7 @@ impl Game {
         self.props = lv.props;
         self.portals = lv.portals;
         self.npcs = lv.npcs;
+        self.shrines = lv.shrines;
         self.safe = lv.safe;
         self.start = lv.start;
         if lv.id.overland() {
@@ -1120,6 +1145,7 @@ impl Game {
             pearls: [done(4); 3],
             stage6: 0,
             shards: [false; 3],
+            side: [0; 18],
         };
         self.waypoints = (0..=act).map(LevelId::land).collect();
         self.go_to(LevelId::land(act), None);
@@ -1139,7 +1165,7 @@ impl Game {
     /// Nightmare / Hell: the world is rebuilt harder, the quests start over, your hero carries on.
     pub(crate) fn next_difficulty(&mut self) {
         let d = (self.quest.difficulty + 1).min(2);
-        self.quest = Quest { stage: 1, seals: [false; 3], difficulty: d, stage2: 0, runes: [false; 3], stage3: 0, sigils: [false; 3], stage4: 0, keys: [false; 3], stage5: 0, pearls: [false; 3], stage6: 0, shards: [false; 3] };
+        self.quest = Quest { stage: 1, seals: [false; 3], difficulty: d, stage2: 0, runes: [false; 3], stage3: 0, sigils: [false; 3], stage4: 0, keys: [false; 3], stage5: 0, pearls: [false; 3], stage6: 0, shards: [false; 3], side: [0; 18] };
         self.parked.clear();
         self.waypoints = vec![LevelId::Overworld];
         self.shop_stale = true;
@@ -1638,6 +1664,7 @@ impl Game {
         self.update_shots();
         self.update_hazards();
         self.update_deep();
+        self.update_side();
         self.update_sky();
         self.update_rift();
         self.second_wind_t = (self.second_wind_t - DT).max(0.0);
@@ -1869,6 +1896,8 @@ impl Game {
             let price = 50 * self.p.clvl as i32;
             d.options = vec![(format!("FORGET MY SKILLS  {price} GOLD"), Act::Respec(price)), ("FAREWELL".into(), Act::Close)];
         }
+        // Side quests this person has (side.rs).
+        self.side_options(role, &mut d);
         if d.heals {
             self.p.hp = self.p.max_hp;
             self.p.mana = self.p.max_mana;
@@ -1976,6 +2005,13 @@ impl Game {
                     self.dialog = None;
                     self.save_due = true;
                 }
+            }
+            Some(Act::Side(q)) => {
+                // Leaving the story conversation still counts as having heard it.
+                if let Some(stage) = self.dialog.as_ref().and_then(|d| d.advance_to) {
+                    self.advance_quest(stage);
+                }
+                self.side_talk(q as usize);
             }
             None => {}
         }
@@ -2140,12 +2176,14 @@ impl Game {
     // ------------------------------------------------------------------ player
 
     fn update_player(&mut self, inp: &Input, p_cast: bool, p_lmb: bool) {
+        // Haste and Mana shrines (side.rs).
+        let (bspeed, bmana) = (self.bless_speed(), self.bless_mana());
         let p = &mut self.p;
         p.flash = (p.flash - DT).max(0.0);
         use crate::items::Stat;
         // Faster cast rate: cast animations and recoveries run quicker (slower while chilled).
         p.chill = (p.chill - DT).max(0.0);
-        let fcr = (1.0 + p.bonus.frac(Stat::Cast, 60)) * if p.chill > 0.0 { 0.75 } else { 1.0 } * p.haste;
+        let fcr = (1.0 + p.bonus.frac(Stat::Cast, 60)) * if p.chill > 0.0 { 0.75 } else { 1.0 } * p.haste * bspeed;
         p.cast_cd = (p.cast_cd - DT * fcr).max(0.0);
         p.cast_t = (p.cast_t - DT * fcr).max(0.0);
         let mregen = 1.0 + p.bonus.frac(Stat::ManaRegen, 200);
@@ -2158,7 +2196,7 @@ impl Game {
         } else {
             2.2 * p.skills.regen_mult()
         };
-        p.mana = (p.mana + base_regen * mregen * DT).min(p.max_mana);
+        p.mana = (p.mana + base_regen * mregen * bmana * DT).min(p.max_mana);
         p.inferno = (p.inferno - DT).max(0.0);
         let starving = p.food <= 0.0;
         if !starving {
@@ -2405,6 +2443,7 @@ impl Game {
         let base = if run { RUN_SPEED } else { WALK_SPEED };
         let base = if self.p.phoenix_t > 0.0 || self.p.embrace_t > 0.0 { base * 1.4 } else if self.p.suit_t > 0.0 { base * 1.2 } else { base };
         let base = base * (1.0 + gear.frac(crate::items::Stat::Move, 50)) * self.ember_speed() * if self.has_power(crate::items::P_ASHWALKER) { 1.2 } else { 1.0 };
+        let base = base * self.bless_speed();
         let base = if self.p.chill > 0.0 { base * 0.6 } else { base };
         let base = if self.flooded(self.p.x, self.p.y) { base * crate::tides::WADE } else { base };
         let speed = if casting { base * 0.25 } else { base };
@@ -2480,6 +2519,7 @@ impl Game {
                     self.floater(px, py, it.name.clone(), it.col());
                     let _ = self.p.gear.add(*it);
                 }
+                Drop::Page(i) => self.read_page(i),
                 Drop::Key(i) => {
                     self.quest.keys[i] = true;
                     self.p.skills.points += 1;
@@ -2765,6 +2805,8 @@ impl Game {
         let dmg = if self.p.mist > 0.0 { 0.0 } else { self.p.armored(dmg) };
         // The steam suit takes half.
         let dmg = if self.p.suit_t > 0.0 { dmg * 0.5 } else { dmg };
+        // An Armor shrine, and side-quest wards (side.rs).
+        let dmg = dmg * self.bless_taken();
         // A Fragile rift: a quarter more.
         let dmg = if self.rift_has(crate::endgame::RiftMod::Fragile) { dmg * 1.25 } else { dmg };
         // Second Wind (ancient power): once a minute a killing blow leaves you at half life.
@@ -2918,7 +2960,7 @@ impl Game {
         self.stats.hits += 1;
         self.sfx.push(Sfx::Hit);
         let kind = self.mobs[i].kind;
-        let dmg = dmg * self.taken(kind);
+        let dmg = dmg * self.taken(kind) * self.bless_damage();
         self.drain(kind, dmg, 1.0);
         let m = &mut self.mobs[i];
         m.hp -= dmg;
@@ -2970,7 +3012,7 @@ impl Game {
             let dmg = if d2 < (0.3 + m.r).powi(2) { dmg } else { dmg * 0.5 };
             hit_any = true;
             let (mx, my, boss, r, kind) = (m.x, m.y, m.boss, m.r, m.kind);
-            let dmg = dmg * self.taken(kind);
+            let dmg = dmg * self.taken(kind) * self.bless_damage();
             self.drain(kind, dmg, 1.0);
             let burn = 2.0 * self.p.skills.burn_mult();
             let m = &mut self.mobs[i];
@@ -3042,6 +3084,8 @@ impl Game {
         }
         let (rank, mods) = (self.mobs[i].rank, self.mobs[i].mods);
         self.drop_gear(x, y, boss, kind, rank);
+        // Super uniques, gold-thieves and side quests (side.rs).
+        self.side_kill(i);
         if shatter {
             self.shatter(x, y);
         }
@@ -3277,6 +3321,7 @@ impl Game {
                 Kind::Tempest => "tempest",
                 Kind::OphanPrime => "ophan",
                 Kind::Solanthos => "solanthos",
+                Kind::WellWitch => "wellwitch",
                 _ => "ashking",
             };
             drops.extend(items::boss_unique(key));
@@ -3335,7 +3380,9 @@ impl Game {
         }
     }
 
-    fn gain_xp(&mut self, xp: f32) {
+    pub(crate) fn gain_xp(&mut self, xp: f32) {
+        // An Experience shrine, and a finished act of lore pages (side.rs).
+        let xp = xp * self.bless_xp();
         self.p.xp += xp;
         while self.p.xp >= xp_to_next(self.p.clvl) {
             self.p.xp -= xp_to_next(self.p.clvl);
@@ -5377,14 +5424,16 @@ mod tests {
     fn champion_and_elite_packs_are_tougher_and_drop_more() {
         use crate::mobs::{Rank, M_FIERY, M_STONE};
         let lv = world::build(LevelId::Dungeon(0, 1), 7);
-        let count = |r: Rank| lv.mobs.iter().filter(|m| m.rank == r).count();
+        // (Old Bonejaw, a super unique, lives on this floor too: he's counted apart.)
+        let count = |r: Rank| lv.mobs.iter().filter(|m| m.rank == r && m.superu == 0).count();
         assert!(count(Rank::Elite) == 1, "one elite leader per floor");
         assert!(count(Rank::Minion) >= 1, "with minions");
         assert!(count(Rank::Champion) >= 2, "and a champion pack");
         let e = lv.mobs.iter().find(|m| m.rank == Rank::Elite).unwrap();
         assert!(e.name.is_some() && e.mods.count_ones() == 2);
         let ow = world::build(LevelId::Overworld, 7);
-        assert!(ow.mobs.iter().filter(|m| m.rank == Rank::Elite).count() == 3);
+        // A super unique clears its spot, which can take an elite pack with it.
+        assert!((2..=3).contains(&ow.mobs.iter().filter(|m| m.rank == Rank::Elite && m.superu == 0).count()));
         // Promotion multiplies life; stone skin even more.
         let mut g = quiet_game();
         let mut a = Mob::new(Kind::Zombie, g.p.x + 3.0, g.p.y, 1.0, &mut g.rng);

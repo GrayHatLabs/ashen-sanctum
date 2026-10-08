@@ -158,6 +158,8 @@ pub fn to_text(g: &Game) -> String {
     let p = &g.p;
     let list = |v: &[u32]| v.iter().map(|n| n.to_string()).collect::<Vec<_>>().join(",");
     s += &format!("rekindles={}\nrift_best={}\nrift_runs={}\nembers={}\nember_points={}\n", list(&p.rekindles), p.rift_best, p.rift_runs, list(&p.embers.map(|e| e as u32)), p.ember_points);
+    let side: String = g.quest.side.iter().map(|n| char::from(b'0' + n.min(&3))).collect();
+    s += &format!("side={side}\npages={}\nsupers={}\nshrines_used={}\nward={}\n", p.pages, p.supers, p.shrines_used, p.ward);
     s += &format!("act={}\n", g.level.act());
     s += &p.skills.save_text();
     s += &format!("waypoints={}\n", g.waypoints.iter().map(|w| crate::levels::id_string(*w)).collect::<Vec<_>>().join(","));
@@ -224,6 +226,15 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
         g.p.embers[i] = (n as u8).min(crate::endgame::EMBER_CAP);
     }
     g.p.ember_points = num("ember_points").unwrap_or(0.0) as u32;
+    if let Some(s) = get("side") {
+        for (i, c) in s.chars().take(18).enumerate() {
+            g.quest.side[i] = c.to_digit(10).unwrap_or(0).min(3) as u8;
+        }
+    }
+    g.p.pages = get("pages").and_then(|v| v.parse().ok()).unwrap_or(0);
+    g.p.supers = get("supers").and_then(|v| v.parse().ok()).unwrap_or(0);
+    g.p.shrines_used = num("shrines_used").unwrap_or(0.0) as u32;
+    g.p.ward = (num("ward").unwrap_or(0.0) as u8).min(6);
     if let Some(s) = get("shards") {
         for (i, c) in s.chars().take(3).enumerate() {
             g.quest.shards[i] = c == '1';

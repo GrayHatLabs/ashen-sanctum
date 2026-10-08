@@ -872,6 +872,11 @@ pub static UNIQUES: &[UniqueDef] = &[
     UniqueDef { name: "ROTMOTHER COWL", base: "hood", req: 7, stats: &[(Stat::Armor, 10), (Stat::Life, 25), (Stat::LifeRegen, 3), (Stat::Hunger, 40)], boss: Some("plague") },
     UniqueDef { name: "HEXBINDER", base: "ring", req: 10, stats: &[(Stat::Skills, 1), (Stat::Mana, 30), (Stat::ManaRegen, 40), (Stat::ManaOnKill, 3)], boss: Some("hex") },
     UniqueDef { name: "CROWN OF ASH", base: "crown", req: 14, stats: &[(Stat::Skills, 2), (Stat::Fire, 30), (Stat::Life, 40), (Stat::Mana, 40)], boss: Some("ashking") },
+    // ---- side content (side.rs): the super uniques' and the Well-Witch's own ----
+    UniqueDef { name: "SKRAT'S LUCKY EAR", base: "amulet", req: 4, stats: &[(Stat::Gold, 40), (Stat::Magic, 25), (Stat::Move, 10)], boss: Some("skrat") },
+    UniqueDef { name: "BONEJAW'S GRIN", base: "ring", req: 5, stats: &[(Stat::LifeOnKill, 4), (Stat::Armor, 6), (Stat::Cast, 10)], boss: Some("bonejaw") },
+    UniqueDef { name: "THE SHEPHERD'S GIRDLE", base: "hbelt", req: 5, stats: &[(Stat::Life, 30), (Stat::LifeRegen, 3), (Stat::Hunger, 30)], boss: Some("shepherd") },
+    UniqueDef { name: "WELL-WITCH'S CHARM", base: "amulet", req: 6, stats: &[(Stat::Skills, 1), (Stat::Mana, 25), (Stat::ManaRegen, 30), (Stat::Life, 10)], boss: Some("wellwitch") },
     UniqueDef { name: "CINDERWALKERS", base: "cboots", req: 3, stats: &[(Stat::Armor, 6), (Stat::Move, 20), (Stat::Stamina, 50), (Stat::Fire, 10)], boss: None },
     UniqueDef { name: "EMBERHEART", base: "amulet", req: 6, stats: &[(Stat::Fire, 25), (Stat::ManaRegen, 30), (Stat::Life, 15)], boss: None },
     UniqueDef { name: "THE KINDLING", base: "gnarled", req: 1, stats: &[(Stat::Fire, 35), (Stat::Mana, 20), (Stat::Cast, 10)], boss: None },

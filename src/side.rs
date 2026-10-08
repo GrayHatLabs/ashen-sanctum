@@ -1,0 +1,994 @@
+//! Side content (docs/SIDE_CONTENT_PLAN.md): shrines, super uniques, side quests, the optional dungeons,
+//! random events and lore pages. Nothing here is on the main story's path.
+//!
+//! - **Shrines**: glowing altars on overlands, dungeon floors and in the rifts. Touch one for a 90 second
+//!   blessing (or an instant gift); a used shrine goes dark.
+//! - **Super uniques**: named monsters with a fixed home, fixed powers, their own line and loot (a rare,
+//!   sometimes their own unique, and a lore page).
+//! - **Side quests**: three per act, given by townsfolk, saved per difficulty (like D2, the rewards can be
+//!   earned again on Nightmare and Hell).
+//! - **Events**: now and then out in the wilds an ambush, a fleeing gold-thief or a fallen adventurer.
+//! - **Lore pages**: five per act; all five give +5% XP in that act.
+use crate::game::{Decal, Drop, Game, Light, PKind, Pickup, Sfx};
+use crate::gfx::rgb;
+use crate::mobs::{Kind, Mob, MobState, Rank, M_FAST, M_FIERY, M_STONE, M_STRONG, M_VAMPIRE};
+use crate::rng::Rng;
+use crate::story::{Act, Dialog, Role};
+use crate::world::{Level, LevelId, Prop, PropKind};
+
+// ------------------------------------------------------------------ shrines
+
+/// What a shrine gives. The timed ones last BLESS_TIME seconds.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum Blessing {
+    Armor,
+    Combat,
+    Mana,
+    Experience,
+    Refill,
+    Skill,
+    Gem,
+    Haste,
+}
+
+pub const BLESSINGS: [Blessing; 8] = [
+    Blessing::Armor,
+    Blessing::Combat,
+    Blessing::Mana,
+    Blessing::Experience,
+    Blessing::Refill,
+    Blessing::Skill,
+    Blessing::Gem,
+    Blessing::Haste,
+];
+pub const BLESS_TIME: f32 = 90.0;
+
+impl Blessing {
+    pub fn name(self) -> &'static str {
+        match self {
+            Blessing::Armor => "ARMOR SHRINE",
+            Blessing::Combat => "COMBAT SHRINE",
+            Blessing::Mana => "MANA SHRINE",
+            Blessing::Experience => "EXPERIENCE SHRINE",
+            Blessing::Refill => "REFILL SHRINE",
+            Blessing::Skill => "SKILL SHRINE",
+            Blessing::Gem => "GEM SHRINE",
+            Blessing::Haste => "HASTE SHRINE",
+        }
+    }
+
+    /// What it does, for the floater and the HUD.
+    pub fn short(self) -> &'static str {
+        match self {
+            Blessing::Armor => "-25% DAMAGE TAKEN",
+            Blessing::Combat => "+30% DAMAGE",
+            Blessing::Mana => "MANA REGENERATES 3X",
+            Blessing::Experience => "+40% EXPERIENCE",
+            Blessing::Refill => "LIFE AND MANA RESTORED",
+            Blessing::Skill => "+1 TO ALL SKILLS",
+            Blessing::Gem => "A GEM",
+            Blessing::Haste => "+25% SPEED",
+        }
+    }
+
+    pub fn col(self) -> u32 {
+        match self {
+            Blessing::Armor => 0xc0c8d8,
+            Blessing::Combat => 0xff7040,
+            Blessing::Mana => 0x6090ff,
+            Blessing::Experience => 0xffe080,
+            Blessing::Refill => 0xff6080,
+            Blessing::Skill => 0xc080ff,
+            Blessing::Gem => 0x60f0c0,
+            Blessing::Haste => 0x80f080,
+        }
+    }
+
+    pub fn id(self) -> u8 {
+        BLESSINGS.iter().position(|b| *b == self).unwrap() as u8 + 1
+    }
+
+    pub fn from_id(id: u8) -> Option<Blessing> {
+        BLESSINGS.get((id as usize).wrapping_sub(1)).copied()
+    }
+}
+
+/// A shrine on a level: its prop's footprint tile, what it gives, and whether it's been used.
+#[derive(Clone, Copy, Debug)]
+pub struct Shrine {
+    pub x: i32,
+    pub y: i32,
+    pub kind: Blessing,
+    pub used: bool,
+}
+
+impl Shrine {
+    /// Where you stand to touch it (the middle of its tile).
+    pub fn at(&self) -> (f32, f32) {
+        (self.x as f32 + 0.5, self.y as f32 + 0.5)
+    }
+}
+
+/// The shrine art of an act (one style per act; later acts use the ash shrine until theirs exists).
+pub fn shrine_art(_act: u8) -> &'static str {
+    "shrine_ash"
+}
+
+// ------------------------------------------------------------------ super uniques
+
+pub struct SuperDef {
+    pub name: &'static str,
+    pub kind: Kind,
+    /// Where it lives, and the tile it stands on ((0, 0): a random spot far from the start).
+    pub home: LevelId,
+    pub spot: (i32, i32),
+    pub mods: u8,
+    /// Its gang: (kind, how many).
+    pub gang: (Kind, usize),
+    pub tint: u32,
+    /// What it shouts when it sees you.
+    pub line: &'static str,
+    /// Its own unique (the items::UNIQUES boss key), dropped now and then.
+    pub unique: &'static str,
+    /// The lore page it carries (index into LORE), if any.
+    pub page: Option<u8>,
+}
+
+pub const SUPERS: &[SuperDef] = &[
+    // ---- Act 1: the Ashlands ----
+    SuperDef {
+        name: "SKRAT ONE-EAR",
+        kind: Kind::Goblin,
+        home: LevelId::Overworld,
+        spot: (88, 66),
+        mods: M_FAST | M_STRONG,
+        gang: (Kind::Goblin, 5),
+        tint: 0x80d040,
+        line: "SKRAT'S LOOT! ALL OF IT SKRAT'S!",
+        unique: "skrat",
+        page: Some(1),
+    },
+    SuperDef {
+        name: "OLD BONEJAW",
+        kind: Kind::Archer,
+        home: LevelId::Dungeon(0, 1),
+        spot: (0, 0),
+        mods: M_STONE | M_FIERY,
+        gang: (Kind::Skeleton, 3),
+        tint: 0xf0e0b0,
+        line: "MORE BONES FOR THE PILE.",
+        unique: "bonejaw",
+        page: Some(0),
+    },
+    SuperDef {
+        name: "THE HOLLOW SHEPHERD",
+        kind: Kind::Zombie,
+        home: LevelId::Overworld,
+        spot: (24, 58),
+        mods: M_FIERY | M_VAMPIRE,
+        gang: (Kind::Zombie, 5),
+        tint: 0xa0b080,
+        line: "THE FLOCK... MUST... FEED...",
+        unique: "shepherd",
+        page: Some(2),
+    },
+];
+
+/// Super uniques are drawn this much bigger than their kind.
+pub const SUPER_SCALE: f32 = 1.25;
+
+// ------------------------------------------------------------------ side quests
+
+#[derive(Clone, Copy, PartialEq, Debug)]
+#[allow(dead_code)] // Ward, Respec and Gold are for the later acts' quests (phases 2-3).
+pub enum Reward {
+    SkillPoint,
+    /// Permanent extra life.
+    Life(u32),
+    /// A rare item, and some gold.
+    Rare(i32),
+    /// Permanent -5% damage taken (stacks).
+    Ward,
+    Respec,
+    Gold(i32),
+}
+
+impl Reward {
+    pub fn text(self) -> String {
+        match self {
+            Reward::SkillPoint => "A SKILL POINT".into(),
+            Reward::Life(n) => format!("+{n} LIFE, FOR GOOD"),
+            Reward::Rare(g) => format!("A RARE ITEM AND {g} GOLD"),
+            Reward::Ward => "-5% DAMAGE TAKEN, FOR GOOD".into(),
+            Reward::Respec => "A FREE RESPEC".into(),
+            Reward::Gold(g) => format!("{g} GOLD"),
+        }
+    }
+}
+
+/// What finishes a side quest.
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub enum Goal {
+    /// Kill this boss (an optional dungeon's).
+    Boss(Kind),
+    /// Kill this super unique (index into SUPERS).
+    Super(usize),
+}
+
+pub struct SideDef {
+    /// Short name, for the quest log and the journal.
+    pub name: &'static str,
+    pub act: u8,
+    pub giver: Role,
+    pub giver_name: &'static str,
+    /// The option that starts the conversation about it.
+    pub ask: &'static str,
+    pub offer: &'static [&'static str],
+    pub remind: &'static str,
+    pub thanks: &'static [&'static str],
+    pub goal: Goal,
+    pub reward: Reward,
+    /// The quest log line while it's open.
+    pub todo: &'static str,
+}
+
+/// Side quest states (Quest::side): not given, given, done (reward waiting), rewarded.
+pub const S_NONE: u8 = 0;
+pub const S_GIVEN: u8 = 1;
+pub const S_DONE: u8 = 2;
+pub const S_PAID: u8 = 3;
+
+pub const SIDES: &[SideDef] = &[
+    // ---- Act 1 ----
+    SideDef {
+        name: "THE WELL RUNS RED",
+        act: 0,
+        giver: Role::Healer,
+        giver_name: "BROTHER ALDRIC",
+        ask: "ASK ABOUT THE OLD WELL",
+        offer: &[
+            "THE OLD WELL SOUTH OF THE VILLAGE RAN DRY THE NIGHT THE ASH FELL. NOW IT RUNS AGAIN... RED, AND IT STINKS OF THE GRAVE.",
+            "THE FARMERS SAY A WITCH WAS DROWNED IN IT, LONG AGO. I THINK SHE HAS FOUND HER WAY BACK UP. GO DOWN THE CHARNEL WELL AND END HER, BEFORE SHE POISONS US ALL.",
+        ],
+        remind: "THE CHARNEL WELL IS SOUTH OF THE VILLAGE, DOWN THE ROAD. THE WITCH WAITS AT THE BOTTOM.",
+        thanks: &["THE WATER RUNS CLEAR AGAIN. I CAN TEACH YOU SOMETHING FOR THAT: SIT, AND LET YOUR MIND GO STILL..."],
+        goal: Goal::Boss(Kind::WellWitch),
+        reward: Reward::SkillPoint,
+        todo: "SLAY THE WELL-WITCH IN THE CHARNEL WELL (SOUTH OF HOLLOWMERE)",
+    },
+    SideDef {
+        name: "GERTA'S CARAVAN",
+        act: 0,
+        giver: Role::Merchant,
+        giver_name: "GERTA",
+        ask: "ASK ABOUT HER SUPPLIES",
+        offer: &[
+            "MY SUPPLY CART NEVER CAME. GOBLINS, ON THE EAST ROAD. THEIR CHIEF IS A ONE-EARED RUNT CALLED SKRAT, AND HE THINKS EVERYTHING SHINY IS HIS.",
+            "BRING HIM DOWN AND I'LL MAKE IT WORTH YOUR WHILE. I KEEP MY BEST PIECE UNDER THE COUNTER.",
+        ],
+        remind: "SKRAT ONE-EAR. EAST OF THE VILLAGE, BY WHAT'S LEFT OF MY CART.",
+        thanks: &["SKRAT'S DEAD? HA! HERE, AS PROMISED: THE PIECE FROM UNDER THE COUNTER, AND A PURSE FOR YOUR TROUBLE."],
+        goal: Goal::Super(0),
+        reward: Reward::Rare(300),
+        todo: "SLAY SKRAT ONE-EAR (EAST OF HOLLOWMERE)",
+    },
+    SideDef {
+        name: "THE HOLLOW SHEPHERD",
+        act: 0,
+        giver: Role::Villager(1),
+        giver_name: "FARMER",
+        ask: "ASK ABOUT HIS FLOCK",
+        offer: &[
+            "MY FLOCK... THE OLD SHEPHERD WENT OUT TO THE WESTERN PENS WHEN THE ASH FELL. HE CAME BACK WRONG, AND THE SHEEP CAME BACK WITH HIM. THEY DON'T BLEAT ANY MORE.",
+            "PUT HIM TO REST. PLEASE. HE WAS MY FATHER.",
+        ],
+        remind: "THE WESTERN PENS, PAST THE TREES. YOU'LL KNOW HIM BY THE FLOCK AROUND HIM.",
+        thanks: &["THANK YOU. I'LL BURY HIM PROPERLY. TAKE THIS: MY MOTHER'S CHARM. IT KEPT HIM ALIVE THROUGH THREE WINTERS."],
+        goal: Goal::Super(2),
+        reward: Reward::Life(20),
+        todo: "PUT THE HOLLOW SHEPHERD TO REST (WEST OF HOLLOWMERE)",
+    },
+];
+
+// ------------------------------------------------------------------ lore
+
+/// Lore pages: (act, title, text). Five per act; the index is the page id.
+pub const LORE: &[(u8, &str, &str)] = &[
+    (0, "A WARDEN'S OATH", "WE THREE SWORE ON THE ASH ALTAR: BONE, PLAGUE AND HEX, TO GUARD THE SANCTUM UNTIL THE KING WAKES. NONE OF US ASKED WHAT HE WOULD BE WHEN HE DID."),
+    (0, "SKRAT'S TALLY", "SKRAT'S: 1 CART. 2 BARRELS ALE. 1 SHINY HAT. 3 HORSES (ATE). 1 EAR (MINE, LOST). ALL SKRAT'S. TOUCH AND DIE."),
+    (0, "THE SHEPHERD'S PRAYER", "LORD OF THE GREEN FIELDS, KEEP MY FLOCK FROM THE ASH. I WILL FEED THEM. I WILL ALWAYS FEED THEM. WHATEVER THEY HUNGER FOR."),
+    (0, "THE DROWNING", "THEY TIED STONES TO HER FEET AND DROPPED HER IN THE WELL. SHE DID NOT SCREAM. SHE LAUGHED, AND SAID SHE WOULD BE THIRSTY WHEN SHE CAME BACK."),
+    (0, "MAREN'S LETTER", "HOLLOWMERE WAS BUILT ON A BURIAL GROUND. EVERY ELDER KNOWS IT. I PRAY THE DEAD UNDER US STAY QUIET, BUT THE ASH HAS WOKEN EVERYTHING ELSE."),
+];
+
+pub fn pages_of(act: usize) -> impl Iterator<Item = usize> {
+    LORE.iter().enumerate().filter(move |(_, l)| l.0 as usize == act).map(|(i, _)| i)
+}
+
+// ------------------------------------------------------------------ events
+
+/// Seconds between events out in the wilds (a range).
+pub const EVENT_GAP: (f32, f32) = (80.0, 150.0);
+/// A gold-thief escapes after this long.
+pub const HOARDER_TIME: f32 = 22.0;
+
+// ------------------------------------------------------------------ placing it all on a level
+
+/// A random open tile far from the level's start (and from portals), reachable from it.
+fn far_spot(lv: &Level, rng: &mut Rng, min: f32) -> Option<(i32, i32)> {
+    let (sx, sy) = (lv.start.0 as i32, lv.start.1 as i32);
+    for _ in 0..400 {
+        let x = rng.range(3, lv.d.w - 3);
+        let y = rng.range(3, lv.d.h - 3);
+        let (fx, fy) = (x as f32 + 0.5, y as f32 + 0.5);
+        let far = ((fx - lv.start.0).powi(2) + (fy - lv.start.1).powi(2)).sqrt();
+        if far < min || lv.d.blocked(fx, fy, 0.9) {
+            continue;
+        }
+        if lv.portals.iter().any(|p| (p.x - fx).powi(2) + (p.y - fy).powi(2) < 16.0) {
+            continue;
+        }
+        if let Some((x0, y0, x1, y1)) = lv.safe {
+            if fx > x0 - 3.0 && fx < x1 + 3.0 && fy > y0 - 3.0 && fy < y1 + 3.0 {
+                continue;
+            }
+        }
+        if lv.d.path((sx, sy), (x, y), 20_000).is_some() {
+            return Some((x, y));
+        }
+    }
+    None
+}
+
+/// The nearest open tile to (x, y).
+fn open_near(lv: &Level, (x, y): (i32, i32)) -> Option<(i32, i32)> {
+    for r in 0..8 {
+        for dy in -r..=r {
+            for dx in -r..=r {
+                let (tx, ty) = (x + dx, y + dy);
+                if !lv.d.blocked(tx as f32 + 0.5, ty as f32 + 0.5, 0.45) {
+                    return Some((tx, ty));
+                }
+            }
+        }
+    }
+    None
+}
+
+/// Puts a level's side content in place: shrines, super uniques and lore pages lying about.
+/// Called by world::build_at after the elites and before the difficulty scaling.
+pub fn place(lv: &mut Level, seed: u64) {
+    let salt = crate::levels::file_name(lv.id).bytes().fold(0x51de_u64, |h, b| h.wrapping_mul(31).wrapping_add(b as u64));
+    let mut rng = Rng::new(seed ^ salt.wrapping_mul(0x2545_f491));
+    // ---- shrines: 2-3 on an overland, 1-2 on a dungeon floor or in a rift ----
+    let n = if lv.id.overland() { rng.range(2, 4) } else { rng.range(1, 3) };
+    let act = lv.id.act() as u8;
+    for _ in 0..n {
+        let Some((x, y)) = far_spot(lv, &mut rng, 10.0) else { break };
+        if lv.shrines.iter().any(|s| (s.x - x).abs() + (s.y - y).abs() < 12) {
+            continue;
+        }
+        let kind = BLESSINGS[rng.range(0, BLESSINGS.len() as i32) as usize];
+        lv.d.set(x, y, crate::dungeon::Tile::Prop);
+        lv.props.push(Prop::on(PropKind::Shrine(act), x, y, 1, 1));
+        lv.shrines.push(Shrine { x, y, kind, used: false });
+    }
+    if matches!(lv.id, LevelId::Rift(_)) {
+        return;
+    }
+    // ---- super uniques and their gangs ----
+    for (i, s) in SUPERS.iter().enumerate() {
+        if s.home != lv.id {
+            continue;
+        }
+        let spot = if s.spot == (0, 0) { far_spot(lv, &mut rng, 18.0) } else { open_near(lv, s.spot) };
+        let Some((x, y)) = spot else { continue };
+        let (fx, fy) = (x as f32 + 0.5, y as f32 + 0.5);
+        let tier = lv.tier * if lv.id.overland() { 1.2 } else { 1.0 };
+        // Clear the spot of other monsters, so it's its own fight.
+        lv.mobs.retain(|m| m.boss || crate::breakables::is_prop(m.kind) || (m.x - fx).powi(2) + (m.y - fy).powi(2) > 36.0);
+        let mut m = Mob::new(s.kind, fx, fy, tier, &mut rng);
+        m.promote(Rank::Elite, s.mods, Some(s.name.into()));
+        // Tougher than an ordinary elite leader.
+        m.max_hp *= 1.5;
+        m.hp = m.max_hp;
+        m.xp *= 1.5;
+        m.superu = i as u8 + 1;
+        lv.mobs.push(m);
+        for k in 0..s.gang.1 {
+            let a = k as f32 / s.gang.1 as f32 * std::f32::consts::TAU;
+            let (gx, gy) = (fx + a.cos() * 1.4, fy + a.sin() * 1.4);
+            if lv.d.blocked(gx, gy, 0.35) {
+                continue;
+            }
+            let mut g = Mob::new(s.gang.0, gx, gy, tier, &mut rng);
+            g.promote(Rank::Minion, s.mods & (M_FAST | M_FIERY), None);
+            lv.mobs.push(g);
+        }
+    }
+    // ---- the optional dungeons' pages lie on their first floor ----
+    if let LevelId::Dungeon(k, 0) = lv.id {
+        if let Some(page) = OPTIONAL.iter().find(|o| o.0 == k).map(|o| o.1) {
+            if let Some((x, y)) = far_spot(lv, &mut rng, 12.0) {
+                lv.pickups.push(Pickup { x: x as f32 + 0.5, y: y as f32 + 0.5, kind: Drop::Page(page), t: 1.0 });
+            }
+        }
+    }
+}
+
+/// The optional dungeons: (dungeon index, the lore page on its first floor).
+pub const OPTIONAL: &[(usize, u8)] = &[(crate::world::CHARNEL, 3)];
+
+// ------------------------------------------------------------------ the game side
+
+impl Game {
+    /// A shrine blessing in force: (kind, seconds left).
+    pub fn blessing(&self) -> Option<(Blessing, f32)> {
+        Blessing::from_id(self.p.blessing).filter(|_| self.p.bless_t > 0.0).map(|b| (b, self.p.bless_t))
+    }
+
+    pub fn blessed(&self, b: Blessing) -> bool {
+        self.blessing().map_or(false, |(k, _)| k == b)
+    }
+
+    /// Damage dealt (Combat shrine).
+    pub fn bless_damage(&self) -> f32 {
+        if self.blessed(Blessing::Combat) {
+            1.3
+        } else {
+            1.0
+        }
+    }
+
+    /// Damage taken: the Armor shrine, and the wards earned from side quests.
+    pub fn bless_taken(&self) -> f32 {
+        let armor = if self.blessed(Blessing::Armor) { 0.75 } else { 1.0 };
+        armor * (1.0 - 0.05 * self.p.ward.min(6) as f32)
+    }
+
+    /// Experience: the Experience shrine, and a finished act of lore pages.
+    pub fn bless_xp(&self) -> f32 {
+        let shrine = if self.blessed(Blessing::Experience) { 1.4 } else { 1.0 };
+        let act = self.level.act();
+        let lore = if pages_of(act).count() > 0 && pages_of(act).all(|i| self.p.pages & (1 << i) != 0) { 1.05 } else { 1.0 };
+        shrine * lore
+    }
+
+    /// Movement and cast speed (Haste shrine).
+    pub fn bless_speed(&self) -> f32 {
+        if self.blessed(Blessing::Haste) {
+            1.25
+        } else {
+            1.0
+        }
+    }
+
+    /// Mana regeneration (Mana shrine).
+    pub fn bless_mana(&self) -> f32 {
+        if self.blessed(Blessing::Mana) {
+            3.0
+        } else {
+            1.0
+        }
+    }
+
+    /// Every tick: shrines you touch, the blessing running out, events, gold-thieves, supers' shouts.
+    pub(crate) fn update_side(&mut self) {
+        let dt = crate::game::DT;
+        if self.p.bless_t > 0.0 {
+            self.p.bless_t -= dt;
+            if self.p.bless_t <= 0.0 {
+                let was = self.p.blessing;
+                self.p.blessing = 0;
+                if Blessing::from_id(was) == Some(Blessing::Skill) {
+                    self.p.recalc();
+                }
+            }
+        }
+        // ---- shrines: walk up to one ----
+        let (px, py) = (self.p.x, self.p.y);
+        if let Some(i) = self.shrines.iter().position(|s| !s.used && {
+            let (sx, sy) = s.at();
+            (sx - px).powi(2) + (sy - py).powi(2) < 1.3 * 1.3
+        }) {
+            self.use_shrine(i);
+        }
+        // ---- super uniques shout when they see you ----
+        for i in 0..self.mobs.len() {
+            let m = &self.mobs[i];
+            if m.superu == 0 || !m.alive() || m.shouted || m.state == MobState::Idle {
+                continue;
+            }
+            let (x, y, line) = (m.x, m.y, SUPERS[m.superu as usize - 1].line);
+            self.mobs[i].shouted = true;
+            self.floater(x, y - 1.0, line.into(), rgb(0xffd080));
+        }
+        // ---- the gold-thief runs, and gets away in the end ----
+        for i in 0..self.mobs.len() {
+            if self.mobs[i].kind != Kind::Hoarder || !self.mobs[i].alive() {
+                continue;
+            }
+            self.mobs[i].flee = 1.0;
+            if self.mobs[i].state == MobState::Idle {
+                self.mobs[i].state = MobState::Chase;
+            }
+            self.mobs[i].special += dt;
+            if self.mobs[i].special > HOARDER_TIME {
+                let (x, y) = (self.mobs[i].x, self.mobs[i].y);
+                self.mobs[i].state = MobState::Dead(10.0);
+                self.mobs[i].hp = 0.0;
+                for _ in 0..16 {
+                    self.spray_at(x, y, PKind::Magic, 20.0);
+                }
+                self.say("THE GOLD-THIEF GOT AWAY...".into());
+            }
+        }
+        // ---- events out in the wilds ----
+        let wild = !self.in_safe(px, py) && !self.in_rift() && !matches!(self.state, crate::game::State::Dead(_));
+        if wild {
+            self.event_cd -= dt;
+            if self.event_cd <= 0.0 {
+                self.event_cd = self.rng.rf(EVENT_GAP.0, EVENT_GAP.1);
+                let r = self.rng.f();
+                let ok = if r < 0.4 {
+                    self.event_ambush()
+                } else if r < 0.7 {
+                    self.event_hoarder()
+                } else {
+                    self.event_fallen()
+                };
+                if !ok {
+                    // No room here: try again soon.
+                    self.event_cd = 10.0;
+                }
+            }
+        }
+    }
+
+    fn use_shrine(&mut self, i: usize) {
+        self.shrines[i].used = true;
+        let kind = self.shrines[i].kind;
+        let (x, y) = self.shrines[i].at();
+        self.p.shrines_used += 1;
+        self.sfx.push(Sfx::Descend);
+        self.lights.push(Light { x, y, r: 160.0, s: 1.2, life: 1.0, max: 1.0 });
+        for _ in 0..24 {
+            self.spray_at(x, y, PKind::Magic, 26.0);
+        }
+        self.floater(x, y, format!("{}: {}", kind.name(), kind.short()), kind.col());
+        match kind {
+            Blessing::Refill => {
+                self.p.hp = self.p.max_hp;
+                self.p.mana = self.p.max_mana;
+            }
+            Blessing::Gem => {
+                let ilvl = crate::items::ilvl_for(self.tier);
+                let gem = crate::items::gem_item(crate::items::roll_gem(ilvl.saturating_add(4), &mut self.rng));
+                self.pickups.push(Pickup { x: self.p.x, y: self.p.y + 0.3, kind: Drop::Item(Box::new(gem)), t: 0.0 });
+            }
+            _ => {
+                let was = self.p.blessing;
+                self.p.blessing = kind.id();
+                self.p.bless_t = BLESS_TIME;
+                if kind == Blessing::Skill || Blessing::from_id(was) == Some(Blessing::Skill) {
+                    self.p.recalc();
+                }
+            }
+        }
+    }
+
+    /// A random open spot `r` tiles (give or take) from the hero that the hero can walk to.
+    fn spot_near(&mut self, r: f32) -> Option<(f32, f32)> {
+        let (px, py) = (self.p.x, self.p.y);
+        for _ in 0..40 {
+            let a = self.rng.f() * std::f32::consts::TAU;
+            let rr = self.rng.rf(r * 0.8, r * 1.2);
+            let (x, y) = (px + a.cos() * rr, py + a.sin() * rr);
+            if self.d.blocked(x, y, 0.5) || self.in_safe(x, y) {
+                continue;
+            }
+            if self.d.path((px as i32, py as i32), (x as i32, y as i32), 4000).is_some() {
+                return Some((x, y));
+            }
+        }
+        None
+    }
+
+    /// The monsters that live here (for ambushes): the level's own, not bosses or breakables.
+    fn local_kinds(&self) -> Vec<Kind> {
+        let mut kinds: Vec<Kind> = vec![];
+        for m in &self.mobs {
+            if !m.boss && m.superu == 0 && m.charm <= 0.0 && !crate::breakables::is_prop(m.kind) && m.kind != Kind::Hoarder && def_is_wild(m.kind) && !kinds.contains(&m.kind) {
+                kinds.push(m.kind);
+            }
+        }
+        kinds
+    }
+
+    /// The ground shakes and two packs close in, each led by a champion.
+    fn event_ambush(&mut self) -> bool {
+        let kinds = self.local_kinds();
+        if kinds.is_empty() {
+            return false;
+        }
+        let mut spawned = 0;
+        for _ in 0..2 {
+            let Some((x, y)) = self.spot_near(7.5) else { continue };
+            let kind = kinds[self.rng.range(0, kinds.len() as i32) as usize];
+            let mods = crate::mobs::roll_mods(1, &mut self.rng);
+            for k in 0..3 {
+                let a = k as f32 * 2.1;
+                let (mx, my) = (x + a.cos() * 0.9, y + a.sin() * 0.9);
+                if self.d.blocked(mx, my, 0.35) {
+                    continue;
+                }
+                let mut m = Mob::new(kind, mx, my, self.tier, &mut self.rng);
+                // A champion leads each pack; the rest are ordinary (six champions at once were a wall early on).
+                if k == 0 {
+                    m.promote(Rank::Champion, mods, None);
+                }
+                m.state = MobState::Chase;
+                self.mobs.push(m);
+                spawned += 1;
+            }
+        }
+        if spawned == 0 {
+            return false;
+        }
+        self.shake = self.shake.max(0.6);
+        self.sfx.push(Sfx::Boom);
+        self.say("AMBUSH!".into());
+        true
+    }
+
+    /// A gold-thief, laden with loot, bolts when it sees you.
+    fn event_hoarder(&mut self) -> bool {
+        let Some((x, y)) = self.spot_near(8.0) else { return false };
+        let mut m = Mob::new(Kind::Hoarder, x, y, self.tier, &mut self.rng);
+        m.state = MobState::Chase;
+        m.flee = 1.0;
+        self.mobs.push(m);
+        self.say("A GOLD-THIEF! CATCH IT BEFORE IT GETS AWAY".into());
+        true
+    }
+
+    /// A fallen adventurer: a pack to loot, and maybe a page.
+    fn event_fallen(&mut self) -> bool {
+        let Some((x, y)) = self.spot_near(6.0) else { return false };
+        self.decals.push(Decal { x, y, r: 0.6, col: rgb(0x301810), a: 0.6 });
+        let ilvl = crate::items::ilvl_for(self.tier);
+        let gold = (20.0 + 15.0 * self.tier) as i32;
+        let mut loot = vec![Drop::Gold(gold), if self.rng.chance(0.5) { Drop::Health } else { Drop::Mana }];
+        let mf = self.p.bonus.get(crate::items::Stat::Magic);
+        loot.push(Drop::Item(Box::new(crate::items::drop(ilvl + 1, mf + 50, true, &mut self.rng))));
+        if let Some(page) = self.missing_page(self.level.act()) {
+            loot.push(Drop::Page(page as u8));
+        }
+        let n = loot.len();
+        for (k, kind) in loot.into_iter().enumerate() {
+            let a = k as f32 / n as f32 * std::f32::consts::TAU;
+            self.pickups.push(Pickup { x: x + a.cos() * 0.5, y: y + a.sin() * 0.5, kind, t: 0.0 });
+        }
+        self.say("A FALLEN ADVENTURER LIES NEARBY. HIS PACK IS STILL FULL".into());
+        true
+    }
+
+    /// A lore page of this act you haven't found yet (fallen adventurers carry them).
+    pub fn missing_page(&self, act: usize) -> Option<usize> {
+        // Pages carried by super uniques or lying in optional dungeons are found there, not on the fallen.
+        let fixed: Vec<usize> = SUPERS.iter().filter_map(|s| s.page.map(|p| p as usize)).chain(OPTIONAL.iter().map(|o| o.1 as usize)).collect();
+        pages_of(act).find(|&i| self.p.pages & (1 << i) == 0 && !fixed.contains(&i))
+    }
+
+    /// A monster died: super uniques' loot and quests, the gold-thief's hoard, optional bosses' quests.
+    pub(crate) fn side_kill(&mut self, i: usize) {
+        let (x, y, kind, superu) = (self.mobs[i].x, self.mobs[i].y, self.mobs[i].kind, self.mobs[i].superu);
+        if kind == Kind::Hoarder {
+            // Its hoard bursts out.
+            for k in 0..7 {
+                let a = k as f32 / 7.0 * std::f32::consts::TAU;
+                let g = (8.0 + 6.0 * self.tier) as i32;
+                self.pickups.push(Pickup { x: x + a.cos() * 0.9, y: y + a.sin() * 0.9, kind: Drop::Gold(g), t: 0.0 });
+            }
+            let ilvl = crate::items::ilvl_for(self.tier);
+            self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(crate::items::gem_item(crate::items::roll_gem(ilvl + 3, &mut self.rng)))), t: 0.0 });
+            if self.rng.chance(0.35) {
+                self.pickups.push(Pickup { x, y: y + 0.4, kind: Drop::Item(Box::new(crate::items::roll(ilvl + 2, crate::items::Rarity::Rare, &mut self.rng))), t: 0.0 });
+            }
+            self.say("THE GOLD-THIEF'S HOARD SPILLS OUT!".into());
+            return;
+        }
+        if superu > 0 {
+            let s = &SUPERS[superu as usize - 1];
+            self.p.supers |= 1 << (superu - 1);
+            let ilvl = crate::items::ilvl_for(self.tier) + 2;
+            let mut drops = vec![Drop::Item(Box::new(crate::items::roll(ilvl, crate::items::Rarity::Rare, &mut self.rng)))];
+            if self.rng.chance(0.2) {
+                if let Some(u) = crate::items::boss_unique(s.unique) {
+                    drops.push(Drop::Item(Box::new(u)));
+                }
+            }
+            if let Some(page) = s.page {
+                if self.p.pages & (1 << page) == 0 {
+                    drops.push(Drop::Page(page));
+                }
+            }
+            drops.push(Drop::Gold((30.0 + 20.0 * self.tier) as i32));
+            let n = drops.len();
+            for (k, kind) in drops.into_iter().enumerate() {
+                let a = k as f32 / n as f32 * std::f32::consts::TAU + 0.3;
+                self.pickups.push(Pickup { x: x + a.cos() * 0.8, y: y + a.sin() * 0.8, kind, t: 0.0 });
+            }
+            self.floater(x, y, format!("{} IS SLAIN", s.name), rgb(0xffd080));
+            self.side_progress(Goal::Super(superu as usize - 1));
+        }
+        if self.mobs[i].boss {
+            self.side_progress(Goal::Boss(kind));
+        }
+    }
+
+    /// A side quest's goal was reached.
+    fn side_progress(&mut self, goal: Goal) {
+        for (q, s) in SIDES.iter().enumerate() {
+            if s.goal == goal && self.quest.side[q] < S_DONE {
+                self.quest.side[q] = S_DONE;
+                self.save_due = true;
+                self.say(format!("{}: DONE. RETURN TO {}", s.name, s.giver_name));
+            }
+        }
+    }
+
+    /// Adds the side quest options of this person to a conversation.
+    pub(crate) fn side_options(&self, role: Role, d: &mut Dialog) {
+        let act = self.level.act() as u8;
+        for (q, s) in SIDES.iter().enumerate() {
+            if s.giver != role || s.act != act {
+                continue;
+            }
+            let label = match self.quest.side[q] {
+                S_NONE => s.ask.to_string(),
+                S_GIVEN => format!("{} (OPEN)", s.name),
+                S_DONE => format!("{}: IT'S DONE", s.name),
+                _ => continue,
+            };
+            let opt = (label, Act::Side(q as u8));
+            // Just above FAREWELL, so the person's own options (shop, healing...) keep their place.
+            let list = if d.pages.len() > 1 { &mut d.last_options } else { &mut d.options };
+            if list.is_empty() || list.iter().all(|o| o.1 == Act::Next) {
+                *list = vec![("FAREWELL".into(), Act::Close)];
+            }
+            let at = if list.last().map_or(false, |o| o.1 == Act::Close) { list.len() - 1 } else { list.len() };
+            list.insert(at, opt);
+        }
+        d.refresh_options();
+    }
+
+    /// Talking about a side quest: the offer, a reminder, or the thanks and the reward.
+    pub(crate) fn side_talk(&mut self, q: usize) {
+        let s = &SIDES[q];
+        let mut d = match self.quest.side[q] {
+            S_NONE => {
+                self.quest.side[q] = S_GIVEN;
+                self.save_due = true;
+                let mut d = Dialog::new(s.giver_name, s.offer);
+                d.last_options = vec![("I'LL SEE TO IT".into(), Act::Close)];
+                d
+            }
+            S_GIVEN => Dialog::new(s.giver_name, &[s.remind]),
+            _ => {
+                self.quest.side[q] = S_PAID;
+                self.save_due = true;
+                let text = self.give_reward(s.reward);
+                let mut pages: Vec<String> = s.thanks.iter().map(|t| t.to_string()).collect();
+                pages.push(format!("{}: {}", s.name, text));
+                let refs: Vec<&str> = pages.iter().map(|p| p.as_str()).collect();
+                Dialog::new(s.giver_name, &refs)
+            }
+        };
+        d.refresh_options();
+        self.dialog = Some(d);
+    }
+
+    fn give_reward(&mut self, r: Reward) -> String {
+        self.sfx.push(Sfx::Descend);
+        match r {
+            Reward::SkillPoint => self.p.skills.points += 1,
+            Reward::Life(n) => {
+                self.p.base_hp += n as f32;
+                self.p.recalc();
+                self.p.hp = self.p.max_hp;
+            }
+            Reward::Rare(g) => {
+                self.p.gold += g;
+                let ilvl = crate::items::ilvl_for(self.tier) + 3;
+                let it = crate::items::roll(ilvl, crate::items::Rarity::Rare, &mut self.rng);
+                // A full bag: it lands at your feet.
+                if let Err(it) = self.p.gear.add(it) {
+                    self.pickups.push(Pickup { x: self.p.x, y: self.p.y + 0.4, kind: Drop::Item(Box::new(it)), t: 0.0 });
+                }
+            }
+            Reward::Ward => self.p.ward = (self.p.ward + 1).min(6),
+            Reward::Respec => {
+                self.p.skills.respec();
+            }
+            Reward::Gold(g) => self.p.gold += g,
+        }
+        r.text()
+    }
+
+    /// Picked up a lore page: read it.
+    pub(crate) fn read_page(&mut self, page: u8) {
+        let i = page as usize;
+        let Some(&(act, title, text)) = LORE.get(i) else { return };
+        let new = self.p.pages & (1 << i) == 0;
+        self.p.pages |= 1 << i;
+        if new {
+            let xp = 40.0 * (1.0 + act as f32) * (1.0 + self.quest.difficulty as f32);
+            self.gain_xp(xp);
+            self.save_due = true;
+        }
+        let have = pages_of(act as usize).filter(|&k| self.p.pages & (1 << k) != 0).count();
+        let all = pages_of(act as usize).count();
+        let mut pages = vec![text.to_string()];
+        if new && have == all {
+            pages.push(format!("ALL {all} PAGES OF THIS ACT FOUND: +5% EXPERIENCE HERE, FOR GOOD"));
+        } else {
+            pages.push(format!("LORE PAGE {have}/{all} OF THIS ACT (SEE THE MAP: TAB / M)"));
+        }
+        let refs: Vec<&str> = pages.iter().map(|p| p.as_str()).collect();
+        let mut d = Dialog::new(title, &refs);
+        d.refresh_options();
+        self.dialog = Some(d);
+    }
+
+    /// The quest log line of this act's open side quests (shown under the main quest).
+    pub fn side_log(&self) -> Option<String> {
+        let act = self.level.act() as u8;
+        SIDES.iter().enumerate().find(|(q, s)| s.act == act && matches!(self.quest.side[*q], S_GIVEN | S_DONE)).map(|(q, s)| {
+            if self.quest.side[q] == S_DONE {
+                format!("{}: RETURN TO {}", s.name, s.giver_name)
+            } else {
+                s.todo.to_string()
+            }
+        })
+    }
+
+    /// The journal (drawn beside the map): this act's pages, side quests and super uniques, and shrines.
+    pub fn journal(&self) -> Vec<(String, u32)> {
+        let act = self.level.act();
+        let mut out = vec![];
+        let have = pages_of(act).filter(|&k| self.p.pages & (1 << k) != 0).count();
+        out.push((format!("LORE PAGES  {have}/{}", pages_of(act).count()), rgb(0xe8d8b0)));
+        for k in pages_of(act) {
+            let found = self.p.pages & (1 << k) != 0;
+            out.push((if found { format!("  {}", LORE[k].1) } else { "  ???".into() }, if found { rgb(0xc8b890) } else { rgb(0x6a5a48) }));
+        }
+        out.push((String::new(), 0));
+        out.push(("SIDE QUESTS".into(), rgb(0xe8d8b0)));
+        for (q, s) in SIDES.iter().enumerate().filter(|(_, s)| s.act as usize == act) {
+            let (state, col) = match self.quest.side[q] {
+                S_NONE => ("NOT FOUND YET", 0x6a5a48),
+                S_GIVEN => ("OPEN", 0xe0c060),
+                S_DONE => ("DONE: RETURN", 0x80e080),
+                _ => ("COMPLETE", 0x80a080),
+            };
+            let name = if self.quest.side[q] == S_NONE { "???" } else { s.name };
+            out.push((format!("  {name}  {state}"), rgb(col)));
+        }
+        out.push((String::new(), 0));
+        out.push(("SUPER UNIQUES".into(), rgb(0xe8d8b0)));
+        for (i, s) in SUPERS.iter().enumerate().filter(|(_, s)| s.home.act() == act) {
+            let slain = self.p.supers & (1 << i) != 0;
+            out.push((if slain { format!("  {}  SLAIN", s.name) } else { "  ???".into() }, if slain { rgb(0xd8a850) } else { rgb(0x6a5a48) }));
+        }
+        out.push((String::new(), 0));
+        out.push((format!("SHRINES USED  {}", self.p.shrines_used), rgb(0xa8a0c0)));
+        if self.p.ward > 0 {
+            out.push((format!("WARDS  -{}% DAMAGE TAKEN", 5 * self.p.ward), rgb(0xa8a0c0)));
+        }
+        out
+    }
+}
+
+/// The monster kinds an ambush can bring (not the heroes' companions).
+fn def_is_wild(k: Kind) -> bool {
+    !matches!(k, Kind::Einherjar | Kind::DireWolf | Kind::Scholar | Kind::Rat | Kind::MossWolf | Kind::ThornWarden | Kind::Bat)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::game::Game;
+
+    #[test]
+    fn shrines_bless_you_and_go_dark() {
+        let mut g = Game::new(7, 360);
+        g.debug_goto(LevelId::Dungeon(0, 0));
+        assert!(!g.shrines.is_empty(), "a dungeon floor has a shrine");
+        let s0 = g.shrines[0];
+        assert!(g.props.iter().any(|p| matches!(p.kind, PropKind::Shrine(_)) && (p.foot.0, p.foot.1) == (s0.x, s0.y)), "its prop is drawn");
+        g.shrines[0].kind = Blessing::Combat;
+        let (x, y) = g.shrines[0].at();
+        (g.p.x, g.p.y) = (x + 0.8, y);
+        g.update_side();
+        assert!(g.shrines[0].used);
+        assert!(g.blessed(Blessing::Combat));
+        assert!(g.bless_damage() > 1.2);
+        g.p.bless_t = 0.01;
+        g.update_side();
+        assert!(g.blessing().is_none(), "it wears off");
+        // A used shrine can't be used again.
+        g.update_side();
+        assert!(g.blessing().is_none());
+    }
+
+    #[test]
+    fn super_uniques_live_where_they_should_and_pay_out() {
+        let mut g = Game::new(7, 360);
+        g.debug_goto(LevelId::Overworld);
+        let i = g.mobs.iter().position(|m| m.superu == 1).expect("Skrat lives on the Ashlands");
+        assert_eq!(g.mobs[i].label(), "SKRAT ONE-EAR");
+        assert!(g.mobs.iter().filter(|m| m.kind == Kind::Goblin && m.rank == Rank::Minion).count() >= 3, "with his gang");
+        // Gerta's quest: take it, kill him, collect.
+        g.quest.side[1] = S_GIVEN;
+        let gold = g.p.gold;
+        let before = g.pickups.len();
+        g.kill(i);
+        assert!(g.pickups.len() > before + 1, "a rare, gold and a page");
+        assert!(g.pickups.iter().any(|k| matches!(k.kind, Drop::Page(1))));
+        assert_eq!(g.quest.side[1], S_DONE);
+        assert!(g.p.supers & 1 != 0, "in the journal");
+        g.side_talk(1);
+        assert_eq!(g.quest.side[1], S_PAID);
+        assert!(g.p.gold >= gold + 300);
+    }
+
+    #[test]
+    fn side_quests_are_offered_and_rewarded() {
+        let mut g = Game::new(7, 360);
+        g.debug_goto(LevelId::Overworld);
+        let i = g.npcs.iter().position(|n| n.role == Role::Healer).unwrap();
+        g.open_dialog(i);
+        let d = g.dialog.as_ref().unwrap();
+        let all: Vec<_> = d.options.iter().chain(d.last_options.iter()).collect();
+        assert!(all.iter().any(|o| o.1 == Act::Side(0)), "Aldric asks about the well");
+        g.side_talk(0);
+        assert_eq!(g.quest.side[0], S_GIVEN);
+        assert!(g.side_log().unwrap().contains("WELL-WITCH"));
+        let pts = g.p.skills.points;
+        g.side_progress(Goal::Boss(Kind::WellWitch));
+        g.side_talk(0);
+        assert_eq!(g.p.skills.points, pts + 1, "a skill point");
+    }
+
+    #[test]
+    fn lore_pages_teach_and_complete_an_act() {
+        let mut g = Game::new(7, 360);
+        g.debug_goto(LevelId::Overworld);
+        let xp = g.p.xp + g.p.clvl as f32 * 1000.0;
+        g.read_page(0);
+        assert!(g.p.pages & 1 != 0);
+        assert!(g.p.xp + g.p.clvl as f32 * 1000.0 > xp);
+        assert!(g.dialog.is_some());
+        assert_eq!(g.bless_xp(), 1.0);
+        for k in pages_of(0) {
+            g.read_page(k as u8);
+        }
+        assert!(g.bless_xp() > 1.0, "all five: +5% XP in Act 1");
+    }
+
+    #[test]
+    fn events_happen_in_the_wilds() {
+        let mut g = Game::new(7, 360);
+        g.debug_goto(LevelId::Dungeon(1, 0));
+        let n = g.mobs.len();
+        assert!(g.event_ambush());
+        assert!(g.mobs.len() > n);
+        assert!(g.event_hoarder());
+        let h = g.mobs.iter().position(|m| m.kind == Kind::Hoarder).unwrap();
+        let before = g.pickups.len();
+        g.kill(h);
+        assert!(g.pickups.len() >= before + 8, "its hoard spills out");
+        assert!(g.event_fallen());
+    }
+}

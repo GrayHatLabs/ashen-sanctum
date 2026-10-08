@@ -33,6 +33,7 @@ mod story;
 mod tides;
 mod sky;
 mod endgame;
+mod side;
 mod world;
 
 use game::{Game, Input};
