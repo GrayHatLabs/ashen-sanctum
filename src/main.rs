@@ -119,6 +119,18 @@ fn main() -> Result<(), String> {
         }
         return Ok(());
     }
+    if let Some(i) = args.iter().position(|a| a == "--export-catalog") {
+        // The level editor's catalog of themes, props, monsters, people, dungeons and overlands.
+        let path = args.get(i + 1).map(String::as_str).filter(|d| !d.starts_with("--")).unwrap_or("tools/level-editor/catalog.js");
+        match std::fs::write(path, levels::catalog_js(seed_arg.unwrap_or(7))) {
+            Ok(()) => println!("wrote the level editor catalog to {path}"),
+            Err(e) => {
+                eprintln!("catalog export failed: {e}");
+                std::process::exit(1);
+            }
+        }
+        return Ok(());
+    }
     if let Some(i) = args.iter().position(|a| a == "--export-levels") {
         // Writes every level as JSON for the level editor (generated, or the hand-made one).
         let dir = args.get(i + 1).map(String::as_str).filter(|d| !d.starts_with("--")).unwrap_or("levels");

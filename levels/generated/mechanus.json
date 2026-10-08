@@ -1,0 +1,6734 @@
+{
+  "version": 1,
+  "id": "mechanus",
+  "name": "THE GRINDING FIELDS",
+  "theme": "mechanus",
+  "tier": 7.2,
+  "width": 112,
+  "height": 112,
+  "tiles": [
+    "                                                                                                                ",
+    "                                                                                                                ",
+    "                                                                                                                ",
+    "                                                                                                                ",
+    "                 o..                                                                     ...                    ",
+    "     ....       .....       .....       ...................   o....o.o      .....       .....       .....       ",
+    "     ......   ........     ........   .......................oo..o         ....o...   ........     .......      ",
+    "     ......o..............................................                  ............     .........o...      ",
+    "     .............o........................                                 ...........       .........o..      ",
+    "     ......................................      ...........                ...o.......       .......o....      ",
+    "     ....................o.......o.........      ...........                ...........       ...o......oo      ",
+    "     o.........o....................................oooo....                ...........      .....o..oo...      ",
+    "     ...........o.o.o............o.......o..........oooo............       ..............   ...o.......o.o      ",
+    "     .........o...ooo..........o....ooo.o...........oooo....o........o......................o...o.o....o..      ",
+    "     .........o.ooo.o...........ooo...........oo...........................................oo...o.o..o....      ",
+    "     ............oo.............oo..o..ooo........................................o...........oo.......oo.      ",
+    "     ..........oo..................oooooo.o.........................o......o....o........o.o..o.o...ooo....     ",
+    "     ..........o................o..o.o....o.............................o..................o...............     ",
+    "     o.........o...............o.......o........................................o........................ooo    ",
+    "     o...........o.o...................o.....................................o....................o.o......     ",
+    "     .............oo....o...............................o.o................................................     ",
+    "      .......o.ooo...............................o......oo....................o.....o....ooo............o..     ",
+    "      ........o............................................o.................o....oo.....ooo..............      ",
+    "       .........o..................   .o.o..............o....................o....oo.....ooo..........o..o      ",
+    "       ...........o.............        ...............o...o..............o..oo..oo.o.....................      ",
+    "       .......oo.........                ................o.................o...o...o......................      ",
+    "       ..........o..o...                  ......o......  .....o.................o..o......................      ",
+    "       ..........o.....                   .............  oo............. .................................      ",
+    "      ..........o......                   .............. o.....................o.o........................      ",
+    "      o.o..o.o.o..o....                   .............. o......................................o.........      ",
+    "      .....o.........o.                   .......o...... ....o................o............o.............o      ",
+    "      .o....ooo.oo....                   ............... o................................o...........o...      ",
+    "      ..o..o..o.....o                    ......... .....  .o.........................................o..oo      ",
+    "     .oo...o.....                        ....o...o .....  ..o.o.......o.................ooo..........o...o.     ",
+    "     .........o..                       .......... .....  ..o............................ooo.o......o......     ",
+    "     .......o...                        ...o.....o .....  o..........o...............o...o..oo..o....o..o.o.    ",
+    "     ...........                        .......... ...... ..........................oo.o..o..o.....o...o.o.o    ",
+    "     ........o..                        .......... ...... o.....o.....o...........o.oo..oo..oo...o..o....o.o    ",
+    "     ............                .........o....o.. ...... ...........o.o.............oo..o.........o..o.o.o.    ",
+    "     ............................................. ...... ...........o..o............oo...o...o..oo.o.o.ooo     ",
+    "     .................................oo..o........ .....  ...........................oo.....ooo..o........     ",
+    "      ............o...................................................oo........ooo....o..oo.......o......      ",
+    "      ................o..............o...............................o...........o.....oo..o.o..oo...o.o.o      ",
+    "      ............o..................................................  .......                   oo..ooo..      ",
+    "      ...o.............................o............................. ........                         ...      ",
+    "     .................................o......................................                           ..      ",
+    "     .......................................#########....########............                          ...      ",
+    "     ..................o....................#...................#...........                           ...      ",
+    "     ............................oo.........#.oooo........oooo..#...........          ..........      ....      ",
+    "     .......................................#.oooo........oooo..#.........          ..............   .....      ",
+    "     .......................................#.oooo........oooo..#...............o o................ ......      ",
+    "     .......................................#.oooo........oooo..#...............oo........................      ",
+    "    ........................................#...................#.........................................      ",
+    "    ...ooo..................................#.......o...........#..................................ooo....      ",
+    "    ...ooo....................................................o....................................ooo....      ",
+    "    ..........................................................o...........................................      ",
+    "    .......................................................................................................     ",
+    "    ......................o................................................................................     ",
+    "    ....................ooo.................#............o......#.........o..............................o..    ",
+    "    ............o...........................#.oooo.........oo...#.................o...oo....................    ",
+    "    .............oo.........................#.oooo.........oo...#...........................................    ",
+    "     .......................................#.oooo..............#........o....o...o..............o.o........    ",
+    "      oo..o.......o.........................#...................#............................oo..oo.........    ",
+    "      o.o.o..........o......................#...................#.................................o.o.......    ",
+    "       .o.o.........o.......................#########....########..........................o......o.o.......    ",
+    "       ..ooo.................................................................................o.....o........    ",
+    "       .....................................................................................o....o..........    ",
+    "       oooo..................................................................................o....o.........    ",
+    "       oo.............o........................................................................oo........o..    ",
+    "       ..............................o................................o..............o........o.o..o........    ",
+    "      ...........................o............oooo................o....o................ooo.....o..o.......     ",
+    "      ............................o...............................o.o.o...............oo......o..o.........     ",
+    "      .......................................................o...ooo..o..................oo.o.o...o........     ",
+    "      .....o....................o.o......o...................o....ooo..o................o........oo...o....     ",
+    "     ..........................o...............o................o....o.....o............oo.........o......      ",
+    "     ....................................o....ooo.o..........oo.......o...o..............o......o.........      ",
+    "     ..........................o.oo.o...o..o...oo..o..............o.oo......o.................o..ooo......      ",
+    "     .........o.................o.oo.o.o..o..o...o............oo..........................................      ",
+    "     .........oo.oo.............o..o.oo...o.                o.o....o..................................o...      ",
+    "     ............................o.....oo.o                      ...o..........o...........o...o..  ......      ",
+    "     ..o........................o..o.......                       o............................o.    .....      ",
+    "     .......o......ooo............o........                       .................oo.............    ....      ",
+    "     ..............ooo.....................                       oo.............ooo..............    ..o.      ",
+    "     ..............ooo............o.....o.o                       ..............o..........ooo....   .....      ",
+    "     ..............................o...o.oo.o                  o..o.................o......ooo....o.......      ",
+    "     ...............................o..........o.o          .o....o..............oo........ooo............      ",
+    "     ................................o.oooo..o.o...       o.oo.oo.........................................      ",
+    "     ........................................o...o.o      o.o.oo.o............o...o.................o.....      ",
+    "     .......................o.........oo..o...o..oo.     ...o...o..............o   o....................o..     ",
+    "     .................................o....ooo.o.oo.     .o..o................      ......................      ",
+    "     .......................o..........o....o.......     .o...o...........o...       .............o.......      ",
+    "     ..............................oo....o....o.o...     .o.o.................      ......................      ",
+    "     .................................o.o.....oo.o.o.   .......................    ....oo.....ooo.........      ",
+    "      ........................o...o...o........o.....o ............o..o..o.............oo....o..oo.o......      ",
+    "      ......ooo..o.............o.o......oo...o.............................o...........o...o..o...oo.....       ",
+    "       ..o..o.o..o........o...........o......o.o.o...................oo....o.........o..o.oo.......oo...        ",
+    "       .   ...ooooo..o..... ...ooo..o.o..o.oo.o...................o...o.o..o........o.....o.o.o.oo..o.          ",
+    "            o...o........     ......o......o....o............             o..........o....o..o....              ",
+    "            oo.oo.......o      o...o.oo...o..o...........o..              ...o..............o....               ",
+    "             ....o.......      oo...o...oooo. ..............               .........o..o..ooo....               ",
+    "            .............      .....o.o.....o ..............              o.o...........oo.o....o               ",
+    "      .     ...............  ..........................o.o...         .o.oo..o......o.o.....o.....              ",
+    "      ..   ............................................oo.....    ...o.o.......o........o.................      ",
+    "      .....................o.........................o.o.o...........o..o.oo...oo.o....o.o...o............      ",
+    "      ..............o...........o.....................oo.............o.....o...o....o...oo................      ",
+    "     .....o.................o.........................o......o.........   .ooo.........oo..................     ",
+    "     ..o..     .......     .............      .......o.o........o....       o...oo     .......     ........     ",
+    "      .o        ....         ..........             .....o.......             o.        ....         .......    ",
+    "                                                                                                                ",
+    "                                                                                                                ",
+    "                                                                                                                ",
+    "                                                                                                                "
+  ],
+  "ground": [
+    "ddddddgggggggggggggggggggggggggggggggggggddddddddddddgggggggggdddddgggggggggddgggggggggggggggdddddddddddgggggggg",
+    "ddddddggggggggggggggggggggggggggggggggggggdddddddddddgggggggggddddgggggggggggggggggggggggggggdddddddddddgggggggg",
+    "ddddddgggggggggggggggggggggggggggggggggggggggdddddddggggggggggddddggggggggggggggggggggggggggggddddddddddgggggggg",
+    "dddddgggggggggggggggggggggggggggggggggggggggggggddggggggggggggdddggggggggggggggggggggggggggggggddddddddggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggdddggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggdgggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggdgggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggddgggggggggggggggggggggggggggggggggggggggggdgggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggdgggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggdddggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggdddggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ggggdddddggggggggggggggggggggggggggggggggggggggdddgggggggggggdddddggggggggggggggggggggggggggggggggggggdddddggggg",
+    "dddddddddddddddgggggggggggggggggggggggggddddddddddddgggggggggddddddggggggggdddddgggggggggggggggggddddddddddddddd",
+    "ddddddddddddddddggggggggggggdggggggggggdddddddddddddggrrgggggddddddgggggggddddddgggggggggggggggggddddddddddddddd",
+    "dddddddddddddddddggggggggggdddgggggggggddddddddddddddgrrgggggdddddddgggggdddddddggggggggggggggggdddddddddddddddd",
+    "dddddddddddddddddgggggggggggdggggggggggddddddddddddddgrrgggggdddddddgggggdddddddgggggggggggggggggddddddddddddddd",
+    "dddgggggggdddddddggggggggggggggggggggggddddddddddddddgrrgggggddddddggggggddddddddggggggggggggggggddddgggggggdddd",
+    "gggggggggggdddddddgggggggggggggggggggggddddddddddddddrrrgggggggggggggggggddddddddggggggggggggggggggggggggggggddd",
+    "gggggggggggddddddddggggggggggggggggggggddddddddddddddrrddddggggggggggggggddddddddgggggggggdddggggggggggggggggddd",
+    "ggggggggggggdddddddddggggggggggggggggggddddddddddddddrrdddddgggggggggggggddddddddgggggggddddddggggggggggggggggdd",
+    "ggggggggggggddddddddddddgggggggggggggggddddddddddddddrrdddddgggggggggggggddddddddgggggggdddddddgggggggggggggggdd",
+    "ggggggggggggddddddddddddgggggggggggggggddddddddddddddrrdddddgggggggggggggddddddddgggggggdddddddgggggggggggggggdd",
+    "ggggggggggggddddddddddddgggggggggggggggdddddddddddddrrrdddddgggggggggggggddddddddgggggggdddddddgggggggggggggggdd",
+    "ggggggggggggdddddddddddddgggggggggggggggddddddddddddrrddddddggggggggggggggdddddddggggggdddrrdddgggggggggggggggdd",
+    "ggggggggggggdddddddddddddggggggggggggggggggdddddddddrrddddddgggggggggggggggggggggggggggddrrrdddgggggggggggggggdd",
+    "ggggggggggggddddddddddddddgggggggggggggggggggggggggdrrdddddgggggggggggggggggggggggggggdddrrddddgggggggggggggggdd",
+    "ggggggggggggddddddddddddddddggggggggggggggggggggggggrrddddgggggggggggggggggggggggggdddddrrrddddgggggggggggggggdd",
+    "gggggggggggggddddddddddddddddddgggggggggggggggggggggrrgggggggggggggggggggggggggggggddddrrrdddddggggggggggggggggd",
+    "gggggggggggggddddddddddddddddddgggggggggggggggggggggrrgggggggggggggggggggggggggggggdddrrrdddddddgggggggggggggggd",
+    "gggggggggggggddddddddddddddddddgggggggggggggggggggggrrgggggggggggggggggggggggggggggdrrrrddddddddgggggggggggggggd",
+    "ggggggggggggddddddddddddddddddddggggggggggggggggggggrrrggggggggggggggggggggggggggggdrrrdddddddddggggggggggggggdd",
+    "ddggggggggggddddddggggggggdddddddggggggggggggggggggggrrgggggggggggggggggggggggggggrrrrggggggggggddddggggggggggdd",
+    "dddgggggggggdddddgggggggggdddddddddddggggggggggggggggrrggggggggggggggggggggggggggrrrrgggggggggggdddddgggggggggdd",
+    "dddgggggggggdddddggggggggggdddddddddddgggggggggggggggrrggggggggggggggggggggggggggrrgggggggggggggdddddgggggggggdd",
+    "ddddggggggggdddddggggggggggdddddddddddddgggggggggggggrrggggggggggggggggggggggggrrrrgggggggggggggddddddggggggggdd",
+    "ddddggggggggdddddggggggggggdddddddddddddgggggggggggggrrggggggggggggggggggggggggrrrggggggggggggggddddddggggggggdd",
+    "ddddggggggggdddddggggggggggdddddddddddddgggggggggggggrrgggggggggggggggggggggggrrrgggggggggggggggddddddggggggggdd",
+    "ddddgggggggddddddggggggggggddddddddddddddggggggggggggrrgggggggggggggggggggggggrrggggggggggggggggddddddgggggggddd",
+    "ddddgggggggdddddddggggggggggggdddddddddddddggggggggggrrrgggggggggggggggggggggrrrggggggggggggggggddddddgggggggddd",
+    "ddddggggggdddddddddgggggggggggggddddddddddddggggggggggrrgggggggdgggggggggggggrrggggggggggggggggggdddddggggggdddd",
+    "ddddddggddddddddddddddddgggggggggdddddddddddggggggggggrrgggggddddgggggggggggrrrggggggggggggggggggdddddddggdddddd",
+    "dddddddddddddddddddddddddgggggggggddddddddddggggggggggrrdddddddddggggggggggrrrggggggggggggggggggggdddddddddddddd",
+    "ggdddddddddddddddddddddddgggggggggddddddddddggggggggggrrdddddddddggggggggggrrgggggggggggggggggggggggdddddddddddd",
+    "ggggdddddddddddddddddddddgggggggggddddddddddggggggggggrrdddddddddgggggggggrrrgggggggggggggggggggggggggdddddddddd",
+    "ggggggddddddddddddddddddgggggggggddddddgggggggggggggggrrdddddddddgggggggggrrggggggggggggggggggggggggggggdddddddd",
+    "ggggggggggdddddddddddddggggggggggddddddgggggggggggggggrrggdddddddggggggggrrrggggggggggggggggggggggggggggggggdddd",
+    "gggggggggggdddddddddgggggggggggggdddddggggggggggggggggrrggggggggggggggggrrrggggggggggggggggggggggggggggggggggddd",
+    "ggggggggggggddddddgggggggggggggggdddddggggggggggggggggrrgggggggggggggggrrrrgggggggggggggggggggggggggggggggggggdd",
+    "ggggggggggggddddddgggggggggggggggdddddggggggggggggggggrrgggggggggggggggrrgggdddgggggggggggggggggggggggggggggggdd",
+    "ggggggggggggdddddggggggggggggggggdddddggggggggggggggggrrggggggggggggggrrrgggdddgggggggggggggggggggggggggggggggdd",
+    "gggggggggggggddddggggggggggggggggdddddggggggggggggggggrrgggggggggggggrrrggggdddggggggggggggggggggggggggggggggggd",
+    "ggggggggggggggddgggggggggggggggggdddddggggggggggggggggrrggggggggggggrrrrgggddddggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggggggdddgggggggggggggggggrrgggggggggggrrrgggggdddddgggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggrrrrggggggggggggggggggggrrggggggggggrrrrgggggdddddgggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggdddrrrrrrrrrrrrrrrrrrrrgggggggggggrrgggggggggrrrgggrrrrrrrrrrrrrrrrrrrrggggggggggggggggggggg",
+    "ggggggggrrgggggggggrrrrrrrrrrrrggrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrggggggggggggggggg",
+    "ggggggggrrrrrrrrrrrrrrrrdggggggggggggggggrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrgggdddddggggggggggrrrrrrrrrrrggggggggggg",
+    "gggggggggrrrrrrrrrrrdddddggggggggggggggggrrgggggggggggrrggggggggggrrgggggggdddddggggggggggggggrrrrrrrggggggggggg",
+    "ggggggggggggggggggggdddddggggggggggggggrrrrgggggggggggrrggggggggggrrrgggggggdddggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggdddddggggggggggggggrrrggggggggggggrrgggggggggggrrggggggggggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggddddddggggggggggggrrrgggggggggggggrrgggggggggggrrrgggggggggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggddddddddgggggggggrrrggggggggggggggrrggggggggggggrrrggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggddddddddddgggggggrrrgggggggggggggggrrgggggggggggggrrggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggddddddddddgggggrrrrggggggggggggggggrrgggggggggggggrrrgggggggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggggggrrrgggggggggggggggggrrggggggggggggggrrrggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggrrrgggggggggggggggggggggggggggggggggggrrrgggggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggggrrrggggggggggggggggggggggggggggggggggggrrrrggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggrrrggggggggggggggggggggggggggggddddgggggggrrggggggggggggggggggggggggggggggggggggg",
+    "ddddddddggggggggggggggggggggggrrrgdddddddddddggggggggggggggggddddddggggggrrrrggggggggggggggggggdddddddddddgggggg",
+    "dddddddddggggggggggggggggggggrrrgdddddddddddddggggggggggggggddddddddggggggrrrgggggggggggggggggdddddddddddddggggg",
+    "dddddddddgggggggggggggggggggrrrrgdddddddddddddgggggggggggggdddddddddgggggggrrrrgggggggggggggggdddddddddddddggggg",
+    "dddddddddgggggggggggggggggggrrgggdddddddddddddggggggggggggggddddddddggggggggrrrrrgggggggggggggdddddddddddddggggg",
+    "dddddddddggggggggggggggggggrrrgggdddddddddddddggggggggggggggddddddddggggggggggrrrggggggggggggggddddddddddddggggg",
+    "ggddddddddgggggggggggggggggrrgggggddddddddddddggggggggggggggddddddddgggggggggggrrrrgggggggggggggggggddddddddgggg",
+    "ggggddddddggggggggggggggggrrrggggggggggddddddgggggggggggggggdddddddddgggggggggggrrrrggggggggggggggggggddddddgggg",
+    "ggggddddddgggggggggggggggrrrdggggggggggggdddgggggggggggggggggddddddddddddddddddgggrrrgggggggggggggggggddddddgggg",
+    "gggggdddddgggggggggggggggrrddddggggggggggggggggggggggggggggggdddddddddddddddddddggrrrrgggggggggggggggggdddddgggg",
+    "gggggdddddggggggggggggggrrrddddggggggggggggggggggggggggggggggddddddddddddddddddddgggrrrggggggggggggggggdddddgggg",
+    "ggggdddddddgggggggggggggrrgddddggggggggggggggggggggggggggggggddddddddddddddddddddggggrrrggggggggggggggdddddddggg",
+    "ggggdddddddggggggggggggrrrgdddgggggggggggddddgggggggggggggggddddddddgggggggdddddggggggrrrgggggggggggggdddddddggg",
+    "ggggdddddddggggggggggggrrggggggggggggggggddddddddddgggggggggdddddddgggggggggddddgggggggrrgggggggggggggdddddddggg",
+    "ggdddddddddgggggggggggrrrgggggggggggggggdddddddddddddddgggddddddddggggggggggddddgggggggrrrggggggggggdddddddddggg",
+    "ddddddddddddgggggggddrrrggggggggggggggggddddddddddddddddddddddddddggggggggggddddggggggggrrrggggggdddddddddddddgg",
+    "ddddddddddddgggggdddrrrdggggggggggggggggddddddddddddddddddddddddddgggggggggggdddgggggggggrrgggggddddddddddddddgg",
+    "dddddddddddddggggdddrrddggggggggggggggggddddddddddddddddddddddddddgggggggggggdddgggggggggrrrggggdddddddddddddddg",
+    "ddddddddddddgggggdddrrddggggggggggggggggddddddddddddddddddddddddddgggggggggggddgggggggggggrrrgggddddddddddddddgg",
+    "ddddddddddddgggggggddddgggggggggggggggggdddddddddddddddddddddddddggggggggggggggggggggggggggrrgggddddddddddddddgg",
+    "gggdddddddgggggggggggggggggggggggggggggggdddddggggggddddddddddgggggggggggggggggggggggggggggrrggggggggdddddddgggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggdddddddgggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggggggggggggggggddddddgggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggggggggggggggggddddddgggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggggggggggggggggdddddggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggggggggggggggggdddddggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggddddggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "dddgggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggdddddggggggggggg",
+    "dddddgggggggggggggggggggggggggggggggggggggggddddddddggggggggggggggggggggggggggggggggggggggggggdddddddddggggggggg",
+    "ddddddggggggggggggggggggggggggggggggggggggdddddddddddgggggggggddddgggggggggggggggggggggggggggdddddddddddgggggggg",
+    "ddddddgggggggggggggggggggggggggggggggggggddddddddddddgggggggggdddddgggggggggddgggggggggggggggdddddddddddgggggggg",
+    "ddddddggggggggggggggggggggggggggggggggggggdddddddddddgggggggggddddgggggggggggggggggggggggggggdddddddddddgggggggg",
+    "ddddddgggggggggggggggggggggggggggggggggggggggdddddddggggggggggddddggggggggggggggggggggggggggggddddddddddgggggggg",
+    "dddddgggggggggggggggggggggggggggggggggggggggggggddggggggggggggdddggggggggggggggggggggggggggggggddddddddggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggdddggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggdgggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggdgggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggddgggggggggggggggggggggggggggggggggggggggggdgggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggdgggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggdddggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggdddggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ggggdddddggggggggggggggggggggggggggggggggggggggdddgggggggggggdddddggggggggggggggggggggggggggggggggggggdddddggggg",
+    "dddddddddddddddgggggggggggggggggggggggggddddddddddddgggggggggddddddggggggggdddddgggggggggggggggggddddddddddddddd",
+    "ddddddddddddddddggggggggggggdggggggggggdddddddddddddgggggggggddddddgggggggddddddgggggggggggggggggddddddddddddddd"
+  ],
+  "start": [
+    54.5,
+    55.5
+  ],
+  "safe": [
+    43.0,
+    45.0,
+    66.0,
+    66.0
+  ],
+  "props": [
+    {
+      "kind": "workshop1",
+      "x": 46.0,
+      "y": 48.0,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "kind": "workshop2",
+      "x": 58.0,
+      "y": 48.0,
+      "w": 4,
+      "h": 4
+    },
+    {
+      "kind": "workshop1",
+      "x": 46.0,
+      "y": 59.0,
+      "w": 4,
+      "h": 3
+    },
+    {
+      "kind": "clock_tower",
+      "x": 59.0,
+      "y": 59.0,
+      "w": 2,
+      "h": 2
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 52.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 57.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 62.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "ent_foundry",
+      "x": 19.0,
+      "y": 81.0,
+      "w": 3,
+      "h": 3
+    },
+    {
+      "kind": "ent_choir",
+      "x": 91.0,
+      "y": 83.0,
+      "w": 3,
+      "h": 3
+    },
+    {
+      "kind": "ent_archive",
+      "x": 89.0,
+      "y": 21.0,
+      "w": 3,
+      "h": 3
+    },
+    {
+      "kind": "ent_clock",
+      "x": 52.0,
+      "y": 11.0,
+      "w": 4,
+      "h": 3
+    },
+    {
+      "kind": "gear_gate",
+      "x": 7.0,
+      "y": 53.0,
+      "w": 3,
+      "h": 2
+    },
+    {
+      "kind": "diving_bell",
+      "x": 99.0,
+      "y": 53.0,
+      "w": 3,
+      "h": 2
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 17.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 67.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 69.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 62.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 65.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 79.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 11.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 102.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 18.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 103.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 79.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 101.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 25.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 33.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 97.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 104.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 105.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 5.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 15.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 98.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 101.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 102.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 16.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 18.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 20.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 33.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 41.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 95.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 103.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 105.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 14.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 18.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 19.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 20.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 31.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 36.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 37.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 38.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 40.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 60.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 69.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 92.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 96.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 98.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 103.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 14.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 16.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 17.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 18.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 20.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 32.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 33.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 34.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 46.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 47.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 91.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 92.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 96.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 98.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 101.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 17.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 18.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 32.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 33.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 36.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 39.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 40.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 41.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 82.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 94.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 95.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 103.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 104.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 15.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 16.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 35.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 36.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 37.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 38.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 39.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 40.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 42.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 68.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 75.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 80.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 89.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 91.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 94.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 96.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 100.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 101.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 102.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 15.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 32.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 35.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 37.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 42.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 72.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 91.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 5.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 15.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 31.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 39.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 80.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 105.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 106.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 107.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 5.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 17.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 19.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 39.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 77.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 98.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 100.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 18.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 19.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 24.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 56.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 58.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 13.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 15.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 16.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 17.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 49.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 56.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 57.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 78.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 84.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 104.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 14.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 59.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 77.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 82.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 83.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 16.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 39.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 41.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 56.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 77.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 82.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 83.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 102.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 105.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 18.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 55.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 59.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 74.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 77.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 78.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 81.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 82.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 84.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 14.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 15.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 57.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 75.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 79.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 83.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 17.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 20.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 48.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 62.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 80.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 83.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 17.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 57.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 58.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 16.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 57.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 79.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 81.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 6.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 8.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 11.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 13.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 15.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 18.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 57.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 96.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 11.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 21.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 49.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 61.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 78.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 91.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 105.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 7.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 12.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 13.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 14.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 16.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 17.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 57.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 90.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 102.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 8.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 11.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 14.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 20.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 59.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 101.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 104.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 105.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 6.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 7.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 11.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 45.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 49.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 60.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 62.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 70.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 88.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 89.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 90.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 101.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 105.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 14.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 60.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 89.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 90.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 91.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 93.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 100.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 12.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 43.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 49.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 58.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 69.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 85.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 89.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 92.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 93.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 96.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 101.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 104.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 106.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 84.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 85.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 87.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 90.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 93.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 99.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 103.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 105.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 107.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 13.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 58.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 64.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 70.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 82.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 84.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 85.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 88.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 89.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 92.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 93.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 97.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 100.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 105.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 107.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 42.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 47.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 69.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 71.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 85.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 86.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 89.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 99.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 102.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 104.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 106.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 69.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 72.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 85.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 86.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 90.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 94.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 97.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 98.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 100.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 102.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 104.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 105.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 106.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 38.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 39.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 42.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 86.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 87.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 93.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 94.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 95.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 98.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 18.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 70.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 71.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 80.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 81.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 82.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 87.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 90.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 91.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 99.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 22.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 37.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 69.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 81.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 87.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 88.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 91.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 93.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 96.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 97.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 101.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 103.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 105.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 18.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 97.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 98.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 101.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 102.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 103.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 9.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 39.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 38.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 23.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 33.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 34.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 80.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 82.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 80.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 81.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 26.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 24.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 25.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 26.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 74.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 105.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 16.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 82.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 86.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 87.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 17.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 18.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 73.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 78.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 82.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 97.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 99.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 6.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 7.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 10.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 18.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 93.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 94.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 97.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 98.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 6.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 8.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 10.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 21.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 98.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 100.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 8.0,
+      "y": 64.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 10.0,
+      "y": 64.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 20.0,
+      "y": 64.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 91.0,
+      "y": 64.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 98.0,
+      "y": 64.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 100.0,
+      "y": 64.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 9.0,
+      "y": 65.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 10.0,
+      "y": 65.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 11.0,
+      "y": 65.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 93.0,
+      "y": 65.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 99.0,
+      "y": 65.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 92.0,
+      "y": 66.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 97.0,
+      "y": 66.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 7.0,
+      "y": 67.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 8.0,
+      "y": 67.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 9.0,
+      "y": 67.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 10.0,
+      "y": 67.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 93.0,
+      "y": 67.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 98.0,
+      "y": 67.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 7.0,
+      "y": 68.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 8.0,
+      "y": 68.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 22.0,
+      "y": 68.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 95.0,
+      "y": 68.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 96.0,
+      "y": 68.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 105.0,
+      "y": 68.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 37.0,
+      "y": 69.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 70.0,
+      "y": 69.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 85.0,
+      "y": 69.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 94.0,
+      "y": 69.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 96.0,
+      "y": 69.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 99.0,
+      "y": 69.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 33.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 46.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 47.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 48.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 49.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 66.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 71.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 88.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 89.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 90.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 96.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 99.0,
+      "y": 70.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 34.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 66.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 68.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 70.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 86.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 87.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 94.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 97.0,
+      "y": 71.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 61.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 65.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 66.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 67.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 70.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 89.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 90.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 92.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 94.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 98.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 11.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 32.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 34.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 41.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 61.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 66.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 67.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 68.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 71.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 88.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 97.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 98.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 102.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 31.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 47.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 64.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 69.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 75.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 88.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 89.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 99.0,
+      "y": 74.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 41.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 46.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 47.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 48.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 50.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 62.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 70.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 74.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 89.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 96.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 31.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 33.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 34.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 36.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 40.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 43.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 47.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 48.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 51.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 66.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 68.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 69.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 76.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 94.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 97.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 98.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 99.0,
+      "y": 76.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 14.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 32.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 34.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 35.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 37.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 39.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 42.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 45.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 49.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 62.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 77.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 14.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 15.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 17.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 18.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 32.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 35.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 37.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 38.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 42.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 60.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 62.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 67.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 102.0,
+      "y": 78.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 33.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 39.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 40.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 42.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 68.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 79.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 91.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 95.0,
+      "y": 79.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 7.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 32.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 35.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 66.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 95.0,
+      "y": 80.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 12.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 34.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 83.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 84.0,
+      "y": 81.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 66.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 67.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 81.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 82.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 83.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 104.0,
+      "y": 82.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 34.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 40.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 42.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 80.0,
+      "y": 83.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 35.0,
+      "y": 84.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 39.0,
+      "y": 84.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 41.0,
+      "y": 84.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 42.0,
+      "y": 84.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 44.0,
+      "y": 84.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 63.0,
+      "y": 84.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 66.0,
+      "y": 84.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 84.0,
+      "y": 84.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 98.0,
+      "y": 84.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 36.0,
+      "y": 85.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 47.0,
+      "y": 85.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 49.0,
+      "y": 85.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 61.0,
+      "y": 85.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 66.0,
+      "y": 85.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 81.0,
+      "y": 85.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 82.0,
+      "y": 85.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 37.0,
+      "y": 86.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 39.0,
+      "y": 86.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 40.0,
+      "y": 86.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 41.0,
+      "y": 86.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 42.0,
+      "y": 86.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 45.0,
+      "y": 86.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 47.0,
+      "y": 86.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 58.0,
+      "y": 86.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 60.0,
+      "y": 86.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 61.0,
+      "y": 86.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 63.0,
+      "y": 86.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 64.0,
+      "y": 86.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 45.0,
+      "y": 87.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 49.0,
+      "y": 87.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 51.0,
+      "y": 87.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 58.0,
+      "y": 87.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 60.0,
+      "y": 87.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 87.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 63.0,
+      "y": 87.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 65.0,
+      "y": 87.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 78.0,
+      "y": 87.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 82.0,
+      "y": 87.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 100.0,
+      "y": 87.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 28.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 38.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 39.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 42.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 46.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 49.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 50.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 60.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 64.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 79.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 83.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 104.0,
+      "y": 88.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 38.0,
+      "y": 89.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 43.0,
+      "y": 89.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 44.0,
+      "y": 89.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 45.0,
+      "y": 89.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 47.0,
+      "y": 89.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 49.0,
+      "y": 89.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 50.0,
+      "y": 89.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 58.0,
+      "y": 89.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 89.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 28.0,
+      "y": 90.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 39.0,
+      "y": 90.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 44.0,
+      "y": 90.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 58.0,
+      "y": 90.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 62.0,
+      "y": 90.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 74.0,
+      "y": 90.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 98.0,
+      "y": 90.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 35.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 36.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 41.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 46.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 48.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 58.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 60.0,
+      "y": 91.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 38.0,
+      "y": 92.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 40.0,
+      "y": 92.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 46.0,
+      "y": 92.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 47.0,
+      "y": 92.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 49.0,
+      "y": 92.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 51.0,
+      "y": 92.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 87.0,
+      "y": 92.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 88.0,
+      "y": 92.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 94.0,
+      "y": 92.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 95.0,
+      "y": 92.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 96.0,
+      "y": 92.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 30.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 34.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 38.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 47.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 53.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 67.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 70.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 73.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 87.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 88.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 93.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 96.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 97.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 99.0,
+      "y": 93.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 12.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 13.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 14.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 17.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 31.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 33.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 40.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 41.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 45.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 75.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 87.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 91.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 94.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 98.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 99.0,
+      "y": 94.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 9.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 12.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 14.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 17.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 26.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 38.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 45.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 47.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 49.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 69.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 70.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 75.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 85.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 88.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 90.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 91.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 99.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 100.0,
+      "y": 95.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 14.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 15.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 16.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 17.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 18.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 21.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 31.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 32.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 33.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 36.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 38.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 41.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 43.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 44.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 46.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 66.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 70.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 72.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 75.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 84.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 90.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 92.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 94.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 96.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 97.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 100.0,
+      "y": 96.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 12.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 16.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 36.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 43.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 48.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 74.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 85.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 90.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 93.0,
+      "y": 97.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 12.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 13.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 15.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 16.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 24.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 31.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 35.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 37.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 38.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 42.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 45.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 57.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 77.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 92.0,
+      "y": 98.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 17.0,
+      "y": 99.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 31.0,
+      "y": 99.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 32.0,
+      "y": 99.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 36.0,
+      "y": 99.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 40.0,
+      "y": 99.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 41.0,
+      "y": 99.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 42.0,
+      "y": 99.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 43.0,
+      "y": 99.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 84.0,
+      "y": 99.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 87.0,
+      "y": 99.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 90.0,
+      "y": 99.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 91.0,
+      "y": 99.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 92.0,
+      "y": 99.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 36.0,
+      "y": 100.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 38.0,
+      "y": 100.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 44.0,
+      "y": 100.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 74.0,
+      "y": 100.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 76.0,
+      "y": 100.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 88.0,
+      "y": 100.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 89.0,
+      "y": 100.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 91.0,
+      "y": 100.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 96.0,
+      "y": 100.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 55.0,
+      "y": 101.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 57.0,
+      "y": 101.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 71.0,
+      "y": 101.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 73.0,
+      "y": 101.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 74.0,
+      "y": 101.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 77.0,
+      "y": 101.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 84.0,
+      "y": 101.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 86.0,
+      "y": 101.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 92.0,
+      "y": 101.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 55.0,
+      "y": 102.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 56.0,
+      "y": 102.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 69.0,
+      "y": 102.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 71.0,
+      "y": 102.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 79.0,
+      "y": 102.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 88.0,
+      "y": 102.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 27.0,
+      "y": 103.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 53.0,
+      "y": 103.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 55.0,
+      "y": 103.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 57.0,
+      "y": 103.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 69.0,
+      "y": 103.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 72.0,
+      "y": 103.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 74.0,
+      "y": 103.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 75.0,
+      "y": 103.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 79.0,
+      "y": 103.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 80.0,
+      "y": 103.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 82.0,
+      "y": 103.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 87.0,
+      "y": 103.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 89.0,
+      "y": 103.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 93.0,
+      "y": 103.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 20.0,
+      "y": 104.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 32.0,
+      "y": 104.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 54.0,
+      "y": 104.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 55.0,
+      "y": 104.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 69.0,
+      "y": 104.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 75.0,
+      "y": 104.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 79.0,
+      "y": 104.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 84.0,
+      "y": 104.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 88.0,
+      "y": 104.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 89.0,
+      "y": 104.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 10.0,
+      "y": 105.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 28.0,
+      "y": 105.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 54.0,
+      "y": 105.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 61.0,
+      "y": 105.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 75.0,
+      "y": 105.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 76.0,
+      "y": 105.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 77.0,
+      "y": 105.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 87.0,
+      "y": 105.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 88.0,
+      "y": 105.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 7.0,
+      "y": 106.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 53.0,
+      "y": 106.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 55.0,
+      "y": 106.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 64.0,
+      "y": 106.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 76.0,
+      "y": 106.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 80.0,
+      "y": 106.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 81.0,
+      "y": 106.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "pendulum",
+      "x": 7.0,
+      "y": 107.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_pipes",
+      "x": 57.0,
+      "y": 107.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 78.0,
+      "y": 107.0,
+      "w": 1,
+      "h": 1
+    }
+  ],
+  "portals": [
+    {
+      "kind": "entrance12",
+      "x": 20.5,
+      "y": 84.5
+    },
+    {
+      "kind": "entrance13",
+      "x": 92.5,
+      "y": 86.5
+    },
+    {
+      "kind": "entrance14",
+      "x": 90.5,
+      "y": 24.5
+    },
+    {
+      "kind": "entrance15",
+      "x": 54.5,
+      "y": 14.5
+    },
+    {
+      "kind": "pass2",
+      "x": 8.5,
+      "y": 56.5
+    },
+    {
+      "kind": "pass4",
+      "x": 100.5,
+      "y": 56.5
+    }
+  ],
+  "monsters": [
+    {
+      "kind": "ordinal_marshal",
+      "x": 85.5,
+      "y": 27.5,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal_prism",
+      "x": 84.3,
+      "y": 28.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal_prism",
+      "x": 86.7,
+      "y": 28.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal",
+      "x": 84.3,
+      "y": 29.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal",
+      "x": 85.5,
+      "y": 29.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal",
+      "x": 86.7,
+      "y": 29.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal",
+      "x": 84.3,
+      "y": 30.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "inquisitor",
+      "x": 24.77,
+      "y": 104.47,
+      "tier": 7.7
+    },
+    {
+      "kind": "inquisitor",
+      "x": 22.33,
+      "y": 102.63,
+      "tier": 7.7
+    },
+    {
+      "kind": "inquisitor",
+      "x": 24.82,
+      "y": 103.42,
+      "tier": 7.7
+    },
+    {
+      "kind": "inquisitor",
+      "x": 23.1,
+      "y": 101.88,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal_marshal",
+      "x": 77.5,
+      "y": 38.5,
+      "tier": 7.2
+    },
+    {
+      "kind": "ordinal_prism",
+      "x": 76.3,
+      "y": 39.3,
+      "tier": 7.2
+    },
+    {
+      "kind": "ordinal_prism",
+      "x": 78.7,
+      "y": 39.3,
+      "tier": 7.2
+    },
+    {
+      "kind": "ordinal",
+      "x": 76.3,
+      "y": 40.3,
+      "tier": 7.2
+    },
+    {
+      "kind": "ordinal",
+      "x": 77.5,
+      "y": 40.3,
+      "tier": 7.2
+    },
+    {
+      "kind": "ordinal",
+      "x": 78.7,
+      "y": 40.3,
+      "tier": 7.2
+    },
+    {
+      "kind": "ordinal",
+      "x": 76.3,
+      "y": 41.3,
+      "tier": 7.2
+    },
+    {
+      "kind": "ordinal_marshal",
+      "x": 76.5,
+      "y": 27.5,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal_prism",
+      "x": 75.3,
+      "y": 28.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal_prism",
+      "x": 77.7,
+      "y": 28.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal",
+      "x": 75.3,
+      "y": 29.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal",
+      "x": 76.5,
+      "y": 29.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal",
+      "x": 77.7,
+      "y": 29.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 44.88,
+      "y": 15.75,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 43.51,
+      "y": 15.51,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 43.67,
+      "y": 18.85,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 45.04,
+      "y": 19.44,
+      "tier": 7.7
+    },
+    {
+      "kind": "inquisitor",
+      "x": 106.14,
+      "y": 20.08,
+      "tier": 7.7
+    },
+    {
+      "kind": "inquisitor",
+      "x": 106.27,
+      "y": 19.35,
+      "tier": 7.7
+    },
+    {
+      "kind": "inquisitor",
+      "x": 103.1,
+      "y": 19.67,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 104.98,
+      "y": 92.19,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 102.63,
+      "y": 90.05,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 105.17,
+      "y": 93.13,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 103.0,
+      "y": 93.37,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 35.1,
+      "y": 42.53,
+      "tier": 7.2
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 34.08,
+      "y": 43.33,
+      "tier": 7.2
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 33.85,
+      "y": 43.21,
+      "tier": 7.2
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 34.0,
+      "y": 42.5,
+      "tier": 7.2
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 33.98,
+      "y": 45.27,
+      "tier": 7.2
+    },
+    {
+      "kind": "ordinal_marshal",
+      "x": 89.5,
+      "y": 94.5,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal",
+      "x": 89.5,
+      "y": 96.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal_marshal",
+      "x": 10.5,
+      "y": 30.5,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal_prism",
+      "x": 9.3,
+      "y": 31.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal",
+      "x": 10.5,
+      "y": 32.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal",
+      "x": 9.3,
+      "y": 33.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "boiler_brute",
+      "x": 61.09,
+      "y": 21.26,
+      "tier": 7.7
+    },
+    {
+      "kind": "spring_jack",
+      "x": 30.2,
+      "y": 12.89,
+      "tier": 7.7
+    },
+    {
+      "kind": "spring_jack",
+      "x": 29.65,
+      "y": 13.96,
+      "tier": 7.7
+    },
+    {
+      "kind": "spring_jack",
+      "x": 26.81,
+      "y": 11.37,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 29.27,
+      "y": 44.79,
+      "tier": 7.2
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 29.79,
+      "y": 43.33,
+      "tier": 7.2
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 28.36,
+      "y": 42.05,
+      "tier": 7.2
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 28.05,
+      "y": 43.44,
+      "tier": 7.2
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 23.3,
+      "y": 50.02,
+      "tier": 7.2
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 24.6,
+      "y": 49.63,
+      "tier": 7.2
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 24.29,
+      "y": 50.77,
+      "tier": 7.2
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 24.68,
+      "y": 49.95,
+      "tier": 7.2
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 24.94,
+      "y": 51.41,
+      "tier": 7.2
+    },
+    {
+      "kind": "ordinal_marshal",
+      "x": 19.5,
+      "y": 16.5,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal_prism",
+      "x": 18.3,
+      "y": 17.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal_prism",
+      "x": 20.7,
+      "y": 17.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal",
+      "x": 18.3,
+      "y": 18.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal",
+      "x": 19.5,
+      "y": 18.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal",
+      "x": 20.7,
+      "y": 18.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "spring_jack",
+      "x": 92.72,
+      "y": 18.28,
+      "tier": 7.7
+    },
+    {
+      "kind": "spring_jack",
+      "x": 92.63,
+      "y": 16.65,
+      "tier": 7.7
+    },
+    {
+      "kind": "spring_jack",
+      "x": 93.6,
+      "y": 15.55,
+      "tier": 7.7
+    },
+    {
+      "kind": "spring_jack",
+      "x": 94.06,
+      "y": 17.87,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 37.59,
+      "y": 8.49,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 37.99,
+      "y": 9.32,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 35.2,
+      "y": 9.34,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 36.5,
+      "y": 9.42,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal_marshal",
+      "x": 97.5,
+      "y": 81.5,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal_prism",
+      "x": 96.3,
+      "y": 82.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal",
+      "x": 96.3,
+      "y": 83.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal",
+      "x": 97.5,
+      "y": 83.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "ordinal",
+      "x": 96.3,
+      "y": 84.3,
+      "tier": 7.7
+    },
+    {
+      "kind": "inquisitor",
+      "x": 9.09,
+      "y": 14.41,
+      "tier": 7.7
+    },
+    {
+      "kind": "inquisitor",
+      "x": 8.08,
+      "y": 12.7,
+      "tier": 7.7
+    },
+    {
+      "kind": "inquisitor",
+      "x": 10.37,
+      "y": 12.87,
+      "tier": 7.7
+    },
+    {
+      "kind": "boiler_brute",
+      "x": 86.8,
+      "y": 65.96,
+      "tier": 7.7
+    },
+    {
+      "kind": "boiler_brute",
+      "x": 87.62,
+      "y": 64.52,
+      "tier": 7.7
+    },
+    {
+      "kind": "boiler_brute",
+      "x": 60.93,
+      "y": 94.48,
+      "tier": 7.7
+    },
+    {
+      "kind": "boiler_brute",
+      "x": 57.83,
+      "y": 92.76,
+      "tier": 7.7
+    },
+    {
+      "kind": "inquisitor",
+      "x": 51.01,
+      "y": 31.21,
+      "tier": 7.2
+    },
+    {
+      "kind": "inquisitor",
+      "x": 52.17,
+      "y": 30.58,
+      "tier": 7.2
+    },
+    {
+      "kind": "inquisitor",
+      "x": 52.08,
+      "y": 29.16,
+      "tier": 7.2
+    },
+    {
+      "kind": "inquisitor",
+      "x": 51.36,
+      "y": 30.08,
+      "tier": 7.2
+    },
+    {
+      "kind": "inquisitor",
+      "x": 52.69,
+      "y": 28.77,
+      "tier": 7.2
+    },
+    {
+      "kind": "inquisitor",
+      "x": 30.49,
+      "y": 73.35,
+      "tier": 7.2
+    },
+    {
+      "kind": "inquisitor",
+      "x": 30.31,
+      "y": 72.38,
+      "tier": 7.2
+    },
+    {
+      "kind": "inquisitor",
+      "x": 31.13,
+      "y": 73.53,
+      "tier": 7.2
+    },
+    {
+      "kind": "inquisitor",
+      "x": 29.81,
+      "y": 72.21,
+      "tier": 7.2
+    },
+    {
+      "kind": "inquisitor",
+      "x": 30.35,
+      "y": 72.58,
+      "tier": 7.2
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 40.53,
+      "y": 9.65,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 43.52,
+      "y": 11.82,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 40.64,
+      "y": 11.28,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 42.09,
+      "y": 8.63,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 41.11,
+      "y": 8.71,
+      "tier": 7.7
+    },
+    {
+      "kind": "inquisitor",
+      "x": 21.93,
+      "y": 25.99,
+      "tier": 7.7
+    },
+    {
+      "kind": "inquisitor",
+      "x": 21.74,
+      "y": 24.92,
+      "tier": 7.7
+    },
+    {
+      "kind": "inquisitor",
+      "x": 22.12,
+      "y": 25.95,
+      "tier": 7.7
+    },
+    {
+      "kind": "boiler_brute",
+      "x": 12.0,
+      "y": 90.75,
+      "tier": 7.7
+    },
+    {
+      "kind": "boiler_brute",
+      "x": 81.53,
+      "y": 33.59,
+      "tier": 7.7
+    },
+    {
+      "kind": "inquisitor",
+      "x": 29.97,
+      "y": 71.82,
+      "tier": 7.2
+    },
+    {
+      "kind": "inquisitor",
+      "x": 29.8,
+      "y": 70.35,
+      "tier": 7.2
+    },
+    {
+      "kind": "inquisitor",
+      "x": 30.36,
+      "y": 70.81,
+      "tier": 7.2
+    },
+    {
+      "kind": "inquisitor",
+      "x": 30.67,
+      "y": 72.31,
+      "tier": 7.2
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 39.67,
+      "y": 22.26,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 41.92,
+      "y": 22.12,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 40.32,
+      "y": 22.76,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 38.68,
+      "y": 20.77,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 42.01,
+      "y": 21.31,
+      "tier": 7.7
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 47.41,
+      "y": 22.81,
+      "tier": 7.2
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 47.83,
+      "y": 21.95,
+      "tier": 7.2
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 47.17,
+      "y": 25.3,
+      "tier": 7.2
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 50.29,
+      "y": 22.21,
+      "tier": 7.2
+    },
+    {
+      "kind": "urn",
+      "x": 22.83,
+      "y": 83.04,
+      "tier": 1.0
+    },
+    {
+      "kind": "crate",
+      "x": 22.46,
+      "y": 88.17,
+      "tier": 1.0
+    },
+    {
+      "kind": "crate",
+      "x": 90.12,
+      "y": 88.85,
+      "tier": 1.0
+    },
+    {
+      "kind": "crate",
+      "x": 96.47,
+      "y": 89.36,
+      "tier": 1.0
+    },
+    {
+      "kind": "urn",
+      "x": 92.46,
+      "y": 82.13,
+      "tier": 1.0
+    },
+    {
+      "kind": "urn",
+      "x": 93.78,
+      "y": 23.19,
+      "tier": 1.0
+    },
+    {
+      "kind": "urn",
+      "x": 87.75,
+      "y": 27.86,
+      "tier": 1.0
+    },
+    {
+      "kind": "urn",
+      "x": 86.32,
+      "y": 23.95,
+      "tier": 1.0
+    },
+    {
+      "kind": "barrel",
+      "x": 52.5,
+      "y": 10.08,
+      "tier": 1.0
+    }
+  ],
+  "npcs": [
+    {
+      "kind": "tally",
+      "x": 55.5,
+      "y": 56.8
+    },
+    {
+      "kind": "vesper",
+      "x": 58.0,
+      "y": 55.8
+    },
+    {
+      "kind": "oiler",
+      "x": 50.5,
+      "y": 55.5
+    },
+    {
+      "kind": "servant0",
+      "x": 52.0,
+      "y": 60.0
+    },
+    {
+      "kind": "servant1",
+      "x": 61.5,
+      "y": 57.0
+    },
+    {
+      "kind": "servant2",
+      "x": 49.5,
+      "y": 52.0
+    },
+    {
+      "kind": "jeweler3",
+      "x": 54.0,
+      "y": 58.5
+    }
+  ],
+  "items": [
+    {
+      "kind": "roast",
+      "x": 97.5,
+      "y": 28.5
+    },
+    {
+      "kind": "roast",
+      "x": 27.5,
+      "y": 66.5
+    },
+    {
+      "kind": "roast",
+      "x": 16.5,
+      "y": 105.5
+    },
+    {
+      "kind": "bread",
+      "x": 35.5,
+      "y": 88.5
+    },
+    {
+      "kind": "roast",
+      "x": 100.5,
+      "y": 31.5
+    },
+    {
+      "kind": "bread",
+      "x": 73.5,
+      "y": 59.5
+    },
+    {
+      "kind": "bread",
+      "x": 6.5,
+      "y": 39.5
+    },
+    {
+      "kind": "roast",
+      "x": 71.5,
+      "y": 47.5
+    },
+    {
+      "kind": "bread",
+      "x": 36.5,
+      "y": 81.5
+    },
+    {
+      "kind": "roast",
+      "x": 33.5,
+      "y": 77.5
+    }
+  ]
+}

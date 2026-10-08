@@ -283,8 +283,8 @@ your character, skills and gear carry on.
 
 ## Level editor
 
-Every map (the overworld with Hollowmere, and each dungeon floor) can be hand-made in the
-browser level editor:
+Every map in all six acts (each overland with its town, and every dungeon floor) can be hand-made in
+the browser level editor:
 
 ```powershell
 D:\projects\AshenSanctum\scripts\level-editor.ps1
