@@ -182,10 +182,430 @@ pub const AREAS: &[AreaDef] = &[
         packs: 8,
         style: Style { forest: 0.8, dead: 0.9, dirt: 0.5, rocks: 0.14 },
     },
+    AreaDef {
+        act: 1,
+        n: 1,
+        slug: "the_frozen_shore",
+        name: "THE FROZEN SHORE",
+        tier: 3.6,
+        size: (96, 96),
+        exits: &[(Side::W, 0.5, 0), (Side::N, 0.5, 2), (Side::E, 0.5, 6)],
+        doors: &[(4, (64, 30))],
+        pass: None,
+        monsters: &[Kind::Raider, Kind::IceTroll, Kind::FrostWolf],
+        packs: 18,
+        style: Style { forest: 0.62, dead: 0.2, dirt: 0.35, rocks: 0.04 },
+    },
+    AreaDef {
+        act: 1,
+        n: 2,
+        slug: "the_howling_tundra",
+        name: "THE HOWLING TUNDRA",
+        tier: 3.9,
+        size: (96, 96),
+        exits: &[(Side::S, 0.5, 1), (Side::N, 0.45, 3)],
+        doors: &[(5, (28, 40))],
+        pass: None,
+        monsters: &[Kind::FrostWolf, Kind::Yeti, Kind::Raider],
+        packs: 20,
+        style: Style { forest: 0.72, dead: 0.35, dirt: 0.3, rocks: 0.05 },
+    },
+    AreaDef {
+        act: 1,
+        n: 3,
+        slug: "the_rime_woods",
+        name: "THE RIME WOODS",
+        tier: 4.3,
+        size: (96, 96),
+        exits: &[(Side::S, 0.45, 2), (Side::E, 0.5, 4)],
+        doors: &[(6, (34, 28))],
+        pass: None,
+        monsters: &[Kind::IceWraith, Kind::Raider, Kind::IceTroll],
+        packs: 20,
+        style: Style { forest: 0.5, dead: 0.25, dirt: 0.3, rocks: 0.03 },
+    },
+    AreaDef {
+        act: 1,
+        n: 4,
+        slug: "the_white_waste",
+        name: "THE WHITE WASTE",
+        tier: 4.7,
+        size: (112, 80),
+        exits: &[(Side::W, 0.5, 3), (Side::N, 0.6, 5)],
+        doors: &[],
+        pass: None,
+        monsters: &[Kind::FrostWolf, Kind::Raider, Kind::Yeti, Kind::IceTroll, Kind::IceWraith],
+        packs: 26,
+        style: Style { forest: 0.8, dead: 0.6, dirt: 0.45, rocks: 0.06 },
+    },
+    AreaDef {
+        act: 1,
+        n: 5,
+        slug: "the_glaciers_edge",
+        name: "THE GLACIER'S EDGE",
+        tier: 5.0,
+        size: (96, 96),
+        exits: &[(Side::S, 0.5, 4)],
+        doors: &[(7, (34, 30))],
+        pass: Some((2, (84, 46))),
+        monsters: &[Kind::IceWraith, Kind::Yeti, Kind::IceTroll, Kind::FrostWolf],
+        packs: 22,
+        style: Style { forest: 0.7, dead: 0.4, dirt: 0.4, rocks: 0.07 },
+    },
+    AreaDef {
+        act: 1,
+        n: 6,
+        slug: "the_raiders_fjord",
+        name: "THE RAIDERS' FJORD",
+        tier: 4.0,
+        size: (64, 64),
+        exits: &[(Side::W, 0.5, 1)],
+        doors: &[],
+        pass: None,
+        monsters: &[Kind::Raider, Kind::FrostWolf],
+        packs: 8,
+        style: Style { forest: 0.6, dead: 0.3, dirt: 0.45, rocks: 0.05 },
+    },
+    AreaDef {
+        act: 2,
+        n: 1,
+        slug: "the_blighted_fields",
+        name: "THE BLIGHTED FIELDS",
+        tier: 5.6,
+        size: (96, 96),
+        exits: &[(Side::S, 0.5, 0), (Side::N, 0.5, 2), (Side::W, 0.5, 6)],
+        doors: &[(8, (66, 34))],
+        pass: None,
+        monsters: &[Kind::Ghoul, Kind::Cultist, Kind::Wisp],
+        packs: 18,
+        style: Style { forest: 0.64, dead: 0.4, dirt: 0.35, rocks: 0.05 },
+    },
+    AreaDef {
+        act: 2,
+        n: 2,
+        slug: "the_gallows_moor",
+        name: "THE GALLOWS MOOR",
+        tier: 6.0,
+        size: (96, 96),
+        exits: &[(Side::S, 0.5, 1), (Side::N, 0.55, 3)],
+        doors: &[(9, (30, 36))],
+        pass: None,
+        monsters: &[Kind::Banshee, Kind::Ghoul, Kind::Cultist],
+        packs: 20,
+        style: Style { forest: 0.7, dead: 0.5, dirt: 0.45, rocks: 0.06 },
+    },
+    AreaDef {
+        act: 2,
+        n: 3,
+        slug: "the_hollow_wood",
+        name: "THE HOLLOW WOOD",
+        tier: 6.4,
+        size: (96, 96),
+        exits: &[(Side::S, 0.55, 2), (Side::N, 0.45, 4)],
+        doors: &[],
+        pass: None,
+        monsters: &[Kind::Werewolf, Kind::Wisp, Kind::Ghoul],
+        packs: 22,
+        style: Style { forest: 0.46, dead: 0.3, dirt: 0.3, rocks: 0.03 },
+    },
+    AreaDef {
+        act: 2,
+        n: 4,
+        slug: "the_barrow_hills",
+        name: "THE BARROW HILLS",
+        tier: 6.6,
+        size: (96, 96),
+        exits: &[(Side::S, 0.45, 3), (Side::E, 0.5, 5)],
+        doors: &[(10, (32, 30))],
+        pass: None,
+        monsters: &[Kind::Ghoul, Kind::Werewolf, Kind::Banshee],
+        packs: 22,
+        style: Style { forest: 0.68, dead: 0.45, dirt: 0.4, rocks: 0.08 },
+    },
+    AreaDef {
+        act: 2,
+        n: 5,
+        slug: "the_castle_approach",
+        name: "THE CASTLE APPROACH",
+        tier: 7.0,
+        size: (96, 96),
+        exits: &[(Side::W, 0.5, 4)],
+        doors: &[(11, (60, 26))],
+        pass: Some((3, (82, 60))),
+        monsters: &[Kind::Werewolf, Kind::Cultist, Kind::Banshee, Kind::Wisp],
+        packs: 22,
+        style: Style { forest: 0.66, dead: 0.5, dirt: 0.4, rocks: 0.05 },
+    },
+    AreaDef {
+        act: 2,
+        n: 6,
+        slug: "the_witchs_bog",
+        name: "THE WITCH'S BOG",
+        tier: 6.0,
+        size: (64, 64),
+        exits: &[(Side::E, 0.5, 1)],
+        doors: &[],
+        pass: None,
+        monsters: &[Kind::Wisp, Kind::Ghoul],
+        packs: 8,
+        style: Style { forest: 0.55, dead: 0.4, dirt: 0.5, rocks: 0.03 },
+    },
+    AreaDef {
+        act: 3,
+        n: 1,
+        slug: "the_gearfields",
+        name: "THE GEARFIELDS",
+        tier: 7.6,
+        size: (96, 96),
+        exits: &[(Side::W, 0.5, 0), (Side::N, 0.5, 2), (Side::E, 0.55, 6)],
+        doors: &[(12, (62, 30))],
+        pass: None,
+        monsters: &[Kind::Scarab, Kind::BoilerBrute, Kind::Ordinal],
+        packs: 18,
+        style: Style { forest: 0.7, dead: 0.4, dirt: 0.35, rocks: 0.05 },
+    },
+    AreaDef {
+        act: 3,
+        n: 2,
+        slug: "the_piston_flats",
+        name: "THE PISTON FLATS",
+        tier: 8.0,
+        size: (96, 96),
+        exits: &[(Side::S, 0.5, 1), (Side::N, 0.5, 3)],
+        doors: &[(13, (30, 34))],
+        pass: None,
+        monsters: &[Kind::Inquisitor, Kind::Gearwraith, Kind::Ordinal],
+        packs: 20,
+        style: Style { forest: 0.74, dead: 0.5, dirt: 0.4, rocks: 0.06 },
+    },
+    AreaDef {
+        act: 3,
+        n: 3,
+        slug: "the_cogworks",
+        name: "THE COGWORKS",
+        tier: 8.4,
+        size: (96, 96),
+        exits: &[(Side::S, 0.5, 2), (Side::N, 0.5, 4)],
+        doors: &[],
+        pass: None,
+        monsters: &[Kind::SpringJack, Kind::Scarab, Kind::ClockCrow, Kind::BoilerBrute],
+        packs: 24,
+        style: Style { forest: 0.6, dead: 0.5, dirt: 0.4, rocks: 0.08 },
+    },
+    AreaDef {
+        act: 3,
+        n: 4,
+        slug: "the_archive_stacks",
+        name: "THE ARCHIVE STACKS",
+        tier: 8.6,
+        size: (96, 96),
+        exits: &[(Side::S, 0.5, 3), (Side::E, 0.5, 5)],
+        doors: &[(14, (32, 30))],
+        pass: None,
+        monsters: &[Kind::Gearwraith, Kind::SpringJack, Kind::Inquisitor],
+        packs: 22,
+        style: Style { forest: 0.7, dead: 0.45, dirt: 0.4, rocks: 0.06 },
+    },
+    AreaDef {
+        act: 3,
+        n: 5,
+        slug: "the_clockface_plain",
+        name: "THE CLOCKFACE PLAIN",
+        tier: 9.0,
+        size: (96, 96),
+        exits: &[(Side::W, 0.5, 4)],
+        doors: &[(15, (60, 26))],
+        pass: Some((4, (80, 62))),
+        monsters: &[Kind::SpringJack, Kind::BoilerBrute, Kind::Scarab, Kind::Ordinal],
+        packs: 22,
+        style: Style { forest: 0.72, dead: 0.5, dirt: 0.4, rocks: 0.05 },
+    },
+    AreaDef {
+        act: 3,
+        n: 6,
+        slug: "the_scrapyard",
+        name: "THE SCRAPYARD",
+        tier: 8.0,
+        size: (64, 64),
+        exits: &[(Side::W, 0.5, 1)],
+        doors: &[],
+        pass: None,
+        monsters: &[Kind::Scarab, Kind::ClockCrow],
+        packs: 8,
+        style: Style { forest: 0.6, dead: 0.6, dirt: 0.5, rocks: 0.1 },
+    },
+    AreaDef {
+        act: 4,
+        n: 1,
+        slug: "the_kelp_shallows",
+        name: "THE KELP SHALLOWS",
+        tier: 10.0,
+        size: (96, 96),
+        exits: &[(Side::W, 0.5, 0), (Side::N, 0.5, 2)],
+        doors: &[(16, (62, 32))],
+        pass: None,
+        monsters: &[Kind::Drowned, Kind::Merrow, Kind::Jelly],
+        packs: 18,
+        style: Style { forest: 0.55, dead: 0.3, dirt: 0.42, rocks: 0.05 },
+    },
+    AreaDef {
+        act: 4,
+        n: 2,
+        slug: "the_coral_gardens",
+        name: "THE CORAL GARDENS",
+        tier: 10.4,
+        size: (96, 96),
+        exits: &[(Side::S, 0.5, 1), (Side::N, 0.5, 3), (Side::E, 0.5, 6)],
+        doors: &[(17, (30, 34))],
+        pass: None,
+        monsters: &[Kind::Siren, Kind::Jelly, Kind::Merrow, Kind::Shellguard],
+        packs: 20,
+        style: Style { forest: 0.6, dead: 0.45, dirt: 0.4, rocks: 0.06 },
+    },
+    AreaDef {
+        act: 4,
+        n: 3,
+        slug: "the_bone_reef",
+        name: "THE BONE REEF",
+        tier: 10.8,
+        size: (96, 96),
+        exits: &[(Side::S, 0.5, 2), (Side::N, 0.5, 4)],
+        doors: &[],
+        pass: None,
+        monsters: &[Kind::Shellguard, Kind::InkHorror, Kind::Drowned, Kind::Anglerlurk],
+        packs: 24,
+        style: Style { forest: 0.66, dead: 0.4, dirt: 0.45, rocks: 0.07 },
+    },
+    AreaDef {
+        act: 4,
+        n: 4,
+        slug: "the_trench_rim",
+        name: "THE TRENCH RIM",
+        tier: 11.0,
+        size: (96, 96),
+        exits: &[(Side::S, 0.5, 3), (Side::E, 0.5, 5)],
+        doors: &[(18, (32, 30))],
+        pass: None,
+        monsters: &[Kind::Anglerlurk, Kind::InkHorror, Kind::Jelly],
+        packs: 22,
+        style: Style { forest: 0.7, dead: 0.5, dirt: 0.4, rocks: 0.06 },
+    },
+    AreaDef {
+        act: 4,
+        n: 5,
+        slug: "the_abyssal_plain",
+        name: "THE ABYSSAL PLAIN",
+        tier: 11.4,
+        size: (96, 96),
+        exits: &[(Side::W, 0.5, 4)],
+        doors: &[(19, (60, 26))],
+        pass: Some((5, (80, 62))),
+        monsters: &[Kind::Merrow, Kind::Siren, Kind::InkHorror, Kind::Shellguard],
+        packs: 22,
+        style: Style { forest: 0.7, dead: 0.45, dirt: 0.42, rocks: 0.05 },
+    },
+    AreaDef {
+        act: 4,
+        n: 6,
+        slug: "the_sunken_galleon",
+        name: "THE SUNKEN GALLEON",
+        tier: 10.6,
+        size: (64, 64),
+        exits: &[(Side::W, 0.5, 2)],
+        doors: &[],
+        pass: None,
+        monsters: &[Kind::Drowned, Kind::Merrow],
+        packs: 8,
+        style: Style { forest: 0.6, dead: 0.4, dirt: 0.5, rocks: 0.06 },
+    },
+    AreaDef {
+        act: 5,
+        n: 1,
+        slug: "the_broken_steps",
+        name: "THE BROKEN STEPS",
+        tier: 12.0,
+        size: (96, 96),
+        exits: &[(Side::W, 0.5, 0), (Side::N, 0.5, 2)],
+        doors: &[(20, (64, 34))],
+        pass: None,
+        monsters: &[Kind::FallenSeraph, Kind::Zealot, Kind::Harpy],
+        packs: 16,
+        style: Style { forest: 0.7, dead: 0.3, dirt: 0.4, rocks: 0.05 },
+    },
+    AreaDef {
+        act: 5,
+        n: 2,
+        slug: "the_stormfields",
+        name: "THE STORMFIELDS",
+        tier: 12.4,
+        size: (96, 96),
+        exits: &[(Side::S, 0.5, 1), (Side::N, 0.5, 3)],
+        doors: &[(21, (30, 36))],
+        pass: None,
+        monsters: &[Kind::StormDrake, Kind::Harpy, Kind::Ophanim],
+        packs: 18,
+        style: Style { forest: 0.72, dead: 0.3, dirt: 0.45, rocks: 0.05 },
+    },
+    AreaDef {
+        act: 5,
+        n: 3,
+        slug: "the_fallen_gardens",
+        name: "THE FALLEN GARDENS",
+        tier: 12.8,
+        size: (96, 96),
+        exits: &[(Side::S, 0.5, 2), (Side::N, 0.5, 4), (Side::E, 0.5, 6)],
+        doors: &[],
+        pass: None,
+        monsters: &[Kind::Sentinel, Kind::Zealot, Kind::FallenSeraph, Kind::Harpy],
+        packs: 20,
+        style: Style { forest: 0.6, dead: 0.3, dirt: 0.5, rocks: 0.06 },
+    },
+    AreaDef {
+        act: 5,
+        n: 4,
+        slug: "the_halo_isles",
+        name: "THE HALO ISLES",
+        tier: 13.0,
+        size: (96, 96),
+        exits: &[(Side::S, 0.5, 3), (Side::E, 0.5, 5)],
+        doors: &[(22, (32, 30))],
+        pass: None,
+        monsters: &[Kind::Ophanim, Kind::FallenSeraph, Kind::Zealot],
+        packs: 20,
+        style: Style { forest: 0.7, dead: 0.3, dirt: 0.45, rocks: 0.05 },
+    },
+    AreaDef {
+        act: 5,
+        n: 5,
+        slug: "the_zenith",
+        name: "THE ZENITH",
+        tier: 13.4,
+        size: (96, 96),
+        exits: &[(Side::W, 0.5, 4)],
+        doors: &[(23, (60, 30))],
+        pass: None,
+        monsters: &[Kind::FallenSeraph, Kind::Zealot, Kind::Sentinel, Kind::StormDrake, Kind::Ophanim],
+        packs: 20,
+        style: Style { forest: 0.74, dead: 0.3, dirt: 0.45, rocks: 0.05 },
+    },
+    AreaDef {
+        act: 5,
+        n: 6,
+        slug: "the_drifting_isles",
+        name: "THE DRIFTING ISLES",
+        tier: 12.6,
+        size: (64, 64),
+        exits: &[(Side::W, 0.5, 3)],
+        doors: &[],
+        pass: None,
+        monsters: &[Kind::Harpy, Kind::StormDrake, Kind::Thunderbird],
+        packs: 8,
+        style: Style { forest: 0.68, dead: 0.3, dirt: 0.5, rocks: 0.05 },
+    },
 ];
 
 /// The town maps' roads out: (act, edge, where along it, the area it leads to).
-pub const TOWN_EXITS: &[(u8, Side, f32, u8)] = &[(0, Side::N, 0.69, 1)];
+pub const TOWN_EXITS: &[(u8, Side, f32, u8)] = &[(0, Side::N, 0.69, 1), (1, Side::E, 0.0, 1), (2, Side::E, 0.0, 1), (3, Side::E, 0.0, 1), (4, Side::E, 0.0, 1), (5, Side::E, 0.0, 1)];
 
 pub fn def(act: u8, n: u8) -> &'static AreaDef {
     AREAS.iter().find(|a| a.act == act && a.n == n).expect("area")
@@ -310,12 +730,46 @@ fn theme_of(act: u8) -> Theme {
     }
 }
 
+/// An act's outdoor props: (kind, footprint) for dense trees, sparse trees, dead trees, rocks and bushes.
+struct Palette {
+    tree: PropKind,
+    tree2: PropKind,
+    dead: PropKind,
+    rock: (PropKind, i32, i32),
+    bush: PropKind,
+}
+
+fn palette(act: u8) -> Palette {
+    match act {
+        1 => Palette { tree: PropKind::SnowPine, tree2: PropKind::SnowPine, dead: PropKind::SnowDead, rock: (PropKind::SnowRock, 1, 1), bush: PropKind::IceCrystal },
+        2 => Palette { tree: PropKind::MistPine, tree2: PropKind::TwistedTree, dead: PropKind::TwistedTree, rock: (PropKind::Gravestone, 1, 1), bush: PropKind::GlowShrooms },
+        3 => Palette { tree: PropKind::GearTower, tree2: PropKind::GasLamp, dead: PropKind::CogPile, rock: (PropKind::SteamVent, 1, 1), bush: PropKind::CogPile },
+        4 => Palette { tree: PropKind::Kelp, tree2: PropKind::Kelp, dead: PropKind::Kelp, rock: (PropKind::Coral2, 1, 2), bush: PropKind::Kelp },
+        5 => Palette { tree: PropKind::CloudTree, tree2: PropKind::CloudTree, dead: PropKind::MarbleRuin, rock: (PropKind::AngelStatue, 1, 1), bush: PropKind::SkyLamp },
+        _ => Palette { tree: PropKind::TreePine, tree2: PropKind::TreeOak, dead: PropKind::TreeDead, rock: (PropKind::Rock, 1, 1), bush: PropKind::Bush },
+    }
+}
+
+/// The prop of the way on to the next act, and where it stands from the door tile (x, y, w, h).
+fn pass_prop(to: usize) -> (PropKind, i32, i32, i32, i32) {
+    match to {
+        2 => (PropKind::PassMist, 1, -1, 2, 3),
+        3 => (PropKind::GearGate, -1, -3, 3, 2),
+        4 => (PropKind::DivingBell, -1, -3, 3, 2),
+        5 => (PropKind::LightStair, -1, -3, 2, 2),
+        _ => (PropKind::Pass, -1, -3, 3, 2),
+    }
+}
+
 /// Map-building helpers shared by the town map and the areas.
 struct Builder {
     w: i32,
     h: i32,
     d: Dungeon,
     keep: Vec<bool>,
+    /// The act (its palette), and whether this is open sky with islands (the Heavens).
+    act: u8,
+    sky: bool,
 }
 
 impl Builder {
@@ -324,7 +778,7 @@ impl Builder {
         for v in d.var.iter_mut() {
             *v = rng.range(0, 100) as u8;
         }
-        Builder { w, h, d, keep: vec![false; (w * h) as usize] }
+        Builder { w, h, d, keep: vec![false; (w * h) as usize], act: 0, sky: false }
     }
 
     /// Marks tiles that must stay clear of trees and rocks.
@@ -338,7 +792,23 @@ impl Builder {
         }
     }
 
-    /// A wandering road, two tiles wide.
+    /// An island of floor in the open sky (the Heavens): a ragged disc.
+    fn island(&mut self, (cx, cy): (i32, i32), r: f32, rng: &mut Rng) {
+        let ri = r as i32 + 2;
+        for y in cy - ri..=cy + ri {
+            for x in cx - ri..=cx + ri {
+                if x < 1 || y < 1 || x >= self.w - 1 || y >= self.h - 1 {
+                    continue;
+                }
+                let dist = (((x - cx) as f32).powi(2) + ((y - cy) as f32).powi(2)).sqrt();
+                if dist < r - rng.f() * 1.5 {
+                    self.d.set(x, y, Tile::Floor);
+                }
+            }
+        }
+    }
+
+    /// A wandering road, two tiles wide (over the sky: a chain bridge).
     fn road(&mut self, (ax, ay): (i32, i32), (bx, by): (i32, i32), salt: f32) {
         let (mut x, mut y) = (ax as f32, ay as f32);
         let mut guard = 0;
@@ -351,6 +821,9 @@ impl Builder {
             y += dy / l + (dx / l) * wob * 0.5;
             for (ox, oy) in [(0, 0), (1, 0), (0, 1), (1, 1)] {
                 let (rx, ry) = (x as i32 + ox, y as i32 + oy);
+                if self.sky && rx > 0 && ry > 0 && rx < self.w - 1 && ry < self.h - 1 {
+                    self.d.set(rx, ry, Tile::Floor);
+                }
                 if self.d.get(rx, ry) == Tile::Floor {
                     self.d.set_ground(rx, ry, 2);
                 }
@@ -371,6 +844,7 @@ impl Builder {
     /// Trees, rocks and bushes everywhere not kept clear (a thick wall of trees at the border), and patches of
     /// ash and dirt.
     fn wilds(&mut self, lv: &mut Level, rng: &mut Rng, st: Style) {
+        let pal = palette(self.act);
         let forest = Noise::new(rng, 16, 9.0);
         let dirt = Noise::new(rng, 16, 7.0);
         for y in 0..self.h {
@@ -384,23 +858,28 @@ impl Builder {
                 if self.keep[(y * self.w + x) as usize] {
                     continue;
                 }
-                let border = x < 3 || y < 3 || x >= self.w - 3 || y >= self.h - 3;
+                // Islands in the sky have no wall of trees at the map's border: their edge is the drop.
+                let border = !self.sky && (x < 3 || y < 3 || x >= self.w - 3 || y >= self.h - 3);
                 let f = forest.at(x as f32, y as f32);
                 let r = rng.f();
                 let tree = if border { r < 0.9 } else { f > st.forest && r < 0.5 || r < 0.012 };
                 if tree {
                     let kind = if rng.chance(st.dead) {
-                        PropKind::TreeDead
+                        pal.dead
                     } else if f > st.forest + 0.15 {
-                        PropKind::TreePine
+                        pal.tree
                     } else {
-                        PropKind::TreeOak
+                        pal.tree2
                     };
                     self.prop(lv, kind, x, y, 1, 1);
                 } else if r < st.rocks {
-                    self.prop(lv, PropKind::Rock, x, y, 1, 1);
+                    let (k, fw, fh) = pal.rock;
+                    let free = (0..fw).all(|dx| (0..fh).all(|dy| self.d.get(x + dx, y + dy) == Tile::Floor && !self.keep.get(((y + dy) * self.w + x + dx) as usize).copied().unwrap_or(true)));
+                    if free {
+                        self.prop(lv, k, x, y, fw, fh);
+                    }
                 } else if r < st.rocks + 0.012 {
-                    self.prop(lv, PropKind::Bush, x, y, 1, 1);
+                    self.prop(lv, pal.bush, x, y, 1, 1);
                 }
             }
         }
@@ -429,8 +908,28 @@ pub fn area(def: &AreaDef, seed: u64) -> Level {
     let mut rng = Rng::new(seed ^ 0xA4EA_0000 ^ (def.act as u64 * 131 + def.n as u64 * 7919));
     let (w, h) = def.size;
     let mut b = Builder::new(w, h, &mut rng);
+    b.act = def.act;
     let mut lv = empty_level(id, def.name.into(), theme_of(def.act), def.tier, Dungeon::blank(1, 1, Tile::Void));
     let center = (w / 2 + rng.range(-6, 7), h / 2 + rng.range(-6, 7));
+    if theme_of(def.act).sky() {
+        // The Heavens: islands in the open sky (where the exits, the doors and the middle are, and a few more),
+        // joined by chain bridges (the roads).
+        b.sky = true;
+        b.d = Dungeon::blank(w, h, Tile::Void);
+        b.island(center, 9.0, &mut rng);
+        for &(side, at, _) in def.exits {
+            let t = exit_tile(side, at, (w, h));
+            b.island(inward(side, t, 3), 6.0, &mut rng);
+        }
+        for &(_, door) in def.doors {
+            b.island(door, 7.0, &mut rng);
+        }
+        for _ in 0..5 {
+            let c = (rng.range(12, w - 12), rng.range(12, h - 12));
+            b.island(c, rng.rf(4.0, 7.0), &mut rng);
+            b.road(center, c, rng.f() * 9.0);
+        }
+    }
     b.clear(center.0, center.1, 3);
     // ---- the roads off the map, to the doors and the pass ----
     let mut arrive = (center.0, center.1);
@@ -443,13 +942,19 @@ pub fn area(def: &AreaDef, seed: u64) -> Level {
     for (i, &(k, (ex, ey))) in def.doors.iter().enumerate() {
         b.road(center, (ex, ey), 5.0 + i as f32);
         b.clear(ex, ey, 5);
-        b.prop(&mut lv, PropKind::Entrance(k), ex - 1, ey - 3, 3, 3);
+        // The last dungeon of each later act has the big door.
+        let (fw, fh) = if def.act > 0 && k % 4 == 3 && k < 24 { (4, 3) } else { (3, 3) };
+        b.prop(&mut lv, PropKind::Entrance(k), ex - fw / 2, ey - 3, fw, fh);
         lv.portals.push(Portal { x: ex as f32 + 0.5, y: ey as f32 + 0.5, kind: PortalKind::Entrance(k) });
     }
     if let Some((to, (px, py))) = def.pass {
+        if b.sky {
+            b.island((px, py), 6.0, &mut rng);
+        }
         b.road(center, (px, py), 8.0);
         b.clear(px, py, 4);
-        b.prop(&mut lv, PropKind::Pass, px - 1, py - 3, 3, 2);
+        let (kind, ox, oy, fw, fh) = pass_prop(to);
+        b.prop(&mut lv, kind, px + ox, py + oy, fw, fh);
         lv.portals.push(Portal { x: px as f32 + 0.5, y: py as f32 + 0.5, kind: PortalKind::Pass(to) });
     }
     b.clear(arrive.0, arrive.1, 4);
@@ -497,6 +1002,46 @@ pub fn area(def: &AreaDef, seed: u64) -> Level {
     lv.d = b.d;
     lv.start = (ax, ay);
     lv
+}
+
+/// An act's old overland, now its town map (acts 2-6): the dungeon doors and the way on to the next act move
+/// out to the areas, and the road to area 1 takes the place of the way on (or of the first door).
+pub fn strip_town(lv: &mut Level) {
+    let act = lv.id.act();
+    if act == 0 || !AREAS.iter().any(|a| a.act as usize == act) {
+        return;
+    }
+    let me = lv.id;
+    let gone = |k: &PortalKind| match *k {
+        PortalKind::Entrance(k) => dungeon_home(k) != me,
+        PortalKind::Pass(to) => to > act && pass_home(act, to) != me,
+        _ => false,
+    };
+    let out = lv.portals.iter().find(|p| matches!(p.kind, PortalKind::Pass(to) if to > act) && gone(&p.kind)).or_else(|| lv.portals.iter().find(|p| gone(&p.kind))).map(|p| (p.x, p.y));
+    let removed: Vec<(f32, f32)> = lv.portals.iter().filter(|p| gone(&p.kind)).map(|p| (p.x, p.y)).collect();
+    lv.portals.retain(|p| !gone(&p.kind));
+    let movable = |k: PropKind| matches!(k, PropKind::Entrance(_) | PropKind::PassMist | PropKind::GearGate | PropKind::DivingBell | PropKind::LightStair | PropKind::Pass);
+    let near = |p: &Prop| removed.iter().any(|&(x, y)| {
+        let (cx, cy) = (p.foot.0 as f32 + p.foot.2 as f32 * 0.5, p.foot.1 as f32 + p.foot.3 as f32 * 0.5);
+        (cx - x).abs() < 4.0 && (cy - y).abs() < 5.0
+    });
+    let mut drop = vec![];
+    for (i, p) in lv.props.iter().enumerate() {
+        if movable(p.kind) && near(p) && !matches!(p.kind, PropKind::Entrance(k) if dungeon_home(k) == me) {
+            drop.push(i);
+        }
+    }
+    for &i in drop.iter().rev() {
+        let p = lv.props.remove(i);
+        for y in p.foot.1..p.foot.1 + p.foot.3 {
+            for x in p.foot.0..p.foot.0 + p.foot.2 {
+                lv.d.set(x, y, Tile::Floor);
+            }
+        }
+    }
+    if let Some((x, y)) = out {
+        lv.portals.push(Portal { x, y, kind: PortalKind::Exit(1) });
+    }
 }
 
 /// Hollowmere and the fields around it (Act 1's town map): the village, its people, and the north road out

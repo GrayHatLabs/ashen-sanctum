@@ -789,7 +789,7 @@ pub fn empty_level(id: LevelId, name: String, theme: Theme, tier: f32, d: Dungeo
 
 /// The procedural version of a level.
 pub fn generate(id: LevelId, seed: u64) -> Level {
-    match id {
+    let lv = match id {
         LevelId::Overworld => overworld(seed),
         LevelId::Frostmarch => frostmarch(seed),
         LevelId::Mistwood => mistwood(seed),
@@ -799,7 +799,13 @@ pub fn generate(id: LevelId, seed: u64) -> Level {
         LevelId::Rift(t) => rift(t, seed),
         LevelId::Dungeon(k, f) => dungeon_floor(k, f, seed),
         LevelId::Area(a, n) => crate::areas::area(crate::areas::def(a, n), seed),
+    };
+    // Acts 2-6: the old overland is now the town map; its doors and the way on live in the areas.
+    let mut lv = lv;
+    if lv.id.town() {
+        crate::areas::strip_town(&mut lv);
     }
+    lv
 }
 
 /// A level as the game plays it: the hand-made file if there is one, else generated.

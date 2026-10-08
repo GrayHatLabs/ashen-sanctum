@@ -472,19 +472,796 @@ window.CATALOG = {
       "tier": 2.0,
       "town": false
     },
-    "deep": {
+    "area:1:1": {
+      "act": 1,
+      "doors": [
+        4
+      ],
+      "exits": [
+        [
+          0,
+          "KALDHOLM"
+        ],
+        [
+          2,
+          "THE HOWLING TUNDRA"
+        ],
+        [
+          6,
+          "THE RAIDERS' FJORD"
+        ]
+      ],
+      "name": "THE FROZEN SHORE",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "tundra",
+      "tier": 3.5999999046325684,
+      "town": false
+    },
+    "area:1:2": {
+      "act": 1,
+      "doors": [
+        5
+      ],
+      "exits": [
+        [
+          1,
+          "THE FROZEN SHORE"
+        ],
+        [
+          3,
+          "THE RIME WOODS"
+        ]
+      ],
+      "name": "THE HOWLING TUNDRA",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "tundra",
+      "tier": 3.9000000953674316,
+      "town": false
+    },
+    "area:1:3": {
+      "act": 1,
+      "doors": [
+        6
+      ],
+      "exits": [
+        [
+          2,
+          "THE HOWLING TUNDRA"
+        ],
+        [
+          4,
+          "THE WHITE WASTE"
+        ]
+      ],
+      "name": "THE RIME WOODS",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "tundra",
+      "tier": 4.300000190734863,
+      "town": false
+    },
+    "area:1:4": {
+      "act": 1,
+      "doors": [],
+      "exits": [
+        [
+          3,
+          "THE RIME WOODS"
+        ],
+        [
+          5,
+          "THE GLACIER'S EDGE"
+        ]
+      ],
+      "name": "THE WHITE WASTE",
+      "passes": [],
+      "shops": [],
+      "size": [
+        112,
+        80
+      ],
+      "story": null,
+      "theme": "tundra",
+      "tier": 4.699999809265137,
+      "town": false
+    },
+    "area:1:5": {
+      "act": 1,
+      "doors": [
+        7
+      ],
+      "exits": [
+        [
+          4,
+          "THE WHITE WASTE"
+        ]
+      ],
+      "name": "THE GLACIER'S EDGE",
+      "passes": [
+        "pass2"
+      ],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "tundra",
+      "tier": 5.0,
+      "town": false
+    },
+    "area:1:6": {
+      "act": 1,
+      "doors": [],
+      "exits": [
+        [
+          1,
+          "THE FROZEN SHORE"
+        ]
+      ],
+      "name": "THE RAIDERS' FJORD",
+      "passes": [],
+      "shops": [],
+      "size": [
+        64,
+        64
+      ],
+      "story": null,
+      "theme": "tundra",
+      "tier": 4.0,
+      "town": false
+    },
+    "area:2:1": {
+      "act": 2,
+      "doors": [
+        8
+      ],
+      "exits": [
+        [
+          0,
+          "MOURNHOLD"
+        ],
+        [
+          2,
+          "THE GALLOWS MOOR"
+        ],
+        [
+          6,
+          "THE WITCH'S BOG"
+        ]
+      ],
+      "name": "THE BLIGHTED FIELDS",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "mistwood",
+      "tier": 5.599999904632568,
+      "town": false
+    },
+    "area:2:2": {
+      "act": 2,
+      "doors": [
+        9
+      ],
+      "exits": [
+        [
+          1,
+          "THE BLIGHTED FIELDS"
+        ],
+        [
+          3,
+          "THE HOLLOW WOOD"
+        ]
+      ],
+      "name": "THE GALLOWS MOOR",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "mistwood",
+      "tier": 6.0,
+      "town": false
+    },
+    "area:2:3": {
+      "act": 2,
+      "doors": [],
+      "exits": [
+        [
+          2,
+          "THE GALLOWS MOOR"
+        ],
+        [
+          4,
+          "THE BARROW HILLS"
+        ]
+      ],
+      "name": "THE HOLLOW WOOD",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "mistwood",
+      "tier": 6.400000095367432,
+      "town": false
+    },
+    "area:2:4": {
+      "act": 2,
+      "doors": [
+        10
+      ],
+      "exits": [
+        [
+          3,
+          "THE HOLLOW WOOD"
+        ],
+        [
+          5,
+          "THE CASTLE APPROACH"
+        ]
+      ],
+      "name": "THE BARROW HILLS",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "mistwood",
+      "tier": 6.599999904632568,
+      "town": false
+    },
+    "area:2:5": {
+      "act": 2,
+      "doors": [
+        11
+      ],
+      "exits": [
+        [
+          4,
+          "THE BARROW HILLS"
+        ]
+      ],
+      "name": "THE CASTLE APPROACH",
+      "passes": [
+        "pass3"
+      ],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "mistwood",
+      "tier": 7.0,
+      "town": false
+    },
+    "area:2:6": {
+      "act": 2,
+      "doors": [],
+      "exits": [
+        [
+          1,
+          "THE BLIGHTED FIELDS"
+        ]
+      ],
+      "name": "THE WITCH'S BOG",
+      "passes": [],
+      "shops": [],
+      "size": [
+        64,
+        64
+      ],
+      "story": null,
+      "theme": "mistwood",
+      "tier": 6.0,
+      "town": false
+    },
+    "area:3:1": {
+      "act": 3,
+      "doors": [
+        12
+      ],
+      "exits": [
+        [
+          0,
+          "THE LAST ESCAPEMENT"
+        ],
+        [
+          2,
+          "THE PISTON FLATS"
+        ],
+        [
+          6,
+          "THE SCRAPYARD"
+        ]
+      ],
+      "name": "THE GEARFIELDS",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "mechanus",
+      "tier": 7.599999904632568,
+      "town": false
+    },
+    "area:3:2": {
+      "act": 3,
+      "doors": [
+        13
+      ],
+      "exits": [
+        [
+          1,
+          "THE GEARFIELDS"
+        ],
+        [
+          3,
+          "THE COGWORKS"
+        ]
+      ],
+      "name": "THE PISTON FLATS",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "mechanus",
+      "tier": 8.0,
+      "town": false
+    },
+    "area:3:3": {
+      "act": 3,
+      "doors": [],
+      "exits": [
+        [
+          2,
+          "THE PISTON FLATS"
+        ],
+        [
+          4,
+          "THE ARCHIVE STACKS"
+        ]
+      ],
+      "name": "THE COGWORKS",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "mechanus",
+      "tier": 8.399999618530273,
+      "town": false
+    },
+    "area:3:4": {
+      "act": 3,
+      "doors": [
+        14
+      ],
+      "exits": [
+        [
+          3,
+          "THE COGWORKS"
+        ],
+        [
+          5,
+          "THE CLOCKFACE PLAIN"
+        ]
+      ],
+      "name": "THE ARCHIVE STACKS",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "mechanus",
+      "tier": 8.600000381469727,
+      "town": false
+    },
+    "area:3:5": {
+      "act": 3,
+      "doors": [
+        15
+      ],
+      "exits": [
+        [
+          4,
+          "THE ARCHIVE STACKS"
+        ]
+      ],
+      "name": "THE CLOCKFACE PLAIN",
+      "passes": [
+        "pass4"
+      ],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "mechanus",
+      "tier": 9.0,
+      "town": false
+    },
+    "area:3:6": {
+      "act": 3,
+      "doors": [],
+      "exits": [
+        [
+          1,
+          "THE GEARFIELDS"
+        ]
+      ],
+      "name": "THE SCRAPYARD",
+      "passes": [],
+      "shops": [],
+      "size": [
+        64,
+        64
+      ],
+      "story": null,
+      "theme": "mechanus",
+      "tier": 8.0,
+      "town": false
+    },
+    "area:4:1": {
       "act": 4,
       "doors": [
-        16,
-        17,
-        18,
+        16
+      ],
+      "exits": [
+        [
+          0,
+          "BRINEHOLLOW"
+        ],
+        [
+          2,
+          "THE CORAL GARDENS"
+        ]
+      ],
+      "name": "THE KELP SHALLOWS",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "deep",
+      "tier": 10.0,
+      "town": false
+    },
+    "area:4:2": {
+      "act": 4,
+      "doors": [
+        17
+      ],
+      "exits": [
+        [
+          1,
+          "THE KELP SHALLOWS"
+        ],
+        [
+          3,
+          "THE BONE REEF"
+        ],
+        [
+          6,
+          "THE SUNKEN GALLEON"
+        ]
+      ],
+      "name": "THE CORAL GARDENS",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "deep",
+      "tier": 10.399999618530273,
+      "town": false
+    },
+    "area:4:3": {
+      "act": 4,
+      "doors": [],
+      "exits": [
+        [
+          2,
+          "THE CORAL GARDENS"
+        ],
+        [
+          4,
+          "THE TRENCH RIM"
+        ]
+      ],
+      "name": "THE BONE REEF",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "deep",
+      "tier": 10.800000190734863,
+      "town": false
+    },
+    "area:4:4": {
+      "act": 4,
+      "doors": [
+        18
+      ],
+      "exits": [
+        [
+          3,
+          "THE BONE REEF"
+        ],
+        [
+          5,
+          "THE ABYSSAL PLAIN"
+        ]
+      ],
+      "name": "THE TRENCH RIM",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "deep",
+      "tier": 11.0,
+      "town": false
+    },
+    "area:4:5": {
+      "act": 4,
+      "doors": [
         19
       ],
-      "exits": [],
+      "exits": [
+        [
+          4,
+          "THE TRENCH RIM"
+        ]
+      ],
+      "name": "THE ABYSSAL PLAIN",
+      "passes": [
+        "pass5"
+      ],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "deep",
+      "tier": 11.399999618530273,
+      "town": false
+    },
+    "area:4:6": {
+      "act": 4,
+      "doors": [],
+      "exits": [
+        [
+          2,
+          "THE CORAL GARDENS"
+        ]
+      ],
+      "name": "THE SUNKEN GALLEON",
+      "passes": [],
+      "shops": [],
+      "size": [
+        64,
+        64
+      ],
+      "story": null,
+      "theme": "deep",
+      "tier": 10.600000381469727,
+      "town": false
+    },
+    "area:5:1": {
+      "act": 5,
+      "doors": [
+        20
+      ],
+      "exits": [
+        [
+          0,
+          "WINDWARD ANCHORAGE"
+        ],
+        [
+          2,
+          "THE STORMFIELDS"
+        ]
+      ],
+      "name": "THE BROKEN STEPS",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "heavens",
+      "tier": 12.0,
+      "town": false
+    },
+    "area:5:2": {
+      "act": 5,
+      "doors": [
+        21
+      ],
+      "exits": [
+        [
+          1,
+          "THE BROKEN STEPS"
+        ],
+        [
+          3,
+          "THE FALLEN GARDENS"
+        ]
+      ],
+      "name": "THE STORMFIELDS",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "heavens",
+      "tier": 12.399999618530273,
+      "town": false
+    },
+    "area:5:3": {
+      "act": 5,
+      "doors": [],
+      "exits": [
+        [
+          2,
+          "THE STORMFIELDS"
+        ],
+        [
+          4,
+          "THE HALO ISLES"
+        ],
+        [
+          6,
+          "THE DRIFTING ISLES"
+        ]
+      ],
+      "name": "THE FALLEN GARDENS",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "heavens",
+      "tier": 12.800000190734863,
+      "town": false
+    },
+    "area:5:4": {
+      "act": 5,
+      "doors": [
+        22
+      ],
+      "exits": [
+        [
+          3,
+          "THE FALLEN GARDENS"
+        ],
+        [
+          5,
+          "THE ZENITH"
+        ]
+      ],
+      "name": "THE HALO ISLES",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "heavens",
+      "tier": 13.0,
+      "town": false
+    },
+    "area:5:5": {
+      "act": 5,
+      "doors": [
+        23
+      ],
+      "exits": [
+        [
+          4,
+          "THE HALO ISLES"
+        ]
+      ],
+      "name": "THE ZENITH",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "heavens",
+      "tier": 13.399999618530273,
+      "town": false
+    },
+    "area:5:6": {
+      "act": 5,
+      "doors": [],
+      "exits": [
+        [
+          3,
+          "THE FALLEN GARDENS"
+        ]
+      ],
+      "name": "THE DRIFTING ISLES",
+      "passes": [],
+      "shops": [],
+      "size": [
+        64,
+        64
+      ],
+      "story": null,
+      "theme": "heavens",
+      "tier": 12.600000381469727,
+      "town": false
+    },
+    "deep": {
+      "act": 4,
+      "doors": [],
+      "exits": [
+        [
+          1,
+          "THE KELP SHALLOWS"
+        ]
+      ],
       "name": "THE SUNKEN REACH",
       "passes": [
-        "pass3",
-        "pass5"
+        "pass3"
       ],
       "shops": [
         "coral",
@@ -505,17 +1282,16 @@ window.CATALOG = {
     },
     "frostmarch": {
       "act": 1,
-      "doors": [
-        4,
-        5,
-        6,
-        7
+      "doors": [],
+      "exits": [
+        [
+          1,
+          "THE FROZEN SHORE"
+        ]
       ],
-      "exits": [],
       "name": "THE FROSTMARCH",
       "passes": [
-        "pass0",
-        "pass2"
+        "pass0"
       ],
       "shops": [
         "jeweler1",
@@ -536,13 +1312,13 @@ window.CATALOG = {
     },
     "heavens": {
       "act": 5,
-      "doors": [
-        20,
-        21,
-        22,
-        23
+      "doors": [],
+      "exits": [
+        [
+          1,
+          "THE BROKEN STEPS"
+        ]
       ],
-      "exits": [],
       "name": "THE SKYREACH",
       "passes": [
         "dock0",
@@ -567,17 +1343,16 @@ window.CATALOG = {
     },
     "mechanus": {
       "act": 3,
-      "doors": [
-        12,
-        13,
-        14,
-        15
+      "doors": [],
+      "exits": [
+        [
+          1,
+          "THE GEARFIELDS"
+        ]
       ],
-      "exits": [],
       "name": "THE GRINDING FIELDS",
       "passes": [
-        "pass2",
-        "pass4"
+        "pass2"
       ],
       "shops": [
         "jeweler3",
@@ -598,17 +1373,16 @@ window.CATALOG = {
     },
     "mistwood": {
       "act": 2,
-      "doors": [
-        8,
-        9,
-        10,
-        11
+      "doors": [],
+      "exits": [
+        [
+          1,
+          "THE BLIGHTED FIELDS"
+        ]
       ],
-      "exits": [],
       "name": "THE MISTWOOD",
       "passes": [
-        "pass1",
-        "pass3"
+        "pass1"
       ],
       "shops": [
         "jeweler2",
@@ -1726,7 +2500,37 @@ window.CATALOG = {
     "area:0:6": "the_ashen_steppe",
     "area:0:7": "shepherds_vale",
     "area:0:8": "skrats_gulch",
-    "area:0:9": "emberpeak_pass"
+    "area:0:9": "emberpeak_pass",
+    "area:1:1": "the_frozen_shore",
+    "area:1:2": "the_howling_tundra",
+    "area:1:3": "the_rime_woods",
+    "area:1:4": "the_white_waste",
+    "area:1:5": "the_glaciers_edge",
+    "area:1:6": "the_raiders_fjord",
+    "area:2:1": "the_blighted_fields",
+    "area:2:2": "the_gallows_moor",
+    "area:2:3": "the_hollow_wood",
+    "area:2:4": "the_barrow_hills",
+    "area:2:5": "the_castle_approach",
+    "area:2:6": "the_witchs_bog",
+    "area:3:1": "the_gearfields",
+    "area:3:2": "the_piston_flats",
+    "area:3:3": "the_cogworks",
+    "area:3:4": "the_archive_stacks",
+    "area:3:5": "the_clockface_plain",
+    "area:3:6": "the_scrapyard",
+    "area:4:1": "the_kelp_shallows",
+    "area:4:2": "the_coral_gardens",
+    "area:4:3": "the_bone_reef",
+    "area:4:4": "the_trench_rim",
+    "area:4:5": "the_abyssal_plain",
+    "area:4:6": "the_sunken_galleon",
+    "area:5:1": "the_broken_steps",
+    "area:5:2": "the_stormfields",
+    "area:5:3": "the_fallen_gardens",
+    "area:5:4": "the_halo_isles",
+    "area:5:5": "the_zenith",
+    "area:5:6": "the_drifting_isles"
   },
   "themes": [
     {

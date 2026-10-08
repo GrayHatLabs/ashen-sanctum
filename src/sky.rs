@@ -9,7 +9,7 @@ use crate::dungeon::Tile;
 use crate::game::{move_circle, Game, PKind, Particle, Sfx, DT, PLAYER_R};
 use crate::gfx::rgb;
 use crate::mobs::{Hazard, HazardKind, Kind, MobState};
-use crate::world::{LevelId, PortalKind, Theme};
+use crate::world::{PortalKind, Theme};
 
 /// The wind's rhythm (seconds): calm between gusts, the warning streaks, the gust itself.
 pub const CALM: (f32, f32) = (7.0, 12.0);
@@ -23,7 +23,7 @@ pub const FALL_COST: f32 = 0.15;
 impl Game {
     /// Does the wind blow here?
     pub fn windy(&self) -> bool {
-        self.level == LevelId::Heavens || self.theme == Theme::Spire || self.rift_has(crate::endgame::RiftMod::Gale)
+        (self.level.act() == 5 && self.level.overland()) || self.theme == Theme::Spire || self.rift_has(crate::endgame::RiftMod::Gale)
     }
 
     /// Is (x, y) open sky?
@@ -268,7 +268,7 @@ mod tests {
     #[test]
     fn gusts_blow_monsters_off_the_edge_and_you_catch_hold() {
         let mut g = Game::new(7, 360);
-        g.debug_goto(LevelId::Heavens);
+        g.debug_goto(crate::world::LevelId::Heavens);
         let ((x, y), dir) = edge(&g);
         g.mobs.clear();
         g.mobs.push(Mob::new(Kind::Harpy, x, y, 12.0, &mut g.rng));
@@ -295,7 +295,7 @@ mod tests {
     #[test]
     fn knockbacks_send_monsters_over_and_the_airship_flies() {
         let mut g = Game::new(7, 360);
-        g.debug_goto(LevelId::Heavens);
+        g.debug_goto(crate::world::LevelId::Heavens);
         let ((x, y), _) = edge(&g);
         g.mobs.clear();
         g.mobs.push(Mob::new(Kind::FallenSeraph, x, y, 12.0, &mut g.rng));
@@ -312,7 +312,7 @@ mod tests {
     #[test]
     fn zealots_heal_their_kin() {
         let mut g = Game::new(7, 360);
-        g.debug_goto(LevelId::Heavens);
+        g.debug_goto(crate::world::LevelId::Heavens);
         let (x, y) = (g.p.x + 4.0, g.p.y);
         g.mobs.clear();
         let mut z = Mob::new(Kind::Zealot, x, y, 12.0, &mut g.rng);

@@ -1,0 +1,8912 @@
+{
+  "version": 1,
+  "id": "area:4:6",
+  "name": "THE SUNKEN GALLEON",
+  "theme": "deep",
+  "tier": 10.6,
+  "width": 64,
+  "height": 64,
+  "tiles": [
+    "ooooooooooooo.oooooo.ooooo.oooo.oooooooooooooooooo.ooooooooooooo",
+    "oooooo.oooooooo.ooooooooooo.oooooooo....ooooooooooo.ooooooooooo.",
+    "oooooo.ooooo.oooo.ooooooooooooooooooooooooooooooo.ooooooooo.ooo.",
+    "oooo......o............o.o........o.ooooo.o......ooo...o.o...ooo",
+    "ooo.......o..........o.o.o........oo..ooo..........o..o.o.o..ooo",
+    ".oo............o...o.o.........oooooo..o...........ooooo.o...ooo",
+    ".oo....o.......o...o....o.o.o..oooo...o....o.........oo..o....oo",
+    "ooo........o............o.o.....oo....oo...o......oo.o.ooo...ooo",
+    "ooo......o.o.o..o.o......o......o....o.o..o........o..o..o.o.ooo",
+    "ooo..o..........o........o.......o.oooooo.o.........oo.o..oo.ooo",
+    "ooo.....o....o..................o..oo..o.......o....o.o.oo.o.ooo",
+    ".oo..................o..........oo..o..o.......o.....o.....o.oo.",
+    "ooo..o.o.........................oo.....o...o.....oo....o.o..oo.",
+    "ooo...........o......o.............oo..oo......o.o.o..........oo",
+    "o.o.....oo.....o.....oo.o......o...oo...oo.....o.o...........ooo",
+    "oooo.o..o......ooo.o.oooooooo....ooo.oooo....o...............ooo",
+    "oo.o.....o.ooo.o.o.oooo.oo.oooo..oo....ooo....o........o.....ooo",
+    "ooo......oo.oo..o....o.o..oo..o...o...o.o....................oo.",
+    "oo......o...o.ooooo.o.ooo.oooo.o.....o..o...o......o........oooo",
+    "ooo......oo.o...o....o..o.oo.o.o.oo....o...........o....o...oooo",
+    ".oo..........o..ooooo..oo.o...oo.o.oo.oo.o..oo..........o....ooo",
+    "ooo..............oo.o.o.o.o.o.o.o.o.o.oooo..o.................o.",
+    ".oo.............o......o..oo.o.o.oo.oo.ooo...o...............ooo",
+    "ooo.o...........o........oooo..o.oo.oo.......o...............o.o",
+    "ooooo...................o.....oo..o....o...........o.o.ooo...ooo",
+    "ooo.o....................oo.oo...o.o...............o.ooo.....ooo",
+    "o.........o...o..........o...oo.o.o.....o.............o.oo....oo",
+    "oo....o...........o......oo.o.oooo..o.................oo.....ooo",
+    "oo........................ooo.o.ooo.o..oo..............o..o..o.o",
+    "............................oo.o..o....o.oo..........o..oo...ooo",
+    "................................ooo.o.o...o.o.........o..oo..ooo",
+    ".................................oo.........o............oo..ooo",
+    "......................................oo....................oooo",
+    ".....................................................o........oo",
+    "..................................................o..o.......oo.",
+    "..................................................o..o.....o.ooo",
+    "oo.........o..............ooo...............o........o.....ooooo",
+    "ooo.....o.o.o.......o...o..oo.oo............o..o...............o",
+    "oooo...oooo.........o......oo.ooo..............o.........o.o.oo.",
+    "o.oo...oo.o.............ooooo....o...........o...........o.ooooo",
+    "ooo............o.......oooo..ooo.o..o.oo....................ooo.",
+    "oooo.o....o.o..o.......o.oooo...oo..o.ooo...............o...oooo",
+    ".ooo.o....o.o.........o.ooo...oo...ooooo..........o.....o....ooo",
+    "oo..o.................oooooo....o....oo.o.o.....o.o..........ooo",
+    ".oooo...................oo..oo....oo.....ooooo..o..........o.ooo",
+    "o.oo.............o......o..oo.oo.oo.....oo.oo.oo.............o.o",
+    "ooo..............o..........oo.o..o.o......o.....o...........ooo",
+    "ooo............o.......o.o..oo.o.o..o.o....o....o.............oo",
+    ".ooo...........o.......o.o.o..o..........o.ooo..o............ooo",
+    "ooo.o.............o....o.o......o........o..o................ooo",
+    "ooooo.............o.............o..oo.......o........o.oo.o..ooo",
+    "ooooo......................o.......oo.....o..........o.ooo..oooo",
+    "oooo....o..............o...o..........................o..o.o..oo",
+    "ooo.....o............................o..o.o.......o.ooooo.o.o.oo",
+    "oooo....o......o........................o........o..ooo..o...ooo",
+    "oo......o......o...........................o.....o.........o.oo.",
+    "ooo.o.............o.............o...o...o..oo.........o....oo..o",
+    "ooooo........o....o.........o...o...o.......o..........oo...oooo",
+    "..oo.oo.................oo..o...........o.......o............ooo",
+    "oooo.oo..o......o........o...................................ooo",
+    "oooo.....o......o...............oo......o.....o..............ooo",
+    "oooooooooooooooo.oooooo.oooooooooo..ooooooooo.ooo.ooooooo.oooooo",
+    "ooo.ooooo.ooo.ooooooooooooooooooo.ooo.ooo...oooooo.ooooooooooooo",
+    "ooooooooooooooooooooooooooo...oooooooooo...ooooo.ooooooooooooooo"
+  ],
+  "ground": [
+    "dddddddddggggggggggggggggggddddddgggggggggggggdddddddddddddddddd",
+    "dddddddddggggggggggggggggggddddddgggggggggggggdddddddddddddddddd",
+    "dddddddddgggggggggggggggggggggggdddddgggggggggdddddddddddddddddd",
+    "dddddddgggggggggggggggggggggggggdddddggggggggggddddddddddddddddd",
+    "dddddgggggggggggggggdddggggggggggdddddgggggggggggddddddddddddggg",
+    "ddddgggggggggggggggddgddgggggggggddddddgggggggggggggdddddddddggg",
+    "dddgggggggggggggggdgdddddggggggggddddddgggggggggggggddddddddgggg",
+    "ddggggggggggggggggddddddgggggggggddddddggggggggggggggdddddddgggg",
+    "ddggggggggggggggggddddddgggggggggddddddggggggggggggggdddddddgggg",
+    "gggggggggggggggggdddddddgggggggggddddddggggggggggggggdddddddgggg",
+    "gggggggggggddddddddddggggggggggggddddddggggggggggggggdddddddgggg",
+    "ggggggddddddddddddgggggggggggggggggdddgggggggggggggggdddddddgggg",
+    "gggggdddddddddddddgggggggggggggggggggggggdddggggggggggddddddgggg",
+    "gggggdddddddddddddggggggggggggggggggggggdddddggggggggggddddggggg",
+    "gggggdddddddddddddggggggggggggggggggggggdddddggggggggggggggggggg",
+    "gggggdddgddddddgddggggggggggggggggggggggdddddggggggggggggggggggg",
+    "gggggdddddddddddddggggggggggggggggggggggddddddgggggggggggggggggg",
+    "gggggddddgddddddddgggggggggggggggggggggddddddddddddddggggggggggg",
+    "ggggddddddddddddddgggggggggggggggggdddddddddddddddddddgggggggggg",
+    "ggggddddddddddddddggggggggggggggggdddddddddddddddddgddgggggggggg",
+    "ggggddddddddddddddggggggggggggggggddddddddddddddddddddgggggggggg",
+    "ggggddddddddddddddgggggggggggggggdddddddddddgdddddddddgggggggggg",
+    "ggggdddddddddddddggggggggggggggggdddddddddddddddddddddgggggggggg",
+    "ggggddddddddddddgggggggggggggggggddddddddddddgdddddddddggggggggg",
+    "gggggdddddddddddgggggggggggggggggdddddddddddddddddddddddddgggggg",
+    "dddddddddddggggggggggggggggggggggddddddddddddddddddddddddddggggg",
+    "ddddddggggggggggggggggggggggggggdddddddddddddddddddddddddddggggg",
+    "dddddgggggggggggggggggggggggggggddddddddddddddddgggdddddddddgggg",
+    "dddddggggggggggggggggddgggggggggddddddddddddddddgggdddddddddgggg",
+    "dddddgggggggggggggggggggggggggggddddddddddddddddgggddddddddggggg",
+    "ddddddgggggggggggggggggggggggggdddddddddddgddddddddddddddddggggg",
+    "rrrdddddddgggggggrrrrrrrrrgdddddddddddddddddgddddddddddddggggggg",
+    "rrrrrdddddddrrrrrrrrrrrrrrrrrrddddggdddddddddddddddddggggggggggg",
+    "ddrrrrrrrrrrrrrrrrgggggggrrrrrrrdggggddddddddddddddddggggggggggg",
+    "ddddrrrrrrrrrdddgggggggggddddrrrrrrggddddddddddddddddggggggggggg",
+    "dddddddddddddddddggggggggddddddrrrrrrrrdddddddddddgddggggggggggg",
+    "ddddddddddddddddgggggggggddddddddgrrrrrddddddddddddddggggggggggg",
+    "dddddddddddddddggggggggggddddddddgggggddddddgdddddddgggggggggggg",
+    "ddddddddddddggggggggggggddddddddggggggdddddddddgdddggggggggggggg",
+    "dddgdddddddggggggggggggdddddddddggggggddddddddddgggggggggggggggg",
+    "dddddddddgggggggggggddddddddddddgggggggddddddddggggggggggggggggg",
+    "dddddggggggggggggggdddddddddddddgggggggdddddddgggggggggggggggggg",
+    "dddgdggggggggggggggdddddddddddddgggggggddddddggggggggggggggggggg",
+    "dddddgggggggggggggddddgdddddddddgggggggdddddddgggggggggggggggggg",
+    "dddggggggggggggggddddddddddddddddggggddddddddddggggggggggggggggg",
+    "ggggggggggggdddddddddddddddddddddddddddddddddddddddggggggggggggg",
+    "gggggggggggddddddgddddddddddgddddddddddddddddddddddddggggggggggg",
+    "gggggggggggddddddddddddddddgggddddddgdddddddddddddddddgggggggddd",
+    "ggggggggggdddddgdddddddddddgggdddddddddddddgddddgdddddggggggdddd",
+    "ggggggggggdddddddddddddgddggggdddddddddddgdddddddddddddgggggdddd",
+    "ggggggggggddddddddgddddddddgggddgdddddddddddgddddddddddgggggdddd",
+    "gggggggggggddddddddddddddddddddddddggddddddddddddddddddggggddddd",
+    "ggggggggggggdddddddddddddddgdddddddddddddddddddddddddddddddddddd",
+    "dddggggggggggddddgggggggdddddddddddddddddddddggggggggddddddddddd",
+    "dddggggggggggggggggggggggdddddddddddddggggggggggggggggdddddddddd",
+    "ddddgggggggggggggggggggggddddddddddgggggggggggggggggggdddddddddd",
+    "ddddgggggggggggggggggggggdddddddddggggggggggggggggggggdddddddddg",
+    "ddddgggggggggggggggggggggdddddddgdggggggggggggggggggggdddddddddd",
+    "ddddgggggggggggggggggggggdddgddddddgggggggggggggggggggdddddddddd",
+    "dddddgggggggggggggggggggggdddddddddddddddggggggggggggddddddddddd",
+    "dddddddddgddddddgddddddddgggggddddddddddddddddddgggddddddddddddd",
+    "dddddddddddddddddddddddddgggggggdgdddddddddddddddddddddddddddddd",
+    "dddddddddddddddddddddddddggggggggddddddddddddddddddddddddddddddd",
+    "dddddddddddddddddddddddddggggggggddddddddddddddddddddddddddddddd"
+  ],
+  "start": [
+    6.5,
+    32.5
+  ],
+  "safe": null,
+  "props": [
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 3.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 4.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 5.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 6.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 7.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 8.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 9.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 10.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 11.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 12.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 14.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 15.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 16.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 17.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 18.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 19.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 21.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 22.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 23.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 24.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 25.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 27.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 29.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 30.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 32.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 35.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 36.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 37.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 38.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 41.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 42.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 43.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 44.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 45.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 46.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 47.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 48.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 49.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 51.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 52.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 53.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 54.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 55.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 56.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 57.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 58.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 59.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 60.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 3.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 4.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 5.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 7.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 8.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 9.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 10.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 11.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 12.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 13.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 14.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 16.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 17.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 18.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 19.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 20.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 21.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 22.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 23.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 24.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 25.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 26.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 29.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 30.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 31.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 32.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 35.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 41.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 42.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 43.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 44.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 45.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 46.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 47.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 48.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 49.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 50.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 52.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 53.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 54.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 55.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 56.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 57.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 58.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 59.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 60.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 3.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 4.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 5.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 7.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 8.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 9.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 10.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 11.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 13.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 14.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 15.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 16.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 18.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 19.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 20.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 21.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 22.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 23.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 24.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 25.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 26.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 27.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 29.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 30.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 31.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 32.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 35.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 36.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 37.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 38.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 41.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 42.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 43.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 44.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 45.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 46.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 47.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 48.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 50.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 51.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 52.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 53.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 54.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 55.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 56.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 57.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 58.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 60.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 3.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 10.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 23.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 25.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 36.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 37.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 38.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 42.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 49.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 50.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 51.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 55.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 57.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 21.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 35.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 38.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 51.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 54.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 56.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 58.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 15.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 19.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 31.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 32.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 35.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 36.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 51.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 52.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 53.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 54.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 55.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 57.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 7.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 24.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 26.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 32.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 38.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 43.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 53.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 54.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 57.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 11.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 32.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 38.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 50.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 51.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 53.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 55.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 56.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 57.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 9.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 13.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 16.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 18.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 25.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 32.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 37.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 42.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 51.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 54.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 57.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 59.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 5.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 35.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 36.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 37.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 38.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 52.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 53.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 55.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 58.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 59.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 8.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 13.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 32.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 35.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 36.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 47.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 52.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 54.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 56.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 57.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 59.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 21.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 32.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 36.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 53.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 59.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 5.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 7.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 44.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 50.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 51.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 56.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 58.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 14.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 21.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 35.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 36.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 47.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 49.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 8.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 9.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 15.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 22.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 24.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 31.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 35.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 36.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 41.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 3.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 5.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 16.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 17.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 19.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 21.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 23.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 25.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 26.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 27.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 35.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 37.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 38.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 45.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 9.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 11.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 12.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 13.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 15.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 17.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 19.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 20.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 21.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 22.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 24.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 25.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 27.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 29.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 30.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 41.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 46.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 55.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 10.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 12.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 13.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 16.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 21.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 23.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 26.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 27.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 30.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 38.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 8.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 12.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 14.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 15.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 16.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 17.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 18.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 20.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 22.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 23.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 24.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 26.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 27.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 29.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 31.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 37.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 44.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 51.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 60.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 9.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 10.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 12.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 16.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 21.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 24.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 26.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 27.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 29.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 31.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 56.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 13.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 16.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 17.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 18.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 19.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 20.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 23.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 24.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 26.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 30.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 31.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 35.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 36.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 38.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 41.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 44.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 45.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 17.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 18.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 20.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 22.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 24.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 26.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 30.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 32.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 36.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 38.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 41.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 16.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 23.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 26.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 27.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 29.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 31.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 36.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 37.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 41.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 45.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 4.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 25.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 26.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 27.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 31.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 36.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 37.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 3.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 24.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 30.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 31.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 51.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 53.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 55.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 56.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 57.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 4.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 25.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 26.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 29.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 35.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 51.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 53.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 54.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 55.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 10.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 14.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 25.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 29.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 30.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 32.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 54.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 56.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 57.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 6.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 18.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 25.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 26.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 30.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 31.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 32.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 36.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 54.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 55.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 26.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 27.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 30.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 32.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 36.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 55.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 58.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 29.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 31.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 41.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 42.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 53.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 56.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 57.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 32.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 36.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 38.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 44.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 54.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 57.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 58.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 38.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 60.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 53.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 50.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 53.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 59.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 11.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 26.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 27.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 44.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 60.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 8.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 10.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 12.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 20.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 24.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 27.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 30.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 31.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 47.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 3.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 7.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 8.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 9.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 10.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 27.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 30.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 31.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 32.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 57.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 59.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 7.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 8.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 10.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 24.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 25.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 26.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 27.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 45.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 60.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 15.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 23.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 24.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 25.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 26.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 29.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 30.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 31.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 36.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 38.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 60.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 3.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 5.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 10.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 12.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 23.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 25.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 26.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 27.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 32.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 36.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 38.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 56.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 22.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 24.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 25.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 26.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 30.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 31.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 35.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 36.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 37.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 38.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 50.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 4.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 23.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 24.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 25.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 26.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 27.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 32.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 37.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 38.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 42.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 48.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 3.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 4.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 24.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 25.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 29.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 35.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 41.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 42.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 43.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 44.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 45.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 59.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 3.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 17.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 24.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 27.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 30.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 31.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 41.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 43.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 44.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 46.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 47.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 29.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 31.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 36.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 43.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 49.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 15.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 23.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 25.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 29.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 31.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 38.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 43.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 48.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 3.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 23.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 25.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 27.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 30.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 41.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 44.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 45.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 4.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 18.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 25.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 32.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 44.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 3.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 4.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 35.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 36.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 53.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 55.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 56.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 58.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 3.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 4.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 27.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 42.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 53.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 55.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 56.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 57.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 60.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 3.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 8.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 23.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 54.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 57.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 59.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 37.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 40.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 42.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 50.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 52.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 53.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 54.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 55.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 56.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 58.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 60.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 3.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 8.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 15.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 49.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 52.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 53.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 54.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 57.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 43.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 59.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 4.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 18.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 32.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 36.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 44.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 54.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 59.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 60.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 3.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 13.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 28.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 55.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 56.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 60.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 3.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 5.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 6.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 24.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 25.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 48.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 3.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 9.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "coral2",
+      "x": 16.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 3.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 32.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "coral2",
+      "x": 33.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 2
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 46.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 3.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 4.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 5.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 6.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 7.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 8.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 9.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 10.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 11.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 12.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 13.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 14.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 15.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 17.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 18.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 19.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 20.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 21.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 22.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 24.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 25.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 26.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 27.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 29.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 30.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 31.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 32.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 36.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 37.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 38.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 41.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 42.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 43.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 44.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 46.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 47.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 48.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 50.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 51.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 52.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 53.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 54.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 55.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 56.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 58.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 59.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 60.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 4.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 5.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 6.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 7.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 8.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 10.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 11.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 12.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 14.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 15.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 16.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 17.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 18.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 19.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 20.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 21.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 22.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 23.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 24.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 25.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 26.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 27.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 28.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 29.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 30.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 31.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 32.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 35.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 36.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 38.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 40.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 44.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 45.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 46.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 47.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 48.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 49.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 51.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 52.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 53.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 54.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 55.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 56.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 57.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 58.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 59.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 60.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 0.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 1.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 2.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 3.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 4.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 5.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 6.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 7.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 8.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 9.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 10.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 11.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 12.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 13.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 14.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 15.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 16.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 17.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 18.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 19.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 20.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 21.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 22.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 23.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 24.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 25.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 26.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 30.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 31.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 32.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 33.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 34.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 35.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 36.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 37.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 38.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 39.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 43.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 44.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 45.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 46.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 47.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 49.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 50.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 51.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 52.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 53.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 54.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 55.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 56.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 57.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 58.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 59.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 60.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 61.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 62.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "kelp1",
+      "x": 63.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    }
+  ],
+  "portals": [
+    {
+      "kind": "exit2",
+      "x": 2.5,
+      "y": 32.5
+    }
+  ],
+  "monsters": [
+    {
+      "kind": "merrow",
+      "x": 47.05,
+      "y": 26.44,
+      "tier": 11.645
+    },
+    {
+      "kind": "merrow",
+      "x": 46.61,
+      "y": 26.46,
+      "tier": 11.645
+    },
+    {
+      "kind": "merrow",
+      "x": 46.49,
+      "y": 25.36,
+      "tier": 11.645
+    },
+    {
+      "kind": "merrow",
+      "x": 49.4,
+      "y": 25.18,
+      "tier": 11.645
+    },
+    {
+      "kind": "merrow",
+      "x": 46.5,
+      "y": 26.61,
+      "tier": 11.645
+    },
+    {
+      "kind": "merrow",
+      "x": 46.15,
+      "y": 6.71,
+      "tier": 10.784
+    },
+    {
+      "kind": "merrow",
+      "x": 44.78,
+      "y": 10.08,
+      "tier": 10.784
+    },
+    {
+      "kind": "merrow",
+      "x": 44.56,
+      "y": 8.27,
+      "tier": 10.784
+    },
+    {
+      "kind": "merrow",
+      "x": 52.9,
+      "y": 32.31,
+      "tier": 11.085
+    },
+    {
+      "kind": "merrow",
+      "x": 52.31,
+      "y": 33.06,
+      "tier": 11.085
+    },
+    {
+      "kind": "merrow",
+      "x": 50.72,
+      "y": 32.06,
+      "tier": 11.085
+    },
+    {
+      "kind": "drowned_sailor",
+      "x": 18.84,
+      "y": 11.32,
+      "tier": 9.637
+    },
+    {
+      "kind": "drowned_sailor",
+      "x": 18.1,
+      "y": 9.86,
+      "tier": 9.637
+    },
+    {
+      "kind": "drowned_sailor",
+      "x": 19.02,
+      "y": 11.05,
+      "tier": 9.637
+    },
+    {
+      "kind": "drowned_sailor",
+      "x": 17.95,
+      "y": 10.01,
+      "tier": 9.637
+    },
+    {
+      "kind": "merrow",
+      "x": 5.72,
+      "y": 47.0,
+      "tier": 10.734
+    },
+    {
+      "kind": "merrow",
+      "x": 7.3,
+      "y": 46.21,
+      "tier": 10.734
+    },
+    {
+      "kind": "merrow",
+      "x": 4.85,
+      "y": 46.87,
+      "tier": 10.734
+    },
+    {
+      "kind": "merrow",
+      "x": 5.2,
+      "y": 47.59,
+      "tier": 10.734
+    },
+    {
+      "kind": "merrow",
+      "x": 3.63,
+      "y": 46.93,
+      "tier": 10.734
+    },
+    {
+      "kind": "drowned_sailor",
+      "x": 21.85,
+      "y": 31.98,
+      "tier": 11.323
+    },
+    {
+      "kind": "drowned_sailor",
+      "x": 21.87,
+      "y": 32.24,
+      "tier": 11.323
+    },
+    {
+      "kind": "drowned_sailor",
+      "x": 21.43,
+      "y": 31.5,
+      "tier": 11.323
+    },
+    {
+      "kind": "drowned_sailor",
+      "x": 21.71,
+      "y": 32.19,
+      "tier": 11.323
+    },
+    {
+      "kind": "drowned_sailor",
+      "x": 21.48,
+      "y": 29.46,
+      "tier": 11.323
+    },
+    {
+      "kind": "drowned_sailor",
+      "x": 47.31,
+      "y": 50.51,
+      "tier": 11.463
+    },
+    {
+      "kind": "drowned_sailor",
+      "x": 43.61,
+      "y": 50.71,
+      "tier": 11.463
+    },
+    {
+      "kind": "drowned_sailor",
+      "x": 46.39,
+      "y": 50.5,
+      "tier": 11.463
+    },
+    {
+      "kind": "drowned_sailor",
+      "x": 44.94,
+      "y": 52.2,
+      "tier": 11.463
+    },
+    {
+      "kind": "drowned_sailor",
+      "x": 47.1,
+      "y": 52.29,
+      "tier": 11.463
+    },
+    {
+      "kind": "merrow",
+      "x": 24.56,
+      "y": 10.39,
+      "tier": 11.457
+    },
+    {
+      "kind": "merrow",
+      "x": 28.46,
+      "y": 9.24,
+      "tier": 11.457
+    },
+    {
+      "kind": "merrow",
+      "x": 25.55,
+      "y": 7.26,
+      "tier": 11.457
+    },
+    {
+      "kind": "merrow",
+      "x": 27.78,
+      "y": 9.41,
+      "tier": 11.457
+    },
+    {
+      "kind": "merrow",
+      "x": 27.81,
+      "y": 9.69,
+      "tier": 11.457
+    }
+  ],
+  "npcs": [],
+  "items": [
+    {
+      "kind": "bread",
+      "x": 6.5,
+      "y": 34.5
+    },
+    {
+      "kind": "apple",
+      "x": 36.5,
+      "y": 34.5
+    },
+    {
+      "kind": "apple",
+      "x": 50.5,
+      "y": 6.5
+    },
+    {
+      "kind": "apple",
+      "x": 56.5,
+      "y": 54.5
+    },
+    {
+      "kind": "apple",
+      "x": 38.5,
+      "y": 22.5
+    },
+    {
+      "kind": "bread",
+      "x": 8.5,
+      "y": 32.5
+    }
+  ]
+}

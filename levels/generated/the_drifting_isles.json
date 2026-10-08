@@ -1,0 +1,594 @@
+{
+  "version": 1,
+  "id": "area:5:6",
+  "name": "THE DRIFTING ISLES",
+  "theme": "heavens",
+  "tier": 12.6,
+  "width": 64,
+  "height": 64,
+  "tiles": [
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                            o ...               ",
+    "                                           o.....               ",
+    "                                          o......o              ",
+    "                                           ......o..            ",
+    "                                          .......o.             ",
+    "                                          .......oo             ",
+    "                                          .........             ",
+    "                                           .....oo              ",
+    "    . ..                                    ...                 ",
+    "   .....                                   ...                  ",
+    "  .......                         .o...   ...                   ",
+    " ..........                    ...oo...  ....                   ",
+    " .........       ..          ....o.o.......                     ",
+    " ........................    ...o.o.......                      ",
+    " ........................... .............                      ",
+    " ..........             ...................                     ",
+    "  ........                .................                     ",
+    " o.......                  .................                    ",
+    "   o..o.                    ...........o.o..                    ",
+    "                           .................                    ",
+    "                           ..................                   ",
+    "                      .... ...................                  ",
+    "                      ....................o....                 ",
+    "                    ...........................                 ",
+    "                     .......  .................                 ",
+    "                     ........  ................                 ",
+    "                    ........   ...........o...                  ",
+    "                    . .....o   ...............                  ",
+    "                      .... o   ........o.....                   ",
+    "                      ...o    ....... .....                     ",
+    "                              ......o .....                     ",
+    "                              o..o...                           ",
+    "                                .o..                            ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                ",
+    "                                                                "
+  ],
+  "ground": [
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggggggggrrgggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggrrrgggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggrrggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggrrggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggggggrrrggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggggggrrgggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggrrrgggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggggggddddggggrrrggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggddddddggrrrrggggggggggggggggggg",
+    "grrggggggggggggggrrgggggggggggggdddddddgrrrggggggggggggggggggggg",
+    "grrrrggggdrrrrrrrrrrrrrrrgggggggdddddddrrrgggggggggggggggggggggg",
+    "gdrrrrrrrrrrrrrrrrrrrrrrrrrggggdddddddrrrrgggggggggggggggggggggg",
+    "gdddrrrrrrrgggggggggggggrrrrrrgddddddrrrdddggggggggggggggggggggg",
+    "ggddddddddggggggggggggggggrrrrrrrdddrrrddddggggggggggggggggggggg",
+    "gddddddddggggggggggggggggggggrrrrrrrrrddddddgggggggggggggggggggg",
+    "gggdddddgggggggggggggggggggggggdrrrrrdddddddgggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggrrrrrrdddddddgggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggrrrrrrrrrdddddddggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggrrrrgrrrrrrdddddddgggggggggggggggggg",
+    "gggggggggggggggggggggggggggrrrggrrrrdrrddddddddggggggggggggggggg",
+    "ggggggggggggggggggggggggggrrrrggrrrrdrrrrddddddggggggggggggggggg",
+    "gggggggggggggggggggggggggrrrggggrrrrddrrrddddddggggggggggggggggg",
+    "ggggggggggggggggggggggggrrrgggggrrrrdddddddddddggggggggggggggggg",
+    "ggggggggggggggggggggggggrrgggggdrrddddddddddddgggggggggggggggggg",
+    "ggggggggggggggggggggggggggddgggdrrddddddddddddgggggggggggggggggg",
+    "gggggggggggggggggggggggggdgdgggdrrdddddddddddggggggggggggggggggg",
+    "gggggggggggggggggggggggggdggggddrrdddgdddddggggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggdddddddgdddddggggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggdddddddggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggggddddgggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"
+  ],
+  "start": [
+    6.5,
+    32.5
+  ],
+  "safe": null,
+  "props": [
+    {
+      "kind": "cloud_tree",
+      "x": 44.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 43.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 42.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 49.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 49.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 49.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "marble_ruin",
+      "x": 49.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 50.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 48.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 49.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 35.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "marble_ruin",
+      "x": 34.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "marble_ruin",
+      "x": 35.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 33.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 35.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "sky_lamp",
+      "x": 32.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 34.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 1.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "marble_ruin",
+      "x": 3.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 6.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 39.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "angel_statue",
+      "x": 41.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "angel_statue",
+      "x": 42.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "angel_statue",
+      "x": 42.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 27.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 27.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "marble_ruin",
+      "x": 39.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 25.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "angel_statue",
+      "x": 36.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 30.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "sky_lamp",
+      "x": 33.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "marble_ruin",
+      "x": 33.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    }
+  ],
+  "portals": [
+    {
+      "kind": "exit3",
+      "x": 2.5,
+      "y": 32.5
+    }
+  ],
+  "monsters": [
+    {
+      "kind": "ash_harpy",
+      "x": 39.57,
+      "y": 43.0,
+      "tier": 12.456
+    },
+    {
+      "kind": "ash_harpy",
+      "x": 41.03,
+      "y": 44.01,
+      "tier": 12.456
+    },
+    {
+      "kind": "ash_harpy",
+      "x": 40.84,
+      "y": 44.8,
+      "tier": 12.456
+    },
+    {
+      "kind": "ash_harpy",
+      "x": 38.72,
+      "y": 43.05,
+      "tier": 12.456
+    },
+    {
+      "kind": "ash_harpy",
+      "x": 40.57,
+      "y": 44.87,
+      "tier": 12.456
+    },
+    {
+      "kind": "thunderbird",
+      "x": 48.1,
+      "y": 24.15,
+      "tier": 11.808
+    },
+    {
+      "kind": "thunderbird",
+      "x": 45.91,
+      "y": 21.65,
+      "tier": 11.808
+    },
+    {
+      "kind": "thunderbird",
+      "x": 47.96,
+      "y": 22.27,
+      "tier": 11.808
+    },
+    {
+      "kind": "storm_drake",
+      "x": 45.99,
+      "y": 26.81,
+      "tier": 12.898
+    },
+    {
+      "kind": "storm_drake",
+      "x": 45.62,
+      "y": 27.69,
+      "tier": 12.898
+    },
+    {
+      "kind": "storm_drake",
+      "x": 46.52,
+      "y": 25.43,
+      "tier": 12.898
+    },
+    {
+      "kind": "storm_drake",
+      "x": 45.31,
+      "y": 25.59,
+      "tier": 12.898
+    },
+    {
+      "kind": "storm_drake",
+      "x": 46.55,
+      "y": 26.2,
+      "tier": 12.898
+    },
+    {
+      "kind": "storm_drake",
+      "x": 37.98,
+      "y": 37.84,
+      "tier": 11.735
+    },
+    {
+      "kind": "storm_drake",
+      "x": 36.69,
+      "y": 36.58,
+      "tier": 11.735
+    },
+    {
+      "kind": "storm_drake",
+      "x": 38.31,
+      "y": 37.67,
+      "tier": 11.735
+    },
+    {
+      "kind": "storm_drake",
+      "x": 28.34,
+      "y": 40.48,
+      "tier": 12.535
+    },
+    {
+      "kind": "storm_drake",
+      "x": 28.94,
+      "y": 40.21,
+      "tier": 12.535
+    },
+    {
+      "kind": "storm_drake",
+      "x": 28.89,
+      "y": 38.11,
+      "tier": 12.535
+    },
+    {
+      "kind": "ash_harpy",
+      "x": 36.13,
+      "y": 33.43,
+      "tier": 12.684
+    },
+    {
+      "kind": "ash_harpy",
+      "x": 36.44,
+      "y": 30.61,
+      "tier": 12.684
+    },
+    {
+      "kind": "ash_harpy",
+      "x": 33.33,
+      "y": 33.11,
+      "tier": 12.684
+    },
+    {
+      "kind": "ash_harpy",
+      "x": 34.62,
+      "y": 31.63,
+      "tier": 12.684
+    },
+    {
+      "kind": "storm_drake",
+      "x": 41.76,
+      "y": 35.6,
+      "tier": 12.683
+    },
+    {
+      "kind": "storm_drake",
+      "x": 43.24,
+      "y": 38.16,
+      "tier": 12.683
+    },
+    {
+      "kind": "storm_drake",
+      "x": 41.95,
+      "y": 39.38,
+      "tier": 12.683
+    },
+    {
+      "kind": "ash_harpy",
+      "x": 33.33,
+      "y": 46.92,
+      "tier": 12.014
+    },
+    {
+      "kind": "ash_harpy",
+      "x": 33.08,
+      "y": 46.91,
+      "tier": 12.014
+    },
+    {
+      "kind": "ash_harpy",
+      "x": 35.99,
+      "y": 46.63,
+      "tier": 12.014
+    },
+    {
+      "kind": "ash_harpy",
+      "x": 33.34,
+      "y": 47.34,
+      "tier": 12.014
+    }
+  ],
+  "npcs": [],
+  "items": [
+    {
+      "kind": "apple",
+      "x": 47.5,
+      "y": 20.5
+    },
+    {
+      "kind": "apple",
+      "x": 32.5,
+      "y": 45.5
+    },
+    {
+      "kind": "apple",
+      "x": 30.5,
+      "y": 31.5
+    },
+    {
+      "kind": "apple",
+      "x": 7.5,
+      "y": 29.5
+    },
+    {
+      "kind": "apple",
+      "x": 41.5,
+      "y": 39.5
+    },
+    {
+      "kind": "apple",
+      "x": 14.5,
+      "y": 33.5
+    }
+  ]
+}

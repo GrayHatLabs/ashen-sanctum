@@ -1200,6 +1200,17 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             idle(&mut g, 20);
             save(&mut g, scr, &format!("area_{}", a.n));
         }
+        // Acts 2-6: two areas each.
+        for act in 1..6u8 {
+            for n in [1u8, 3] {
+                g.debug_goto(LevelId::Area(act, n));
+                g.banner_t = 0.0;
+                g.event_cd = 9999.0;
+                g.message = None;
+                idle(&mut g, 20);
+                save(&mut g, scr, &format!("area_{act}_{n}"));
+            }
+        }
         g.debug_goto(LevelId::Area(0, 2));
         g.banner_t = 0.0;
         for e in g.explored.iter_mut() {

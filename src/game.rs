@@ -3799,6 +3799,15 @@ mod tests {
     }
 
     fn walk_onto(g: &mut Game, kind: PortalKind) {
+        // Doors and the ways on live out in the areas now: go to the one that has it.
+        if !g.portals.iter().any(|p| p.kind == kind) {
+            let there = match kind {
+                PortalKind::Entrance(k) => crate::areas::dungeon_home(k),
+                PortalKind::Pass(to) => crate::areas::pass_home(g.level.act(), to),
+                _ => g.level,
+            };
+            g.debug_goto(there);
+        }
         let s = g.portals.iter().find(|p| p.kind == kind).map(|p| (p.x, p.y)).expect("portal");
         (g.p.x, g.p.y) = s;
         g.portal_cd = 0.0;
@@ -3824,7 +3833,7 @@ mod tests {
         assert_eq!(g.quest.stage2, 1);
         // The glacier is sealed.
         walk_onto(&mut g, PortalKind::Entrance(GLACIER));
-        assert_eq!(g.level, LevelId::Frostmarch, "black ice holds");
+        assert!(g.level.act() == LevelId::Frostmarch.act() && !matches!(g.level, LevelId::Dungeon(..)), "black ice holds");
         // The three heralds and their runes.
         let power = g.p.power;
         for (i, k) in (4..7).enumerate() {
@@ -3836,7 +3845,7 @@ mod tests {
         assert!(g.p.power > power * 1.3, "runes make you stronger");
         // Town portal back to Kaldholm (not Hollowmere).
         walk_onto(&mut g, PortalKind::TownPortal);
-        assert_eq!(g.level, LevelId::Frostmarch);
+        assert!(g.level.act() == LevelId::Frostmarch.act() && !matches!(g.level, LevelId::Dungeon(..)));
         assert!(g.in_safe(g.p.x, g.p.y));
         assert!(g.debug_talk(Role::Captain));
         read_through(&mut g);
@@ -3845,7 +3854,7 @@ mod tests {
         assert_eq!(g.level, LevelId::Dungeon(GLACIER, 0));
         // Up the stairs comes out on the Frostmarch, by the glacier gate.
         walk_onto(&mut g, PortalKind::Up);
-        assert_eq!(g.level, LevelId::Frostmarch);
+        assert!(g.level.act() == LevelId::Frostmarch.act() && !matches!(g.level, LevelId::Dungeon(..)));
         g.debug_goto(LevelId::Dungeon(GLACIER, DUNGEONS[GLACIER].floors - 1));
         assert!(g.mobs.iter().any(|m| m.kind == crate::mobs::Kind::WhiteDragon));
         assert!(g.debug_kill_boss());
@@ -3864,10 +3873,10 @@ mod tests {
         g.debug_goto(LevelId::Frostmarch);
         // The mists stay closed until the Rime Wyrm falls.
         walk_onto(&mut g, PortalKind::Pass(2));
-        assert_eq!(g.level, LevelId::Frostmarch, "the mist pass is closed");
+        assert!(g.level.act() == LevelId::Frostmarch.act() && !matches!(g.level, LevelId::Dungeon(..)), "the mist pass is closed");
         g.quest.stage2 = 3;
         walk_onto(&mut g, PortalKind::Pass(2));
-        assert_eq!(g.level, LevelId::Mistwood);
+        assert!(g.level.act() == LevelId::Mistwood.act() && !matches!(g.level, LevelId::Dungeon(..)));
         assert_eq!(g.level.act(), 2);
         assert!(g.in_safe(g.p.x, g.p.y) || g.npcs.iter().any(|n| n.role == Role::Hunter));
         // The hunter sends you after the three heralds.
@@ -3877,7 +3886,7 @@ mod tests {
         assert_eq!(g.quest.stage3, 1);
         // The castle stays shut without the sigils.
         walk_onto(&mut g, PortalKind::Entrance(CASTLE));
-        assert_eq!(g.level, LevelId::Mistwood, "the castle gate is sealed");
+        assert!(g.level.act() == LevelId::Mistwood.act() && !matches!(g.level, LevelId::Dungeon(..)), "the castle gate is sealed");
         for (k, kind) in [(8, crate::mobs::Kind::Ossric), (9, crate::mobs::Kind::Grimhilde), (10, crate::mobs::Kind::Malgrave)] {
             g.debug_goto(LevelId::Dungeon(k, DUNGEONS[k].floors - 1));
             assert!(g.mobs.iter().any(|m| m.kind == kind), "{kind:?} waits below");
@@ -3911,17 +3920,17 @@ mod tests {
     fn act_four_opens_after_vardak_and_can_be_finished() {
         let mut g = Game::new(5, crate::gfx::SH_WIDE);
         g.act_start(2);
-        assert_eq!(g.level, LevelId::Mistwood);
+        assert!(g.level.act() == LevelId::Mistwood.act() && !matches!(g.level, LevelId::Dungeon(..)));
         // The gear gate is still while the Count lives.
         walk_onto(&mut g, PortalKind::Pass(3));
-        assert_eq!(g.level, LevelId::Mistwood, "the gears are still");
+        assert!(g.level.act() == LevelId::Mistwood.act() && !matches!(g.level, LevelId::Dungeon(..)), "the gears are still");
         g.quest.stage3 = 3;
         walk_onto(&mut g, PortalKind::Pass(3));
-        assert_eq!(g.level, LevelId::Mechanus);
+        assert!(g.level.act() == LevelId::Mechanus.act() && !matches!(g.level, LevelId::Dungeon(..)));
         assert_eq!(g.level.act(), 3);
         // And back again, arriving by the gear gate.
         walk_onto(&mut g, PortalKind::Pass(2));
-        assert_eq!(g.level, LevelId::Mistwood);
+        assert!(g.level.act() == LevelId::Mistwood.act() && !matches!(g.level, LevelId::Dungeon(..)));
         let gate = g.portals.iter().find(|p| p.kind == PortalKind::Pass(3)).map(|p| (p.x, p.y)).unwrap();
         assert!((g.p.x - gate.0).abs() + (g.p.y - gate.1).abs() < 3.0, "arrived at the gear gate");
         g.debug_goto(LevelId::Mechanus);
@@ -3930,7 +3939,7 @@ mod tests {
         read_through(&mut g);
         assert_eq!(g.quest.stage4, 1);
         walk_onto(&mut g, PortalKind::Entrance(HEART));
-        assert_eq!(g.level, LevelId::Mechanus, "the heart is locked");
+        assert!(g.level.act() == LevelId::Mechanus.act() && !matches!(g.level, LevelId::Dungeon(..)), "the heart is locked");
         for (i, (k, kind)) in [(12, crate::mobs::Kind::Forgemother), (13, crate::mobs::Kind::Cantor), (14, crate::mobs::Kind::Archivist)].into_iter().enumerate() {
             g.debug_goto(LevelId::Dungeon(k, DUNGEONS[k].floors - 1));
             assert!(g.mobs.iter().any(|m| m.kind == kind), "{kind:?} waits below");
@@ -4079,15 +4088,15 @@ mod tests {
     fn act_five_opens_after_the_clockmaker_and_can_be_finished() {
         let mut g = Game::new(5, crate::gfx::SH_WIDE);
         g.act_start(3);
-        assert_eq!(g.level, LevelId::Mechanus);
+        assert!(g.level.act() == LevelId::Mechanus.act() && !matches!(g.level, LevelId::Dungeon(..)));
         // The bell is locked until the Clockmaker stops.
         walk_onto(&mut g, PortalKind::Pass(4));
-        assert_eq!(g.level, LevelId::Mechanus, "the bell's chains are locked");
+        assert!(g.level.act() == LevelId::Mechanus.act() && !matches!(g.level, LevelId::Dungeon(..)), "the bell's chains are locked");
         g.quest.stage4 = 3;
         g.quest.keys = [true; 3];
         g.portal_cd = 0.0;
         walk_onto(&mut g, PortalKind::Pass(4));
-        assert_eq!(g.level, LevelId::Deep);
+        assert!(g.level.act() == LevelId::Deep.act() && !matches!(g.level, LevelId::Dungeon(..)));
         assert!(g.quest.ysolde_has_news());
         assert!(g.debug_talk(Role::Ysolde));
         read_through(&mut g);
@@ -4095,7 +4104,7 @@ mod tests {
         // The sanctum is sealed until the pearls are set.
         g.portal_cd = 0.0;
         walk_onto(&mut g, PortalKind::Entrance(ABYSS));
-        assert_eq!(g.level, LevelId::Deep, "the sanctum is sealed");
+        assert!(g.level.act() == LevelId::Deep.act() && !matches!(g.level, LevelId::Dungeon(..)), "the sanctum is sealed");
         for (i, k) in (16..19).enumerate() {
             g.debug_goto(LevelId::Dungeon(k, DUNGEONS[k].floors - 1));
             assert!(g.debug_kill_boss());
@@ -4129,21 +4138,21 @@ mod tests {
     fn act_six_opens_after_the_leviathan_and_can_be_finished() {
         let mut g = Game::new(5, crate::gfx::SH_WIDE);
         g.act_start(4);
-        assert_eq!(g.level, LevelId::Deep);
+        assert!(g.level.act() == LevelId::Deep.act() && !matches!(g.level, LevelId::Dungeon(..)));
         walk_onto(&mut g, PortalKind::Pass(5));
-        assert_eq!(g.level, LevelId::Deep, "the stair won't hold you yet");
+        assert!(g.level.act() == LevelId::Deep.act() && !matches!(g.level, LevelId::Dungeon(..)), "the stair won't hold you yet");
         g.quest.stage5 = 3;
         g.quest.pearls = [true; 3];
         g.portal_cd = 0.0;
         walk_onto(&mut g, PortalKind::Pass(5));
-        assert_eq!(g.level, LevelId::Heavens);
+        assert!(g.level.act() == LevelId::Heavens.act() && !matches!(g.level, LevelId::Dungeon(..)));
         assert!(g.quest.seraphine_has_news());
         assert!(g.debug_talk(Role::Seraphine));
         read_through(&mut g);
         assert_eq!(g.quest.stage6, 1);
         g.portal_cd = 0.0;
         walk_onto(&mut g, PortalKind::Entrance(ZENITH));
-        assert_eq!(g.level, LevelId::Heavens, "the true sanctum is sealed");
+        assert!(g.level.act() == LevelId::Heavens.act() && !matches!(g.level, LevelId::Dungeon(..)), "the true sanctum is sealed");
         for (i, k) in (20..23).enumerate() {
             g.debug_goto(LevelId::Dungeon(k, DUNGEONS[k].floors - 1));
             assert!(g.debug_kill_boss());

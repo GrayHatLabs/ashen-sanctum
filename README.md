@@ -133,8 +133,8 @@ take back their Seals, unseal the Sanctum and end the Ash King.
   Well), **the Barrow Fields** (the Bone Crypt), **the Rotwood** (the Rotting Warrens), **the Cinder
   Hills** (the Hexed Catacombs), **the Cinder Waste** and **the Ashen Steppe** (the Ashen Sanctum and the
   pass north to Act 2). Two side branches: **Shepherd's Vale** off the Ashlands and **Skrat's Gulch** off
-  the Barrow Fields. Forests, roads, roaming wolves, goblins and undead, wild food. (Acts 2-6 are still
-  one overland each; they get their areas next.)
+  the Barrow Fields. Forests, roads, roaming wolves, goblins and undead, wild food. Acts 2-6 are built
+  the same way: each town map, then five areas on the road and a side branch (`docs/AREAS_PLAN.md`).
 - **Four dungeons**, each with its own look, floors joined by stairs, and a boss at the bottom:
   1. **The Bone Crypt** (the Barrow Fields, 2 floors): the **Bone Warden** raises skeletons.
   2. **The Rotting Warrens** (the Rotwood, 2 floors): the **Plague Warden** spits poison pools.

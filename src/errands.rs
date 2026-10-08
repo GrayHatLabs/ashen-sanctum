@@ -604,7 +604,7 @@ mod tests {
         k.sort_by_key(|k| *k as u8);
         k.dedup();
         assert_eq!(k.len(), 8);
-        assert_eq!(roll_act(1, 7, 0).len(), 2, "two on an act that's one overland");
+        assert_eq!(roll_act(5, 7, 0).len(), crate::areas::AREAS.iter().filter(|a| a.act == 5).count());
     }
 
     #[test]

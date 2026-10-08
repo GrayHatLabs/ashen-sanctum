@@ -71,7 +71,7 @@ impl Game {
                 let f = self.art.floor(theme, ground, v);
                 scr.blit(f, sx, sy, Fx::default());
                 // The tide over the flats: dark water rising, rippling with the swell.
-                if ground == 1 && self.tide > 0.0 && self.level == LevelId::Deep {
+                if ground == 1 && self.tide > 0.0 && crate::tides::tidal(self.level) {
                     let ripple = ((self.tick as f32 * 0.08 + tx as f32 * 0.7 + ty as f32 * 0.4).sin() * 0.5 + 0.5) * 0.12;
                     let a = (self.tide * 0.72 + ripple * self.tide).min(0.85);
                     for row in -8i32..=8 {

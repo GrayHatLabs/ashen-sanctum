@@ -50,6 +50,37 @@ Plains and Stony Field:
 
 About 5x today's outdoor space in Act 1.
 
+## Acts 2-6 (built 2026-10-08)
+
+Each act's old overland is now its **town map**:
+- **Kept:** the town, its lake or mist or clocks or tides or sky islands, the way in from the previous act,
+  and the monsters around it.
+- **Moved out:** the four dungeon doors and the way on to the next act. The road out to area 1 takes the
+  place of the old way on (`areas::strip_town`).
+
+Each act then has 5 areas on the main road and 1 side branch:
+
+| Act | Areas (main road) | Branch |
+|---|---|---|
+| 2 Frostmarch | Frozen Shore (Mines), Howling Tundra (Caves), Rime Woods (Temple), White Waste, Glacier's Edge (Glacier's Heart, the mist road east) | Raiders' Fjord |
+| 3 Mistwood | Blighted Fields (Chapel), Gallows Moor (Gallows), Hollow Wood, Barrow Hills (Barrow), Castle Approach (Castle Vardak, the gear gate) | Witch's Bog |
+| 4 Mechanus | Gearfields (Foundry), Piston Flats (Choir Engine), Cogworks, Archive Stacks (Archive), Clockface Plain (Heart of the Clock, the diving bell) | Scrapyard |
+| 5 the Deep | Kelp Shallows (Wreck), Coral Gardens (Cathedral), Bone Reef, Trench Rim (Trench), Abyssal Plain (Drowned Sanctum, the stair of light) | Sunken Galleon |
+| 6 the Heavens | Broken Steps (Broken Choir), Stormfields (Storm Spire), Fallen Gardens, Halo Isles (Wheel of Eyes), the Zenith (True Sanctum) | Drifting Isles |
+
+**Each act's look:**
+
+| Act | Trees | Rocks and bushes |
+|---|---|---|
+| 2 | snow pines | snow rocks, ice crystals |
+| 3 | mist pines, twisted trees | gravestones, glow-shrooms |
+| 4 | gear towers, gas lamps | cog piles, steam vents |
+| 5 | kelp | coral |
+| 6 | cloud trees, marble ruins | angel statues, sky lamps |
+
+- **The Heavens' areas** are islands in open sky, joined by chain bridges.
+- **The tide** floods the flats on every Act 5 outdoor map, and **the wind** blows on every Act 6 one.
+
 ## How it works in code (`src/areas.rs`)
 
 - **Ids:**

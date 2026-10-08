@@ -1,0 +1,9945 @@
+{
+  "version": 1,
+  "id": "area:3:6",
+  "name": "THE SCRAPYARD",
+  "theme": "mechanus",
+  "tier": 8.0,
+  "width": 64,
+  "height": 64,
+  "tiles": [
+    "oooooooo.oooooooo..o.ooooooooo.oooooooooo.o.ooooooooo.oooooo.o.o",
+    "oo.oooooooooo.oooo.oo..ooooooooo.oooooo.oooooooooooooooooooooooo",
+    "o.ooooooooooo.oooo.o.ooo..ooooooo.ooooo..ooooooooo..oooooooooooo",
+    "oooooo......o...............o.ooooo..o.o..o....oo.ooo..oooo..ooo",
+    "ooo.o.oooo.........o....o.o....o..o.....oo.oo....oo.o.oo..o...oo",
+    "oooo.o.o.oo...o...o........................ooo.o..ooo.o..o...ooo",
+    ".oooooo.o.o.o.o...o.....o.....o.........o.....oo...oo.o.oo..oooo",
+    "ooo.oo.oo.oo.o...........o.........o........ooo...oo.o.o....oooo",
+    "ooo......................o....o...............ooo..oo..oo..ooooo",
+    "o.oo....ooo...o......................o..o.....o....oo.oo.o...ooo",
+    "ooo.....o.o........o...............o....o....oo.oo.oooo.o.o..ooo",
+    "ooo............................o......o...o......o...o.o.o..oooo",
+    "ooo......o..........o......o.o......................o.o..o...ooo",
+    "oooo.............................o....o.o....o.....oo.oooo.o.o.o",
+    "ooo..........................o..................ooooo..o.o...ooo",
+    "ooo....o........o........oo.oo......o...o..........oo..oo....ooo",
+    "ooo.oo.............................o..o...........o..........o.o",
+    "ooo...o.................o..oo...o..o..o.............oooo.....ooo",
+    ".oo..................................................o.o..oo.ooo",
+    "oo........o.o.......o...................o....................oo.",
+    "ooo...o..........o.......o......o.o.o.....o....o...........ooooo",
+    "ooo............................o....o...................o......o",
+    "ooo....o..o.o.......o.............o.o............o...........ooo",
+    "ooo...........o.................o...o.oooo..oo.o....o..o..o.....",
+    "oooo.o.........o.oo..o......o.......o....oo...oooo........o..ooo",
+    "ooo.....o..........o.............o....oo.o..oo..oo..o.........oo",
+    "ooo...........oooooo.......o............oo.o.o.oo..o........oooo",
+    "ooo......................o......oo...oo...o...o.o............ooo",
+    "oo...................................o.o.oooo.o.o............ooo",
+    "....................................ooo.oo..oo..o.o......o...ooo",
+    "..............................o..o...oooo.oo.o.o....o.....o...o.",
+    "................................o..o.oo.oo...................o.o",
+    "..............o................oo.oo..oo.o.......o...oo......ooo",
+    "..............................o..o.oooo.........o..........ooooo",
+    "....................oo.........ooo...o...o.o...o......o...o..ooo",
+    "...........o....o.oo..ooooo.ooooo.oo.....oo.o................ooo",
+    "oo....................o.oo....o.o..o.....................o...oo.",
+    "ooo......o.o.......o....oo.o.o.o....ooo.o..........ooo.oo..o.ooo",
+    "ooo...o.........o..oo............o.oo....oo...o.......o......ooo",
+    "ooo..............o....o......o..o.........o..........o.o..o..ooo",
+    "ooo.....o...o...oooo.o.............o........o.......o..o......oo",
+    "ooo.o..........o.oo.............o..ooo.........o.....o..o.....o.",
+    "oo..o...o.....o..oo.ooo..................o...o.....ooooo.o...ooo",
+    "o.o.o.........ooo.o...o...o..........o............oo.oo......ooo",
+    "oo..o..........oooooo.......................o.....ooooooo.o...oo",
+    "ooooo.........ooo.ooo.o..................o......oooo...oo....oo.",
+    "ooo............oo...............o......oo....o..o...oo.o..o..ooo",
+    ".oo.o......o..ooooooo.....o.........o..o....o.....ooo...o....ooo",
+    "oooo.........ooooo.oo..............o..o.o...........o.ooo....ooo",
+    "oooooo.o...oo..o.....o........o..o.oo.o.........o.....oo..o..ooo",
+    "ooo.........o.o.ooooo..............o....oo...................o.o",
+    ".oo....oo.ooo.oo.....o..........o..o..ooo................o...ooo",
+    "ooo..oo.oo.o.o.o.......o.......o.o.o.oooo....................ooo",
+    "oo...oooo.oo.o...............ooooo..o.ooo.......o............ooo",
+    "ooo.....oo.ooo................oooo..o................o.......ooo",
+    "ooo..oo..ooo..o...oo...........oo.o..o...........o...........ooo",
+    ".ooo.o.....o.oo.o.........o....oo.o...o..........o.o.o.....o.ooo",
+    "oooo.oooooo...o...........o.....oo.o.oooo...........o....o...ooo",
+    "oooo.oo.o....o....o.o...oo......oooo..oo.o.oo...........oo.o.ooo",
+    "oooo....o.o.oo...........o......o.o.oo.ooo....o....oo....o.ooooo",
+    "oooo.o.oo..o.....o..o........o..o..o.o.oo..o.........oo..oooooo.",
+    "ooooooooooooooooo.oooooooooooooooooo.oooooooooo..ooooooooooooooo",
+    "oooooooooooooooo.ooooooooooooo.ooooooooooooooooooooooo.oooooo..o",
+    "ooo.ooooooooooooooooo.oooooo.oooooooooo.oooooooooooo.ooooooooooo"
+  ],
+  "ground": [
+    "ddddddgggggggggggggggggggddddddggggggggggggggggggggggggggggggggg",
+    "ddddddgggggggggggggggggggddddddggggggggggggggggggggggggggggggggg",
+    "dddddgggggggggggggggggggggdddddggggggggggggggggggggggggggggggggg",
+    "dddddgggggggggggggggggggggddddgggggggggggggggggggggggggggggggggg",
+    "ddddgggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "dddgggggggggddddgggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggddddddgggggggggggggggggggggggggggggggggggddddddgggggg",
+    "gggggggggggddddddggggggggggggggggggggggggggggggggdddddddddgggggg",
+    "gggggggggggddddddggggggggggggggggggggggggggggggggggdddddddgggggg",
+    "gggggggggddddddddgggggggggggggggggggggggggggggggggggggddddgggggg",
+    "ggdddddddddddddddggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ggddddddddddddddddgggggggggggggggggggggggggggggggggggggggggggggg",
+    "ggdddddddddddddddddgggggggggggggggggggggggggggggggggggggggggdddd",
+    "gdddddddddddddddddddggggggggggggggggggggggggggggggggggggggggdddd",
+    "gdddddddddddddddddddddgggggggggggggggggggggggggggggggggggggddddd",
+    "ggdddddddddddddddddddddggggggggggggggggggggggggggggggggggggddddd",
+    "ggddddddddddddddddddddddgggggggggggggggggggggggggggggggggggddddd",
+    "gggdddddddddddddddddddddddggggggggggggddddddggggggggggggggdddddd",
+    "gggggdddddddgggggdddddddddddddddddddddddddddddggggggggdddddddddd",
+    "gggggggggggggggggddddddddddddddddddddddddddddddddddddddddddddddd",
+    "gggggggggggggggggddddddddddddddddddddddddddddddddddddddddddddddd",
+    "ggggggggggggggggggdddddddddddddddddddddddddddddddddddddddddddddd",
+    "ggggggggggggggggggdddddddddddddddddddddddddddddddddddddddddddddd",
+    "ggggggggggggggggggdddddddddddddddddddddddddddddddddddddddddddddd",
+    "gggggggggggggggggggddddddddddddddddddddddddddddddddddddddddddddd",
+    "ggggggggggggggggggggggggdddddddddddddddddddddddddddddddddddddddd",
+    "ggggggggggggggggggggggggggdddddddddddddddddddddddddddddddddddddd",
+    "ggggggggggggggggggggggggggdddddddddddddddddddddddddddddddddddddg",
+    "ggggggggggggggggggggggggggddddddddddddddddddddddddddddddddddddgg",
+    "ggggggggrrrrrrrrrrrggggggggddddddddgddddddddddddddddddddddddddgg",
+    "gggggrrrrrrrrrrrrrrrrrrrrrgggggggggggggggggdddddddddddddddddddgg",
+    "rrrgrrrrrgggggggggrrrrrrrrggggggggggggggggggggddddddddddddddddgg",
+    "rrrrrrgggggddddddgggggggggggggggggggggggggggggggggggdddddddddggg",
+    "ggrrrggggdddddddddgggggggggggggggggggggggggggggggggggddddddddggg",
+    "ggggggggdddddddddddggggggggggggggggggggggggggggggggggddddddddggg",
+    "ggggggggdddddddddddggggggggggggggggggggggggggggggggggddddddddggg",
+    "gggggggddddddddddddggggggggggggggggggggggggggggggggggddddddddggg",
+    "ggggggdddddddddddddddddgggggggggggggggggggggggggggggggdddddddggg",
+    "gggggdddddddddddddddddddgggggggggggggggggggggggggggggggddddddddd",
+    "ggggdddddddddddddddddddddgggggggggggggggggggggggggggggggggggdddd",
+    "gggddddddddddddddddddddddgggggggggggggggggggggggggggggggggggdddd",
+    "gggddddddddddggddddddddddgggggggggggggggggggggggdddgggggggggdddd",
+    "ggdddddddddddgggdddddddddggggggggggggggggggggggddddgggggggggdddd",
+    "ggdddddddddddggddddddddddggggggggggggggggggggggdddddggggggggdddd",
+    "gggddddddddddddddddddddddggggggggggggggggggggggdddddggggggggdddd",
+    "gggddddddddddddddddddddddgggggggggggggggggggggddddddddggggggdddd",
+    "gggggddddddddddddddddddddggggggggddddddgggggggdddddddddddddddddg",
+    "gggggggggddddddddddddddddgggggggddddddddgggggdddddddddddddddgggg",
+    "ggggggggggdddddddddddddddgggggggddddddddgggggdddddddddddddddgggg",
+    "ggggggggggdddddddddddddddgggggggddddddddgggggdddddddddddddddgggg",
+    "ggggggggggdddddddddddddddgggggggddddddddgggggdddddddddddddddgggg",
+    "ggggggggggdddddddddddddddgggggggddddddddgggggddddddddddddddddggg",
+    "dddddggggddddddddddddddgggggggggddddddddggggggddddddddddddddddgg",
+    "ddddddddddddggggggggggggggggggggddddddddggggggggggggdddddddddddd",
+    "dddddddddddgggggggggggggggggggggddddddddgggggggggggggddddddddddd",
+    "dddddddddddgggggggggggggggggggggddddddddgggggggggggggddddddddddd",
+    "dddddddddddgggggggggggggggggggggddddddddggggggggggggggdddddddddd",
+    "dddddddddddgggggggggggggggggggggddddddddggggggggggggggdddddddddd",
+    "dddddddddddgggggggggggggggggggggdddddddgggggggggggggggdddddddddd",
+    "dddddddddddggggggggggggggggggdddddddddgggggggggggggggggddddddddd",
+    "ddddddddddddgggggggddddddddddddddddddggggggggggggggggggggggggddd",
+    "ddddddddddddggggggddddddddddddddddgggggggggggggggggggggggggggggd",
+    "ddddddddddddgggggdddddddddddddddddggggggggggggggdddggggggggggggg",
+    "ddddddddddddgggggdddddddddddddddddggggggggggggggdddggggggggggggg"
+  ],
+  "start": [
+    6.5,
+    32.5
+  ],
+  "safe": null,
+  "props": [
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 1.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 3.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 4.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 5.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 6.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 7.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 9.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 10.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 11.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 12.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 13.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 14.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 15.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 16.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 19.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 21.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 22.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 23.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 24.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 25.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 26.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 27.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 28.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 29.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 31.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 32.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 33.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 34.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 35.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 36.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 37.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 38.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 39.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 40.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 42.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 44.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 45.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 46.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 47.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 48.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 49.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 50.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 51.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 52.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 54.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 55.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 56.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 57.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 58.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 59.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 0.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 1.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 3.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 4.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 5.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 6.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 7.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 8.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 9.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 10.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 11.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 12.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 14.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 15.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 16.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 17.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 19.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 20.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 23.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 24.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 25.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 26.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 27.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 28.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 29.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 30.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 31.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 33.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 34.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 35.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 36.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 37.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 38.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 40.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 41.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 42.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 43.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 44.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 45.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 46.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 47.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 48.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 49.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 50.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 51.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 52.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 53.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 54.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 55.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 56.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 57.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 58.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 59.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 60.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 61.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 63.0,
+      "y": 1.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 3.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 4.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 5.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 6.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 7.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 8.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 9.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 10.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 11.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 12.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 14.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 15.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 16.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 17.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 19.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 21.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 22.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 23.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 26.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 27.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 28.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 29.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 30.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 31.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 32.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 34.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 35.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 36.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 37.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 38.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 41.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 42.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 43.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 44.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 45.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 46.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 47.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 48.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 49.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 52.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 53.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 54.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 55.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 56.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 57.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 58.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 59.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 60.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 2.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 2.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 3.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 4.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 5.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 12.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 28.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 30.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 31.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 32.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 33.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 34.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 37.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 39.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 42.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 47.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 48.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 50.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 51.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 52.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 55.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 56.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 57.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 58.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 62.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 3.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 1.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 4.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 6.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 7.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 8.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 9.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 19.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 24.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 26.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 31.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 34.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 40.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 41.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 43.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 44.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 49.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 50.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 52.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 54.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 55.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 58.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 62.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 4.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 3.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 5.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 7.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 9.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 10.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 14.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 18.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 43.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 44.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 45.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 47.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 50.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 51.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 52.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 54.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 57.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 63.0,
+      "y": 5.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 3.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 4.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 5.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 6.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 8.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 10.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 12.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 14.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 18.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 24.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 30.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 40.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 46.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 47.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 51.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 52.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 54.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 56.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 57.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 60.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 63.0,
+      "y": 6.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 4.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 5.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 7.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 8.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 10.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 11.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 13.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 25.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 35.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 44.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 45.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 46.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 50.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 51.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 53.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 55.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 60.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 61.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 63.0,
+      "y": 7.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 0.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 1.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 25.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 30.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 46.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 47.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 48.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 51.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 52.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 55.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 56.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 59.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 60.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 8.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 0.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 3.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 8.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 9.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 10.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 14.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 37.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 40.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 46.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 51.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 52.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 54.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 55.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 57.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 61.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 62.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 9.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 0.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 1.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 2.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 8.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 10.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 19.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 35.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 40.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 45.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 46.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 48.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 49.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 51.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 52.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 53.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 54.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 56.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 58.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 63.0,
+      "y": 10.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 0.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 31.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 38.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 42.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 49.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 53.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 55.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 57.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 60.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 11.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 9.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 20.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 27.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 29.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 52.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 54.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 57.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 61.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 12.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 3.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 33.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 38.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 40.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 45.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 51.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 52.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 54.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 55.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 56.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 57.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 59.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 61.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 63.0,
+      "y": 13.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 2.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 29.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 48.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 49.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 50.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 51.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 52.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 55.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 57.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 61.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 63.0,
+      "y": 14.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 7.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 16.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 25.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 26.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 28.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 29.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 36.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 40.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 51.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 52.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 55.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 56.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 62.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 15.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 4.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 5.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 35.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 38.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 50.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 16.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 2.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 6.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 24.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 27.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 28.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 32.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 35.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 38.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 52.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 53.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 54.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 55.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 17.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 2.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 53.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 55.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 58.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 59.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 62.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 18.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 10.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 12.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 20.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 40.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 61.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 62.0,
+      "y": 19.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 0.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 6.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 17.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 25.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 32.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 34.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 36.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 42.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 47.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 59.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 60.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 61.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 62.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 20.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 1.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 2.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 31.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 36.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 56.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 21.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 0.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 7.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 10.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 12.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 20.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 34.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 36.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 49.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 62.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 63.0,
+      "y": 22.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 0.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 1.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 14.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 32.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 36.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 38.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 39.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 40.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 41.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 44.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 45.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 47.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 52.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 55.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 58.0,
+      "y": 23.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 3.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 5.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 15.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 17.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 18.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 21.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 28.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 36.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 41.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 42.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 46.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 47.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 48.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 49.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 58.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 61.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 63.0,
+      "y": 24.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 2.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 8.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 19.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 33.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 38.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 39.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 41.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 44.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 45.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 48.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 49.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 52.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 63.0,
+      "y": 25.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 2.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 14.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 15.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 16.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 17.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 18.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 19.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 27.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 40.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 41.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 43.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 45.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 47.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 48.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 51.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 60.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 61.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 62.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 26.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 25.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 32.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 33.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 37.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 38.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 42.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 46.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 48.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 27.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 37.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 39.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 41.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 42.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 43.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 44.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 46.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 48.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 62.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 63.0,
+      "y": 28.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 36.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 37.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 38.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 40.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 41.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 44.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 45.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 48.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 50.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 57.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 61.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 63.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 30.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 33.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 37.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 38.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 39.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 40.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 42.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 43.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 45.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 47.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 52.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 58.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 30.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 32.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 35.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 37.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 38.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 40.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 41.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 31.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 14.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 31.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 32.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 34.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 35.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 38.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 39.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 41.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 49.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 53.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 54.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 62.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 63.0,
+      "y": 32.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 30.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 33.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 35.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 36.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 37.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 38.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 48.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 59.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 60.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 20.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 21.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 31.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 32.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 33.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 37.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 41.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 43.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 47.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 54.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 58.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 62.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 34.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 11.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 16.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 18.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 19.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 22.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 23.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 24.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 25.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 26.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 28.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 29.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 30.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 31.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 32.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 34.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 35.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 41.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 42.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 44.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 62.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 35.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 0.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 1.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 22.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 24.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 25.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 30.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 32.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 35.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 57.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 36.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 9.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 11.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 19.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 24.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 25.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 27.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 29.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 31.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 36.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 37.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 38.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 40.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 51.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 52.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 53.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 55.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 56.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 59.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 62.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 2.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 6.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 16.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 19.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 20.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 33.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 35.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 36.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 41.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 42.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 46.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 54.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 62.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 63.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 17.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 22.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 29.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 32.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 42.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 53.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 55.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 58.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 2.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 8.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 12.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 16.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 17.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 18.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 19.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 21.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 35.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 44.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 52.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 55.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 63.0,
+      "y": 40.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 0.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 1.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 2.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 4.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 15.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 17.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 18.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 32.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 35.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 36.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 37.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 47.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 53.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 56.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 62.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 4.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 8.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 14.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 17.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 18.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 20.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 21.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 22.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 41.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 45.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 51.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 52.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 53.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 54.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 55.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 57.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 62.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 0.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 2.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 4.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 14.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 15.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 16.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 18.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 22.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 26.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 37.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 50.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 51.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 53.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 54.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 61.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 63.0,
+      "y": 43.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 4.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 15.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 16.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 17.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 18.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 19.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 20.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 44.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 50.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 51.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 52.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 53.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 54.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 55.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 56.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 58.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 44.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 0.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 2.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 3.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 4.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 14.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 15.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 16.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 18.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 19.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 20.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 22.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 41.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 48.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 49.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 50.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 51.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 55.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 56.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 0.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 2.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 15.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 16.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 32.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 39.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 40.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 45.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 48.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 52.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 53.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 55.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 58.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 62.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 63.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 4.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 11.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 14.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 15.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 16.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 17.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 18.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 19.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 20.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 26.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 36.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 39.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 44.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 50.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 51.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 52.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 56.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 61.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 63.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 1.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 2.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 3.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 13.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 14.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 15.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 16.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 17.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 19.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 20.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 35.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 38.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 40.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 52.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 54.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 55.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 56.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 0.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 3.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 4.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 5.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 7.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 11.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 12.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 15.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 21.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 30.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 33.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 35.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 36.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 38.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 48.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 54.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 55.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 58.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 61.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 62.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 63.0,
+      "y": 49.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 1.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 2.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 12.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 14.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 16.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 17.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 18.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 19.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 20.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 35.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 40.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 41.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 61.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 50.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 7.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 8.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 10.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 11.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 12.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 14.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 15.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 21.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 32.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 35.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 38.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 39.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 40.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 57.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 63.0,
+      "y": 51.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 0.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 5.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 6.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 8.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 9.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 11.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 13.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 15.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 23.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 31.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 33.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 35.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 37.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 38.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 39.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 40.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 62.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 52.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 5.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 6.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 7.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 8.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 10.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 11.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 13.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 29.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 30.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 31.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 32.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 33.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 36.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 38.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 39.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 40.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 48.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 63.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 1.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 2.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 8.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 9.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 11.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 12.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 13.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 30.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 31.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 32.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 33.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 36.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 53.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 54.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 0.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 2.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 5.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 6.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 9.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 10.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 11.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 14.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 18.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 19.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 31.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 32.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 34.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 37.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 49.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 55.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 2.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 3.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 5.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 11.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 13.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 14.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 16.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 26.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 31.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 32.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 34.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 38.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 49.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 51.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 53.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 59.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 56.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 1.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 3.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 5.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 6.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 7.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 8.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 9.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 10.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 14.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 26.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 32.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 33.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 35.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 37.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 38.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 39.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 40.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 52.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 57.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 61.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 62.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 63.0,
+      "y": 57.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 2.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 3.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 5.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 6.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 8.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 13.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 18.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 20.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 24.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 25.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 32.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 33.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 34.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 35.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 38.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 39.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 41.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 43.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 44.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 56.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 57.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 59.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 62.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 58.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 0.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 2.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 3.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 8.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 10.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 12.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 13.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 25.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 32.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 34.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 36.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 37.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 39.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 40.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 41.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 46.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 51.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 52.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 57.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 59.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 60.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 61.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 63.0,
+      "y": 59.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 2.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 3.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 5.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 7.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 8.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 11.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 17.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 20.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 29.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 32.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 35.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 37.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 39.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 40.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "steam_vent",
+      "x": 43.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 53.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 54.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 57.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 58.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 59.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 60.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 62.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 0.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 1.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 2.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 3.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 4.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 5.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 6.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 7.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 8.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 9.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 10.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 11.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 12.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 13.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 14.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 15.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 16.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 18.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 19.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 20.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 21.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 22.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 23.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 24.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 25.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 26.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 27.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 28.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 29.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 30.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 31.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 32.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 33.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 34.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 35.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 37.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 38.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 39.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 40.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 41.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 42.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 43.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 44.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 45.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 46.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 49.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 50.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 51.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 52.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 53.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 54.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 55.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 56.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 57.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 58.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 59.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 60.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 61.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 0.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 1.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 2.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 3.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 4.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 5.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 6.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 7.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 8.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 9.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 10.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 11.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 12.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 13.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 14.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 15.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 17.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 18.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 19.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 20.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 21.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 22.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 23.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 24.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 25.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 26.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 27.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 28.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 29.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 31.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 32.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 33.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 34.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 35.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 36.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 37.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 38.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 39.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 40.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 41.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 42.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 43.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 44.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 45.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 46.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 47.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 48.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 49.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 50.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 51.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 52.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 53.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 55.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 56.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 57.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 58.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 59.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 60.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 63.0,
+      "y": 62.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 0.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 1.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 2.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 4.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 5.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 6.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 7.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 8.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 9.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 10.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 11.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 12.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 13.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 14.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 15.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 16.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 17.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 18.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 19.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 20.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 22.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 23.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 24.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 25.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 26.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 27.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 29.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 30.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 31.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 32.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 33.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 34.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 35.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 36.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 37.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 38.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 40.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 41.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 42.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 43.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 44.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 45.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 46.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 47.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 48.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 49.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 50.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gas_lamp",
+      "x": 51.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 53.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 54.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 55.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 56.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 57.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 58.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 59.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 60.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 61.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cog_pile",
+      "x": 62.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "gear_tower",
+      "x": 63.0,
+      "y": 63.0,
+      "w": 1,
+      "h": 1
+    }
+  ],
+  "portals": [
+    {
+      "kind": "exit1",
+      "x": 2.5,
+      "y": 32.5
+    }
+  ],
+  "monsters": [
+    {
+      "kind": "brass_scarab",
+      "x": 8.71,
+      "y": 17.43,
+      "tier": 7.417
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 8.21,
+      "y": 14.68,
+      "tier": 7.417
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 8.96,
+      "y": 16.02,
+      "tier": 7.417
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 9.39,
+      "y": 17.95,
+      "tier": 7.417
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 32.16,
+      "y": 47.57,
+      "tier": 8.022
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 31.23,
+      "y": 47.55,
+      "tier": 8.022
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 32.36,
+      "y": 48.57,
+      "tier": 8.022
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 36.33,
+      "y": 26.82,
+      "tier": 7.618
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 34.94,
+      "y": 29.95,
+      "tier": 7.618
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 35.48,
+      "y": 27.57,
+      "tier": 7.618
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 24.27,
+      "y": 45.53,
+      "tier": 8.262
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 24.59,
+      "y": 48.04,
+      "tier": 8.262
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 21.62,
+      "y": 47.39,
+      "tier": 8.262
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 32.3,
+      "y": 9.39,
+      "tier": 7.445
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 35.08,
+      "y": 9.2,
+      "tier": 7.445
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 33.4,
+      "y": 9.38,
+      "tier": 7.445
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 32.32,
+      "y": 10.04,
+      "tier": 7.445
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 31.58,
+      "y": 9.01,
+      "tier": 7.445
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 27.21,
+      "y": 50.04,
+      "tier": 7.815
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 26.38,
+      "y": 50.22,
+      "tier": 7.815
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 26.75,
+      "y": 51.94,
+      "tier": 7.815
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 25.65,
+      "y": 50.88,
+      "tier": 7.815
+    },
+    {
+      "kind": "brass_scarab",
+      "x": 27.82,
+      "y": 49.95,
+      "tier": 7.815
+    },
+    {
+      "kind": "clock_crow",
+      "x": 54.95,
+      "y": 56.86,
+      "tier": 7.406
+    },
+    {
+      "kind": "clock_crow",
+      "x": 54.61,
+      "y": 59.26,
+      "tier": 7.406
+    },
+    {
+      "kind": "clock_crow",
+      "x": 56.63,
+      "y": 57.05,
+      "tier": 7.406
+    },
+    {
+      "kind": "clock_crow",
+      "x": 53.92,
+      "y": 57.45,
+      "tier": 7.406
+    },
+    {
+      "kind": "clock_crow",
+      "x": 58.41,
+      "y": 45.5,
+      "tier": 7.845
+    },
+    {
+      "kind": "clock_crow",
+      "x": 60.07,
+      "y": 43.56,
+      "tier": 7.845
+    },
+    {
+      "kind": "clock_crow",
+      "x": 60.15,
+      "y": 44.32,
+      "tier": 7.845
+    },
+    {
+      "kind": "clock_crow",
+      "x": 57.38,
+      "y": 46.37,
+      "tier": 7.845
+    }
+  ],
+  "npcs": [],
+  "items": [
+    {
+      "kind": "apple",
+      "x": 24.5,
+      "y": 50.5
+    },
+    {
+      "kind": "apple",
+      "x": 41.5,
+      "y": 7.5
+    },
+    {
+      "kind": "apple",
+      "x": 32.5,
+      "y": 37.5
+    },
+    {
+      "kind": "apple",
+      "x": 39.5,
+      "y": 54.5
+    },
+    {
+      "kind": "bread",
+      "x": 5.5,
+      "y": 41.5
+    },
+    {
+      "kind": "apple",
+      "x": 49.5,
+      "y": 21.5
+    }
+  ]
+}

@@ -1,0 +1,940 @@
+{
+  "version": 1,
+  "id": "area:5:5",
+  "name": "THE ZENITH",
+  "theme": "heavens",
+  "tier": 13.4,
+  "width": 96,
+  "height": 96,
+  "tiles": [
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                             .                                  ",
+    "                                                         .......                                ",
+    "                                                        .........                ...            ",
+    "                                                      ....oooo....             . ......         ",
+    "                                                       ...oooo....            .........         ",
+    "                                                      ....oooo....           ....o......        ",
+    "                                                      .............          ...........        ",
+    "                                                      .............         .............       ",
+    "                                                      ............           ............       ",
+    "                                                       ...........          ...........o.       ",
+    "                                                      ..................................        ",
+    "                                           .         ...................................        ",
+    "                                         ......... .....  ......               ........         ",
+    "                                       .o.............   ....                    ....           ",
+    "                                        o...........   ....                      .. .           ",
+    "                                      oo..................                      ..o.....        ",
+    "                                      ..................                      ..........        ",
+    "                              ...    ..................                      ..........o.       ",
+    "                        ....................................                 .........o...      ",
+    "   ... ..             ......... ..............................               ............       ",
+    "  .......           .....          ...................    ........        ................      ",
+    " .........        .....          ..................o.        ............................       ",
+    " .........      .....          ..... ...............             ..........   .o..........      ",
+    " .......... .......           ..... ................o                         ..ooo......       ",
+    " ................           ....   ... .oo...........                         ..........        ",
+    " ............               ...   ...   ...........                              ......         ",
+    " ..........              .....   ...     .......                                 . ..           ",
+    "  .......              ......   ...         ...                                                 ",
+    "  .......            ........  ...          ..                                                  ",
+    "   .o.               ............           ..                                                  ",
+    "                    ............             ..                                                 ",
+    "            ...     ...........              ..                                                 ",
+    "          ......  .............              ..                                                 ",
+    "          .....................              ..                                                 ",
+    "           ........ ...........              ..                                                 ",
+    "           ......    ..........              ..                                                 ",
+    "           ...oo.   ......o...               ...                                                ",
+    "           . oo        ....                   ..                                                ",
+    "             .           .                    ..                                                ",
+    "                                             ...                                                ",
+    "                                             ..                                                 ",
+    "                                             ..                                                 ",
+    "                                          . ...                                                 ",
+    "                                        . ......                                                ",
+    "                                        .........                                               ",
+    "                                        ........                                                ",
+    "                                        .........                                               ",
+    "                                       ..........                                               ",
+    "                                         ..o.....                                               ",
+    "                                         ......o.                                               ",
+    "                                          . ...                                                 ",
+    "                                           o                                                    ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                ",
+    "                                                                                                "
+  ],
+  "ground": [
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggdddgggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggddddddggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggdddddddggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggrrggggggggggggggggggddddddddgggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggrrrggggggggggggggggggddddddddgggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggrrgggggggggggggggggggddddddddgggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggggggggggggggggggggrrrggggggggggggggggddddrrddddggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggggggggggggggggggrrrrggdddgggggggggggddrrrrrddddggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggggggggggggggggrrrrrggddrrrrrrrrrrrrrrrrrrrdddddggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggdgggggggggrrrrgggrrrrrrrrrrrrrrrrrrrdddddddgggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggdddddddddgrrrrrggrrrrrrgggggggggggggggdddddddgggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggddddddddddrrrrrgggrrrrggggggggggggggggggggddddggggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggddddddddrrrrgggrrrrggggggggggggggggggggggddgdggggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggddggggdddrrrdddrrrrrggggggggggggggggggggggddddddgggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggddgggggdrrrrdrrrrrggggggggggggggggggggggddddddddgggggggggg",
+    "ggggggggggggggggggggggggggggggrrrggggddgggggggrrdrrrrrrggggggggggggggggggggggdddddddddgggggggggg",
+    "ggggggggggggggggggggggggrrrrrrrrrrrrrrrrrrgggrrrrrrrrrrrrrrrggggggggggggggggggddddddddgggggggggg",
+    "gggdddggdgggggggggggggrrrrrrrrrgrrrrrrrrrrrrrrrrrrrrdgrrrrrrrrgggggggggggggggrrrrrrrrddggggggggg",
+    "ggdddddddgggggggggggrrrrrggggggggggrrrrrrrrrrrddddddggggggrrrrrrrrggggggggrrrrrrrrrrrddggggggggg",
+    "gdddddddddggggggggrrrrrggggggggggrrrrrrrrrrrrrgggggggggggggggrrrrrrrrrrrrrrrrrgggdddddddgggggggg",
+    "gdddddddddggggggrrrrrggggggggggrrrrrgrrrrgggrrgggggggggggggggggggrrrrrrrrrrggggggdddddddddgggggg",
+    "grrrrrrrdddgrrrrrrrgggggggggggrrrrrgrrrgggggrrggggggggggggggggggggggggggggggggggggdddddddggggggg",
+    "grrrrrrrrrrrrrrrrgggggggggggrrrrgggrrrggggggrrggggggggggggggggggggggggggggggggggggddddddgggggggg",
+    "gddddddrrrrrrgggggggggggggggrrrgggrrrgggggggrrggggggggggggggggggggggggggggggggggggdddddggggggggg",
+    "gddddddddddggggggggggggggdrrrrgggrrrggggggggrrgggggggggggggggggggggggggggggggggggggddggggggggggg",
+    "ggdddddddgggggggggggggggdrrrrgggrrrgggggggggrrgggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggddddggggggggggggdddrrrddggrrrggggggggggrrgggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggddrrrrgggrrrgggggggggggrrgggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggdrrrrgggrrrrgggggggggggggrrggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggddgggggrrrrdgrrrrrggggggggggggggrrggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggdddggrrrrddrrrrrggggggggggggggggrrggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggrrrrrrrrdddrrrggggggggggggggggggrrggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggrrrrrrgdddddggggggggggggggggggggrrggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggddddggggdddddgggggggggggggggggggrrggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggddddgggddddddddddgggggggggggggggrrrgggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggddggggggggddddgggggggggggggggggggrrgggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggdgggggggggggdggggggggggggggggggggrrgggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggrrrgggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggrrggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggrrggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggrrggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggdgddrrrggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggddddrrgggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggdddrrrgggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggdddrrggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggdddddddgggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggdddddgggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggddddddggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "ggggggggggggggggggggggggggggggggggggggggggdgdddggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggdgggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"
+  ],
+  "start": [
+    6.5,
+    48.5
+  ],
+  "safe": null,
+  "props": [
+    {
+      "kind": "ent_zenith",
+      "x": 58.0,
+      "y": 27.0,
+      "w": 4,
+      "h": 3
+    },
+    {
+      "kind": "angel_statue",
+      "x": 81.0,
+      "y": 29.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "sky_lamp",
+      "x": 87.0,
+      "y": 33.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 40.0,
+      "y": 37.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 40.0,
+      "y": 38.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 38.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 39.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "angel_statue",
+      "x": 82.0,
+      "y": 39.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "sky_lamp",
+      "x": 87.0,
+      "y": 41.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "angel_statue",
+      "x": 86.0,
+      "y": 42.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "sky_lamp",
+      "x": 51.0,
+      "y": 45.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "marble_ruin",
+      "x": 79.0,
+      "y": 46.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "marble_ruin",
+      "x": 52.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 80.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 81.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 82.0,
+      "y": 47.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "marble_ruin",
+      "x": 40.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "marble_ruin",
+      "x": 41.0,
+      "y": 48.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "angel_statue",
+      "x": 4.0,
+      "y": 53.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 14.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 15.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "sky_lamp",
+      "x": 26.0,
+      "y": 60.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "marble_ruin",
+      "x": 13.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 14.0,
+      "y": 61.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "cloud_tree",
+      "x": 43.0,
+      "y": 72.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "angel_statue",
+      "x": 47.0,
+      "y": 73.0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "kind": "marble_ruin",
+      "x": 43.0,
+      "y": 75.0,
+      "w": 1,
+      "h": 1
+    }
+  ],
+  "portals": [
+    {
+      "kind": "exit4",
+      "x": 2.5,
+      "y": 48.5
+    },
+    {
+      "kind": "entrance23",
+      "x": 60.5,
+      "y": 30.5
+    }
+  ],
+  "monsters": [
+    {
+      "kind": "gilded_sentinel",
+      "x": 73.29,
+      "y": 35.25,
+      "tier": 12.47
+    },
+    {
+      "kind": "gilded_sentinel",
+      "x": 73.42,
+      "y": 34.66,
+      "tier": 12.47
+    },
+    {
+      "kind": "gilded_sentinel",
+      "x": 70.87,
+      "y": 35.0,
+      "tier": 12.47
+    },
+    {
+      "kind": "gilded_sentinel",
+      "x": 73.41,
+      "y": 35.07,
+      "tier": 12.47
+    },
+    {
+      "kind": "storm_drake",
+      "x": 42.86,
+      "y": 45.32,
+      "tier": 13.339
+    },
+    {
+      "kind": "storm_drake",
+      "x": 43.67,
+      "y": 44.58,
+      "tier": 13.339
+    },
+    {
+      "kind": "storm_drake",
+      "x": 40.71,
+      "y": 43.57,
+      "tier": 13.339
+    },
+    {
+      "kind": "storm_drake",
+      "x": 41.71,
+      "y": 46.46,
+      "tier": 13.339
+    },
+    {
+      "kind": "fallen_seraph",
+      "x": 47.54,
+      "y": 47.82,
+      "tier": 13.432
+    },
+    {
+      "kind": "fallen_seraph",
+      "x": 49.64,
+      "y": 46.9,
+      "tier": 13.432
+    },
+    {
+      "kind": "fallen_seraph",
+      "x": 49.01,
+      "y": 49.29,
+      "tier": 13.432
+    },
+    {
+      "kind": "fallen_seraph",
+      "x": 46.62,
+      "y": 49.19,
+      "tier": 13.432
+    },
+    {
+      "kind": "fallen_seraph",
+      "x": 47.82,
+      "y": 49.51,
+      "tier": 13.432
+    },
+    {
+      "kind": "gilded_sentinel",
+      "x": 43.05,
+      "y": 41.54,
+      "tier": 14.036
+    },
+    {
+      "kind": "gilded_sentinel",
+      "x": 45.27,
+      "y": 42.3,
+      "tier": 14.036
+    },
+    {
+      "kind": "gilded_sentinel",
+      "x": 43.33,
+      "y": 40.39,
+      "tier": 14.036
+    },
+    {
+      "kind": "gilded_sentinel",
+      "x": 42.84,
+      "y": 39.45,
+      "tier": 14.036
+    },
+    {
+      "kind": "storm_drake",
+      "x": 84.96,
+      "y": 40.99,
+      "tier": 12.954
+    },
+    {
+      "kind": "storm_drake",
+      "x": 84.87,
+      "y": 43.24,
+      "tier": 12.954
+    },
+    {
+      "kind": "storm_drake",
+      "x": 86.16,
+      "y": 40.82,
+      "tier": 12.954
+    },
+    {
+      "kind": "storm_drake",
+      "x": 85.87,
+      "y": 41.15,
+      "tier": 12.954
+    },
+    {
+      "kind": "storm_drake",
+      "x": 85.9,
+      "y": 41.17,
+      "tier": 12.954
+    },
+    {
+      "kind": "sun_zealot",
+      "x": 56.63,
+      "y": 42.43,
+      "tier": 13.67
+    },
+    {
+      "kind": "sun_zealot",
+      "x": 59.17,
+      "y": 44.04,
+      "tier": 13.67
+    },
+    {
+      "kind": "sun_zealot",
+      "x": 59.01,
+      "y": 44.19,
+      "tier": 13.67
+    },
+    {
+      "kind": "fallen_seraph",
+      "x": 43.43,
+      "y": 69.56,
+      "tier": 12.812
+    },
+    {
+      "kind": "fallen_seraph",
+      "x": 43.34,
+      "y": 68.07,
+      "tier": 12.812
+    },
+    {
+      "kind": "fallen_seraph",
+      "x": 43.35,
+      "y": 67.77,
+      "tier": 12.812
+    },
+    {
+      "kind": "sun_zealot",
+      "x": 22.41,
+      "y": 59.27,
+      "tier": 13.232
+    },
+    {
+      "kind": "sun_zealot",
+      "x": 22.4,
+      "y": 59.49,
+      "tier": 13.232
+    },
+    {
+      "kind": "sun_zealot",
+      "x": 21.39,
+      "y": 59.49,
+      "tier": 13.232
+    },
+    {
+      "kind": "storm_drake",
+      "x": 43.7,
+      "y": 44.21,
+      "tier": 13.843
+    },
+    {
+      "kind": "storm_drake",
+      "x": 43.79,
+      "y": 41.88,
+      "tier": 13.843
+    },
+    {
+      "kind": "storm_drake",
+      "x": 43.21,
+      "y": 41.93,
+      "tier": 13.843
+    },
+    {
+      "kind": "storm_drake",
+      "x": 40.87,
+      "y": 44.33,
+      "tier": 13.843
+    },
+    {
+      "kind": "storm_drake",
+      "x": 42.94,
+      "y": 44.15,
+      "tier": 13.843
+    },
+    {
+      "kind": "sun_zealot",
+      "x": 85.68,
+      "y": 44.82,
+      "tier": 13.264
+    },
+    {
+      "kind": "sun_zealot",
+      "x": 85.54,
+      "y": 44.73,
+      "tier": 13.264
+    },
+    {
+      "kind": "sun_zealot",
+      "x": 85.59,
+      "y": 42.21,
+      "tier": 13.264
+    },
+    {
+      "kind": "sun_zealot",
+      "x": 83.19,
+      "y": 43.67,
+      "tier": 13.264
+    },
+    {
+      "kind": "sun_zealot",
+      "x": 45.74,
+      "y": 57.82,
+      "tier": 13.091
+    },
+    {
+      "kind": "sun_zealot",
+      "x": 45.71,
+      "y": 57.56,
+      "tier": 13.091
+    },
+    {
+      "kind": "sun_zealot",
+      "x": 45.57,
+      "y": 60.47,
+      "tier": 13.091
+    },
+    {
+      "kind": "sun_zealot",
+      "x": 45.46,
+      "y": 58.67,
+      "tier": 13.091
+    },
+    {
+      "kind": "sun_zealot",
+      "x": 45.47,
+      "y": 57.93,
+      "tier": 13.091
+    },
+    {
+      "kind": "fallen_seraph",
+      "x": 67.3,
+      "y": 45.7,
+      "tier": 13.228
+    },
+    {
+      "kind": "fallen_seraph",
+      "x": 66.64,
+      "y": 46.1,
+      "tier": 13.228
+    },
+    {
+      "kind": "fallen_seraph",
+      "x": 64.74,
+      "y": 44.92,
+      "tier": 13.228
+    },
+    {
+      "kind": "gilded_sentinel",
+      "x": 80.04,
+      "y": 31.46,
+      "tier": 14.006
+    },
+    {
+      "kind": "gilded_sentinel",
+      "x": 78.62,
+      "y": 30.59,
+      "tier": 14.006
+    },
+    {
+      "kind": "gilded_sentinel",
+      "x": 78.89,
+      "y": 30.34,
+      "tier": 14.006
+    },
+    {
+      "kind": "gilded_sentinel",
+      "x": 77.95,
+      "y": 31.72,
+      "tier": 14.006
+    },
+    {
+      "kind": "gilded_sentinel",
+      "x": 80.24,
+      "y": 31.73,
+      "tier": 14.006
+    },
+    {
+      "kind": "storm_drake",
+      "x": 56.32,
+      "y": 43.18,
+      "tier": 13.007
+    },
+    {
+      "kind": "storm_drake",
+      "x": 52.96,
+      "y": 41.67,
+      "tier": 13.007
+    },
+    {
+      "kind": "storm_drake",
+      "x": 53.37,
+      "y": 43.69,
+      "tier": 13.007
+    },
+    {
+      "kind": "storm_drake",
+      "x": 55.93,
+      "y": 43.22,
+      "tier": 13.007
+    },
+    {
+      "kind": "storm_drake",
+      "x": 56.19,
+      "y": 42.95,
+      "tier": 13.007
+    },
+    {
+      "kind": "storm_drake",
+      "x": 43.23,
+      "y": 42.82,
+      "tier": 12.887
+    },
+    {
+      "kind": "storm_drake",
+      "x": 44.48,
+      "y": 43.37,
+      "tier": 12.887
+    },
+    {
+      "kind": "storm_drake",
+      "x": 41.68,
+      "y": 41.03,
+      "tier": 12.887
+    },
+    {
+      "kind": "storm_drake",
+      "x": 42.17,
+      "y": 40.99,
+      "tier": 13.918
+    },
+    {
+      "kind": "storm_drake",
+      "x": 43.37,
+      "y": 40.98,
+      "tier": 13.918
+    },
+    {
+      "kind": "storm_drake",
+      "x": 39.6,
+      "y": 42.05,
+      "tier": 13.918
+    },
+    {
+      "kind": "storm_drake",
+      "x": 42.82,
+      "y": 42.59,
+      "tier": 13.918
+    },
+    {
+      "kind": "storm_drake",
+      "x": 42.51,
+      "y": 41.51,
+      "tier": 13.918
+    },
+    {
+      "kind": "sun_zealot",
+      "x": 83.02,
+      "y": 33.47,
+      "tier": 12.344
+    },
+    {
+      "kind": "sun_zealot",
+      "x": 81.85,
+      "y": 31.99,
+      "tier": 12.344
+    },
+    {
+      "kind": "sun_zealot",
+      "x": 82.17,
+      "y": 35.13,
+      "tier": 12.344
+    },
+    {
+      "kind": "sun_zealot",
+      "x": 83.53,
+      "y": 31.64,
+      "tier": 12.344
+    },
+    {
+      "kind": "sun_zealot",
+      "x": 82.13,
+      "y": 31.98,
+      "tier": 12.344
+    },
+    {
+      "kind": "storm_drake",
+      "x": 81.63,
+      "y": 38.57,
+      "tier": 12.218
+    },
+    {
+      "kind": "storm_drake",
+      "x": 83.86,
+      "y": 35.96,
+      "tier": 12.218
+    },
+    {
+      "kind": "storm_drake",
+      "x": 83.16,
+      "y": 36.33,
+      "tier": 12.218
+    },
+    {
+      "kind": "storm_drake",
+      "x": 81.49,
+      "y": 35.76,
+      "tier": 12.218
+    },
+    {
+      "kind": "storm_drake",
+      "x": 81.52,
+      "y": 36.46,
+      "tier": 12.218
+    },
+    {
+      "kind": "fallen_seraph",
+      "x": 42.09,
+      "y": 69.82,
+      "tier": 12.297
+    },
+    {
+      "kind": "fallen_seraph",
+      "x": 41.67,
+      "y": 70.35,
+      "tier": 12.297
+    },
+    {
+      "kind": "fallen_seraph",
+      "x": 41.79,
+      "y": 70.27,
+      "tier": 12.297
+    },
+    {
+      "kind": "ophanim",
+      "x": 37.99,
+      "y": 43.03,
+      "tier": 14.565
+    },
+    {
+      "kind": "ophanim",
+      "x": 37.49,
+      "y": 42.28,
+      "tier": 14.565
+    },
+    {
+      "kind": "ophanim",
+      "x": 37.88,
+      "y": 42.75,
+      "tier": 14.565
+    }
+  ],
+  "npcs": [],
+  "items": [
+    {
+      "kind": "apple",
+      "x": 58.5,
+      "y": 25.5
+    },
+    {
+      "kind": "apple",
+      "x": 80.5,
+      "y": 31.5
+    },
+    {
+      "kind": "apple",
+      "x": 15.5,
+      "y": 59.5
+    },
+    {
+      "kind": "apple",
+      "x": 79.5,
+      "y": 41.5
+    },
+    {
+      "kind": "apple",
+      "x": 8.5,
+      "y": 47.5
+    },
+    {
+      "kind": "apple",
+      "x": 61.5,
+      "y": 25.5
+    }
+  ]
+}

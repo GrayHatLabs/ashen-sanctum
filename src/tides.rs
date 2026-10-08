@@ -20,6 +20,11 @@ pub const SWIM: f32 = 1.3;
 /// A siren's pull, tiles per second.
 pub const PULL_SPEED: f32 = 3.2;
 
+/// The tide comes in on Act 5's outdoor maps (the Sunken Reach and its areas).
+pub fn tidal(id: LevelId) -> bool {
+    id.act() == 4 && id.overland()
+}
+
 /// Water depth 0..1 at a point in the tide's cycle.
 pub fn tide_level(t: f32) -> f32 {
     let t = t.rem_euclid(TIDE_CYCLE);
@@ -37,12 +42,12 @@ pub fn tide_level(t: f32) -> f32 {
 impl Game {
     /// Is (x, y) under water right now?
     pub fn flooded(&self, x: f32, y: f32) -> bool {
-        self.tide > 0.5 && self.level == LevelId::Deep && self.d.ground_at(x.floor() as i32, y.floor() as i32) == 1
+        self.tide > 0.5 && tidal(self.level) && self.d.ground_at(x.floor() as i32, y.floor() as i32) == 1
     }
 
     /// The tide's state for the HUD: (label, level 0..1), or None off the Sunken Reach.
     pub fn tide_gauge(&self) -> Option<(&'static str, f32)> {
-        if self.level != LevelId::Deep {
+        if !tidal(self.level) {
             return None;
         }
         let t = self.tide_t.rem_euclid(TIDE_CYCLE);
@@ -88,7 +93,7 @@ impl Game {
         }
         // The tide (the Sunken Reach only; the clock keeps running while you're away).
         self.tide_t += DT;
-        if self.level != LevelId::Deep {
+        if !tidal(self.level) {
             self.tide = 0.0;
             for m in self.mobs.iter_mut() {
                 m.tide = 1.0;
