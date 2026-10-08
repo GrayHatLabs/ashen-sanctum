@@ -261,6 +261,8 @@ let LANDS = {
 const PASS_NAMES = ["Way to Act 1 (Ashlands)", "Way to Act 2 (Frostmarch)", "Way to Act 3 (Mistwood)", "Way to Act 4 (Mechanus)",
   "Way to Act 5 (Sunken Reach)", "Way to Act 6 (the Heavens)"];
 const ACT_COLORS = ["#e0d8c0", "#90c8ff", "#80f0a0", "#ffb040", "#40d0c0", "#fff0a0"];
+// Area ids and their file names (area:0:3 -> the_rotwood), from the catalog.
+let C_SLUGS = {};
 // The game's own catalog (catalog.js) replaces the built-in lists above when it's there.
 if (window.CATALOG) {
   const C = window.CATALOG;
@@ -271,16 +273,20 @@ if (window.CATALOG) {
   NPCS = C.npcs.map(n => ({ kind: n.kind, name: title(n.name), img: n.img }));
   DUNGEONS = C.dungeons.map(d => [d.slug, d.name, d.floors, d.theme, d.tier, d.boss, d.act]);
   BOSSES = C.dungeons.map(d => d.boss);
+  // In act order: each act's town map, then its areas (area:<act>:<n>).
   const ORDER = ["overworld", "frostmarch", "mistwood", "mechanus", "deep", "heavens"];
-  OVERLANDS = Object.keys(C.lands).sort((a, b) => (ORDER.indexOf(a) + 99) % 99 - (ORDER.indexOf(b) + 99) % 99);
+  const key = id => { const m = /^area:(\d+):(\d+)$/.exec(id); return m ? +m[1] * 100 + +m[2] : ORDER.indexOf(id) * 100; };
+  C_SLUGS = C.slugs || {};
+  OVERLANDS = Object.keys(C.lands).sort((a, b) => key(a) - key(b));
   LANDS = {};
-  for (const [id, l] of Object.entries(C.lands)) LANDS[id] = { theme: l.theme, name: l.name, tier: Math.round(l.tier * 10) / 10, doors: [Math.min(...l.doors), Math.max(...l.doors) + 1], passes: l.passes, story: l.story, shops: l.shops, size: l.size };
+  for (const [id, l] of Object.entries(C.lands)) LANDS[id] = { theme: l.theme, name: l.name, tier: Math.round(l.tier * 10) / 10, doorList: l.doors, passes: l.passes, exits: l.exits || [], story: l.story, shops: l.shops, size: l.size, town: l.town, act: l.act };
   const open = new Set(C.themes.filter(t => t.open).map(t => t.name)), sky = new Set(C.themes.filter(t => t.sky).map(t => t.name));
   isOpen = theme => open.has(theme);
   isSky = theme => sky.has(theme);
   PORTALS = [PORTALS[0], PORTALS[1], { kind: "townportal", name: "Town portal", color: "#6080ff" },
     ...PASS_NAMES.map((n, i) => ({ kind: "pass" + i, name: n, color: ACT_COLORS[i] })),
     { kind: "dock0", name: "Airship dock (the Heavens)", color: "#f0c060" },
+    ...Array.from({ length: 9 }, (_, n) => ({ kind: "exit" + n, name: n ? `Road to area ${n}` : "Road to the town", color: "#d0a060" })),
     ...C.dungeons.map((d, k) => ({ kind: "entrance" + k, name: "Door: " + title(d.name.replace(/^THE /, "")), color: ACT_COLORS[d.act] }))];
   document.getElementById("lv-theme").innerHTML = C.themes.map(t => `<option>${t.name}</option>`).join("");
 }
@@ -309,11 +315,13 @@ let dirty = false;
 const cv = document.getElementById("cv"), ctx = cv.getContext("2d");
 
 function levelIdToName(id) {
+  if (window.CATALOG && C_SLUGS[id]) return C_SLUGS[id];
   if (OVERLANDS.includes(id)) return id;
   const m = /^dungeon:(\d+):(\d+)$/.exec(id || "");
   return m ? `${DUNGEONS[+m[1]][0]}_floor${+m[2] + 1}` : null;
 }
 function nameToLevelId(name) {
+  for (const [id, slug] of Object.entries(C_SLUGS)) if (slug === name) return id;
   if (OVERLANDS.includes(name)) return name;
   for (let k = 0; k < DUNGEONS.length; k++)
     for (let f = 0; f < DUNGEONS[k][2]; f++)
@@ -709,11 +717,13 @@ function check() {
   const m = /^dungeon:(\d+):(\d+)$/.exec(L.id);
   if (isOw) {
     const land = LANDS[L.id];
-    for (let k = land.doors[0]; k < land.doors[1]; k++) if (!L.portals.some(p => p.kind === "entrance" + k)) out.push(["bad", `Missing the door to ${DUNGEONS[k][1]} (portal entrance${k}).`]);
+    const doors = land.doorList || (land.doors ? Array.from({ length: land.doors[1] - land.doors[0] }, (_, i) => land.doors[0] + i) : []);
+    for (const k of doors) if (!L.portals.some(p => p.kind === "entrance" + k)) out.push(["bad", `Missing the door to ${DUNGEONS[k][1]} (portal entrance${k}).`]);
     for (const pass of land.passes) if (!L.portals.some(p => p.kind === pass)) out.push(["bad", `Missing the pass (portal ${pass}) between the acts.`]);
-    if (!L.npcs.some(n => n.kind === land.story[0])) out.push(["bad", `${land.story[1]} is missing: the story can't go on.`]);
-    for (const k of land.shops) if (!L.npcs.some(n => n.kind === k)) out.push(["warn", `No ${k} in town.`]);
-    if (!L.safe) out.push(["warn", "No safe zone: monsters can follow you into town."]);
+    for (const [n, name] of land.exits || []) if (!L.portals.some(p => p.kind === "exit" + n)) out.push(["bad", `Missing the road to ${name} (portal exit${n}).`]);
+    if (land.story && !L.npcs.some(n => n.kind === land.story[0])) out.push(["bad", `${land.story[1]} is missing: the story can't go on.`]);
+    for (const k of land.shops || []) if (!L.npcs.some(n => n.kind === k)) out.push(["warn", `No ${k} in town.`]);
+    if (land.town !== false && !L.safe) out.push(["warn", "No safe zone: monsters can follow you into town."]);
   } else if (m) {
     const k = +m[1], f = +m[2], last = f + 1 === DUNGEONS[k][2];
     if (!up) out.push(["bad", "Missing stairs up (the way out)."]);
@@ -767,7 +777,7 @@ document.getElementById("btn-resize").onclick = () => {
 
 // ------------------------------------------------------------------ new level
 document.getElementById("btn-new").onclick = () => {
-  const names = [...OVERLANDS]; for (const d of DUNGEONS) for (let f = 0; f < d[2]; f++) names.push(`${d[0]}_floor${f + 1}`);
+  const names = OVERLANDS.map(levelIdToName); for (const d of DUNGEONS) for (let f = 0; f < d[2]; f++) names.push(`${d[0]}_floor${f + 1}`);
   const name = prompt("Which level? One of:\n" + names.join("\n"), "bone_crypt_floor1");
   if (!name || !names.includes(name)) { if (name) msg("Unknown level name", true); return; }
   const id = nameToLevelId(name), ow = OVERLANDS.includes(id);

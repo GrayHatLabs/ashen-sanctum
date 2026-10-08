@@ -128,7 +128,7 @@ impl Game {
     /// Every town gets its brazier; Windward Anchorage its Riftwarden once Solanthos has fallen (on any
     /// difficulty). Added when a town is entered, so hand-made level files get them too.
     pub(crate) fn add_endgame_npcs(&mut self) {
-        if !self.level.overland() {
+        if !self.level.town() {
             return;
         }
         let act = self.level.act();

@@ -128,14 +128,21 @@ take back their Seals, unseal the Sanctum and end the Ash King.
     ("SHOW ME YOUR GEAR"): her shelf restocks each time you come back from a dungeon.
   - **Brother Aldric**: heals you fully whenever you talk to him.
   - **Captain Rolf** and the villagers: hints.
-- **The Ashlands** (overworld): forests, roads, roaming wolves, goblins and undead, wild food.
+- **The wilds**, D2 style: eight outdoor areas you walk between (a road runs off the edge of one map
+  into the next; plan in `docs/AREAS_PLAN.md`). North from Hollowmere: **the Ashlands** (the Charnel
+  Well), **the Barrow Fields** (the Bone Crypt), **the Rotwood** (the Rotting Warrens), **the Cinder
+  Hills** (the Hexed Catacombs), **the Cinder Waste** and **the Ashen Steppe** (the Ashen Sanctum and the
+  pass north to Act 2). Two side branches: **Shepherd's Vale** off the Ashlands and **Skrat's Gulch** off
+  the Barrow Fields. Forests, roads, roaming wolves, goblins and undead, wild food. (Acts 2-6 are still
+  one overland each; they get their areas next.)
 - **Four dungeons**, each with its own look, floors joined by stairs, and a boss at the bottom:
-  1. **The Bone Crypt** (southwest, 2 floors): the **Bone Warden** raises skeletons.
-  2. **The Rotting Warrens** (southeast, 2 floors): the **Plague Warden** spits poison pools.
-  3. **The Hexed Catacombs** (northeast, 3 floors): the **Hex Warden** fires bolt volleys and blinks away.
-  4. **The Ashen Sanctum** (northwest, 3 floors, sealed until you have all three Seals): the **Ash King**.
-- **Waypoints** (D2 style): a rune circle in Hollowmere and near the start of every dungeon floor.
-  Step on one to activate it; stepping onto any waypoint lets you travel to every one you've activated.
+  1. **The Bone Crypt** (the Barrow Fields, 2 floors): the **Bone Warden** raises skeletons.
+  2. **The Rotting Warrens** (the Rotwood, 2 floors): the **Plague Warden** spits poison pools.
+  3. **The Hexed Catacombs** (the Cinder Hills, 3 floors): the **Hex Warden** fires bolt volleys and blinks away.
+  4. **The Ashen Sanctum** (the Ashen Steppe, 3 floors, sealed until you have all three Seals): the **Ash King**.
+- **Waypoints** (D2 style): a rune circle in Hollowmere, in every area (by the road in) and near the start
+  of every dungeon floor. Step on one to activate it; stepping onto any waypoint lets you travel to this
+  act's waypoints and the other acts' towns.
 - Each Warden drops a **Seal** (more life, mana and fireball power) and opens a portal home.
   Levels remember what you killed. If you die, you wake in Hollowmere and lose 10% of your gold.
 
@@ -272,7 +279,7 @@ Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`;
 - **Side quests** from the townsfolk, with D2-style rewards (a skill point, permanent life, a rare item),
   earned again on each difficulty. Act 1: Brother Aldric's *The Well Runs Red*, Gerta's *Caravan*
   and a farmer's *Hollow Shepherd*.
-- **The Charnel Well**, Act 1's optional dungeon south of Hollowmere, and the Well-Witch at its bottom.
+- **The Charnel Well**, Act 1's optional dungeon in the Ashlands, and the Well-Witch at its bottom.
 - **Events** out in the wilds: ambushes, a fleeing gold-thief with its hoard, fallen adventurers.
 - **Lore pages**, five per act; all five give +5% experience in that act. The map (Tab / M) shows the
   **journal**: pages, side quests, super uniques and shrines.

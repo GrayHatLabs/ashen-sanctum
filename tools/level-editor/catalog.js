@@ -228,13 +228,223 @@ window.CATALOG = {
     }
   ],
   "lands": {
+    "area:0:1": {
+      "act": 0,
+      "doors": [
+        24
+      ],
+      "exits": [
+        [
+          0,
+          "HOLLOWMERE"
+        ],
+        [
+          2,
+          "THE BARROW FIELDS"
+        ],
+        [
+          7,
+          "SHEPHERD'S VALE"
+        ]
+      ],
+      "name": "THE ASHLANDS",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "overworld",
+      "tier": 1.0,
+      "town": false
+    },
+    "area:0:2": {
+      "act": 0,
+      "doors": [
+        0
+      ],
+      "exits": [
+        [
+          1,
+          "THE ASHLANDS"
+        ],
+        [
+          3,
+          "THE ROTWOOD"
+        ],
+        [
+          8,
+          "SKRAT'S GULCH"
+        ]
+      ],
+      "name": "THE BARROW FIELDS",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "overworld",
+      "tier": 1.2999999523162842,
+      "town": false
+    },
+    "area:0:3": {
+      "act": 0,
+      "doors": [
+        1
+      ],
+      "exits": [
+        [
+          2,
+          "THE BARROW FIELDS"
+        ],
+        [
+          4,
+          "THE CINDER HILLS"
+        ]
+      ],
+      "name": "THE ROTWOOD",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "overworld",
+      "tier": 1.7000000476837158,
+      "town": false
+    },
+    "area:0:4": {
+      "act": 0,
+      "doors": [
+        2
+      ],
+      "exits": [
+        [
+          3,
+          "THE ROTWOOD"
+        ],
+        [
+          5,
+          "THE CINDER WASTE"
+        ]
+      ],
+      "name": "THE CINDER HILLS",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "overworld",
+      "tier": 2.0999999046325684,
+      "town": false
+    },
+    "area:0:5": {
+      "act": 0,
+      "doors": [],
+      "exits": [
+        [
+          4,
+          "THE CINDER HILLS"
+        ],
+        [
+          6,
+          "THE ASHEN STEPPE"
+        ]
+      ],
+      "name": "THE CINDER WASTE",
+      "passes": [],
+      "shops": [],
+      "size": [
+        112,
+        80
+      ],
+      "story": null,
+      "theme": "overworld",
+      "tier": 2.5999999046325684,
+      "town": false
+    },
+    "area:0:6": {
+      "act": 0,
+      "doors": [
+        3
+      ],
+      "exits": [
+        [
+          5,
+          "THE CINDER WASTE"
+        ]
+      ],
+      "name": "THE ASHEN STEPPE",
+      "passes": [
+        "pass1"
+      ],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "overworld",
+      "tier": 3.0,
+      "town": false
+    },
+    "area:0:7": {
+      "act": 0,
+      "doors": [],
+      "exits": [
+        [
+          1,
+          "THE ASHLANDS"
+        ]
+      ],
+      "name": "SHEPHERD'S VALE",
+      "passes": [],
+      "shops": [],
+      "size": [
+        64,
+        64
+      ],
+      "story": null,
+      "theme": "overworld",
+      "tier": 1.2000000476837158,
+      "town": false
+    },
+    "area:0:8": {
+      "act": 0,
+      "doors": [],
+      "exits": [
+        [
+          2,
+          "THE BARROW FIELDS"
+        ]
+      ],
+      "name": "SKRAT'S GULCH",
+      "passes": [],
+      "shops": [],
+      "size": [
+        64,
+        64
+      ],
+      "story": null,
+      "theme": "overworld",
+      "tier": 1.5,
+      "town": false
+    },
     "deep": {
+      "act": 4,
       "doors": [
         16,
         17,
         18,
         19
       ],
+      "exits": [],
       "name": "THE SUNKEN REACH",
       "passes": [
         "pass3",
@@ -254,15 +464,18 @@ window.CATALOG = {
         "CAPTAIN YSOLDE MARROW"
       ],
       "theme": "deep",
-      "tier": 9.600000381469727
+      "tier": 9.600000381469727,
+      "town": true
     },
     "frostmarch": {
+      "act": 1,
       "doors": [
         4,
         5,
         6,
         7
       ],
+      "exits": [],
       "name": "THE FROSTMARCH",
       "passes": [
         "pass0",
@@ -282,15 +495,18 @@ window.CATALOG = {
         "CAPTAIN BRENNA"
       ],
       "theme": "tundra",
-      "tier": 3.4000000953674316
+      "tier": 3.4000000953674316,
+      "town": true
     },
     "heavens": {
+      "act": 5,
       "doors": [
         20,
         21,
         22,
         23
       ],
+      "exits": [],
       "name": "THE SKYREACH",
       "passes": [
         "dock0",
@@ -310,15 +526,18 @@ window.CATALOG = {
         "SERAPHINE"
       ],
       "theme": "heavens",
-      "tier": 12.0
+      "tier": 12.0,
+      "town": true
     },
     "mechanus": {
+      "act": 3,
       "doors": [
         12,
         13,
         14,
         15
       ],
+      "exits": [],
       "name": "THE GRINDING FIELDS",
       "passes": [
         "pass2",
@@ -338,15 +557,18 @@ window.CATALOG = {
         "TALLY"
       ],
       "theme": "mechanus",
-      "tier": 7.199999809265137
+      "tier": 7.199999809265137,
+      "town": true
     },
     "mistwood": {
+      "act": 2,
       "doors": [
         8,
         9,
         10,
         11
       ],
+      "exits": [],
       "name": "THE MISTWOOD",
       "passes": [
         "pass1",
@@ -366,35 +588,36 @@ window.CATALOG = {
         "ABELARD"
       ],
       "theme": "mistwood",
-      "tier": 5.199999809265137
+      "tier": 5.199999809265137,
+      "town": true
     },
     "overworld": {
-      "doors": [
-        0,
-        1,
-        2,
-        3,
-        24
+      "act": 0,
+      "doors": [],
+      "exits": [
+        [
+          1,
+          "THE ASHLANDS"
+        ]
       ],
-      "name": "THE ASHLANDS",
-      "passes": [
-        "pass1"
-      ],
+      "name": "HOLLOWMERE",
+      "passes": [],
       "shops": [
         "healer",
         "jeweler0",
         "merchant"
       ],
       "size": [
-        112,
-        112
+        80,
+        80
       ],
       "story": [
         "elder",
         "ELDER MAREN"
       ],
       "theme": "overworld",
-      "tier": 1.0
+      "tier": 1.0,
+      "town": true
     }
   },
   "monsters": [
@@ -1441,6 +1664,16 @@ window.CATALOG = {
       "w": 1
     }
   ],
+  "slugs": {
+    "area:0:1": "the_ashlands",
+    "area:0:2": "the_barrow_fields",
+    "area:0:3": "the_rotwood",
+    "area:0:4": "the_cinder_hills",
+    "area:0:5": "the_cinder_waste",
+    "area:0:6": "the_ashen_steppe",
+    "area:0:7": "shepherds_vale",
+    "area:0:8": "skrats_gulch"
+  },
   "themes": [
     {
       "name": "overworld",

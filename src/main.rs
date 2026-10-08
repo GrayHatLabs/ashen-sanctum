@@ -34,6 +34,7 @@ mod tides;
 mod sky;
 mod endgame;
 mod side;
+mod areas;
 mod world;
 
 use game::{Game, Input};

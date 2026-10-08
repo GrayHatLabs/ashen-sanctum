@@ -881,7 +881,7 @@ impl Game {
         self.shrines = lv.shrines;
         self.safe = lv.safe;
         self.start = lv.start;
-        if lv.id.overland() {
+        if lv.id.town() {
             self.town_start = lv.start;
         }
         self.add_endgame_npcs();
@@ -924,7 +924,7 @@ impl Game {
         if self.quest.difficulty > 0 && !self.level_name.ends_with(&tag) {
             self.level_name += &tag;
         }
-        if !lv.id.overland() {
+        if !lv.id.town() {
             self.shop_stale = true;
         }
         self.place_clockwork();
@@ -960,6 +960,8 @@ impl Game {
             LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep | LevelId::Heavens => (self.town_start.0 + 3.0, self.town_start.1 + 2.0),
             LevelId::Dungeon(..) => self.portals.iter().find(|p| p.kind == PortalKind::Up).map(|p| (p.x + 2.0, p.y + 1.0)).unwrap_or(self.start),
             LevelId::Rift(_) => self.start,
+            // An area's waypoint stands by the road in from town.
+            LevelId::Area(..) => (self.start.0 + 2.0, self.start.1 + 1.0),
         };
         let clear = |x: f32, y: f32| {
             !self.d.blocked(x, y, 0.6)
@@ -993,6 +995,7 @@ impl Game {
             LevelId::Heavens => "WINDWARD ANCHORAGE".into(),
             LevelId::Dungeon(k, f) => format!("{} - LEVEL {}", DUNGEONS_LIST[k].name, f + 1),
             LevelId::Rift(t) => format!("ASH RIFT - TIER {t}"),
+            LevelId::Area(a, n) => crate::areas::def(a, n).name.into(),
         }
     }
 
@@ -1025,14 +1028,17 @@ impl Game {
             .waypoints
             .iter()
             .filter(|id| **id != self.level)
+            // This act's waypoints, and the other acts' towns (D2 shows one act at a time).
+            .filter(|id| id.act() == self.level.act() || id.town())
             .map(|&id| (Self::waypoint_name(id), Act::Travel(id)))
             .collect();
         if options.is_empty() {
             return;
         }
         options.sort_by_key(|o| match o.1 {
-            Act::Travel(id @ LevelId::Dungeon(k, f)) => id.act() * 100 + 1 + k * 10 + f,
-            Act::Travel(id) => id.act() * 100,
+            Act::Travel(id @ LevelId::Dungeon(k, f)) => id.act() * 1000 + 100 + k * 10 + f,
+            Act::Travel(id @ LevelId::Area(_, n)) => id.act() * 1000 + n as usize,
+            Act::Travel(id) => id.act() * 1000,
             _ => 999,
         });
         options.push(("STAY HERE".into(), Act::Close));
@@ -1270,6 +1276,8 @@ impl Game {
         // Where do we arrive?
         let spot = match (id, from) {
             (land, Some(LevelId::Dungeon(k, _))) if land.overland() => self.portal_spot(PortalKind::Entrance(k)),
+            // From the next area over: at the road back to it.
+            (land, Some(other)) if land.overland() && other.overland() && land.act() == other.act() => self.portal_spot(PortalKind::Exit(crate::areas::number(other))),
             (land, Some(other)) if land.overland() && other.overland() => self.portal_spot(PortalKind::Pass(other.act())),
             (LevelId::Dungeon(_, f), Some(LevelId::Dungeon(_, g))) if g > f => self.portal_spot(PortalKind::Down),
             (LevelId::Dungeon(..), _) => self.portal_spot(PortalKind::Up),
@@ -1345,7 +1353,14 @@ impl Game {
                 let boss_dead = self.mobs.iter().all(|m| !m.boss || !m.alive());
                 at(PortalKind::Down).or_else(|| if boss_dead { at(PortalKind::TownPortal).or_else(|| at(PortalKind::Up)) } else { None })
             }
-            _ => at(PortalKind::Entrance(target)),
+            // Outdoors: the door if it's in this area, else the road toward the area that holds it.
+            _ => {
+                let home = crate::areas::dungeon_home(target);
+                match crate::areas::route(self.level, home) {
+                    Some(next) if self.level != home => at(PortalKind::Exit(crate::areas::number(next))),
+                    _ => at(PortalKind::Entrance(target)),
+                }
+            }
         }
     }
 
@@ -1366,6 +1381,30 @@ impl Game {
 
     /// First dungeon of this act whose herald token the bot doesn't have yet (then the act's
     /// last dungeon). Each act has four dungeons in order: three heralds, then the final one.
+    /// For the bot: a waypoint worth taking (one known in an area closer to where it's going), outdoors.
+    pub fn bot_waypoint_goal(&self) -> Option<LevelId> {
+        if !self.level.overland() {
+            return None;
+        }
+        let home = crate::areas::dungeon_home(self.bot_dungeon());
+        if home.act() != self.level.act() {
+            return None;
+        }
+        let here = crate::areas::steps(self.level, home)?;
+        self.waypoints
+            .iter()
+            .filter(|w| w.act() == self.level.act() && w.overland())
+            .filter_map(|&w| crate::areas::steps(w, home).map(|s| (w, s)))
+            .filter(|&(_, s)| s + 1 < here)
+            .min_by_key(|&(_, s)| s)
+            .map(|(w, _)| w)
+    }
+
+    /// Where this level's waypoint stands, and whether it's been found (for the bot).
+    pub fn bot_waypoint(&self) -> ((f32, f32), bool) {
+        (self.waypoint, self.waypoints.contains(&self.level))
+    }
+
     fn bot_dungeon(&self) -> usize {
         let a = self.level.act().min(5);
         let got = match a {
@@ -1785,8 +1824,16 @@ impl Game {
                 self.go_to(LevelId::Dungeon(k, 0), Some(here));
             }
             PortalKind::Dock(n) => self.fly_airship(n),
+            PortalKind::Exit(n) => {
+                let to = crate::areas::level(here.act(), n);
+                let first = !self.waypoints.contains(&to) && !self.parked.contains_key(&to);
+                self.go_to(to, Some(here));
+                if first {
+                    self.banner_t = 3.0;
+                }
+            }
             PortalKind::Pass(act) => {
-                if act == 1 && here == LevelId::Overworld && !self.quest.north_open() {
+                if act == 1 && here.act() == 0 && !self.quest.north_open() {
                     self.portal_cd = 2.0;
                     self.say("THE PASS IS CHOKED WITH ASH AND SNOW. NOT WHILE THE ASH KING LIVES.".into());
                     return;
@@ -1811,8 +1858,9 @@ impl Game {
                     self.say("AN OLD DIVING BELL. ITS CHAINS ARE LOCKED BY THE CLOCK'S OWN GEARS.".into());
                     return;
                 }
-                self.go_to(LevelId::land(act), Some(here));
-                if act == 1 && here == LevelId::Overworld && !self.waypoints.contains(&LevelId::Frostmarch) {
+                // Coming back from the next act lands you at this act's pass (an area, or the overland).
+                self.go_to(crate::areas::pass_home(act, here.act()), Some(here));
+                if act == 1 && here.act() == 0 && !self.waypoints.contains(&LevelId::Frostmarch) {
                     self.say("THE FROSTMARCH. FIND KALDHOLM, BY THE FROZEN LAKE".into());
                 }
                 if act == 2 && !self.waypoints.contains(&LevelId::Mistwood) {
@@ -1829,7 +1877,7 @@ impl Game {
                 }
             }
             PortalKind::Up => match here {
-                LevelId::Dungeon(k, 0) => self.go_to(LevelId::land(world::DUNGEONS[k].act), Some(LevelId::Dungeon(k, 0))),
+                LevelId::Dungeon(k, 0) => self.go_to(crate::areas::dungeon_home(k), Some(LevelId::Dungeon(k, 0))),
                 LevelId::Dungeon(k, f) => self.go_to(LevelId::Dungeon(k, f - 1), Some(here)),
                 _ => {}
             },
@@ -1839,6 +1887,18 @@ impl Game {
                 }
             }
             PortalKind::TownPortal => {
+                // A boss's token left lying here comes with you (stepping in too soon used to strand it).
+                let (px, py) = (self.p.x, self.p.y);
+                let mut any = false;
+                for k in self.pickups.iter_mut() {
+                    if matches!(k.kind, Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Pearl(_) | Drop::Shard(_)) {
+                        (k.x, k.y, k.t) = (px, py, 1.0);
+                        any = true;
+                    }
+                }
+                if any {
+                    self.collect_pickups();
+                }
                 self.go_to(LevelId::land(here.act()), None);
                 (self.p.x, self.p.y) = self.town_start;
             }
@@ -3594,6 +3654,12 @@ mod tests {
         let mut g = Game::new(3, crate::gfx::SH_WIDE);
         assert_eq!(g.level, LevelId::Overworld);
         assert!(g.in_safe(g.p.x, g.p.y), "start in town");
+        // Out the north road into the Ashlands, then on to the Barrow Fields.
+        walk_onto(&mut g, PortalKind::Exit(1));
+        assert_eq!(g.level, LevelId::Area(0, 1));
+        assert!(g.portals.iter().any(|p| p.kind == PortalKind::Exit(0) && (p.x - g.p.x).abs() + (p.y - g.p.y).abs() < 3.0), "arrive by the road back");
+        walk_onto(&mut g, PortalKind::Exit(2));
+        assert_eq!(g.level, LevelId::Area(0, 2));
         // Walk onto the crypt entrance.
         let e = g.portals.iter().find(|p| p.kind == PortalKind::Entrance(0)).map(|p| (p.x, p.y)).unwrap();
         g.p.x = e.0;
@@ -3623,7 +3689,8 @@ mod tests {
         g.p.y = up.1;
         g.portal_cd = 0.0;
         g.update(&Input::default());
-        assert_eq!(g.level, LevelId::Overworld);
+        assert_eq!(g.level, LevelId::Area(0, 2), "out by the crypt's door");
+        assert!(g.portals.iter().any(|p| p.kind == PortalKind::Entrance(0) && (p.x - g.p.x).abs() + (p.y - g.p.y).abs() < 3.0));
         assert!(((g.p.x - e.0).powi(2) + (g.p.y - e.1).powi(2)).sqrt() < 2.5, "back at the crypt door");
     }
 
@@ -3642,12 +3709,14 @@ mod tests {
         assert!(g.dialog.is_none());
         assert_eq!(g.quest.stage, 1);
         // The Sanctum is sealed.
+        g.debug_goto(LevelId::Area(0, 6));
         let s = g.portals.iter().find(|p| p.kind == PortalKind::Entrance(SANCTUM)).map(|p| (p.x, p.y)).unwrap();
         g.p.x = s.0;
         g.p.y = s.1;
         g.portal_cd = 0.0;
         g.update(&Input::default());
-        assert_eq!(g.level, LevelId::Overworld, "ash barrier holds");
+        assert_eq!(g.level, LevelId::Area(0, 6), "ash barrier holds");
+        g.debug_goto(LevelId::Overworld);
         // Slay the three wardens and take their seals.
         for k in 0..3 {
             g.debug_goto(LevelId::Dungeon(k, DUNGEONS[k].floors - 1));
@@ -3674,6 +3743,7 @@ mod tests {
             g.update(&Input::default());
         }
         assert_eq!(g.quest.stage, 2);
+        g.debug_goto(LevelId::Area(0, 6));
         g.p.x = s.0;
         g.p.y = s.1;
         g.portal_cd = 0.0;
@@ -3705,9 +3775,10 @@ mod tests {
     #[test]
     fn act_two_opens_after_the_ash_king_and_can_be_finished() {
         let mut g = Game::new(5, crate::gfx::SH_WIDE);
-        // The pass north is shut while the Ash King lives.
+        // The pass north (at the far end of the Ashen Steppe) is shut while the Ash King lives.
+        g.debug_goto(LevelId::Area(0, 6));
         walk_onto(&mut g, PortalKind::Pass(1));
-        assert_eq!(g.level, LevelId::Overworld, "pass closed");
+        assert_eq!(g.level, LevelId::Area(0, 6), "pass closed");
         g.quest.stage = 3;
         g.portal_cd = 0.0;
         g.update(&Input::default());
@@ -5431,7 +5502,7 @@ mod tests {
         assert!(count(Rank::Champion) >= 2, "and a champion pack");
         let e = lv.mobs.iter().find(|m| m.rank == Rank::Elite).unwrap();
         assert!(e.name.is_some() && e.mods.count_ones() == 2);
-        let ow = world::build(LevelId::Overworld, 7);
+        let ow = world::build(LevelId::Area(0, 2), 7);
         // A super unique clears its spot, which can take an elite pack with it.
         assert!((2..=3).contains(&ow.mobs.iter().filter(|m| m.rank == Rank::Elite && m.superu == 0).count()));
         // Promotion multiplies life; stone skin even more.
@@ -5574,7 +5645,7 @@ mod tests {
     #[test]
     fn nightmare_follows_the_rime_wyrm() {
         let mut g = Game::new(5, crate::gfx::SH_WIDE);
-        let normal_hp: f32 = g.mobs.iter().map(|m| m.max_hp).sum();
+        let normal_hp: f32 = world::build_at(LevelId::Area(0, 1), g.world_seed, 0).mobs.iter().map(|m| m.max_hp).sum();
         g.quest.stage = 3;
         g.quest.seals = [true; 3];
         g.p.gear.bag[0] = Some(crate::items::unique(0));
@@ -5625,7 +5696,7 @@ mod tests {
         assert_eq!((g.quest.stage5, g.quest.pearl_count(), g.quest.stage6, g.quest.shard_count()), (0, 0, 0, 0));
         assert!(g.p.gear.bag[0].is_some() && g.p.clvl == clvl, "you keep your hero");
         assert!(g.level_name.contains("NIGHTMARE"));
-        let nm_hp: f32 = g.mobs.iter().map(|m| m.max_hp).sum();
+        let nm_hp: f32 = world::build_at(LevelId::Area(0, 1), g.world_seed, 1).mobs.iter().map(|m| m.max_hp).sum();
         assert!(nm_hp > normal_hp * 2.0, "monsters are much tougher");
         assert!(g.tier > 1.5);
         // Saved and loaded as nightmare.

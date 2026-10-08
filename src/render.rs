@@ -1254,6 +1254,19 @@ impl Game {
             scr.blend(sx - w / 2, y - 1, w, 10, BLACK, 0.65);
             scr.text(&it.name, sx, y, it.col(), Align::Center, 1);
         }
+        // Roads off the map (areas.rs): where they lead, once you're close.
+        for p in &self.portals {
+            if let PortalKind::Exit(n) = p.kind {
+                let d2 = (p.x - self.p.x).powi(2) + (p.y - self.p.y).powi(2);
+                if d2 < 64.0 {
+                    let (sx, sy) = to_scr(p.x, p.y);
+                    let name = Game::waypoint_name(crate::areas::level(self.level.act(), n));
+                    let a = (1.0 - d2.sqrt() / 8.0).clamp(0.0, 1.0);
+                    scr.text(&format!("TO {name}"), sx, sy + 6, mix(BLACK, rgb(0xe8d090), a), Align::Center, 1);
+                    blend_ellipse(scr, sx, sy, 14, 6, rgb(0xffe0a0), 0.18 * a);
+                }
+            }
+        }
         for f in &self.floaters {
             let (sx, sy) = to_scr(f.x, f.y);
             let rise = (f.t * 30.0) as i32;

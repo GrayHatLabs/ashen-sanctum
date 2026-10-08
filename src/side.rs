@@ -132,6 +132,8 @@ pub struct SuperDef {
     pub unique: &'static str,
     /// The lore page it carries (index into LORE), if any.
     pub page: Option<u8>,
+    /// Something of its camp, set down beside it (Skrat's stolen cart).
+    pub camp: Option<PropKind>,
 }
 
 pub const SUPERS: &[SuperDef] = &[
@@ -139,14 +141,15 @@ pub const SUPERS: &[SuperDef] = &[
     SuperDef {
         name: "SKRAT ONE-EAR",
         kind: Kind::Goblin,
-        home: LevelId::Overworld,
-        spot: (88, 66),
+        home: LevelId::Area(0, 8),
+        spot: (0, 0),
         mods: M_FAST | M_STRONG,
         gang: (Kind::Goblin, 5),
         tint: 0x80d040,
         line: "SKRAT'S LOOT! ALL OF IT SKRAT'S!",
         unique: "skrat",
         page: Some(1),
+        camp: Some(PropKind::Cart),
     },
     SuperDef {
         name: "OLD BONEJAW",
@@ -159,18 +162,20 @@ pub const SUPERS: &[SuperDef] = &[
         line: "MORE BONES FOR THE PILE.",
         unique: "bonejaw",
         page: Some(0),
+        camp: None,
     },
     SuperDef {
         name: "THE HOLLOW SHEPHERD",
         kind: Kind::Zombie,
-        home: LevelId::Overworld,
-        spot: (24, 58),
+        home: LevelId::Area(0, 7),
+        spot: (0, 0),
         mods: M_FIERY | M_VAMPIRE,
         gang: (Kind::Zombie, 5),
         tint: 0xa0b080,
         line: "THE FLOCK... MUST... FEED...",
         unique: "shepherd",
         page: Some(2),
+        camp: None,
     },
 ];
 
@@ -247,14 +252,14 @@ pub const SIDES: &[SideDef] = &[
         giver_name: "BROTHER ALDRIC",
         ask: "ASK ABOUT THE OLD WELL",
         offer: &[
-            "THE OLD WELL SOUTH OF THE VILLAGE RAN DRY THE NIGHT THE ASH FELL. NOW IT RUNS AGAIN... RED, AND IT STINKS OF THE GRAVE.",
+            "THE OLD WELL OUT IN THE ASHLANDS RAN DRY THE NIGHT THE ASH FELL. NOW IT RUNS AGAIN... RED, AND IT STINKS OF THE GRAVE.",
             "THE FARMERS SAY A WITCH WAS DROWNED IN IT, LONG AGO. I THINK SHE HAS FOUND HER WAY BACK UP. GO DOWN THE CHARNEL WELL AND END HER, BEFORE SHE POISONS US ALL.",
         ],
-        remind: "THE CHARNEL WELL IS SOUTH OF THE VILLAGE, DOWN THE ROAD. THE WITCH WAITS AT THE BOTTOM.",
+        remind: "THE CHARNEL WELL IS IN THE ASHLANDS, NORTH OF THE VILLAGE, OFF THE ROAD. THE WITCH WAITS AT THE BOTTOM.",
         thanks: &["THE WATER RUNS CLEAR AGAIN. I CAN TEACH YOU SOMETHING FOR THAT: SIT, AND LET YOUR MIND GO STILL..."],
         goal: Goal::Boss(Kind::WellWitch),
         reward: Reward::SkillPoint,
-        todo: "SLAY THE WELL-WITCH IN THE CHARNEL WELL (SOUTH OF HOLLOWMERE)",
+        todo: "SLAY THE WELL-WITCH IN THE CHARNEL WELL (THE ASHLANDS)",
     },
     SideDef {
         name: "GERTA'S CARAVAN",
@@ -263,14 +268,14 @@ pub const SIDES: &[SideDef] = &[
         giver_name: "GERTA",
         ask: "ASK ABOUT HER SUPPLIES",
         offer: &[
-            "MY SUPPLY CART NEVER CAME. GOBLINS, ON THE EAST ROAD. THEIR CHIEF IS A ONE-EARED RUNT CALLED SKRAT, AND HE THINKS EVERYTHING SHINY IS HIS.",
+            "MY SUPPLY CART NEVER CAME. GOBLINS DRAGGED IT OFF THE BARROW FIELDS INTO A GULCH TO THE EAST. THEIR CHIEF IS A ONE-EARED RUNT CALLED SKRAT, AND HE THINKS EVERYTHING SHINY IS HIS.",
             "BRING HIM DOWN AND I'LL MAKE IT WORTH YOUR WHILE. I KEEP MY BEST PIECE UNDER THE COUNTER.",
         ],
-        remind: "SKRAT ONE-EAR. EAST OF THE VILLAGE, BY WHAT'S LEFT OF MY CART.",
+        remind: "SKRAT ONE-EAR. HIS GULCH IS EAST OFF THE BARROW FIELDS, PAST THE ASHLANDS. HE'LL BE SITTING ON MY CART.",
         thanks: &["SKRAT'S DEAD? HA! HERE, AS PROMISED: THE PIECE FROM UNDER THE COUNTER, AND A PURSE FOR YOUR TROUBLE."],
         goal: Goal::Super(0),
         reward: Reward::Rare(300),
-        todo: "SLAY SKRAT ONE-EAR (EAST OF HOLLOWMERE)",
+        todo: "SLAY SKRAT ONE-EAR (SKRAT'S GULCH, EAST OF THE BARROW FIELDS)",
     },
     SideDef {
         name: "THE HOLLOW SHEPHERD",
@@ -279,14 +284,14 @@ pub const SIDES: &[SideDef] = &[
         giver_name: "FARMER",
         ask: "ASK ABOUT HIS FLOCK",
         offer: &[
-            "MY FLOCK... THE OLD SHEPHERD WENT OUT TO THE WESTERN PENS WHEN THE ASH FELL. HE CAME BACK WRONG, AND THE SHEEP CAME BACK WITH HIM. THEY DON'T BLEAT ANY MORE.",
+            "MY FLOCK... THE OLD SHEPHERD WENT OUT TO THE VALE WEST OF THE ASHLANDS WHEN THE ASH FELL. HE CAME BACK WRONG, AND THE SHEEP CAME BACK WITH HIM. THEY DON'T BLEAT ANY MORE.",
             "PUT HIM TO REST. PLEASE. HE WAS MY FATHER.",
         ],
-        remind: "THE WESTERN PENS, PAST THE TREES. YOU'LL KNOW HIM BY THE FLOCK AROUND HIM.",
+        remind: "SHEPHERD'S VALE, WEST OFF THE ASHLANDS. YOU'LL KNOW HIM BY THE FLOCK AROUND HIM.",
         thanks: &["THANK YOU. I'LL BURY HIM PROPERLY. TAKE THIS: MY MOTHER'S CHARM. IT KEPT HIM ALIVE THROUGH THREE WINTERS."],
         goal: Goal::Super(2),
         reward: Reward::Life(20),
-        todo: "PUT THE HOLLOW SHEPHERD TO REST (WEST OF HOLLOWMERE)",
+        todo: "PUT THE HOLLOW SHEPHERD TO REST (SHEPHERD'S VALE, WEST OF THE ASHLANDS)",
     },
 ];
 
@@ -387,6 +392,18 @@ pub fn place(lv: &mut Level, seed: u64) {
         let tier = lv.tier * if lv.id.overland() { 1.2 } else { 1.0 };
         // Clear the spot of other monsters, so it's its own fight.
         lv.mobs.retain(|m| m.boss || crate::breakables::is_prop(m.kind) || (m.x - fx).powi(2) + (m.y - fy).powi(2) > 36.0);
+        if let Some(kind) = s.camp {
+            if let Some((cx, cy)) = open_near(lv, (x + 3, y - 2)) {
+                if (0..3).all(|dx| (0..2).all(|dy| !lv.d.blocked((cx + dx) as f32 + 0.5, (cy + dy) as f32 + 0.5, 0.45))) {
+                    for dy in 0..2 {
+                        for dx in 0..3 {
+                            lv.d.set(cx + dx, cy + dy, crate::dungeon::Tile::Prop);
+                        }
+                    }
+                    lv.props.push(Prop::on(kind, cx, cy, 3, 2));
+                }
+            }
+        }
         let mut m = Mob::new(s.kind, fx, fy, tier, &mut rng);
         m.promote(Rank::Elite, s.mods, Some(s.name.into()));
         // Tougher than an ordinary elite leader.
@@ -925,8 +942,9 @@ mod tests {
     #[test]
     fn super_uniques_live_where_they_should_and_pay_out() {
         let mut g = Game::new(7, 360);
-        g.debug_goto(LevelId::Overworld);
-        let i = g.mobs.iter().position(|m| m.superu == 1).expect("Skrat lives on the Ashlands");
+        g.debug_goto(LevelId::Area(0, 8));
+        let i = g.mobs.iter().position(|m| m.superu == 1).expect("Skrat lives in his gulch");
+        assert!(g.props.iter().any(|p| p.kind == PropKind::Cart), "on Gerta's cart");
         assert_eq!(g.mobs[i].label(), "SKRAT ONE-EAR");
         assert!(g.mobs.iter().filter(|m| m.kind == Kind::Goblin && m.rank == Rank::Minion).count() >= 3, "with his gang");
         // Gerta's quest: take it, kill him, collect.

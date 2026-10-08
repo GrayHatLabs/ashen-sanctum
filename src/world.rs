@@ -23,6 +23,8 @@ pub enum LevelId {
     Heavens,
     /// (dungeon index into DUNGEONS, floor from 0)
     Dungeon(usize, usize),
+    /// An outdoor area of an act (areas.rs): (act, area from 1). The act's town map keeps its own id.
+    Area(u8, u8),
     /// An Ash Rift of this tier (endgame.rs).
     Rift(u16),
 }
@@ -30,6 +32,11 @@ pub enum LevelId {
 impl LevelId {
     /// An open-air map with a town (one per act).
     pub fn overland(self) -> bool {
+        matches!(self, LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep | LevelId::Heavens | LevelId::Area(..))
+    }
+
+    /// An act's town map (the overland with the town; the wild areas around it don't count).
+    pub fn town(self) -> bool {
         matches!(self, LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep | LevelId::Heavens)
     }
 
@@ -43,6 +50,7 @@ impl LevelId {
             LevelId::Deep => 4,
             LevelId::Heavens => 5,
             LevelId::Dungeon(k, _) => DUNGEONS[k].act,
+            LevelId::Area(a, _) => a as usize,
             // The rifts open from Windward Anchorage, and lead back there.
             LevelId::Rift(_) => 5,
         }
@@ -501,6 +509,8 @@ pub enum PortalKind {
     Pass(usize),
     /// An airship dock: it flies you to the other dock with the same number on this map.
     Dock(u8),
+    /// A road off the edge of the map into area `n` of the same act (0 = the town map; areas.rs).
+    Exit(u8),
 }
 
 pub struct Portal {
@@ -775,6 +785,7 @@ pub fn generate(id: LevelId, seed: u64) -> Level {
         LevelId::Heavens => heavens(seed),
         LevelId::Rift(t) => rift(t, seed),
         LevelId::Dungeon(k, f) => dungeon_floor(k, f, seed),
+        LevelId::Area(a, n) => crate::areas::area(crate::areas::def(a, n), seed),
     }
 }
 
@@ -825,12 +836,14 @@ pub fn add_elites(lv: &mut Level, seed: u64) {
         LevelId::Heavens => 0x1311,
         LevelId::Rift(t) => 0x1411 + t as u64,
         LevelId::Dungeon(k, f) => 0x0e12 + k as u64 * 16 + f as u64,
+        LevelId::Area(a, n) => 0x1511 + a as u64 * 16 + n as u64,
     };
     let mut rng = Rng::new(seed ^ salt.wrapping_mul(0x9e37_79b9));
     let (champs, elites) = match lv.id {
         LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep | LevelId::Heavens => (5, 3),
         LevelId::Dungeon(_, f) => (1 + (f > 0) as usize, 1),
         LevelId::Rift(t) => (2 + t as usize / 4, 1 + t as usize / 8),
+        LevelId::Area(..) => (3, 2),
     };
     let mut order: Vec<usize> = (0..lv.mobs.len()).filter(|&i| !lv.mobs[i].boss).collect();
     for i in (1..order.len()).rev() {
@@ -869,7 +882,6 @@ pub fn add_elites(lv: &mut Level, seed: u64) {
 }
 
 /// Where the pass between the acts starts on each overland (the door tile).
-pub const PASS_ASH: (i32, i32) = (57, 7);
 pub const PASS_FROST: (i32, i32) = (56, 104);
 /// The misty road east out of the Frostmarch, and where it comes out in the Mistwood.
 pub const PASS_FROST_EAST: (i32, i32) = (106, 52);
@@ -907,17 +919,17 @@ pub fn town_center() -> (f32, f32) {
 }
 
 /// Smooth value noise in 0..1 from a seeded lattice.
-struct Noise {
+pub(crate) struct Noise {
     grid: Vec<f32>,
     n: i32,
     cell: f32,
 }
 
 impl Noise {
-    fn new(rng: &mut Rng, n: i32, cell: f32) -> Self {
+    pub(crate) fn new(rng: &mut Rng, n: i32, cell: f32) -> Self {
         Noise { grid: (0..n * n).map(|_| rng.f()).collect(), n, cell }
     }
-    fn at(&self, x: f32, y: f32) -> f32 {
+    pub(crate) fn at(&self, x: f32, y: f32) -> f32 {
         let (gx, gy) = (x / self.cell, y / self.cell);
         let (x0, y0) = (gx.floor() as i32, gy.floor() as i32);
         let (fx, fy) = (gx - x0 as f32, gy - y0 as f32);
@@ -929,202 +941,9 @@ impl Noise {
     }
 }
 
-/// Builds the overworld: Hollowmere in the middle, roads out to the four dungeons,
-/// forests, rocks, roaming packs and a little wild food.
+/// Act 1's town map: Hollowmere and the fields around it (the Ashlands themselves are areas, areas.rs).
 pub fn overworld(seed: u64) -> Level {
-    let mut rng = Rng::new(seed ^ 0x0F0F_1234);
-    let (w, h) = (WORLD_W, WORLD_H);
-    let mut d = Dungeon::blank(w, h, Tile::Floor);
-    for v in d.var.iter_mut() {
-        *v = rng.range(0, 100) as u8;
-    }
-    let mut lv = Level::new(LevelId::Overworld, "THE ASHLANDS".into(), Theme::Overworld, 1.0, Dungeon::blank(1, 1, Tile::Void));
-    // Tiles that must stay clear of trees and rocks.
-    let mut keep = vec![false; (w * h) as usize];
-    let clear = |keep: &mut Vec<bool>, x: i32, y: i32, r: i32| {
-        for yy in y - r..=y + r {
-            for xx in x - r..=x + r {
-                if xx >= 0 && yy >= 0 && xx < w && yy < h {
-                    keep[(yy * w + xx) as usize] = true;
-                }
-            }
-        }
-    };
-
-    // ---- Hollowmere ----
-    let (tx0, ty0, tx1, ty1) = TOWN;
-    for y in ty0..=ty1 {
-        for x in tx0..=tx1 {
-            d.set_ground(x, y, 1);
-            let edge = x == tx0 || x == tx1 || y == ty0 || y == ty1;
-            let gate = (y == ty0 || y == ty1) && (54..=57).contains(&x) || (x == tx0 || x == tx1) && (59..=62).contains(&y);
-            if edge && !gate {
-                d.set(x, y, Tile::Wall);
-            }
-        }
-    }
-    clear(&mut keep, 56, 60, 16);
-    // Roads through town (plus).
-    for x in tx0..=tx1 {
-        for y in 60..=61 {
-            d.set_ground(x, y, 2);
-        }
-    }
-    for y in ty0..=ty1 {
-        for x in 55..=56 {
-            d.set_ground(x, y, 2);
-        }
-    }
-    let prop = |lv: &mut Level, d: &mut Dungeon, kind: PropKind, x0: i32, y0: i32, fw: i32, fh: i32| {
-        for y in y0..y0 + fh {
-            for x in x0..x0 + fw {
-                d.set(x, y, Tile::Prop);
-            }
-        }
-        lv.props.push(Prop::on(kind, x0, y0, fw, fh));
-    };
-    prop(&mut lv, &mut d, PropKind::House1, 46, 52, 4, 4);
-    prop(&mut lv, &mut d, PropKind::House2, 62, 52, 4, 4);
-    prop(&mut lv, &mut d, PropKind::House2, 46, 65, 4, 3);
-    prop(&mut lv, &mut d, PropKind::House1, 62, 64, 4, 4);
-    prop(&mut lv, &mut d, PropKind::Stall, 59, 56, 3, 2);
-    prop(&mut lv, &mut d, PropKind::Well, 52, 56, 1, 1);
-    prop(&mut lv, &mut d, PropKind::Campfire, 58, 63, 1, 1);
-    lv.safe = Some((tx0 as f32 - 1.0, ty0 as f32 - 1.0, tx1 as f32 + 2.0, ty1 as f32 + 2.0));
-    lv.npcs = vec![
-        Npc::new("ELDER MAREN", Role::Elder, "npc_elder", 57.5, 64.5, 6),
-        Npc::new("GERTA", Role::Merchant, "npc_merchant", 60.5, 58.8, 0),
-        Npc::new("BROTHER ALDRIC", Role::Healer, "npc_healer", 50.5, 58.5, 2),
-        Npc::new("CAPTAIN ROLF", Role::Guard, "npc_guard", 57.8, 52.0, 0),
-        Npc::new("VILLAGER", Role::Villager(0), "npc_villager", 53.5, 63.5, 1),
-        Npc::new("FARMER", Role::Villager(1), "npc_villager", 61.5, 61.0, 7),
-        Npc::new("VILLAGER", Role::Villager(2), "npc_villager", 49.5, 62.0, 2),
-        Npc::new("FARMER", Role::Villager(3), "npc_villager", 64.0, 58.5, 5),
-        Npc::new("MASTER ODO", Role::Jeweler(0), "npc_jeweler0", 55.5, 59.5, 1),
-    ];
-
-    // ---- roads to each dungeon ----
-    let gates = [(55, ty1 + 1), (tx1 + 1, 60), (55, ty0 - 1), (tx0 - 1, 60)];
-    for (k, def) in DUNGEONS.iter().enumerate().filter(|(_, d)| d.act == 0) {
-        let (ex, ey) = def.entrance;
-        // Leave by the nearest gate, then wander toward the entrance.
-        let &(gx, gy) = gates.iter().min_by_key(|(gx, gy)| (gx - ex).pow(2) + (gy - ey).pow(2)).unwrap();
-        let (mut x, mut y) = (gx as f32, gy as f32);
-        let mut guard = 0;
-        while ((x - ex as f32).abs() > 0.8 || (y - ey as f32).abs() > 0.8) && guard < 400 {
-            guard += 1;
-            let (dx, dy) = (ex as f32 - x, ey as f32 - y);
-            let l = (dx * dx + dy * dy).sqrt();
-            let wob = (guard as f32 * 0.21 + k as f32).sin() * 0.6;
-            x += dx / l + (-dy / l) * wob * 0.5;
-            y += dy / l + (dx / l) * wob * 0.5;
-            for (ox, oy) in [(0, 0), (1, 0), (0, 1), (1, 1)] {
-                let (rx, ry) = (x as i32 + ox, y as i32 + oy);
-                if d.get(rx, ry) == Tile::Floor {
-                    d.set_ground(rx, ry, 2);
-                }
-            }
-            clear(&mut keep, x as i32, y as i32, 2);
-        }
-        clear(&mut keep, ex, ey, 5);
-        // Entrance building behind the door tile.
-        prop(&mut lv, &mut d, PropKind::Entrance(k), ex - 1, ey - 3, 3, 3);
-        lv.portals.push(Portal { x: ex as f32 + 0.5, y: ey as f32 + 0.5, kind: PortalKind::Entrance(k) });
-    }
-
-    // ---- the mountain pass north (to Act 2; open after the Ash King) ----
-    {
-        let (px, py) = PASS_ASH;
-        let (mut x, mut y) = (55.0f32, (ty0 - 1) as f32);
-        while y > py as f32 + 0.5 {
-            y -= 1.0;
-            x += (px as f32 - x).clamp(-0.5, 0.5) + ((y * 0.37).sin() * 0.4);
-            for (ox, oy) in [(0, 0), (1, 0)] {
-                let (rx, ry) = (x as i32 + ox, y as i32 + oy);
-                if d.get(rx, ry) == Tile::Floor {
-                    d.set_ground(rx, ry, 2);
-                }
-            }
-            clear(&mut keep, x as i32, y as i32, 2);
-        }
-        clear(&mut keep, px, py, 4);
-        prop(&mut lv, &mut d, PropKind::Pass, px - 1, py - 3, 3, 2);
-        lv.portals.push(Portal { x: px as f32 + 0.5, y: py as f32 + 0.5, kind: PortalKind::Pass(1) });
-    }
-
-    // ---- forests, rocks and bushes ----
-    let forest = Noise::new(&mut rng, 16, 9.0);
-    for y in 0..h {
-        for x in 0..w {
-            if d.get(x, y) != Tile::Floor || keep[(y * w + x) as usize] {
-                continue;
-            }
-            let border = x < 4 || y < 4 || x >= w - 4 || y >= h - 4;
-            let f = forest.at(x as f32, y as f32);
-            let r = rng.f();
-            let tree = if border { r < 0.85 } else { f > 0.58 && r < 0.5 || r < 0.015 };
-            if tree {
-                let kind = if f > 0.75 { PropKind::TreePine } else if rng.chance(0.2) { PropKind::TreeDead } else { PropKind::TreeOak };
-                prop(&mut lv, &mut d, kind, x, y, 1, 1);
-            } else if r < 0.03 {
-                prop(&mut lv, &mut d, PropKind::Rock, x, y, 1, 1);
-            } else if r < 0.045 {
-                prop(&mut lv, &mut d, PropKind::Bush, x, y, 1, 1);
-            }
-            if f < 0.3 && rng.chance(0.4) {
-                d.set_ground(x, y, 1);
-            }
-        }
-    }
-
-    // ---- roaming packs and wild food ----
-    let (cx, cy) = town_center();
-    let mut packs = 0;
-    for _ in 0..600 {
-        if packs >= 30 {
-            break;
-        }
-        let x = rng.range(6, w - 6) as f32 + 0.5;
-        let y = rng.range(6, h - 6) as f32 + 0.5;
-        let far = ((x - cx).powi(2) + (y - cy).powi(2)).sqrt();
-        if far < 20.0
-            || d.blocked(x, y, 0.4)
-            || DUNGEONS.iter().filter(|d| d.act == 0).any(|def| (def.entrance.0 as f32 - x).abs() + (def.entrance.1 as f32 - y).abs() < 6.0)
-            || ((x - PASS_ASH.0 as f32).abs() < 5.0 && y < 16.0)
-        {
-            continue;
-        }
-        let tier = if far < 34.0 { 0.8 } else { 1.1 };
-        let kinds: &[Kind] = if far < 34.0 { &[Kind::Wolf, Kind::Goblin] } else { &[Kind::Wolf, Kind::Goblin, Kind::Zombie, Kind::Skeleton] };
-        let kind = kinds[rng.range(0, kinds.len() as i32) as usize];
-        let n = rng.range(3, 6);
-        for _ in 0..n {
-            for _try in 0..10 {
-                let (mx, my) = (x + rng.rf(-2.0, 2.0), y + rng.rf(-2.0, 2.0));
-                if !d.blocked(mx, my, 0.35) {
-                    lv.mobs.push(Mob::new(kind, mx, my, tier, &mut rng));
-                    break;
-                }
-            }
-        }
-        packs += 1;
-    }
-    let mut food = 0;
-    for _ in 0..400 {
-        if food >= 12 {
-            break;
-        }
-        let x = rng.range(6, w - 6) as f32 + 0.5;
-        let y = rng.range(6, h - 6) as f32 + 0.5;
-        if ((x - cx).powi(2) + (y - cy).powi(2)).sqrt() > 16.0 && !d.blocked(x, y, 0.3) {
-            lv.pickups.push(Pickup { x, y, kind: Drop::Food(if rng.chance(0.75) { 0 } else { 1 }), t: 1.0 });
-            food += 1;
-        }
-    }
-    lv.explored = vec![false; (w * h) as usize];
-    lv.d = d;
-    lv.start = town_center();
-    lv
+    crate::areas::hollowmere(seed)
 }
 
 /// Kaldholm's town square.
@@ -2459,9 +2278,9 @@ mod tests {
         for n in &lv.npcs {
             assert!(lv.d.walkable(n.x as i32, n.y as i32), "{} stands in a wall", n.name);
         }
-        assert!(lv.mobs.len() > 60, "overworld has {} monsters", lv.mobs.len());
-        let (x0, y0, x1, y1) = lv.safe.unwrap();
-        assert!(lv.mobs.iter().all(|m| !(m.x > x0 && m.x < x1 && m.y > y0 && m.y < y1)), "monsters spawned in town");
+        // Hollowmere's map is quiet; the monsters are out in the areas (areas.rs tests those).
+        assert!(lv.mobs.is_empty());
+        assert!(lv.portal(PortalKind::Exit(1)).is_some(), "the north road");
     }
 
     #[test]
@@ -2485,12 +2304,11 @@ mod tests {
         assert!(lv.mobs.len() > 50 && lv.mobs.iter().all(|m| crate::mobs::def(m.kind).cold));
         let (x0, y0, x1, y1) = lv.safe.unwrap();
         assert!(lv.mobs.iter().all(|m| !(m.x > x0 && m.x < x1 && m.y > y0 && m.y < y1)), "monsters spawned in town");
-        // And the Ashlands have the pass north.
-        let ow = overworld(7);
-        let pass = ow.portal(PortalKind::Pass(1)).expect("pass north");
-        let (cx, cy) = town_center();
-        assert!(ow.d.path((cx as i32, cy as i32), (pass.x as i32, pass.y as i32), 100_000).is_some());
-        assert!(ow.portals.iter().all(|p| !matches!(p.kind, PortalKind::Entrance(k) if k >= 4 && k != CHARNEL)));
+        // And the Ashen Steppe (Act 1's last area) has the pass north.
+        let steppe = generate(LevelId::Area(0, 6), 7);
+        let pass = steppe.portal(PortalKind::Pass(1)).expect("pass north");
+        let s = (steppe.start.0 as i32, steppe.start.1 as i32);
+        assert!(steppe.d.path(s, (pass.x as i32, pass.y as i32), 100_000).is_some());
     }
 
     #[test]

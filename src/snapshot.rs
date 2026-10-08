@@ -87,9 +87,15 @@ impl Bot {
             return inp;
         }
         if let Some(d) = g.dialog.as_ref() {
-            // Waypoints: the bot walks everywhere (cancel the travel menu).
+            // Waypoints: travel when one is closer to where it's going; otherwise walk (cancel the menu).
             if d.name == "WAYPOINT" {
-                inp.cancel = t % 20 == 0;
+                let want = g.bot_waypoint_goal().and_then(|l| d.options.iter().position(|o| o.1 == crate::story::Act::Travel(l)));
+                match want {
+                    Some(i) if d.sel < i => inp.move_y = if t % 2 == 0 { 1.0 } else { 0.0 },
+                    Some(i) if d.sel > i => inp.move_y = if t % 2 == 0 { -1.0 } else { 0.0 },
+                    Some(_) => inp.confirm = t % 4 == 0,
+                    None => inp.cancel = t % 20 == 0,
+                }
             } else {
                 inp.confirm = t % 20 == 0;
             }
@@ -165,6 +171,14 @@ impl Bot {
                 self.steer(g, t, (mx, my), &mut inp);
                 return inp;
             }
+        }
+        // Outdoors: touch this area's waypoint (they're near where you come in), and take one that's closer
+        // to where it's going.
+        let ((wx, wy), known) = g.bot_waypoint();
+        let near_wp = (wx - g.p.x).powi(2) + (wy - g.p.y).powi(2) < 144.0;
+        if g.level.overland() && ((!known && near_wp) || g.bot_waypoint_goal().is_some()) {
+            self.steer(g, t, (wx, wy), &mut inp);
+            return inp;
         }
         if let Some(p) = g.bot_portal() {
             self.steer(g, t, p, &mut inp);
@@ -1172,6 +1186,38 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         idle(&mut g, 90);
         save(&mut g, scr, "endgame_guardian");
     }
+    // Act 1's areas (areas.rs): each one where you come in, and the Barrow Fields' whole map.
+    {
+        let mut g = Game::new(7, h);
+        g.p.base_hp = 9999.0;
+        g.p.recalc();
+        g.p.hp = 9999.0;
+        for a in crate::areas::AREAS.iter().filter(|a| a.act == 0) {
+            g.debug_goto(LevelId::Area(0, a.n));
+            g.banner_t = 0.0;
+            g.event_cd = 9999.0;
+            g.message = None;
+            idle(&mut g, 20);
+            save(&mut g, scr, &format!("area_{}", a.n));
+        }
+        g.debug_goto(LevelId::Area(0, 2));
+        g.banner_t = 0.0;
+        for e in g.explored.iter_mut() {
+            *e = true;
+        }
+        g.show_map = true;
+        idle(&mut g, 2);
+        save(&mut g, scr, "area_map");
+        g.show_map = false;
+        g.debug_goto(LevelId::Overworld);
+        let exit = g.portals.iter().find(|p| p.kind == crate::world::PortalKind::Exit(1)).map(|p| (p.x, p.y));
+        if let Some((x, y)) = exit {
+            (g.p.x, g.p.y) = (x + 0.5, y + 3.0);
+            g.banner_t = 0.0;
+            idle(&mut g, 20);
+            save(&mut g, scr, "area_exit");
+        }
+    }
     // Side content (side.rs): a shrine and its blessing, Skrat One-Ear and his gang, the Charnel Well, the
     // Well-Witch, a lore page and the journal on the map.
     {
@@ -1193,7 +1239,7 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             idle(&mut g, 60);
             save(&mut g, scr, "side_blessed");
         }
-        g.debug_goto(LevelId::Overworld);
+        g.debug_goto(LevelId::Area(0, 8));
         g.banner_t = 0.0;
         g.event_cd = 9999.0;
         if let Some((x, y)) = g.mobs.iter().find(|m| m.superu == 1).map(|m| (m.x, m.y)) {
@@ -1201,6 +1247,9 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             idle(&mut g, 45);
             save(&mut g, scr, "side_skrat");
         }
+        g.debug_goto(LevelId::Area(0, 1));
+        g.banner_t = 0.0;
+        g.event_cd = 9999.0;
         if let Some((x, y)) = g.portals.iter().find(|p| p.kind == crate::world::PortalKind::Entrance(crate::world::CHARNEL)).map(|p| (p.x, p.y)) {
             g.mobs.retain(|m| (m.x - x).powi(2) + (m.y - y).powi(2) > 100.0);
             (g.p.x, g.p.y) = (x + 1.5, y + 2.5);
