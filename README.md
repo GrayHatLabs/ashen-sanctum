@@ -359,6 +359,18 @@ Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`;
     and Ylva's Frozen Bride (a respec).
   - **Super uniques:** Grimfang the White, the Frozen Bride and Jarl Hrogar.
   - **Lore:** five pages.
+- **Every act** (`src/extras.rs`):
+  - **The bestiary**: every kind of monster you slay is counted (on the map, right). At 50, 250 and 1000
+    kills: +4% damage against that kind per tier, and +10% experience from it at the last.
+  - **A rival adventurer** turns up in town now and then (from about 20 minutes of play) with a challenge.
+    Accept and they wait for you in one of the act's areas, fighting like a hero of their class. Beat them
+    and they leave, paying their own unique the first time only; the next rival comes about an hour of play
+    later. If they beat you, they take a tenth of your gold.
+  - **Merchant caravans** camp by the road in the areas now and then (from level 5), selling rares at a
+    markup. Sometimes raiders are attacking as you arrive: drive them off and prices drop by a third.
+  - **The arena**: the Arena Master in every town opens a challenge for each act you've reached: five waves,
+    then the arena's champion, against the clock. Your first clear on each difficulty pays a rare; the five
+    best times per arena go on a board shared by all your heroes.
 - **Lore pages**, five per act; all five give +5% experience in that act. The map (Tab / M) shows the
   **journal**: pages, side quests, super uniques and shrines.
 

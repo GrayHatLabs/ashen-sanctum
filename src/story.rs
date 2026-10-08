@@ -66,6 +66,14 @@ pub enum Role {
     Brazier(u8),
     /// The Riftwarden in Windward Anchorage: opens the Ash Rifts, and spends Embers (endgame.rs).
     Riftwarden,
+    // ---- The all-act systems (extras.rs) ----
+    /// A rival adventurer, waiting in town with a challenge.
+    Rival,
+    /// The Arena Master in every town.
+    ArenaMaster,
+    /// A travelling merchant and the caravan's guards.
+    Caravan,
+    CaravanGuard,
 }
 
 /// Jeweler names by act.
@@ -336,6 +344,10 @@ pub enum Act {
     Pact(u8),
     /// The court (gears.rs): 0 fight, 1 bribe, 2 argue, 10+ an answer.
     Court(u8),
+    /// The rival's challenge (extras.rs): 1 accept, 0 not today.
+    Rival(u8),
+    /// The arena (extras.rs): fight this act's challenge (99: the board of best times).
+    Arena(u8),
 }
 
 pub struct Dialog {
@@ -803,7 +815,7 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
             ];
             Dialog::new(if k == 2 { "FISHERWIFE" } else { "FISHERMAN" }, &[lines[k as usize % 3]])
         }
-        Role::Rescue(_) | Role::GoblinTrader | Role::Jarl | Role::FrozenMerchant | Role::YetiCub | Role::BogWitch | Role::Magistrate => Dialog::new("", &["..."]),
+        Role::Rescue(_) | Role::GoblinTrader | Role::Jarl | Role::FrozenMerchant | Role::YetiCub | Role::BogWitch | Role::Magistrate | Role::Rival | Role::ArenaMaster | Role::Caravan | Role::CaravanGuard => Dialog::new("", &["..."]),
         Role::Captive => Dialog::new("CAPTIVE", &["PLEASE... THEY'RE ALL AROUND ME. KILL THEM AND I CAN RUN FOR IT!"]),
         Role::Guard => {
             let line = if q.stage == 0 {

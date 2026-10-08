@@ -1611,6 +1611,64 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             save(&mut g, scr, "isle_astronomer");
         }
     }
+    // The all-act systems (extras.rs): the Arena Master and a rival in town, the rival's duel, a caravan, an
+    // arena wave, and the bestiary on the map.
+    {
+        let mut g = Game::new(7, h);
+        g.p.base_hp = 9999.0;
+        g.p.recalc();
+        g.p.hp = 9999.0;
+        g.p.clvl = 12;
+        let quiet = |g: &mut Game| {
+            g.banner_t = 0.0;
+            g.event_cd = 9999.0;
+            g.message = None;
+        };
+        g.ex.rival_state = 1;
+        g.ex.rival_next = 4;
+        g.debug_goto(LevelId::Overworld);
+        quiet(&mut g);
+        if let Some((x, y)) = g.npcs.iter().find(|n| n.role == Role::ArenaMaster).map(|n| (n.x, n.y)) {
+            (g.p.x, g.p.y) = (x + 1.5, y + 1.5);
+            idle(&mut g, 10);
+            save(&mut g, scr, "extra_town");
+        }
+        g.rival_answer(true);
+        let at = g.ex.rival_area.unwrap();
+        g.debug_goto(at);
+        quiet(&mut g);
+        if let Some((x, y)) = g.mobs.iter().find(|m| m.kind == crate::mobs::Kind::Rival).map(|m| (m.x, m.y)) {
+            g.debug_place_near(x, y, 3.5);
+            idle(&mut g, 60);
+            save(&mut g, scr, "extra_rival");
+        }
+        g.debug_goto(LevelId::Area(0, 3));
+        quiet(&mut g);
+        g.ex.caravan_cd = 0.0;
+        g.place_caravan();
+        g.message = None;
+        if let Some((x, y)) = g.npcs.iter().find(|n| n.role == Role::Caravan).map(|n| (n.x, n.y)) {
+            g.debug_place_near(x, y, 2.5);
+            idle(&mut g, 20);
+            save(&mut g, scr, "extra_caravan");
+        }
+        g.debug_goto(LevelId::Overworld);
+        g.arena_choice(0);
+        idle(&mut g, 260);
+        save(&mut g, scr, "extra_arena");
+        for (k, n) in [(crate::mobs::Kind::Zombie, 260), (crate::mobs::Kind::Skeleton, 1200), (crate::mobs::Kind::Wolf, 60), (crate::mobs::Kind::Goblin, 14)] {
+            for _ in 0..n {
+                g.bestiary_kill(k, 0.0, 0.0);
+            }
+        }
+        g.debug_goto(LevelId::Area(0, 1));
+        quiet(&mut g);
+        g.floaters.clear();
+        g.show_map = true;
+        idle(&mut g, 2);
+        save(&mut g, scr, "extra_bestiary");
+        g.show_map = false;
+    }
     // Side content (side.rs): a shrine and its blessing, Skrat One-Ear and his gang, the Charnel Well, the
     // Well-Witch, a lore page and the journal on the map.
     {

@@ -1511,6 +1511,8 @@ impl Game {
         self.stats.dealt += 1;
         let burn = burn * self.p.skills.burn_mult();
         let kind = self.mobs[i].kind;
+        // The bestiary (extras.rs): you know this kind's weak spots.
+        let dmg = dmg * self.bestiary_damage(kind);
         // Mechanus's laws: inside a law zone, forbidden blows barely scratch.
         let law = self.law_scale(i);
         // Ordinals in step hold a shield wall; a broken squad is easy prey.

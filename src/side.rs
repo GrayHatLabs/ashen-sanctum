@@ -784,6 +784,10 @@ fn open_near(lv: &Level, (x, y): (i32, i32)) -> Option<(i32, i32)> {
 pub fn place(lv: &mut Level, seed: u64) {
     let salt = crate::levels::file_name(lv.id).bytes().fold(0x51de_u64, |h, b| h.wrapping_mul(31).wrapping_add(b as u64));
     let mut rng = Rng::new(seed ^ salt.wrapping_mul(0x2545_f491));
+    // The arena (extras.rs) is just the ring.
+    if matches!(lv.id, LevelId::Arena(_)) {
+        return;
+    }
     // ---- shrines: 2-3 on an overland, 1-2 on a dungeon floor or in a rift ----
     let n = if lv.id.overland() { rng.range(2, 4) } else { rng.range(1, 3) };
     let act = lv.id.act() as u8;
@@ -797,7 +801,7 @@ pub fn place(lv: &mut Level, seed: u64) {
         lv.props.push(Prop::on(PropKind::Shrine(act), x, y, 1, 1));
         lv.shrines.push(Shrine { x, y, kind, used: false });
     }
-    if matches!(lv.id, LevelId::Rift(_)) {
+    if matches!(lv.id, LevelId::Rift(_) | LevelId::Arena(_)) {
         return;
     }
     // ---- super uniques and their gangs ----

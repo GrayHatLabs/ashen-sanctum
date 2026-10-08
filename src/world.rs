@@ -27,6 +27,8 @@ pub enum LevelId {
     Area(u8, u8),
     /// An Ash Rift of this tier (endgame.rs).
     Rift(u16),
+    /// The arena's challenge for this act (extras.rs).
+    Arena(u8),
 }
 
 impl LevelId {
@@ -53,6 +55,7 @@ impl LevelId {
             LevelId::Area(a, _) => a as usize,
             // The rifts open from Windward Anchorage, and lead back there.
             LevelId::Rift(_) => 5,
+            LevelId::Arena(a) => a as usize,
         }
     }
 
@@ -879,6 +882,7 @@ pub fn generate(id: LevelId, seed: u64) -> Level {
         LevelId::Deep => deep(seed),
         LevelId::Heavens => heavens(seed),
         LevelId::Rift(t) => rift(t, seed),
+        LevelId::Arena(a) => arena(a, seed),
         LevelId::Dungeon(k, f) => dungeon_floor(k, f, seed),
         LevelId::Area(a, n) => crate::areas::area(crate::areas::def(a, n), seed),
     };
@@ -940,6 +944,7 @@ pub fn add_elites(lv: &mut Level, seed: u64) {
         LevelId::Deep => 0x1211,
         LevelId::Heavens => 0x1311,
         LevelId::Rift(t) => 0x1411 + t as u64,
+        LevelId::Arena(a) => 0x1611 + a as u64,
         LevelId::Dungeon(k, f) => 0x0e12 + k as u64 * 16 + f as u64,
         LevelId::Area(a, n) => 0x1511 + a as u64 * 16 + n as u64,
     };
@@ -948,6 +953,7 @@ pub fn add_elites(lv: &mut Level, seed: u64) {
         LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep | LevelId::Heavens => (5, 3),
         LevelId::Dungeon(_, f) => (1 + (f > 0) as usize, 1),
         LevelId::Rift(t) => (2 + t as usize / 4, 1 + t as usize / 8),
+        LevelId::Arena(_) => (0, 0),
         LevelId::Area(..) => (3, 2),
     };
     let mut order: Vec<usize> = (0..lv.mobs.len()).filter(|&i| !lv.mobs[i].boss).collect();
@@ -2194,6 +2200,33 @@ pub fn deep(seed: u64) -> Level {
     lv.explored = vec![false; (w * h) as usize];
     lv.d = d;
     lv.start = brinehollow_center();
+    lv
+}
+
+/// The arena (extras.rs): a round pit in the look of the act's first dungeon, empty until the waves come.
+pub fn arena(act: u8, _seed: u64) -> Level {
+    let (w, h) = (37, 37);
+    let mut d = Dungeon::blank(w, h, Tile::Wall);
+    let (cx, cy) = (18.0f32, 18.0f32);
+    for y in 0..h {
+        for x in 0..w {
+            let r = ((x as f32 + 0.5 - cx - 0.5).powi(2) + (y as f32 + 0.5 - cy - 0.5).powi(2)).sqrt();
+            if r < 11.5 {
+                d.set(x, y, Tile::Floor);
+            }
+        }
+    }
+    // Four pillars to fight around.
+    for (px, py) in [(13, 13), (23, 13), (13, 23), (23, 23)] {
+        d.set(px, py, Tile::Wall);
+    }
+    d.rooms = vec![Room { x: 8, y: 8, w: 21, h: 21 }];
+    let look = DUNGEONS.iter().find(|x| x.act == act as usize).unwrap_or(&DUNGEONS[0]);
+    let tier = DUNGEONS.iter().filter(|x| x.act == act as usize).map(|x| x.tier).fold(0.0f32, f32::max).max(1.5);
+    let mut lv = Level::new(LevelId::Arena(act), crate::extras::ARENAS[act as usize % 6].into(), look.theme, tier, d);
+    lv.start = (18.5, 26.5);
+    lv.portals.push(Portal { x: 18.5, y: 28.5, kind: PortalKind::TownPortal });
+    lv.explored = vec![true; (w * h) as usize];
     lv
 }
 

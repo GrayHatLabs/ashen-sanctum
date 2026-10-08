@@ -1513,6 +1513,17 @@ impl Game {
                 scr.text(t, jx, jy + 14 + k as i32 * lh, *col, Align::Left, 1);
             }
         }
+        // The bestiary (extras.rs), on the right.
+        let lines = self.bestiary_lines();
+        let bw = 196;
+        let bx = scr.w - bw - 4;
+        let bh = lines.len() as i32 * lh + 8;
+        scr.blend(bx - 4, jy - 4, bw, bh, rgb(0x0c0a08), 0.72);
+        for (k, (t, col)) in lines.iter().enumerate() {
+            if !t.is_empty() {
+                scr.text(t, bx, jy + k as i32 * lh, *col, Align::Left, 1);
+            }
+        }
     }
 
     /// The class select screen: the hero carousel (shared with the menu).
@@ -1752,6 +1763,8 @@ impl Game {
             (crate::mobs::Kind::Vardak, 1) => "boss_vardak_bat",
             // The Clockmaker's great engine.
             (crate::mobs::Kind::Clockmaker, 1) => "boss_clockmaker_engine",
+            // A rival is drawn as a hero of their class (extras.rs).
+            (crate::mobs::Kind::Rival, f) => crate::extras::RIVALS[f as usize % 8].1,
             _ => def(m.kind).art,
         };
         let (art, scale, ..) = self.art.char_art(name);
@@ -2154,6 +2167,7 @@ impl Game {
 
         // An Ash Rift's bar, clock and modifiers.
         crate::endgame::draw_rift_hud(self, scr);
+        crate::extras::draw_arena_hud(self, scr);
         // Area name and quest log (top left).
         scr.text(&self.level_name, 6, 6, rgb(0xd8b878), Align::Left, 1);
         let log = self.quest_log();
@@ -2194,7 +2208,7 @@ impl Game {
             scr.fill(w / 2 - bw / 2 - 2, 26, bw + 4, 14, rgb(0x5a4a38));
             scr.fill(w / 2 - bw / 2, 28, bw, 10, BLACK);
             scr.fill(w / 2 - bw / 2, 28, f, 10, if m.enraged { rgb(0xc02010) } else { rgb(0x901010) });
-            scr.text(def(m.kind).label, w / 2, 16, rgb(0xffd0a0), Align::Center, 1);
+            scr.text(m.name.as_deref().unwrap_or(def(m.kind).label), w / 2, 16, rgb(0xffd0a0), Align::Center, 1);
         } else if let Some(i) = self.hover.or(self.focus) {
             let m = &self.mobs[i];
             if m.alive() {

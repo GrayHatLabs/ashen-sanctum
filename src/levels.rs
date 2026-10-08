@@ -111,6 +111,7 @@ pub fn file_name(id: LevelId) -> String {
         LevelId::Heavens => "heavens".into(),
         LevelId::Dungeon(k, f) => format!("{}_floor{}", DUNGEON_SLUGS[k], f + 1),
         LevelId::Rift(t) => format!("rift{t}"),
+        LevelId::Arena(a) => format!("arena{a}"),
         LevelId::Area(a, n) => crate::areas::def(a, n).slug.into(),
     }
 }
@@ -125,6 +126,7 @@ pub fn id_string(id: LevelId) -> String {
         LevelId::Heavens => "heavens".into(),
         LevelId::Dungeon(k, f) => format!("dungeon:{k}:{f}"),
         LevelId::Rift(t) => format!("rift:{t}"),
+        LevelId::Arena(a) => format!("arena:{a}"),
         LevelId::Area(a, n) => format!("area:{a}:{n}"),
     }
 }
@@ -152,6 +154,9 @@ pub fn parse_id(s: &str) -> Option<LevelId> {
         let mut it = t.split(':');
         let (a, n): (u8, u8) = (it.next()?.parse().ok()?, it.next()?.parse().ok()?);
         return crate::areas::AREAS.iter().any(|d| d.act == a && d.n == n).then_some(LevelId::Area(a, n));
+    }
+    if let Some(t) = s.strip_prefix("arena:") {
+        return t.parse().ok().filter(|a| *a < 6).map(LevelId::Arena);
     }
     if let Some(t) = s.strip_prefix("rift:") {
         return t.parse().ok().map(LevelId::Rift);
@@ -316,7 +321,7 @@ const PROPS: [PropKind; 98] = [
     PropKind::Shrine(5),
 ];
 
-const KINDS: [Kind; 84] = [
+const KINDS: [Kind; 85] = [
     Kind::Zombie,
     Kind::Skeleton,
     Kind::Wolf,
@@ -401,6 +406,7 @@ const KINDS: [Kind; 84] = [
     Kind::KrakenArm,
     Kind::Astronomer,
     Kind::StarMetal,
+    Kind::Rival,
 ];
 
 fn portal_name(k: PortalKind) -> String {

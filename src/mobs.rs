@@ -143,6 +143,8 @@ pub enum Kind {
     Astronomer,
     /// A lump of star-metal in a fallen star's crater: break it open.
     StarMetal,
+    /// A rival adventurer (extras.rs): `form` is which one, drawn as a hero of their class.
+    Rival,
     // ---- breakables (breakables.rs): no mind, smashed by any hit; the act is in `Mob::form` ----
     Crate,
     Barrel,
@@ -346,6 +348,7 @@ pub fn def(k: Kind) -> Def {
             boss: true,
             ..d("boss_astronomer", "THE ASTRONOMER", 1500.0, 2.0, (26.0, 36.0), 0.6, 1.6, 2400.0)
         },
+        Kind::Rival => Def { r: 0.35, reach: 1.3, ..d("mage", "RIVAL", 260.0, 3.0, (14.0, 20.0), 0.4, 1.1, 900.0) },
         Kind::StarMetal => Def { r: 0.45, reach: 0.0, ..d("star_metal", "STAR-METAL", 60.0, 0.0, (0.0, 0.0), 9.0, 99.0, 30.0) },
         Kind::KrakenArm => Def { r: 0.8, reach: 2.2, ..d("kraken_arm", "THE KRAKEN'S ARM", 220.0, 0.0, (20.0, 30.0), 0.7, 2.2, 600.0) },
         Kind::Automaton => Def { r: 0.38, reach: 1.0, ..d("automaton", "THE BRASS KNIGHT", 420.0, 3.8, (14.0, 20.0), 0.4, 0.9, 0.0) },

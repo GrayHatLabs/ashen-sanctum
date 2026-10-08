@@ -701,6 +701,8 @@ pub struct Game {
     pub(crate) errands_done: Vec<(LevelId, crate::errands::ErrandKind)>,
     /// Set pieces (features.rs), and casts seen on the thin ice.
     pub(crate) feats: crate::features::Feats,
+    /// The all-act systems (extras.rs): bestiary, rival, caravans, arena. Per hero, never reset.
+    pub(crate) ex: crate::extras::Extras,
     pub(crate) ice_casts: u32,
     pub(crate) tide: f32,
     pub(crate) blind_t: f32,
@@ -834,6 +836,7 @@ impl Game {
             errands: vec![],
             errands_done: vec![],
             feats: Default::default(),
+            ex: Default::default(),
             ice_casts: 0,
             tide: 0.0,
             blind_t: 0.0,
@@ -1005,7 +1008,7 @@ impl Game {
         let base = match self.level {
             LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep | LevelId::Heavens => (self.town_start.0 + 3.0, self.town_start.1 + 2.0),
             LevelId::Dungeon(..) => self.portals.iter().find(|p| p.kind == PortalKind::Up).map(|p| (p.x + 2.0, p.y + 1.0)).unwrap_or(self.start),
-            LevelId::Rift(_) => self.start,
+            LevelId::Rift(_) | LevelId::Arena(_) => self.start,
             // An area's waypoint stands by the road in from town.
             LevelId::Area(..) => (self.start.0 + 2.0, self.start.1 + 1.0),
         };
@@ -1041,6 +1044,7 @@ impl Game {
             LevelId::Heavens => "WINDWARD ANCHORAGE".into(),
             LevelId::Dungeon(k, f) => format!("{} - LEVEL {}", DUNGEONS_LIST[k].name, f + 1),
             LevelId::Rift(t) => format!("ASH RIFT - TIER {t}"),
+            LevelId::Arena(a) => crate::extras::ARENAS[a as usize % 6].into(),
             LevelId::Area(a, n) => crate::areas::def(a, n).name.into(),
         }
     }
@@ -1343,6 +1347,7 @@ impl Game {
         self.gears_enter();
         self.reef_enter();
         self.isles_enter();
+        self.extras_enter();
         if let Some(mut w) = wolf {
             let (wx, wy) = if self.d.blocked(x + 1.0, y, 0.35) { (x, y) } else { (x + 1.0, y) };
             w.x = wx;
@@ -1768,6 +1773,7 @@ impl Game {
         self.update_gears();
         self.update_reef();
         self.update_isles();
+        self.update_extras();
         self.update_sky();
         self.update_rift();
         self.second_wind_t = (self.second_wind_t - DT).max(0.0);
@@ -1800,6 +1806,8 @@ impl Game {
     }
 
     fn respawn(&mut self) {
+        // A rival who beat you takes their cut first (extras.rs).
+        self.rival_won();
         self.stats.deaths += 1;
         let lost = self.p.gold / 10;
         self.p.gold -= lost;
@@ -2138,6 +2146,8 @@ impl Game {
             }
             Some(Act::BuyStock(k)) => self.buy_stock(k as usize),
             Some(Act::Duel) => self.start_duel(),
+            Some(Act::Rival(k)) => self.rival_answer(k == 1),
+            Some(Act::Arena(a)) => self.arena_choice(a),
             Some(Act::Pact(k)) => self.make_pact(k as usize),
             Some(Act::Court(k)) => self.court_act(k),
             Some(Act::Side(q)) => {
@@ -3226,7 +3236,9 @@ impl Game {
         if matches!(kind, Kind::Zombie | Kind::PlagueWarden | Kind::Wolf) {
             self.decals.push(Decal { x, y, r: if boss { 1.0 } else { 0.4 }, col: rgb(0x301008), a: 0.5 });
         }
-        self.gain_xp(xp);
+        // The bestiary (extras.rs) counts it, and pays experience at its last tier.
+        let bx = self.bestiary_kill(kind, x, y);
+        self.gain_xp(xp * bx);
         {
             use crate::items::Stat;
             let p = &mut self.p;
@@ -3263,6 +3275,10 @@ impl Game {
             if self.feats.ghosts.count_ones() >= 3 {
                 self.side_progress(crate::side::Goal::Ghosts);
             }
+        }
+        // The rival yields (extras.rs).
+        if kind == Kind::Rival {
+            self.rival_beaten(x, y);
         }
         // Act 6 (isles.rs): star-metal, the Weeping Seraph's tears.
         if kind == Kind::StarMetal {

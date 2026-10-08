@@ -1998,6 +1998,12 @@ window.CATALOG = {
       "kind": "star_metal",
       "name": "STAR-METAL",
       "prop": false
+    },
+    {
+      "boss": false,
+      "kind": "mage",
+      "name": "RIVAL",
+      "prop": false
     }
   ],
   "npcs": [

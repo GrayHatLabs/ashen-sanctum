@@ -224,7 +224,7 @@ impl Game {
         self.props.retain(|p| !hit(p) || matches!(p.kind, PropKind::Entrance(_) | PropKind::StairsUp | PropKind::StairsDown | PropKind::Shrine(_)));
     }
 
-    fn set_prop(&mut self, kind: PropKind, x0: i32, y0: i32, w: i32, h: i32) {
+    pub(crate) fn set_prop(&mut self, kind: PropKind, x0: i32, y0: i32, w: i32, h: i32) {
         self.clear_props(x0 - 1, y0 - 1, x0 + w + 1, y0 + h + 1);
         for y in y0..y0 + h {
             for x in x0..x0 + w {
@@ -248,7 +248,7 @@ impl Game {
         }
     }
 
-    fn stock(&mut self, who: Role, n: usize, rare: bool) {
+    pub(crate) fn stock(&mut self, who: Role, n: usize, rare: bool) {
         let ilvl = crate::items::ilvl_for(self.tier) + 3;
         let items = (0..n)
             .map(|_| {
@@ -727,12 +727,22 @@ impl Game {
     /// What the set pieces' people say (None: not theirs).
     pub(crate) fn feature_dialog(&mut self, role: Role) -> Option<Dialog> {
         match role {
-            Role::GoblinTrader | Role::FrozenMerchant => {
+            Role::GoblinTrader | Role::FrozenMerchant | Role::Caravan => {
                 self.feats.trading = Some(role);
-                let pitch = if role == Role::GoblinTrader { "PSST. SHINY THINGS, FELL OFF A CART. CHEAP, CHEAP. NO QUESTIONS!" } else { "FROZE SOLID IN THAT ICE FOR A WINTER, I DID. YOU SAVED ME: TAKE YOUR PICK, ONE TIME ONLY." };
-                let mut d = Dialog::new(if role == Role::GoblinTrader { "GRUBNIK THE FENCE" } else { "HALVARD THE THAWED" }, &[pitch]);
+                let pitch = match role {
+                    Role::GoblinTrader => "PSST. SHINY THINGS, FELL OFF A CART. CHEAP, CHEAP. NO QUESTIONS!",
+                    Role::FrozenMerchant => "FROZE SOLID IN THAT ICE FOR A WINTER, I DID. YOU SAVED ME: TAKE YOUR PICK, ONE TIME ONLY.",
+                    _ if self.ex.caravan_ambush == 2 => "YOU SAVED MY CARAVAN! FOR YOU, A THIRD OFF EVERYTHING ON THE WAGON.",
+                    _ => "GOODS FROM EVERY ROAD BETWEEN HERE AND THE EDGE OF THE WORLD. NOT CHEAP, BUT YOU WON'T FIND BETTER IN TOWN.",
+                };
+                let who = match role {
+                    Role::GoblinTrader => "GRUBNIK THE FENCE",
+                    Role::FrozenMerchant => "HALVARD THE THAWED",
+                    _ => self.ex.caravan_name,
+                };
+                let mut d = Dialog::new(who, &[pitch]);
                 let stock = self.feats.stock.iter().find(|s| s.0 == role).map(|s| s.1.clone()).unwrap_or_default();
-                let mul = if role == Role::GoblinTrader { 3 } else { 4 };
+                let mul = self.trade_mul(role);
                 d.options = stock
                     .iter()
                     .enumerate()
@@ -750,13 +760,27 @@ impl Game {
             Role::Magistrate => Some(if self.feats.court == 0 { self.court_dialog() } else { Dialog::new("MAGISTRATE KORVEL", &["THE COURT HAS RULED. MOVE ALONG, CITIZEN."]) }),
             Role::YetiCub => Some(Dialog::new("A LOST YETI CUB", &["MRRR. (IT SNIFFS YOUR HAND AND WON'T LEAVE YOUR SIDE.)"])),
             Role::Rescue(_) => Some(Dialog::new("TRAPPED VILLAGER", &["HELP! THE FIRE! GET ME OUT OF HERE!"])),
+            // The all-act systems (extras.rs).
+            Role::Rival => Some(self.rival_dialog()),
+            Role::ArenaMaster => Some(self.arena_dialog()),
+            Role::CaravanGuard => Some(Dialog::new("CARAVAN GUARD", &["KEEP YOUR HANDS WHERE I CAN SEE THEM, FRIEND. THE MERCHANT'S OVER BY THE WAGON."])),
             _ => None,
+        }
+    }
+
+    /// A trader's markup over an item's price.
+    fn trade_mul(&self, role: Role) -> i32 {
+        match role {
+            Role::GoblinTrader => 3,
+            Role::Caravan if self.ex.caravan_ambush == 2 => 2,
+            Role::Caravan => 3,
+            _ => 4,
         }
     }
 
     pub(crate) fn buy_stock(&mut self, k: usize) {
         let Some(role) = self.feats.trading else { return };
-        let mul = if role == Role::GoblinTrader { 3 } else { 4 };
+        let mul = self.trade_mul(role);
         let Some(slot) = self.feats.stock.iter_mut().find(|s| s.0 == role).and_then(|s| s.1.get_mut(k)) else { return };
         let Some(it) = slot.as_ref() else { return };
         let price = it.price() * mul;
