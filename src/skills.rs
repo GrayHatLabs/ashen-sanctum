@@ -1508,6 +1508,7 @@ impl Game {
         if self.mobs[i].charm > 0.0 || self.mobs[i].invuln > 0.0 {
             return;
         }
+        self.stats.dealt += 1;
         let burn = burn * self.p.skills.burn_mult();
         let kind = self.mobs[i].kind;
         // Mechanus's laws: inside a law zone, forbidden blows barely scratch.

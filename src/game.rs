@@ -547,6 +547,8 @@ pub enum State {
 pub struct Stats {
     pub casts: u32,
     pub hits: u32,
+    /// Blows that reached a monster (any skill; the test bot watches this).
+    pub dealt: u32,
     pub damage_taken: f32,
     pub embers: u32,
     pub eaten: u32,
@@ -3178,18 +3180,29 @@ impl Game {
             // never steps you into the portal first.
             let (ax, ay) = (x - self.p.x, y - self.p.y);
             let base = ay.atan2(ax);
-            let mut spot = (x, y + 2.5);
-            'find: for dist in [2.6f32, 2.0, 3.2] {
-                for k in [0.0f32, 0.6, -0.6, 1.2, -1.2, 1.8, -1.8] {
+            // It must be somewhere you can walk to (a spot past a wall corner once trapped the bot); failing
+            // that, where the boss fell.
+            let mut spot = (x, y);
+            let (hx, hy) = (self.p.x as i32, self.p.y as i32);
+            'find: for dist in [2.6f32, 2.0, 3.2, 1.4] {
+                for k in [0.0f32, 0.6, -0.6, 1.2, -1.2, 1.8, -1.8, 2.4, -2.4, 3.1] {
                     let a = base + k;
                     let (px, py) = (x + a.cos() * dist, y + a.sin() * dist);
-                    if !self.d.blocked(px, py, 0.45) && self.d.los(x, y, px, py) {
+                    if !self.d.blocked(px, py, 0.45) && self.d.los(x, y, px, py) && self.d.path((hx, hy), (px as i32, py as i32), 6000).is_some() {
                         spot = (px, py);
                         break 'find;
                     }
                 }
             }
             self.portals.push(Portal { x: spot.0, y: spot.1, kind: PortalKind::TownPortal });
+            // The portal's opening shatters any crate, barrel or urn crowding it (one could wall it off).
+            let crowding: Vec<usize> = (0..self.mobs.len())
+                .filter(|&j| crate::breakables::is_prop(self.mobs[j].kind) && self.mobs[j].alive() && (self.mobs[j].x - spot.0).powi(2) + (self.mobs[j].y - spot.1).powi(2) < 4.0)
+                .collect();
+            for j in crowding {
+                self.mobs[j].hp = 0.0;
+                self.kill(j);
+            }
             let label = crate::mobs::def(kind).label;
             self.say(format!("{label} IS SLAIN"));
             return;

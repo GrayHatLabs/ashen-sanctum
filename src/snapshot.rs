@@ -38,6 +38,10 @@ struct Bot {
     path: Vec<(f32, f32)>,
     goal: (f32, f32),
     repath: u32,
+    /// The last reachability check: (spot, reachable, valid until tick).
+    reach_cache: ((i32, i32), bool, u32),
+    /// Attacks that stop landing: (hits when last checked, tick of the last landed hit, close in until tick).
+    whiff: (u32, u32, u32),
 }
 
 impl Bot {
@@ -60,6 +64,17 @@ impl Bot {
         let l = (sx * sx + sy * sy).sqrt().max(0.01);
         inp.move_x = sx / l;
         inp.move_y = sy / l;
+    }
+
+    /// Is there a path to this spot? (Checked at most twice a second per spot, it's not cheap.)
+    fn path_ok(&mut self, g: &Game, t: u32, to: (f32, f32)) -> bool {
+        let key = ((to.0 * 2.0) as i32, (to.1 * 2.0) as i32);
+        if self.reach_cache.0 == key && t < self.reach_cache.2 {
+            return self.reach_cache.1;
+        }
+        let ok = g.bot_path(to.0, to.1).is_some();
+        self.reach_cache = (key, ok, t + 30);
+        ok
     }
 
     fn act(&mut self, g: &Game, t: u32) -> Input {
@@ -98,13 +113,26 @@ impl Bot {
             self.steer(g, t, tk, &mut inp);
             return inp;
         }
-        if g.p.food < 40.0 {
+        // (The vampire feeds on blood, not bread: walking onto food she can't eat pinned her among clockwork.)
+        if g.p.food < 40.0 && g.p.skills.class != crate::skills::Class::Vampire {
             if let Some(f) = g.bot_food() {
                 self.steer(g, t, f, &mut inp);
                 return inp;
             }
         }
         if let Some((mx, my, dist, visible)) = g.bot_target() {
+            // Nothing has landed for 3 s (shooting a wall corner, a whip just short): step in for a moment.
+            let landed = g.stats.hits + g.stats.dealt;
+            if landed != self.whiff.0 {
+                self.whiff = (landed, t, self.whiff.2);
+            } else if t > self.whiff.1 + 180 && t > self.whiff.2 + 60 {
+                self.whiff = (landed, t, t + 60);
+            }
+            if t < self.whiff.2 && dist > 1.2 && !g.level.overland() && self.path_ok(g, t, (mx, my)) {
+                self.steer(g, t, (mx, my), &mut inp);
+                inp.cast = t % 2 == 0;
+                return inp;
+            }
             if visible && dist < 9.0 && !g.in_safe(g.p.x, g.p.y) {
                 // Every third press uses the secondary skill, and it cycles through all she knows.
                 if t % 3 == 0 {
@@ -124,8 +152,16 @@ impl Bot {
                 return inp;
             }
             // Bosses are worth walking to; everything else only if it's right there.
-            let boss_near = g.boss_alive_near(14.0);
-            if (dist < 6.0 || boss_near) && !g.level.overland() {
+            let boss_near = g.boss_alive_near(16.0);
+            // Only if there's a way there (a lurker behind a wall in the Midnight Trench used to pin the bot
+            // against the wall while the boss waited out of sight).
+            if boss_near && !g.level.overland() {
+                if let Some(b) = g.bot_boss() {
+                    self.steer(g, t, b, &mut inp);
+                    return inp;
+                }
+            }
+            if dist < 6.0 && !g.level.overland() && self.path_ok(g, t, (mx, my)) {
                 self.steer(g, t, (mx, my), &mut inp);
                 return inp;
             }
@@ -150,7 +186,7 @@ fn bench(g: &mut Game) {
     let def = &crate::world::DUNGEONS[k];
     g.debug_goto(LevelId::Dungeon(k, 0));
     g.banner_t = 0.0;
-    let mut bot = Bot { path: vec![], goal: (0.0, 0.0), repath: 0 };
+    let mut bot = Bot { path: vec![], goal: (0.0, 0.0), repath: 0, reach_cache: ((i32::MIN, 0), false, 0), whiff: (0, 0, 0) };
     // A clear spot with room around it.
     let (px, py) = (g.p.x, g.p.y);
     let open = |g: &Game, x: f32, y: f32| !g.d.blocked(x, y, 0.5);
@@ -258,7 +294,7 @@ pub fn run(dir: Option<&str>, tall: bool) -> i32 {
     let t0 = std::time::Instant::now();
     let mut draw_time = std::time::Duration::ZERO;
     let mut draws = 0;
-    let mut bot = Bot { path: vec![], goal: (0.0, 0.0), repath: 0 };
+    let mut bot = Bot { path: vec![], goal: (0.0, 0.0), repath: 0, reach_cache: ((i32::MIN, 0), false, 0), whiff: (0, 0, 0) };
     let mut visited = std::collections::HashSet::new();
     let (mut next_action, mut action_shots) = (0u32, 0);
     let mut last_bosses = 0;
@@ -270,6 +306,35 @@ pub fn run(dir: Option<&str>, tall: bool) -> i32 {
         g.sfx.clear();
         if god && g.p.hp < g.p.max_hp * 0.5 {
             g.p.hp = g.p.max_hp;
+        }
+        // ASHEN_BOSSWATCH=1: every 5 s while a boss is in the level: its life, its distance, what it's doing.
+        if std::env::var("ASHEN_BOSSWATCH").is_ok() && t % 300 == 0 {
+            {
+                let tgt = g.bot_target().map(|(x, y, d, v)| format!("{x:.0},{y:.0} d={d:.1} vis={v} path={}", g.bot_path(x, y).is_some()));
+                println!("  watch t={}s {} at {:.1},{:.1} target={tgt:?} portal={:?} token={:?}", t / 60, g.level_name, g.p.x, g.p.y, g.bot_portal(), g.bot_token());
+                let near: Vec<String> = g.mobs.iter().filter(|m| m.alive() && (m.x - g.p.x).powi(2) + (m.y - g.p.y).powi(2) < 9.0).map(|m| format!("{:?}@{:.1},{:.1} charm={:.0} hp={:.0}/{:.0} st={:?} inv={:.1}", m.kind, m.x, m.y, m.charm, m.hp, m.max_hp, m.state, m.invuln)).collect();
+                let path = g.bot_portal().map(|(x, y)| g.bot_path(x, y).map(|p| p.len()));
+                println!("      mana={:.0}/{:.0} embrace={:.1} dialog={:?} state={:?} pull={:.1} cast_t={:.2} stun? moving={} path_to_portal={path:?} near={near:?} inp={:?}", g.p.mana, g.p.max_mana, g.p.embrace_t, g.dialog.as_ref().map(|d| d.name), g.state, g.pull.2, g.p.cast_t, g.p.moving, (inp.move_x, inp.move_y, inp.cast, inp.cast2, inp.confirm));
+            }
+            if std::env::var("ASHEN_GRID").is_ok() && t / 60 == 60 {
+                let (px, py) = (g.p.x as i32, g.p.y as i32);
+                for y in py - 6..=py + 6 {
+                    let row: String = (px - 6..=px + 6).map(|x| {
+                        let here = |mx: f32, my: f32| mx as i32 == x && my as i32 == y;
+                        if here(g.p.x, g.p.y) { '@' }
+                        else if let Some(m) = g.mobs.iter().find(|m| m.alive() && here(m.x, m.y)) { if crate::breakables::is_prop(m.kind) { 'p' } else { 'M' } }
+                        else if g.d.walkable(x, y) { '.' } else { '#' }
+                    }).collect();
+                    println!("      grid {row}");
+                }
+            }
+            if let Some(m) = g.mobs.iter().find(|m| m.boss && m.alive()) {
+                let d = ((m.x - g.p.x).powi(2) + (m.y - g.p.y).powi(2)).sqrt();
+                println!(
+                    "  watch t={}s {:?} hp={:.0}/{:.0} dist={d:.1} state={:?} invuln={:.1} rush={:.1} dark={:.1} los={} player_hp={:.0}/{:.0} casts={} hits={}",
+                    t / 60, m.kind, m.hp, m.max_hp, m.state, m.invuln, m.rush, g.dark_t, g.d.los(g.p.x, g.p.y, m.x, m.y), g.p.hp, g.p.max_hp, g.stats.casts, g.stats.hits
+                );
+            }
         }
         // ASHEN_DEATHS=1: what was around the hero each time it died (balance hunting).
         let dead_now = matches!(g.state, crate::game::State::Dead(_));
