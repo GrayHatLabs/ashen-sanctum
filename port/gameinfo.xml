@@ -3,8 +3,8 @@
   <game>
     <path>./AshenSanctum.sh</path>
     <name>Ashen Sanctum</name>
-    <desc>An isometric action RPG in the spirit of Diablo II. Eight heroes, five acts from the burning Ashlands to the drowned deep, sets, gems, uniques and Nightmare and Hell difficulties.</desc>
-    <releasedate>20261007T000000</releasedate>
+    <desc>An isometric action RPG in the spirit of Diablo II. Eight heroes and six acts, from the burning Ashlands to the shattered heavens, with a seventh, the realm of chaos, on the way. Side quests, rivals, merchant caravans, an arena, sets, gems, uniques, Nightmare and Hell, and an endless endgame.</desc>
+    <releasedate>20261009T000000</releasedate>
     <developer>GrayHatLabs</developer>
     <publisher>GrayHatLabs</publisher>
     <genre>Action RPG</genre>

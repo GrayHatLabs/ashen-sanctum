@@ -11,7 +11,7 @@
     "porter": [
       "GrayHatLabs"
     ],
-    "desc": "An isometric action RPG in the spirit of Diablo II. Eight heroes, five acts from the burning Ashlands to the drowned deep, sets, gems, uniques and Nightmare and Hell difficulties.",
+    "desc": "An isometric action RPG in the spirit of Diablo II. Eight heroes and six acts, from the burning Ashlands to the shattered heavens, with a seventh, the realm of chaos, on the way. Side quests, rivals, merchant caravans, an arena, sets, gems, uniques, Nightmare and Hell, and an endless endgame.",
     "inst": "Ready to run. Copy AshenSanctum.sh and the ashensanctum folder into your ports folder.",
     "genres": [
       "rpg",
