@@ -176,6 +176,8 @@ jobs:
           body: |
             ## Downloads
             - **Windows:** `AshenSanctum-windows.zip`: unzip and run `AshenSanctum.exe` (nothing else to install).
+              If Windows says "Windows protected your PC", click **More info**, then **Run anyway** (the game
+              isn't code-signed yet, so SmartScreen doesn't recognise it).
             - **Linux (x86_64):** `AshenSanctum-linux-x86_64.tar.gz`: unpack and run `./AshenSanctum`.
             - **Handhelds (aarch64, PortMaster):** `AshenSanctum-handheld-aarch64.zip`: copy the `ports` folder's
               contents onto the card's ports folder (Anbernic RG35XX H, AYN Odin 2 on ROCKNIX, and the like).

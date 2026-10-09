@@ -16,6 +16,9 @@ Windows (`AshenSanctum-windows.zip`), Linux x86_64 (`AshenSanctum-linux-x86_64.t
 with PortMaster (`AshenSanctum-handheld-aarch64.zip`) and Android (`AshenSanctum-android.apk`). Nothing else
 to install: the art, music and SDL2 are built in.
 
+**Windows says "Windows protected your PC"?** That's SmartScreen: the game isn't code-signed yet, so Windows
+doesn't recognise it. Click **More info**, then **Run anyway**.
+
 GitHub Actions builds them: `.github/workflows/ci.yml` runs the tests and the bot's self-test on every push,
 and `.github/workflows/release.yml` builds every platform and publishes a release when a version tag is
 pushed (`git tag v1.3.0 && git push origin v1.3.0`).
