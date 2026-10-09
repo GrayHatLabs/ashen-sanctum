@@ -2,7 +2,7 @@
 # Push a version tag to make one:   git tag v1.2.0 && git push origin v1.2.0
 # (or run it by hand from the Actions tab: a manual run uploads the builds as workflow artifacts only).
 #
-# - Windows (x86_64): a standalone .exe, SDL2 built in, cross-compiled with MinGW (as scripts/build-windows.sh).
+# - Windows (x86_64): a standalone .exe, SDL2 built in, built with MSVC on a Windows runner.
 # - Linux (x86_64): a standalone binary, SDL2 built in and linked statically.
 # - Handhelds (aarch64 Linux: Anbernic RG35XX, Odin 2 on ROCKNIX): the PortMaster-style port folder
 #   (as scripts/build-handheld.sh), built natively on an arm64 runner against the system SDL2.
@@ -21,32 +21,24 @@ permissions:
 
 jobs:
   windows:
-    runs-on: ubuntu-22.04
+    # Built on Windows with Microsoft's own toolchain (MSVC): virus scanners flag MinGW-built Rust programs far
+    # more often. SDL2 is built in; the .exe carries an icon and version details (build.rs).
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: MinGW and CMake
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq mingw-w64 cmake
       - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: x86_64-pc-windows-gnu
       - uses: Swatinem/rust-cache@v2
         with:
-          key: windows
+          key: windows-msvc
       - name: Build
-        env:
-          CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER: x86_64-w64-mingw32-gcc
-          CC_x86_64_pc_windows_gnu: x86_64-w64-mingw32-gcc
-          CXX_x86_64_pc_windows_gnu: x86_64-w64-mingw32-g++
-          AR_x86_64_pc_windows_gnu: x86_64-w64-mingw32-ar
-          # SDL2's registry calls need advapi32, which the sdl2 crate doesn't link on its own.
-          CARGO_TARGET_X86_64_PC_WINDOWS_GNU_RUSTFLAGS: -C link-arg=-ladvapi32
-        run: cargo build --release --target x86_64-pc-windows-gnu --features bundled
+        run: cargo build --release --features bundled
       - name: Package
+        shell: pwsh
         run: |
-          mkdir -p out/AshenSanctum-windows
-          cp target/x86_64-pc-windows-gnu/release/ashensanctum.exe out/AshenSanctum-windows/AshenSanctum.exe
-          cp README.md out/AshenSanctum-windows/
-          cd out && zip -qr AshenSanctum-windows.zip AshenSanctum-windows
+          New-Item -ItemType Directory -Force out/AshenSanctum-windows | Out-Null
+          Copy-Item target/release/ashensanctum.exe out/AshenSanctum-windows/AshenSanctum.exe
+          Copy-Item README.md out/AshenSanctum-windows/
+          Compress-Archive -Path out/AshenSanctum-windows -DestinationPath out/AshenSanctum-windows.zip
       - uses: actions/upload-artifact@v4
         with:
           name: windows
