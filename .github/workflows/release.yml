@@ -31,6 +31,9 @@ jobs:
         with:
           key: windows-msvc
       - name: Build
+        env:
+          # The runner's CMake 4 refuses SDL2's old cmake_minimum_required otherwise.
+          CMAKE_POLICY_VERSION_MINIMUM: '3.5'
         run: cargo build --release --features bundled
       - name: Package
         shell: pwsh
