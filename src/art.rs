@@ -38,6 +38,14 @@ pub struct TileDef {
 
 /// Decode a blob written by import_art.py: u32 w, u32 h, then w*h ARGB pixels.
 pub fn decode(b: &[u8]) -> Sprite {
+    // The blobs are zlib-compressed behind an "ASZ1" tag (scripts/import_art.py): unpack them first.
+    let inflated;
+    let b: &[u8] = if b.starts_with(b"ASZ1") {
+        inflated = miniz_oxide::inflate::decompress_to_vec_zlib(&b[4..]).expect("embedded art is not valid zlib");
+        &inflated
+    } else {
+        b
+    };
     let rd = |i: usize| u32::from_le_bytes([b[i], b[i + 1], b[i + 2], b[i + 3]]);
     let (w, h) = (rd(0) as i32, rd(4) as i32);
     let mut s = Sprite::new(w, h);

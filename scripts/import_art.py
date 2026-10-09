@@ -13,6 +13,7 @@ Anything missing from the manifest keeps its code-drawn fallback.
 """
 import json
 import struct
+import zlib
 import sys
 from pathlib import Path
 
@@ -34,7 +35,9 @@ def blob(src: Path, dest: Path):
     for i in range(0, len(raw), 4):
         r, g, b, a = raw[i], raw[i + 1], raw[i + 2], raw[i + 3]
         data += struct.pack("<I", 0 if a < 128 else (0xFF000000 | (r << 16) | (g << 8) | b))
-    dest.write_bytes(data)
+    # Compressed (zlib, behind an "ASZ1" tag): a game .exe padded out with hundreds of megabytes of raw pixels
+    # looks to virus scanners like malware inflated to dodge them (Defender flagged v1.2.x). src/art.rs inflates it.
+    dest.write_bytes(b"ASZ1" + zlib.compress(bytes(data), 9))
 
 
 def main():
