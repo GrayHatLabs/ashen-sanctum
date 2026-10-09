@@ -1,11 +1,11 @@
 //! Act 4's set pieces (docs/SIDE_CONTENT_PLAN.md 2c), the user's picks:
 //!
-//! - **The Broken Automaton**: five gears lie in Mechanus's five main areas. Find them all and a brass
+//! - **The Broken Automaton**: five gears lie in the Dominion's five main areas. Find them all and a brass
 //!   automaton knight whirs to life and fights beside you for the rest of the act (it walks with you between
 //!   Act 4's levels, and is rebuilt if it falls).
 //! - **The Unlawful Court** (the Piston Flats): a clockwork magistrate tries you for unlicensed heroism. Fight
 //!   the court, bribe it, or argue your case (three questions). Bribed or acquitted, you get a writ: the
-//!   laws of Mechanus no longer bind your blows.
+//!   laws of the Dominion no longer bind your blows.
 //! - **The Scrapyard Lottery** (the Scrapyard): smash scrap heaps for whatever's inside: gold, gems, gear,
 //!   rust... or a junk golem.
 //! - **The Timeless Vault** (the Archive Stacks): a sealed vault whose door only opens while time is stopped:
@@ -23,7 +23,7 @@ use crate::world::LevelId;
 pub const COURT: LevelId = LevelId::Area(3, 2);
 pub const SCRAPYARD: LevelId = LevelId::Area(3, 6);
 pub const VAULT: LevelId = LevelId::Area(3, 4);
-/// The automaton's gears: one in each of Mechanus's five main areas.
+/// The automaton's gears: one in each of the Dominion's five main areas.
 pub const GEAR_AREAS: [u8; 5] = [1, 2, 3, 4, 5];
 /// The neutral group of the court's guards.
 pub const G_COURT: u8 = 3;
@@ -31,11 +31,11 @@ pub const G_COURT: u8 = 3;
 /// The court's questions: (the charge, the answers; the first is the lawful one: they're shuffled in the talk).
 pub const CHARGES: [(&str, [&str; 3]); 3] = [
     (
-        "THE ACCUSED STRUCK DOWN A CITIZEN OF MECHANUS. DOES THE ACCUSED DENY IT?",
+        "THE ACCUSED STRUCK DOWN A CITIZEN OF THE DOMINION. DOES THE ACCUSED DENY IT?",
         ["A SCARAB IS NO CITIZEN. YOUR OWN LEDGER LISTS IT AS PROPERTY.", "I DENY EVERYTHING.", "IT HAD IT COMING."],
     ),
     (
-        "THE ACCUSED ENTERED MECHANUS WITHOUT A PERMIT. WHAT SAYS THE ACCUSED?",
+        "THE ACCUSED ENTERED THE DOMINION WITHOUT A PERMIT. WHAT SAYS THE ACCUSED?",
         ["THE GEAR GATE OPENED BY YOUR OWN LAW WHEN THE COUNT FELL. I WAS SUMMONED.", "PERMITS ARE FOR COWARDS.", "I'LL GET ONE LATER."],
     ),
     (
@@ -124,7 +124,7 @@ impl Game {
             self.sfx.push(Sfx::Descend);
             self.spawn_automaton();
         } else if n < 5 {
-            self.say(format!("A GEAR FROM SOME GREAT MACHINE. {} MORE LIE IN MECHANUS'S FIELDS", 5 - n));
+            self.say(format!("A GEAR FROM SOME GREAT MACHINE. {} MORE LIE IN THE DOMINION'S FIELDS", 5 - n));
         }
     }
 
@@ -279,7 +279,7 @@ impl Game {
     pub(crate) fn court_dialog(&self) -> Dialog {
         let mut d = Dialog::new(
             "MAGISTRATE KORVEL",
-            &["ORDER! THE ACCUSED WILL APPROACH THE BENCH. YOU STAND CHARGED WITH UNLICENSED HEROISM IN THE DOMINION OF MECHANUS. HOW DOES THE ACCUSED WISH TO PROCEED?"],
+            &["ORDER! THE ACCUSED WILL APPROACH THE BENCH. YOU STAND CHARGED WITH UNLICENSED HEROISM IN THE CLOCKWORK DOMINION. HOW DOES THE ACCUSED WISH TO PROCEED?"],
         );
         let fine = self.court_fine();
         d.options = vec![
@@ -343,7 +343,7 @@ impl Game {
         self.feats.writ = true;
         self.save_due = true;
         self.sfx.push(Sfx::Descend);
-        let mut d = Dialog::new("MAGISTRATE KORVEL", &[line, "(WITH THE WRIT, THE LAWS OF MECHANUS NO LONGER BIND YOUR BLOWS.)"]);
+        let mut d = Dialog::new("MAGISTRATE KORVEL", &[line, "(WITH THE WRIT, THE LAWS OF THE DOMINION NO LONGER BIND YOUR BLOWS.)"]);
         d.refresh_options();
         self.dialog = Some(d);
     }

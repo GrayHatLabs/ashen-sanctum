@@ -1,10 +1,10 @@
-# Act 4 ideas: Mechanus (2026-10-05)
+# Act 4 ideas: the Clockwork Dominion (2026-10-05)
 
-The user asked for "a gothic steampunk world based on Mechanus".
+The user asked for "a gothic steampunk world based on the Clockwork Dominion".
 
 ## Setting: the Clockwork Dominion
 
-Beyond the vampire lord's castle, a door opens onto **Mechanus**, the plane of perfect law. It's an endless city of brass gears the size of cathedrals, turning in the sky.
+Beyond the vampire lord's castle, a door opens onto **the Clockwork Dominion**, the plane of perfect law. It's an endless city of brass gears the size of cathedrals, turning in the sky.
 - Gothic spires made of iron and stained glass.
 - Steam vents and soot-black chapels where prayers are punched into brass cards.
 - Copper, verdigris green, soot black and boiler-fire orange, under a tick-tocking sky.
@@ -38,7 +38,7 @@ Hook: someone has been *winding the world*. The Ash King's fire, the Rime Wyrm's
 ## The end bad guy: options
 
 1. **The Clockmaker** (recommended)
-   - Who: a tall gothic figure in a stovepipe hat and soot-black coat, the god-engineer of Mechanus. Half his body is an exposed golden clockwork heart.
+   - Who: a tall gothic figure in a stovepipe hat and soot-black coat, the god-engineer of the Clockwork Dominion. Half his body is an exposed golden clockwork heart.
    - Why: he has been winding the world, and the earlier acts were his experiments.
    - Fight:
      - **Phase 1:** he duels with time. Rewind pulses snap you back to where you stood 3 seconds ago, and clock-hand blades sweep the arena.
@@ -50,7 +50,7 @@ Hook: someone has been *winding the world*. The Ash King's fire, the Rime Wyrm's
    - Who: a mad astronomer-king fused to a giant clockwork orrery.
    - Fight: the planets orbit as rotating hazards, and he speeds them up as he weakens.
 
-**Mechanic idea for the act:** *time*. Clocks you can strike to slow an area, rewind pulses, and timed doors. Combined with Mechanus's order, there could be "law zones" where only one type of damage works.
+**Mechanic idea for the act:** *time*. Clocks you can strike to slow an area, rewind pulses, and timed doors. Combined with the Dominion's order, there could be "law zones" where only one type of damage works.
 
 ## Built (2026-10-05)
 

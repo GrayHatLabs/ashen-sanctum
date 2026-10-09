@@ -18,7 +18,7 @@ Smashable props stand in dungeon rooms and corridors, and near outdoor camps and
 | 1 Ashlands | wooden crate, barrel, clay urn |
 | 2 Frostmarch | ice-crusted crate, frozen barrel, frost-bound urn |
 | 3 Mistwood | upright coffin, bone urn, rotten barrel |
-| 4 Mechanus | brass crate, clockwork box, oil drum |
+| 4 the Clockwork Dominion | brass crate, clockwork box, oil drum |
 
 ## Loot (per break)
 

@@ -28,7 +28,7 @@ pub enum Track {
     Hearth,
     /// Mournhold: a candlelit lament on a lute, a bell tolling far off.
     Vigil,
-    /// The Last Escapement: a gentle music-box waltz, the one warm place in Mechanus.
+    /// The Last Escapement: a gentle music-box waltz, the one warm place in the Dominion.
     Refuge,
     /// Act 5: the Sunken Reach (a slow swell, whale-song).
     Tide,
@@ -578,7 +578,7 @@ fn vigil(rng: &mut Rng) -> Vec<f32> {
 }
 
 /// The Last Escapement: a gentle music-box waltz (F major) with a soft tick, warm pads and a
-/// little countermelody, the one warm place in Mechanus.
+/// little countermelody, the one warm place in the Dominion.
 fn refuge(rng: &mut Rng) -> Vec<f32> {
     let bpm = 92.0;
     let beat = 60.0 / bpm;
@@ -791,7 +791,7 @@ fn crypt(rng: &mut Rng) -> Vec<f32> {
     b.finish(0.6, 0.6)
 }
 
-/// Mechanus: a clock ticks under a running harpsichord figure (A minor), with an organ swell.
+/// The Dominion: a clock ticks under a running harpsichord figure (A minor), with an organ swell.
 fn gears(rng: &mut Rng) -> Vec<f32> {
     let bpm = 112.0;
     let beat = 60.0 / bpm;

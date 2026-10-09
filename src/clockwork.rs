@@ -1,5 +1,5 @@
 //! Act 4's time mechanics: brass **stop-clocks** you strike (walk into them) to slow every
-//! foe around them for a while, and **law zones** where Mechanus decrees how foes may be hurt.
+//! foe around them for a while, and **law zones** where Dominion decrees how foes may be hurt.
 //! Both appear in the Grinding Fields and the clockwork dungeons (not in town).
 use crate::game::{Game, Sfx, DT};
 use crate::gfx::{mix, rgb, Align, Screen};
@@ -266,10 +266,10 @@ mod tests {
     use crate::world::LevelId;
 
     #[test]
-    fn mechanus_has_clocks_that_slow_time_and_laws_that_bind() {
+    fn dominion_has_clocks_that_slow_time_and_laws_that_bind() {
         let mut g = Game::new(5, crate::gfx::SH_WIDE);
         assert!(g.clocks.is_empty() && g.laws.is_empty(), "none in Act 1");
-        g.debug_goto(LevelId::Mechanus);
+        g.debug_goto(LevelId::Dominion);
         assert!(g.clocks.len() >= 3, "clocks in the Grinding Fields: {}", g.clocks.len());
         assert!(!g.laws.is_empty());
         for c in &g.clocks {
@@ -278,7 +278,7 @@ mod tests {
         // The same places on every visit.
         let at: Vec<(f32, f32)> = g.clocks.iter().map(|c| (c.x, c.y)).collect();
         g.debug_goto(LevelId::Overworld);
-        g.debug_goto(LevelId::Mechanus);
+        g.debug_goto(LevelId::Dominion);
         assert_eq!(at, g.clocks.iter().map(|c| (c.x, c.y)).collect::<Vec<_>>());
 
         // Walking into a clock stops time around it.

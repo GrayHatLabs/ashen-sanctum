@@ -37,7 +37,7 @@ pub enum Kind {
     Grimhilde,
     Malgrave,
     Vardak,
-    // ---- Act 4: Mechanus ----
+    // ---- Act 4: Dominion ----
     Scarab,
     Inquisitor,
     Gearwraith,

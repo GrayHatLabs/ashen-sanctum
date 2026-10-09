@@ -40,7 +40,7 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force out/AshenSanctum-windows | Out-Null
           Copy-Item target/release/ashensanctum.exe out/AshenSanctum-windows/AshenSanctum.exe
-          Copy-Item README.md out/AshenSanctum-windows/
+          Copy-Item README.md, THIRD_PARTY_LICENSES.txt out/AshenSanctum-windows/
           Compress-Archive -Path out/AshenSanctum-windows -DestinationPath out/AshenSanctum-windows.zip
       - uses: actions/upload-artifact@v4
         with:
@@ -68,7 +68,7 @@ jobs:
           mkdir -p out/AshenSanctum-linux
           cp target/release/ashensanctum out/AshenSanctum-linux/AshenSanctum
           chmod +x out/AshenSanctum-linux/AshenSanctum
-          cp README.md out/AshenSanctum-linux/
+          cp README.md THIRD_PARTY_LICENSES.txt out/AshenSanctum-linux/
           cd out && tar czf AshenSanctum-linux-x86_64.tar.gz AshenSanctum-linux
       - uses: actions/upload-artifact@v4
         with:
@@ -93,7 +93,7 @@ jobs:
           mkdir -p "$OUT/ashensanctum"
           cp target/release/ashensanctum "$OUT/ashensanctum/"
           cp port/AshenSanctum.sh "$OUT/"
-          cp port/ashensanctum.gptk port/cover.png port/screenshot.png port/port.json port/gameinfo.xml README.md "$OUT/ashensanctum/"
+          cp port/ashensanctum.gptk port/cover.png port/screenshot.png port/port.json port/gameinfo.xml README.md THIRD_PARTY_LICENSES.txt "$OUT/ashensanctum/"
           chmod +x "$OUT/AshenSanctum.sh" "$OUT/ashensanctum/ashensanctum"
           cd out && zip -qr AshenSanctum-handheld-aarch64.zip ports
       - uses: actions/upload-artifact@v4

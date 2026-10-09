@@ -36,7 +36,7 @@
   - **One clockwork brass arm** holding an ornate brass **ray pistol**, and a pocket watch chain.
   - A foggy Victorian city of airships and steam behind her; brass and teal palette.
 - **Concept art (art repo, `tools/inventor_art.py`):** portrait and 8-direction sprite.
-- **Home turf:** Act 4, the Clockwork Dominion of Mechanus (docs/ACT4_IDEAS.md). She's the mortal genius who can out-invent the Clockmaker.
+- **Home turf:** Act 4, the Clockwork Dominion of the Clockwork Dominion (docs/ACT4_IDEAS.md). She's the mortal genius who can out-invent the Clockmaker.
 
 ## Identity
 

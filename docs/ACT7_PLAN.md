@@ -31,14 +31,14 @@ Status: **being built in stages, with a review after each.**
   anchor stones stop it for good around them.
 - **Stillness meter:** yes.
 - **Extras:** all four (Chaos Roulette, the Wandering Room, Gravity Wells, Echo Hunt).
-- **The user's own idea: Ylgrath can only be destroyed with an object from Mechanus (Act 4).**
+- **The user's own idea: Ylgrath can only be destroyed with an object from the Clockwork Dominion (Act 4).**
   - **How it plays (agreed with the user, 2026-10-08):**
     1. **First fight, without the Stillpoint:** you beat him and he comes apart. He drops a fair reward (a
        rare, some gold, his first lore page) but no uniques and no ancients.
     2. While he pulls himself back together he gloats, and tells you what can unmake him: "only the first gear
-       of the Clockmaker could hold me still... and it's lost in Mechanus." Then he flees deeper into the Eye.
+       of the Clockmaker could hold me still... and it's lost in the Clockwork Dominion." Then he flees deeper into the Eye.
     3. **The Eye seals behind him.** His chamber stays shut until you carry the Stillpoint, so leaving and
-       coming back does not bring him back: nothing to farm. The quest log points you to Mechanus.
+       coming back does not bring him back: nothing to farm. The quest log points you to the Clockwork Dominion.
     4. Back in Act 4 by waypoint, a sealed spot (deep in the Heart of the Clock, or behind the Timeless
        Vault) has opened since his hint. It holds **the Stillpoint**, the Clockmaker's first and perfect gear.
     5. **The real fight:** with the Stillpoint, the Eye opens and he fights at full strength. At the end the
@@ -127,7 +127,7 @@ Act 7's is **instability**:
 3. **The Hall of Mirrors** (the Shattered Monastery): boss **the Mirror Abbot**, the twin monastery's fallen
    abbot. He fights with copies of your own skills.
 4. **The Eye of the Churn**, the final dungeon (3 floors): boss **Ylgrath, the Unshaped**. He can only be
-   destroyed while you carry **the Stillpoint** from Mechanus (see the user's picks above).
+   destroyed while you carry **the Stillpoint** from the Clockwork Dominion (see the user's picks above).
    - It is chaos given a will.
    - It takes the shape of a different earlier act boss each phase (the Butcher's cleaver, the Frost Jarl's ice,
      Vardak's bats, the Clockmaker's gears, the Leviathan's tide, Solanthos's light).

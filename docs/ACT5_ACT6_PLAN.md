@@ -22,7 +22,7 @@ The Clockmaker was winding the world, but not for himself.
 
 ## Act 5: The Drowned Deep
 
-**Unlock:** after the Clockmaker. His broken engine falls through the floor of Mechanus into the sea, and a diving-bell lift waits in the Last Escapement.
+**Unlock:** after the Clockmaker. His broken engine falls through the floor of the Clockwork Dominion into the sea, and a diving-bell lift waits in the Last Escapement.
 
 **Look:**
 - Abyssal teal and black, lit by glowing cyan and violet sea life.

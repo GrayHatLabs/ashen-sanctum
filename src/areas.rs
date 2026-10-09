@@ -810,7 +810,7 @@ fn theme_of(act: u8) -> Theme {
     match act {
         1 => Theme::Tundra,
         2 => Theme::Mistwood,
-        3 => Theme::Mechanus,
+        3 => Theme::Dominion,
         4 => Theme::Deep,
         5 => Theme::Heavens,
         6 => Theme::Churn,

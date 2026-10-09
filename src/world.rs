@@ -15,8 +15,8 @@ pub enum LevelId {
     Frostmarch,
     /// Act 3's overland: the Mistwood and Mournhold.
     Mistwood,
-    /// Act 4's overland: the Grinding Fields of Mechanus and the Last Escapement.
-    Mechanus,
+    /// Act 4's overland: the Grinding Fields of the Dominion and the Last Escapement.
+    Dominion,
     /// Act 5's overland: the Sunken Reach and Brinehollow, on the floor of the black sea.
     Deep,
     /// Act 6's overland: the Skyreach and Windward Anchorage, islands above the clouds.
@@ -36,12 +36,12 @@ pub enum LevelId {
 impl LevelId {
     /// An open-air map with a town (one per act).
     pub fn overland(self) -> bool {
-        matches!(self, LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep | LevelId::Heavens | LevelId::Churn | LevelId::Area(..))
+        matches!(self, LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Dominion | LevelId::Deep | LevelId::Heavens | LevelId::Churn | LevelId::Area(..))
     }
 
     /// An act's town map (the overland with the town; the wild areas around it don't count).
     pub fn town(self) -> bool {
-        matches!(self, LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep | LevelId::Heavens | LevelId::Churn)
+        matches!(self, LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Dominion | LevelId::Deep | LevelId::Heavens | LevelId::Churn)
     }
 
     /// 0 for Act 1 ... 4 for Act 5.
@@ -50,7 +50,7 @@ impl LevelId {
             LevelId::Overworld => 0,
             LevelId::Frostmarch => 1,
             LevelId::Mistwood => 2,
-            LevelId::Mechanus => 3,
+            LevelId::Dominion => 3,
             LevelId::Deep => 4,
             LevelId::Heavens => 5,
             LevelId::Churn => 6,
@@ -68,7 +68,7 @@ impl LevelId {
             0 => LevelId::Overworld,
             1 => LevelId::Frostmarch,
             2 => LevelId::Mistwood,
-            3 => LevelId::Mechanus,
+            3 => LevelId::Dominion,
             4 => LevelId::Deep,
             5 => LevelId::Heavens,
             _ => LevelId::Churn,
@@ -96,7 +96,7 @@ pub enum Theme {
     Barrow,
     Castle,
     /// Act 4 overland: brass plates over the void.
-    Mechanus,
+    Dominion,
     Foundry,
     Choir,
     Archive,
@@ -138,7 +138,7 @@ impl Theme {
         Theme::Gallows,
         Theme::Barrow,
         Theme::Castle,
-        Theme::Mechanus,
+        Theme::Dominion,
         Theme::Foundry,
         Theme::Choir,
         Theme::Archive,
@@ -161,12 +161,12 @@ impl Theme {
 
     /// Open-air (grass or snow ground, palisade walls).
     pub fn open(self) -> bool {
-        matches!(self, Theme::Overworld | Theme::Tundra | Theme::Mistwood | Theme::Mechanus | Theme::Deep | Theme::Heavens | Theme::Churn)
+        matches!(self, Theme::Overworld | Theme::Tundra | Theme::Mistwood | Theme::Dominion | Theme::Deep | Theme::Heavens | Theme::Churn)
     }
 
     /// Act 4 themes (drifting steam and brass sparks).
     pub fn clockwork(self) -> bool {
-        matches!(self, Theme::Mechanus | Theme::Foundry | Theme::Choir | Theme::Archive | Theme::Clock)
+        matches!(self, Theme::Dominion | Theme::Foundry | Theme::Choir | Theme::Archive | Theme::Clock)
     }
 
     /// Act 5 themes (rising bubbles and drifting sea snow).
@@ -207,8 +207,8 @@ impl Theme {
             Theme::Mistwood => (300.0, 0.3),
             Theme::Castle => (240.0, 0.1),
             Theme::Chapel | Theme::Gallows | Theme::Barrow => (230.0, 0.08),
-            // Mechanus: a sooty amber dusk; the foundry glows.
-            Theme::Mechanus => (340.0, 0.36),
+            // The Dominion: a sooty amber dusk; the foundry glows.
+            Theme::Dominion => (340.0, 0.36),
             Theme::Foundry => (260.0, 0.16),
             Theme::Clock => (260.0, 0.14),
             Theme::Choir | Theme::Archive => (240.0, 0.1),
@@ -710,7 +710,7 @@ pub enum PropKind {
     Workshop2,
     ClockTower,
     Pendulum,
-    /// The gear gate between the Mistwood and Mechanus.
+    /// The gear gate between the Mistwood and the Dominion.
     GearGate,
     // ---- Act 5 ----
     Kelp,
@@ -722,7 +722,7 @@ pub enum PropKind {
     StiltHouse2,
     ShellLamp,
     AnchorRock,
-    /// The diving bell between Mechanus and the Drowned Deep.
+    /// The diving bell between Dominion and the Drowned Deep.
     DivingBell,
     // ---- Act 6 ----
     AngelStatue,
@@ -935,7 +935,7 @@ pub fn generate(id: LevelId, seed: u64) -> Level {
         LevelId::Overworld => overworld(seed),
         LevelId::Frostmarch => frostmarch(seed),
         LevelId::Mistwood => mistwood(seed),
-        LevelId::Mechanus => mechanus(seed),
+        LevelId::Dominion => dominion(seed),
         LevelId::Deep => deep(seed),
         LevelId::Heavens => heavens(seed),
         LevelId::Churn => crate::areas::stillhold(seed),
@@ -987,8 +987,127 @@ pub fn build_at(id: LevelId, seed: u64, difficulty: u8) -> Level {
     }
     // Crates, barrels and urns to smash (after the elites and difficulty, which don't apply to them).
     crate::breakables::place(&mut lv, seed);
+    tidy(&mut lv);
     lv
 }
+
+/// Nothing left where you can't get at it (src/mapcheck.rs found some on random maps): monsters standing in
+/// walls or scenery, or shut away in pockets, and pickups in pockets, move to the nearest open ground you can
+/// reach (a boss, too: it can land on a pillar), or go if there is none close by. Things that never move stay put.
+fn tidy(lv: &mut Level) {
+    let seen = reachable(lv);
+    let w = lv.d.w;
+    let ok = |x: i32, y: i32| x >= 0 && y >= 0 && x < w && y < lv.d.h && seen[(y * w + x) as usize];
+    let spot = |x: f32, y: f32| -> Option<(f32, f32)> {
+        let (cx, cy) = (x.floor() as i32, y.floor() as i32);
+        for r in 0..7 {
+            for dy in -r..=r {
+                for dx in -r..=r {
+                    if ok(cx + dx, cy + dy) {
+                        return Some(((cx + dx) as f32 + 0.5, (cy + dy) as f32 + 0.5));
+                    }
+                }
+            }
+        }
+        None
+    };
+    let fixed = |k: Kind| crate::breakables::is_prop(k) || matches!(k, Kind::Riftmaw | Kind::ScrapPile | Kind::StarMetal | Kind::KrakenArm | Kind::IceBlock);
+    let mut gone = vec![];
+    for (i, m) in lv.mobs.iter_mut().enumerate() {
+        if fixed(m.kind) || ok(m.x.floor() as i32, m.y.floor() as i32) {
+            continue;
+        }
+        match spot(m.x, m.y) {
+            Some((x, y)) => (m.x, m.y) = (x, y),
+            None => gone.push(i),
+        }
+    }
+    for &i in gone.iter().rev() {
+        lv.mobs.remove(i);
+    }
+    lv.pickups.retain_mut(|k| {
+        if ok(k.x.floor() as i32, k.y.floor() as i32) {
+            return true;
+        }
+        match spot(k.x, k.y) {
+            Some((x, y)) => {
+                (k.x, k.y) = (x, y);
+                true
+            }
+            None => false,
+        }
+    });
+}
+
+/// The tiles you can walk to from (sx, sy), riding airships between docks.
+pub fn reachable(lv: &Level) -> Vec<bool> {
+    let d = &lv.d;
+    let (w, h) = (d.w, d.h);
+    let mut seen = vec![false; (w * h) as usize];
+    let mut queue = std::collections::VecDeque::new();
+    let push = |x: i32, y: i32, seen: &mut Vec<bool>, queue: &mut std::collections::VecDeque<(i32, i32)>| {
+        if x >= 0 && y >= 0 && x < w && y < h && d.walkable(x, y) && !seen[(y * w + x) as usize] {
+            seen[(y * w + x) as usize] = true;
+            queue.push_back((x, y));
+        }
+    };
+    let start = nearest_open(lv, lv.start.0, lv.start.1).expect("somewhere to stand at the start");
+    push(start.0, start.1, &mut seen, &mut queue);
+    let mut docks_used = vec![];
+    loop {
+        while let Some((x, y)) = queue.pop_front() {
+            for (dx, dy) in [(1, 0), (-1, 0), (0, 1), (0, -1)] {
+                push(x + dx, y + dy, &mut seen, &mut queue);
+            }
+        }
+        // Any dock you can reach flies you to its partners.
+        let mut more = false;
+        for p in lv.portals.iter() {
+            let PortalKind::Dock(n) = p.kind else { continue };
+            if docks_used.contains(&n) || !near_seen(lv, &seen, p.x, p.y) {
+                continue;
+            }
+            docks_used.push(n);
+            for q in lv.portals.iter().filter(|q| q.kind == PortalKind::Dock(n)) {
+                if let Some((x, y)) = nearest_open(lv, q.x, q.y) {
+                    push(x, y, &mut seen, &mut queue);
+                    more = true;
+                }
+            }
+        }
+        if !more {
+            break;
+        }
+    }
+    seen
+}
+
+/// The nearest walkable tile to (x, y), within a few tiles.
+pub fn nearest_open(lv: &Level, x: f32, y: f32) -> Option<(i32, i32)> {
+    let (cx, cy) = (x.floor() as i32, y.floor() as i32);
+    for r in 0..4 {
+        for dy in -r..=r {
+            for dx in -r..=r {
+                if lv.d.walkable(cx + dx, cy + dy) {
+                    return Some((cx + dx, cy + dy));
+                }
+            }
+        }
+    }
+    None
+}
+
+/// Can you get within reach of (x, y): is a tile within two of it reachable?
+pub fn near_seen(lv: &Level, seen: &[bool], x: f32, y: f32) -> bool {
+    let (cx, cy) = (x.floor() as i32, y.floor() as i32);
+    (-2..=2).any(|dy| {
+        (-2..=2).any(|dx| {
+            let (tx, ty) = (cx + dx, cy + dy);
+            tx >= 0 && ty >= 0 && tx < lv.d.w && ty < lv.d.h && seen[(ty * lv.d.w + tx) as usize]
+        })
+    })
+}
+
 
 /// Promotes some packs, D2 style: blue champion packs (one modifier each) and elite leaders
 /// with a name, two modifiers and minions that share one of them. Works on hand-made levels too.
@@ -998,7 +1117,7 @@ pub fn add_elites(lv: &mut Level, seed: u64) {
         LevelId::Overworld => 0x0e11,
         LevelId::Frostmarch => 0x0f11,
         LevelId::Mistwood => 0x1011,
-        LevelId::Mechanus => 0x1111,
+        LevelId::Dominion => 0x1111,
         LevelId::Deep => 0x1211,
         LevelId::Heavens => 0x1311,
         LevelId::Churn => 0x1811,
@@ -1009,7 +1128,7 @@ pub fn add_elites(lv: &mut Level, seed: u64) {
     };
     let mut rng = Rng::new(seed ^ salt.wrapping_mul(0x9e37_79b9));
     let (champs, elites) = match lv.id {
-        LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep | LevelId::Heavens | LevelId::Churn => (5, 3),
+        LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Dominion | LevelId::Deep | LevelId::Heavens | LevelId::Churn => (5, 3),
         LevelId::Dungeon(_, f) => (1 + (f > 0) as usize, 1),
         LevelId::Rift(t) => (2 + t as usize / 4, 1 + t as usize / 8),
         LevelId::Arena(_) => (0, 0),
@@ -1056,7 +1175,7 @@ pub const PASS_FROST: (i32, i32) = (56, 104);
 /// The misty road east out of the Frostmarch, and where it comes out in the Mistwood.
 pub const PASS_FROST_EAST: (i32, i32) = (106, 52);
 pub const PASS_MIST: (i32, i32) = (6, 56);
-/// The gear gate behind Castle Vardak (opens when the Count dies), and where it comes out on Mechanus.
+/// The gear gate behind Castle Vardak (opens when the Count dies), and where it comes out on the Dominion.
 pub const GEAR_GATE: (i32, i32) = (22, 16);
 pub const PASS_GEARS: (i32, i32) = (8, 56);
 /// The diving bell at the Last Escapement's east road (down to the deep, once the Clockmaker is dead), and
@@ -1070,7 +1189,7 @@ pub const STAIR_SKY: (i32, i32) = (10, 56);
 pub const ANCHORAGE: (i32, i32, i32, i32) = (44, 46, 64, 64);
 /// Brinehollow: the stilt town on the sea floor.
 pub const BRINEHOLLOW: (i32, i32, i32, i32) = (44, 46, 64, 64);
-/// The Last Escapement: the refuge town on Mechanus.
+/// The Last Escapement: the refuge town on the Dominion.
 pub const ESCAPEMENT: (i32, i32, i32, i32) = (44, 46, 64, 64);
 /// Mournhold: palisade rectangle on the Mistwood.
 pub const MOURNHOLD: (i32, i32, i32, i32) = (40, 48, 62, 66);
@@ -1439,7 +1558,7 @@ pub fn mistwood(seed: u64) -> Level {
     clear(&mut keep, px, py, 4);
     prop(&mut lv, &mut d, PropKind::PassMist, px - 3, py - 1, 2, 3);
     lv.portals.push(Portal { x: px as f32 + 0.5, y: py as f32 + 0.5, kind: PortalKind::Pass(1) });
-    // The gear gate on the castle grounds (to Mechanus, once the Count is dead).
+    // The gear gate on the castle grounds (to the Dominion, once the Count is dead).
     let (gx, gy) = GEAR_GATE;
     road(&mut d, &mut keep, (mx, ty0 - 1), (gx, gy), 11.0);
     clear(&mut keep, gx, gy, 4);
@@ -1524,17 +1643,17 @@ pub fn escapement_center() -> (f32, f32) {
     (54.5, 55.5)
 }
 
-/// Builds Act 4's overland: the Grinding Fields of Mechanus, an island of brass plates over the
+/// Builds Act 4's overland: the Grinding Fields of the Dominion, an island of brass plates over the
 /// void, with the refuge town of the Last Escapement, roads to the heralds' works and the
 /// great clock, and the gear gate back to the Mistwood.
-pub fn mechanus(seed: u64) -> Level {
+pub fn dominion(seed: u64) -> Level {
     let mut rng = Rng::new(seed ^ 0x4C0C_C10C);
     let (w, h) = (WORLD_W, WORLD_H);
     let mut d = Dungeon::blank(w, h, Tile::Floor);
     for v in d.var.iter_mut() {
         *v = rng.range(0, 100) as u8;
     }
-    let mut lv = Level::new(LevelId::Mechanus, "THE GRINDING FIELDS".into(), Theme::Mechanus, 7.2, Dungeon::blank(1, 1, Tile::Void));
+    let mut lv = Level::new(LevelId::Dominion, "THE GRINDING FIELDS".into(), Theme::Dominion, 7.2, Dungeon::blank(1, 1, Tile::Void));
     let mut keep = vec![false; (w * h) as usize];
     let clear = |keep: &mut Vec<bool>, x: i32, y: i32, r: i32| {
         for yy in y - r..=y + r {
@@ -2458,8 +2577,8 @@ mod tests {
         assert!(lv.mobs.len() > 50);
         let (x0, y0, x1, y1) = lv.safe.unwrap();
         assert!(lv.mobs.iter().all(|m| !(m.x > x0 && m.x < x1 && m.y > y0 && m.y < y1)), "monsters spawned in town");
-        // Mechanus has the bell down.
-        let mech = mechanus(7);
+        // The Dominion has the bell down.
+        let mech = dominion(7);
         let bell = mech.portal(PortalKind::Pass(4)).expect("the diving bell");
         let (cx, cy) = escapement_center();
         assert!(mech.d.path((cx as i32, cy as i32), (bell.x as i32, bell.y as i32), 100_000).is_some());
@@ -2511,8 +2630,8 @@ mod tests {
     }
 
     #[test]
-    fn mechanus_connects_the_escapement_to_every_works_and_the_gear_gate() {
-        let lv = mechanus(7);
+    fn dominion_connects_the_escapement_to_every_works_and_the_gear_gate() {
+        let lv = dominion(7);
         let (cx, cy) = escapement_center();
         assert!(lv.d.walkable(cx as i32, cy as i32));
         let mut kinds = vec![];

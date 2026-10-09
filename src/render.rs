@@ -1251,7 +1251,7 @@ impl Game {
                 scr.disc(sx + ahead + scr.shake.0, sy - up + scr.shake.1, 2, rgb(0xe0fffa));
             }
         }
-        // Weather: Mechanus's drifting steam and rising brass sparks.
+        // Weather: Dominion's drifting steam and rising brass sparks.
         if self.theme.clockwork() {
             let (cx, cy) = iso::to_screen(self.p.x, self.p.y);
             let t = self.tick as f32 / 60.0;

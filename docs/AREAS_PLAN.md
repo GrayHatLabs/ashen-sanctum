@@ -64,7 +64,7 @@ Each act then has 5 areas on the main road and 1 side branch:
 |---|---|---|
 | 2 Frostmarch | Frozen Shore (Mines), Howling Tundra (Caves), Rime Woods (Temple), White Waste, Glacier's Edge (Glacier's Heart, the mist road east) | Raiders' Fjord |
 | 3 Mistwood | Blighted Fields (Chapel), Gallows Moor (Gallows), Hollow Wood, Barrow Hills (Barrow), Castle Approach (Castle Vardak, the gear gate) | Witch's Bog |
-| 4 Mechanus | Gearfields (Foundry), Piston Flats (Choir Engine), Cogworks, Archive Stacks (Archive), Clockface Plain (Heart of the Clock, the diving bell) | Scrapyard |
+| 4 the Clockwork Dominion | Gearfields (Foundry), Piston Flats (Choir Engine), Cogworks, Archive Stacks (Archive), Clockface Plain (Heart of the Clock, the diving bell) | Scrapyard |
 | 5 the Deep | Kelp Shallows (Wreck), Coral Gardens (Cathedral), Bone Reef, Trench Rim (Trench), Abyssal Plain (Drowned Sanctum, the stair of light) | Sunken Galleon |
 | 6 the Heavens | Broken Steps (Broken Choir), Stormfields (Storm Spire), Fallen Gardens, Halo Isles (Wheel of Eyes), the Zenith (True Sanctum) | Drifting Isles |
 

@@ -14,7 +14,8 @@ drones in the wilds, bells and a heartbeat in the dungeons, drums for boss fight
 Ready-to-play builds are on the [releases page](https://github.com/GrayHatLabs/ashen-sanctum/releases/latest):
 Windows (`AshenSanctum-windows.zip`), Linux x86_64 (`AshenSanctum-linux-x86_64.tar.gz`), aarch64 handhelds
 with PortMaster (`AshenSanctum-handheld-aarch64.zip`) and Android (`AshenSanctum-android.apk`). Nothing else
-to install: the art, music and SDL2 are built in.
+to install: the art, music and SDL2 are built in. The libraries the game is built with, and their licences,
+are listed in `THIRD_PARTY_LICENSES.txt` (in every download; regenerate it with `scripts/third_party_licenses.py`).
 
 **Windows says "Windows protected your PC"?** That's SmartScreen: the game isn't code-signed yet, so Windows
 doesn't recognise it. Click **More info**, then **Run anyway**.
@@ -200,14 +201,14 @@ take back their Seals, unseal the Sanctum and end the Ash King.
   - **Gems** (D2 style): ruby, sapphire, topaz, emerald, amethyst, diamond and skull, from chipped to
     perfect. A gem gives something different in a weapon, armor or jewelry. Some white and blue gear
     has sockets: choose a gem (Enter / A), then the item.
-  - In **Mechanus** (Act 4), brass **stop-clocks** stand in the fields and works: walk into one to
+  - In **the Clockwork Dominion** (Act 4), brass **stop-clocks** stand in the fields and works: walk into one to
     slow every foe around it for 8 seconds. **Law zones** (glowing brass circles) decree how foes inside
     may be hurt: only close blows, only blows from afar, or only while they stand still.
   - Act 4's **Ordinal squads** march in ranks behind their marshal, halting on the beat to fire
     together behind a shield wall. Kill the marshal and the squad breaks. **Clockwork crows** come in
     flocks that circle you.
   - **Crates, barrels and urns** (a set per act: coffins and bone urns in the Mistwood, brass crates and
-    oil drums in Mechanus) stand in dungeons and by dungeon entrances. Any hit smashes them; some hold gold,
+    oil drums in the Clockwork Dominion) stand in dungeons and by dungeon entrances. Any hit smashes them; some hold gold,
     potions, food, and now and then a gem or an item.
   - A **jeweler** in every town joins three alike gems into a better one, cuts sockets in plain
     white gear, and takes gems back out unharmed, all for gold. See [docs/ITEMS_SETS_GEMS.md](docs/ITEMS_SETS_GEMS.md).
@@ -255,10 +256,10 @@ and graveyards, with the walled village of **Mournhold** and the dark spires of 
 - **Monsters**: ghouls, werewolves (they regenerate), banshees, will-o'-wisps, cultists and vampire bats.
 - Fog banks and drifting wisp-lights over the forest; a haunted waltz in the woods, an organ in the crypts.
 
-## Act 4: Mechanus
+## Act 4: the Clockwork Dominion
 
 When Count Vardak falls, a ring of brass **gears** behind his castle starts to turn. Through it lies
-**Mechanus, the Clockwork Dominion**: the Grinding Fields, an island of sooty brass plates over the void,
+**The Clockwork Dominion**: the Grinding Fields, an island of sooty brass plates over the void,
 with gear towers, boilers and steam vents, and the refuge town of **the Last Escapement**, where clockwork
 servants who grew souls hide from their maker.
 
@@ -357,7 +358,7 @@ Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`;
   - **Super uniques:** the Pale Huntsman, Sister Mournwail and Blackmoor the Gibbet-Hanged.
   - **Lore:** five pages.
   - **Act 4:**
-    - the **Broken Automaton**: five gears in Mechanus's areas rebuild a brass knight that fights at your side
+    - the **Broken Automaton**: five gears in the Dominion's areas rebuild a brass knight that fights at your side
       for the act;
     - the **Unlawful Court** (the Piston Flats): fight, bribe or argue; a writ frees you from the laws;
     - the **Scrapyard Lottery**: smash scrap heaps for loot, or a junk golem;

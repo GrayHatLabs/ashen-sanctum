@@ -34,7 +34,7 @@ never loads from it.
 | The Gallows Catacombs, floors 1-2 | `gallows_catacombs_floor1`, `_floor2` | `dungeon:9:0`, `dungeon:9:1` |
 | The Barrow Of Knights, floors 1-3 | `barrow_of_knights_floor1` ... `_floor3` | `dungeon:10:0` ... `dungeon:10:2` |
 | Castle Vardak, floors 1-3 | `castle_vardak_floor1` ... `_floor3` | `dungeon:11:0` ... `dungeon:11:2` |
-| Act 4: the Grinding Fields (overland + town) | `mechanus` | `mechanus` |
+| Act 4: the Grinding Fields (overland + town) | `dominion` | `dominion` |
 | The Foundry Of Souls, floors 1-2 | `foundry_of_souls_floor1`, `_floor2` | `dungeon:12:0`, `dungeon:12:1` |
 | The Choir Engine, floors 1-2 | `choir_engine_floor1`, `_floor2` | `dungeon:13:0`, `dungeon:13:1` |
 | The Archive Of Gears, floors 1-3 | `archive_of_gears_floor1` ... `_floor3` | `dungeon:14:0` ... `dungeon:14:2` |
@@ -93,7 +93,7 @@ The full lists of kinds are in that file and in the editor's palettes.
 - **id**: which map this replaces (must match the file name, see the table).
 - **theme**: `overworld`, `crypt`, `warrens`, `catacombs`, `sanctum`; Act 2: `tundra` (the Frostmarch),
   `mines`, `icecaves`, `rime`, `glacier`; Act 3: `mistwood`, `chapel`, `gallows`, `barrow`, `castle`; Act 4:
-  `mechanus`, `foundry`, `choir`, `archive`, `clock`; Act 5: `deep` (the Sunken Reach), `wreck`, `reef`,
+  `dominion`, `foundry`, `choir`, `archive`, `clock`; Act 5: `deep` (the Sunken Reach), `wreck`, `reef`,
   `trench`, `drowned`; Act 6: `heavens` (the Skyreach), `seraph`, `spire`, `wheel`, `zenith` (art, lighting,
   weather and each act's rules: the tide, the wind and the open sky).
 - **tier**: difficulty. Monsters' life and damage scale with it (a monster's own `tier` wins).
@@ -108,7 +108,7 @@ The full lists of kinds are in that file and in the editor's palettes.
   | `overworld` | grass | dirt | road |
   | `tundra` | snow | frozen lake ice | snowy road |
   | `mistwood` | earth | glowing moss | mud road |
-  | `mechanus` | brass plate | verdigris | conveyor |
+  | `dominion` | brass plate | verdigris | conveyor |
   | `deep` | sand | tide flats (flood at high tide: you wade, sea monsters swim) | boardwalk |
   | `heavens` | cloud marble | sky grass | chain bridge |
 - **start**: where you arrive when there's no matching portal (and, on the overworld, where you
@@ -140,7 +140,7 @@ The full lists of kinds are in that file and in the editor's palettes.
   | `overworld` | `entrance0..3` | `pass1` | Elder Maren (`elder`) | `merchant`, `healer`, `jeweler0` |
   | `frostmarch` | `entrance4..7` | `pass0`, `pass2` | Captain Brenna (`captain`) | `trader`, `seer`, `jeweler1` |
   | `mistwood` | `entrance8..11` | `pass1`, `pass3` | Abelard (`hunter`) | `widow`, `priest`, `jeweler2` |
-  | `mechanus` | `entrance12..15` | `pass2`, `pass4` | Tally (`tally`) | `vesper`, `oiler`, `jeweler3` |
+  | `dominion` | `entrance12..15` | `pass2`, `pass4` | Tally (`tally`) | `vesper`, `oiler`, `jeweler3` |
   | `deep` | `entrance16..19` | `pass3`, `pass5` | Captain Ysolde Marrow (`ysolde`) | `nessa`, `coral`, `jeweler4` |
   | `heavens` | `entrance20..23` | `pass4`, two `dock0` | Seraphine (`seraphine`) | `bram`, `aurel`, `jeweler5` |
 

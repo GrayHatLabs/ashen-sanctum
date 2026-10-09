@@ -109,7 +109,7 @@ pub fn file_name(id: LevelId) -> String {
         LevelId::Overworld => "overworld".into(),
         LevelId::Frostmarch => "frostmarch".into(),
         LevelId::Mistwood => "mistwood".into(),
-        LevelId::Mechanus => "mechanus".into(),
+        LevelId::Dominion => "dominion".into(),
         LevelId::Deep => "deep".into(),
         LevelId::Heavens => "heavens".into(),
         LevelId::Churn => "churn".into(),
@@ -125,7 +125,7 @@ pub fn id_string(id: LevelId) -> String {
         LevelId::Overworld => "overworld".into(),
         LevelId::Frostmarch => "frostmarch".into(),
         LevelId::Mistwood => "mistwood".into(),
-        LevelId::Mechanus => "mechanus".into(),
+        LevelId::Dominion => "dominion".into(),
         LevelId::Deep => "deep".into(),
         LevelId::Heavens => "heavens".into(),
         LevelId::Churn => "churn".into(),
@@ -146,8 +146,8 @@ pub fn parse_id(s: &str) -> Option<LevelId> {
     if s == "mistwood" {
         return Some(LevelId::Mistwood);
     }
-    if s == "mechanus" {
-        return Some(LevelId::Mechanus);
+    if s == "dominion" {
+        return Some(LevelId::Dominion);
     }
     if s == "deep" {
         return Some(LevelId::Deep);
@@ -177,7 +177,7 @@ pub fn parse_id(s: &str) -> Option<LevelId> {
 
 /// Every level in the game, in order.
 pub fn all_ids() -> Vec<LevelId> {
-    let mut v = vec![LevelId::Overworld, LevelId::Frostmarch, LevelId::Mistwood, LevelId::Mechanus, LevelId::Deep, LevelId::Heavens, LevelId::Churn];
+    let mut v = vec![LevelId::Overworld, LevelId::Frostmarch, LevelId::Mistwood, LevelId::Dominion, LevelId::Deep, LevelId::Heavens, LevelId::Churn];
     for a in crate::areas::AREAS {
         v.push(LevelId::Area(a.act, a.n));
     }
@@ -211,7 +211,7 @@ const THEMES: [(&str, Theme); 34] = [
     ("gallows", Theme::Gallows),
     ("barrow", Theme::Barrow),
     ("castle", Theme::Castle),
-    ("mechanus", Theme::Mechanus),
+    ("dominion", Theme::Dominion),
     ("foundry", Theme::Foundry),
     ("choir", Theme::Choir),
     ("archive", Theme::Archive),
@@ -761,7 +761,7 @@ pub fn catalog_js(seed: u64) -> String {
         LevelId::Overworld => "elder",
         LevelId::Frostmarch => "captain",
         LevelId::Mistwood => "hunter",
-        LevelId::Mechanus => "tally",
+        LevelId::Dominion => "tally",
         LevelId::Deep => "ysolde",
         _ => "seraphine",
     };

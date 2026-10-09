@@ -2012,7 +2012,7 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         g.quest.stage = 3;
         g.quest.stage2 = 3;
         g.quest.stage3 = 3;
-        g.debug_goto(LevelId::Mechanus);
+        g.debug_goto(LevelId::Dominion);
         (g.p.x, g.p.y) = g.start;
         g.banner_t = 0.0;
         idle(&mut g, 60);

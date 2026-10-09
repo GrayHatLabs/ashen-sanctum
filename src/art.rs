@@ -145,7 +145,7 @@ fn theme_grade(t: Theme) -> (u32, f32, f32) {
         Theme::Mines => (0x587890, 0.3, 0.88),
         Theme::Rime => (0x80b0e0, 0.25, 0.95),
         Theme::Glacier => (0x1a3a78, 0.3, 0.85),
-        Theme::Mistwood | Theme::Castle | Theme::Mechanus => (0, 0.0, 1.0),
+        Theme::Mistwood | Theme::Castle | Theme::Dominion => (0, 0.0, 1.0),
         Theme::Foundry => (0x6a3010, 0.4, 0.85),
         Theme::Choir => (0x3a2a40, 0.4, 0.8),
         Theme::Archive => (0x4a3a20, 0.4, 0.8),
@@ -286,7 +286,7 @@ impl Art {
                 Theme::Tundra => palisade_snow.clone(),
                 Theme::Mistwood => fence.clone(),
                 Theme::Castle => castle_wall.clone(),
-                Theme::Mechanus => iron_fence.clone(),
+                Theme::Dominion => iron_fence.clone(),
                 Theme::Deep | Theme::Reef => coral_wall.clone(),
                 Theme::Trench => grade(&coral_wall, theme_grade(t)),
                 Theme::Wreck => grade(&wall, (0x3a2818, 0.5, 0.75)),
@@ -395,7 +395,7 @@ impl Art {
                 _ => &self.mist_earth[var % self.mist_earth.len()],
             };
         }
-        if theme == Theme::Mechanus {
+        if theme == Theme::Dominion {
             return match ground {
                 1 => &self.verdigris,
                 2 => &self.conveyor,

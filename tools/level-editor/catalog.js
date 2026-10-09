@@ -897,7 +897,7 @@ window.CATALOG = {
         96
       ],
       "story": null,
-      "theme": "mechanus",
+      "theme": "dominion",
       "tier": 7.599999904632568,
       "town": false
     },
@@ -924,7 +924,7 @@ window.CATALOG = {
         96
       ],
       "story": null,
-      "theme": "mechanus",
+      "theme": "dominion",
       "tier": 8.0,
       "town": false
     },
@@ -949,7 +949,7 @@ window.CATALOG = {
         96
       ],
       "story": null,
-      "theme": "mechanus",
+      "theme": "dominion",
       "tier": 8.399999618530273,
       "town": false
     },
@@ -976,7 +976,7 @@ window.CATALOG = {
         96
       ],
       "story": null,
-      "theme": "mechanus",
+      "theme": "dominion",
       "tier": 8.600000381469727,
       "town": false
     },
@@ -1001,7 +1001,7 @@ window.CATALOG = {
         96
       ],
       "story": null,
-      "theme": "mechanus",
+      "theme": "dominion",
       "tier": 9.0,
       "town": false
     },
@@ -1024,7 +1024,7 @@ window.CATALOG = {
         64
       ],
       "story": null,
-      "theme": "mechanus",
+      "theme": "dominion",
       "tier": 8.0,
       "town": false
     },
@@ -1556,6 +1556,36 @@ window.CATALOG = {
       "tier": 9.600000381469727,
       "town": true
     },
+    "dominion": {
+      "act": 3,
+      "doors": [],
+      "exits": [
+        [
+          1,
+          "THE GEARFIELDS"
+        ]
+      ],
+      "name": "THE GRINDING FIELDS",
+      "passes": [
+        "pass2"
+      ],
+      "shops": [
+        "jeweler3",
+        "oiler",
+        "vesper"
+      ],
+      "size": [
+        112,
+        112
+      ],
+      "story": [
+        "tally",
+        "TALLY"
+      ],
+      "theme": "dominion",
+      "tier": 7.199999809265137,
+      "town": true
+    },
     "frostmarch": {
       "act": 1,
       "doors": [],
@@ -1615,36 +1645,6 @@ window.CATALOG = {
       ],
       "theme": "heavens",
       "tier": 12.0,
-      "town": true
-    },
-    "mechanus": {
-      "act": 3,
-      "doors": [],
-      "exits": [
-        [
-          1,
-          "THE GEARFIELDS"
-        ]
-      ],
-      "name": "THE GRINDING FIELDS",
-      "passes": [
-        "pass2"
-      ],
-      "shops": [
-        "jeweler3",
-        "oiler",
-        "vesper"
-      ],
-      "size": [
-        112,
-        112
-      ],
-      "story": [
-        "tally",
-        "TALLY"
-      ],
-      "theme": "mechanus",
-      "tier": 7.199999809265137,
       "town": true
     },
     "mistwood": {
@@ -3150,7 +3150,7 @@ window.CATALOG = {
       "sky": false
     },
     {
-      "name": "mechanus",
+      "name": "dominion",
       "open": true,
       "sky": false
     },

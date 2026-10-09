@@ -269,7 +269,7 @@ pub const SUPERS: &[SuperDef] = &[
     SuperDef { name: "LUCRETIA, VARDAK'S BRIDE", kind: Kind::Bride, home: LevelId::Area(2, 99), spot: (0, 0), mods: M_FAST | M_VAMPIRE, gang: (Kind::Cultist, 0), tint: 0xf0d0e0, line: "MY LORD WILL DRINK YOU DRY.", unique: "bride", page: None, camp: None },
     SuperDef { name: "MORGANA, VARDAK'S BRIDE", kind: Kind::Bride, home: LevelId::Area(2, 99), spot: (0, 0), mods: M_STRONG | M_VAMPIRE, gang: (Kind::Cultist, 0), tint: 0xd8c0f0, line: "OH, A GUEST. HOW... APPETISING.", unique: "bride", page: None, camp: None },
     SuperDef { name: "ISOLDE, VARDAK'S BRIDE", kind: Kind::Bride, home: LevelId::Area(2, 99), spot: (0, 0), mods: M_STONE | M_VAMPIRE, gang: (Kind::Cultist, 0), tint: 0xe0e8ff, line: "YOU'LL NEVER REACH THE CASTLE.", unique: "bride", page: None, camp: None },
-    // ---- Act 4: Mechanus ----
+    // ---- Act 4: Dominion ----
     SuperDef {
         name: "MAINSPRING",
         kind: Kind::BoilerBrute,
@@ -587,7 +587,7 @@ pub const SIDES: &[SideDef] = &[
         giver: Role::Tally,
         giver_name: "TALLY",
         ask: "ASK ABOUT THE MISSING LEDGER",
-        offer: &["MY LEDGER! EVERY GEAR IN MECHANUS, COUNTED AND ACCOUNTED, AND A SPRING-HEELED LUNATIC SNATCHED IT RIGHT OFF MY DESK. TICK-TOCK JACK, THEY CALL HIM. HE BOUNCES ROUND THE COGWORKS LAUGHING AT HIS OWN JOKES. BRING IT BACK. I'LL PAY. I ALWAYS PAY. IT'S IN THE LEDGER."],
+        offer: &["MY LEDGER! EVERY GEAR IN THE DOMINION, COUNTED AND ACCOUNTED, AND A SPRING-HEELED LUNATIC SNATCHED IT RIGHT OFF MY DESK. TICK-TOCK JACK, THEY CALL HIM. HE BOUNCES ROUND THE COGWORKS LAUGHING AT HIS OWN JOKES. BRING IT BACK. I'LL PAY. I ALWAYS PAY. IT'S IN THE LEDGER."],
         remind: "TICK-TOCK JACK, IN THE COGWORKS. HE'S FAST. BE FASTER.",
         thanks: &["MY LEDGER. NOT A PAGE MISSING. FIFTEEN HUNDRED GOLD, AS AGREED. I'VE WRITTEN IT DOWN."],
         goal: Goal::Super(14),

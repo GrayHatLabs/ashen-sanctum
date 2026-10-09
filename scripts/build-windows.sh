@@ -17,6 +17,6 @@ OUT=dist/AshenSanctum-windows
 rm -rf "$OUT"
 mkdir -p "$OUT"
 cp "$CARGO_TARGET_DIR/x86_64-pc-windows-gnu/release/ashensanctum.exe" "$OUT/AshenSanctum.exe"
-cp README.md "$OUT/"
+cp README.md THIRD_PARTY_LICENSES.txt "$OUT/"
 (cd dist && rm -f AshenSanctum-windows.zip && python3 -m zipfile -c AshenSanctum-windows.zip AshenSanctum-windows/)
 echo "Built dist/AshenSanctum-windows/AshenSanctum.exe and dist/AshenSanctum-windows.zip"

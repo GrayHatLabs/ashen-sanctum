@@ -168,7 +168,7 @@ pub enum Drop {
     Rune(usize),
     /// A skeleton lord's grave sigil (0 Ossric, 1 Grimhilde, 2 Malgrave).
     Sigil(usize),
-    /// A herald of Mechanus's winding key (0 Forgemother, 1 Cantor, 2 Archivist).
+    /// A herald of the Dominion's winding key (0 Forgemother, 1 Cantor, 2 Archivist).
     Key(usize),
     /// A Leviathan pearl from a herald of the deep (0 Dregmoor, 1 Nacre, 2 the Angler Matriarch).
     Pearl(usize),
@@ -1008,7 +1008,7 @@ impl Game {
     /// Where this level's waypoint stands: beside the town square, or near a floor's way in.
     fn find_waypoint(&self) -> (f32, f32) {
         let base = match self.level {
-            LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Mechanus | LevelId::Deep | LevelId::Heavens | LevelId::Churn => (self.town_start.0 + 3.0, self.town_start.1 + 2.0),
+            LevelId::Overworld | LevelId::Frostmarch | LevelId::Mistwood | LevelId::Dominion | LevelId::Deep | LevelId::Heavens | LevelId::Churn => (self.town_start.0 + 3.0, self.town_start.1 + 2.0),
             LevelId::Dungeon(..) => self.portals.iter().find(|p| p.kind == PortalKind::Up).map(|p| (p.x + 2.0, p.y + 1.0)).unwrap_or(self.start),
             LevelId::Rift(_) | LevelId::Arena(_) => self.start,
             // An area's waypoint stands by the road in from town.
@@ -1041,7 +1041,7 @@ impl Game {
             LevelId::Overworld => "HOLLOWMERE".into(),
             LevelId::Frostmarch => "KALDHOLM".into(),
             LevelId::Mistwood => "MOURNHOLD".into(),
-            LevelId::Mechanus => "THE LAST ESCAPEMENT".into(),
+            LevelId::Dominion => "THE LAST ESCAPEMENT".into(),
             LevelId::Deep => "BRINEHOLLOW".into(),
             LevelId::Heavens => "WINDWARD ANCHORAGE".into(),
             LevelId::Churn => "STILLHOLD".into(),
@@ -1513,7 +1513,7 @@ impl Game {
             LevelId::Overworld if q.elder_has_news() => Some(Role::Elder),
             LevelId::Frostmarch if q.captain_has_news() => Some(Role::Captain),
             LevelId::Mistwood if q.hunter_has_news() => Some(Role::Hunter),
-            LevelId::Mechanus if q.tally_has_news() => Some(Role::Tally),
+            LevelId::Dominion if q.tally_has_news() => Some(Role::Tally),
             LevelId::Deep if q.ysolde_has_news() => Some(Role::Ysolde),
             LevelId::Heavens if q.seraphine_has_news() => Some(Role::Seraphine),
             _ => None,
@@ -1637,7 +1637,7 @@ impl Game {
                 Track::Abyss
             }
         } else if self.level.act() == 3 {
-            // Mechanus: a ticking harpsichord outside, the engine's clangour in the works.
+            // The Dominion: a ticking harpsichord outside, the engine's clangour in the works.
             if self.level.overland() {
                 Track::Gears
             } else {
@@ -1954,8 +1954,8 @@ impl Game {
                 if act == 2 && !self.waypoints.contains(&LevelId::Mistwood) {
                     self.say("THE MISTWOOD. FIND THE VILLAGE OF MOURNHOLD".into());
                 }
-                if act == 3 && !self.waypoints.contains(&LevelId::Mechanus) {
-                    self.say("MECHANUS, THE CLOCKWORK DOMINION. FIND THE LAST ESCAPEMENT".into());
+                if act == 3 && !self.waypoints.contains(&LevelId::Dominion) {
+                    self.say("THE CLOCKWORK DOMINION. FIND THE LAST ESCAPEMENT".into());
                 }
                 if act == 5 && !self.waypoints.contains(&LevelId::Heavens) {
                     self.say("THE SHATTERED HEAVENS. FIND WINDWARD ANCHORAGE. MIND THE EDGES".into());
@@ -2235,7 +2235,7 @@ impl Game {
                 self.quest.stage4 = s4;
                 self.sfx.push(Sfx::Pickup);
                 match s4 {
-                    1 => self.say("NEW QUEST: SILENCE THE THREE HERALDS OF MECHANUS".into()),
+                    1 => self.say("NEW QUEST: SILENCE THE THREE HERALDS OF THE DOMINION".into()),
                     2 => self.say("THE HEART OF THE CLOCK IS OPEN".into()),
                     _ => {}
                 }
@@ -4088,20 +4088,20 @@ mod tests {
         assert!(g.level.act() == LevelId::Mistwood.act() && !matches!(g.level, LevelId::Dungeon(..)), "the gears are still");
         g.quest.stage3 = 3;
         walk_onto(&mut g, PortalKind::Pass(3));
-        assert!(g.level.act() == LevelId::Mechanus.act() && !matches!(g.level, LevelId::Dungeon(..)));
+        assert!(g.level.act() == LevelId::Dominion.act() && !matches!(g.level, LevelId::Dungeon(..)));
         assert_eq!(g.level.act(), 3);
         // And back again, arriving by the gear gate.
         walk_onto(&mut g, PortalKind::Pass(2));
         assert!(g.level.act() == LevelId::Mistwood.act() && !matches!(g.level, LevelId::Dungeon(..)));
         let gate = g.portals.iter().find(|p| p.kind == PortalKind::Pass(3)).map(|p| (p.x, p.y)).unwrap();
         assert!((g.p.x - gate.0).abs() + (g.p.y - gate.1).abs() < 3.0, "arrived at the gear gate");
-        g.debug_goto(LevelId::Mechanus);
+        g.debug_goto(LevelId::Dominion);
         assert!(g.quest.tally_has_news());
         assert!(g.debug_talk(Role::Tally));
         read_through(&mut g);
         assert_eq!(g.quest.stage4, 1);
         walk_onto(&mut g, PortalKind::Entrance(HEART));
-        assert!(g.level.act() == LevelId::Mechanus.act() && !matches!(g.level, LevelId::Dungeon(..)), "the heart is locked");
+        assert!(g.level.act() == LevelId::Dominion.act() && !matches!(g.level, LevelId::Dungeon(..)), "the heart is locked");
         for (i, (k, kind)) in [(12, crate::mobs::Kind::Forgemother), (13, crate::mobs::Kind::Cantor), (14, crate::mobs::Kind::Archivist)].into_iter().enumerate() {
             g.debug_goto(LevelId::Dungeon(k, DUNGEONS[k].floors - 1));
             assert!(g.mobs.iter().any(|m| m.kind == kind), "{kind:?} waits below");
@@ -4109,7 +4109,7 @@ mod tests {
             g.debug_collect_all();
             assert!(g.quest.keys[i], "key {i}");
         }
-        g.debug_goto(LevelId::Mechanus);
+        g.debug_goto(LevelId::Dominion);
         assert!(g.quest.tally_has_news());
         assert!(g.debug_talk(Role::Tally));
         read_through(&mut g);
@@ -4122,12 +4122,12 @@ mod tests {
         assert_eq!(g.quest.stage4, 3);
         assert!(!g.quest.tally_has_news(), "nightmare waits for later acts");
         assert!(g.quest.deep_open(), "the diving bell is free");
-        // Saved in Mechanus, loaded in Mechanus.
-        g.debug_goto(LevelId::Mechanus);
+        // Saved in the Dominion, loaded in the Dominion.
+        g.debug_goto(LevelId::Dominion);
         let text = crate::save::to_text(&g);
         let mut h = Game::new(5, crate::gfx::SH_WIDE);
         crate::save::apply(&mut h, &text);
-        assert_eq!(h.level, LevelId::Mechanus);
+        assert_eq!(h.level, LevelId::Dominion);
         assert_eq!((h.quest.stage4, h.quest.key_count()), (3, 3));
     }
 
@@ -4164,7 +4164,7 @@ mod tests {
     #[test]
     fn ordinal_squads_march_in_step_until_the_marshal_falls() {
         let mut g = Game::new(5, crate::gfx::SH_WIDE);
-        g.debug_goto(LevelId::Mechanus);
+        g.debug_goto(LevelId::Dominion);
         let squad_of = |g: &Game, m: usize| -> Vec<usize> {
             let (mx, my) = (g.mobs[m].x, g.mobs[m].y);
             (0..g.mobs.len())
@@ -4186,7 +4186,7 @@ mod tests {
     fn ordinal_ranks_hold_a_shield_wall_and_break_with_their_marshal() {
         use crate::mobs::{Kind, Mob, MobState};
         let mut g = Game::new(5, crate::gfx::SH_WIDE);
-        g.debug_goto(LevelId::Mechanus);
+        g.debug_goto(LevelId::Dominion);
         // A fresh squad in open ground, you to the east.
         g.mobs.clear();
         let (cx, cy) = g.clocks.first().map(|c| (c.x, c.y)).unwrap_or(g.start);
@@ -4239,9 +4239,9 @@ mod tests {
     }
 
     #[test]
-    fn clockwork_crows_flock_in_mechanus() {
+    fn clockwork_crows_flock_in_dominion() {
         let mut g = Game::new(5, crate::gfx::SH_WIDE);
-        g.debug_goto(LevelId::Mechanus);
+        g.debug_goto(LevelId::Dominion);
         let n = g.mobs.iter().filter(|m| m.kind == crate::mobs::Kind::ClockCrow).count();
         assert!(n >= 6, "a flock or more of crows: {n}");
     }
@@ -4250,10 +4250,10 @@ mod tests {
     fn act_five_opens_after_the_clockmaker_and_can_be_finished() {
         let mut g = Game::new(5, crate::gfx::SH_WIDE);
         g.act_start(3);
-        assert!(g.level.act() == LevelId::Mechanus.act() && !matches!(g.level, LevelId::Dungeon(..)));
+        assert!(g.level.act() == LevelId::Dominion.act() && !matches!(g.level, LevelId::Dungeon(..)));
         // The bell is locked until the Clockmaker stops.
         walk_onto(&mut g, PortalKind::Pass(4));
-        assert!(g.level.act() == LevelId::Mechanus.act() && !matches!(g.level, LevelId::Dungeon(..)), "the bell's chains are locked");
+        assert!(g.level.act() == LevelId::Dominion.act() && !matches!(g.level, LevelId::Dungeon(..)), "the bell's chains are locked");
         g.quest.stage4 = 3;
         g.quest.keys = [true; 3];
         g.portal_cd = 0.0;
@@ -4405,7 +4405,7 @@ mod tests {
     #[test]
     fn boiler_brutes_burst_when_they_fall() {
         let mut g = Game::new(5, crate::gfx::SH_WIDE);
-        g.debug_goto(LevelId::Mechanus);
+        g.debug_goto(LevelId::Dominion);
         let i = match g.mobs.iter().position(|m| m.kind == crate::mobs::Kind::BoilerBrute) {
             Some(i) => i,
             None => {
@@ -5737,7 +5737,7 @@ mod tests {
             (LevelId::Overworld, Track::Town, Track::Wilds),
             (LevelId::Frostmarch, Track::Hearth, Track::Frost),
             (LevelId::Mistwood, Track::Vigil, Track::Mist),
-            (LevelId::Mechanus, Track::Refuge, Track::Gears),
+            (LevelId::Dominion, Track::Refuge, Track::Gears),
         ] {
             g.debug_goto(id);
             (g.p.x, g.p.y) = g.start;
@@ -5754,7 +5754,7 @@ mod tests {
         use crate::inventory::Cell;
         use crate::items::{gem_item, Gem, Rarity};
         let mut g = Game::new(5, crate::gfx::SH_WIDE);
-        for (k, id) in [LevelId::Overworld, LevelId::Frostmarch, LevelId::Mistwood, LevelId::Mechanus].into_iter().enumerate() {
+        for (k, id) in [LevelId::Overworld, LevelId::Frostmarch, LevelId::Mistwood, LevelId::Dominion].into_iter().enumerate() {
             g.debug_goto(id);
             let n = g.npcs.iter().find(|n| n.role == Role::Jeweler(k as u8)).expect("a jeweler in town");
             assert!(!g.d.blocked(n.x, n.y, 0.3), "the jeweler stands on open ground in act {}", k + 1);
@@ -5869,7 +5869,7 @@ mod tests {
         g.dialog = None;
         g.quest.stage4 = 3;
         g.quest.keys = [true; 3];
-        g.debug_goto(LevelId::Mechanus);
+        g.debug_goto(LevelId::Dominion);
         assert!(g.debug_talk(Role::Tally));
         assert!(!g.dialog.as_ref().unwrap().options.iter().any(|o| o.1 == Act::NextDifficulty), "not after act 4");
         g.dialog = None;

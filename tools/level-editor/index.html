@@ -109,7 +109,7 @@
     <div class="row"><label>Id</label><span id="lv-id" class="hint"></span></div>
     <div class="row"><label>Name</label><input id="lv-name" style="flex:1"></div>
     <div class="row"><label>Theme</label>
-      <select id="lv-theme"><option>overworld</option><option>crypt</option><option>warrens</option><option>catacombs</option><option>sanctum</option><option>tundra</option><option>mines</option><option>icecaves</option><option>rime</option><option>glacier</option><option>mistwood</option><option>chapel</option><option>gallows</option><option>barrow</option><option>castle</option><option>mechanus</option><option>foundry</option><option>choir</option><option>archive</option><option>clock</option></select></div>
+      <select id="lv-theme"><option>overworld</option><option>crypt</option><option>warrens</option><option>catacombs</option><option>sanctum</option><option>tundra</option><option>mines</option><option>icecaves</option><option>rime</option><option>glacier</option><option>mistwood</option><option>chapel</option><option>gallows</option><option>barrow</option><option>castle</option><option>dominion</option><option>foundry</option><option>choir</option><option>archive</option><option>clock</option></select></div>
     <div class="row"><label>Tier</label><input id="lv-tier" type="number" step="0.1" min="0.1">
       <span class="hint">difficulty</span></div>
     <div class="row"><label>Size</label><span id="lv-size" class="hint"></span>
@@ -158,7 +158,7 @@ let PROPS = [
   ["tree_twisted", 1, 1], ["tree_mistpine", 1, 1], ["glow_shrooms", 1, 1], ["gravestone", 1, 1],
   ["cottage_mist", 4, 4], ["cottage_mist2", 4, 4], ["gallows", 3, 2], ["merchant_cart", 3, 2], ["pass_mist", 3, 2],
   ["ent_chapel", 3, 3], ["ent_gallows", 3, 3], ["ent_barrow", 3, 3], ["ent_castle", 4, 3],
-  // Act 4 (Mechanus)
+  // Act 4 (Dominion)
   ["gear_tower", 1, 1], ["steam_pipes", 1, 1], ["steam_vent", 1, 1], ["gas_lamp", 1, 1], ["cog_pile", 1, 1], ["pendulum", 1, 1],
   ["workshop1", 4, 4], ["workshop2", 4, 4], ["clock_tower", 2, 2], ["gear_gate", 3, 2],
   ["ent_foundry", 3, 3], ["ent_choir", 3, 3], ["ent_archive", 3, 3], ["ent_clock", 4, 3],
@@ -182,7 +182,7 @@ let PORTALS = [
   { kind: "entrance9", name: "Door: Gallows Catacombs", color: "#60f080" },
   { kind: "entrance10", name: "Door: Barrow of Knights", color: "#8090a0" },
   { kind: "entrance11", name: "Door: Castle Vardak", color: "#c01020" },
-  { kind: "pass3", name: "Gear gate (Mistwood <-> Mechanus)", color: "#e0b040" },
+  { kind: "pass3", name: "Gear gate (Mistwood <-> Dominion)", color: "#e0b040" },
   { kind: "entrance12", name: "Door: Foundry of Souls", color: "#ff8020" },
   { kind: "entrance13", name: "Door: Choir Engine", color: "#c0a0ff" },
   { kind: "entrance14", name: "Door: Archive of Gears", color: "#80b0ff" },
@@ -218,13 +218,13 @@ const ITEMS = [
 const THEME_FLOOR = { overworld: "#3e6a2a", crypt: "#4e5254", warrens: "#5a4a34", catacombs: "#4a4260", sanctum: "#4a2620",
   tundra: "#d8e2ee", mines: "#5a6a78", icecaves: "#9ac8e8", rime: "#a8c8e0", glacier: "#4a70a8",
   mistwood: "#3a4652", chapel: "#405a50", gallows: "#3a4038", barrow: "#5a5446", castle: "#4a2028",
-  mechanus: "#4e3e28", foundry: "#5a3018", choir: "#3a2e40", archive: "#4a3c26", clock: "#24222a",
+  dominion: "#4e3e28", foundry: "#5a3018", choir: "#3a2e40", archive: "#4a3c26", clock: "#24222a",
   deep: "#c8b088", wreck: "#4a3a28", reef: "#3a6a70", trench: "#1a2a3a", drowned: "#2a4a4a",
   heavens: "#d8d8e0", seraph: "#c8b890", spire: "#4a5068", wheel: "#c0a060", zenith: "#e8d8a8" };
 const THEME_WALL = { overworld: "#3a2414", crypt: "#22281e", warrens: "#2e2214", catacombs: "#241e36", sanctum: "#2a0e0a",
   tundra: "#4a3424", mines: "#2a3440", icecaves: "#3a6a90", rime: "#4a6a88", glacier: "#1a3a6a",
   mistwood: "#1e2a24", chapel: "#1a2a22", gallows: "#1e221c", barrow: "#2a281e", castle: "#200810",
-  mechanus: "#1e1e22", foundry: "#2a1408", choir: "#1e1622", archive: "#2a2014", clock: "#101014",
+  dominion: "#1e1e22", foundry: "#2a1408", choir: "#1e1622", archive: "#2a2014", clock: "#101014",
   deep: "#3a5a50", wreck: "#2a1a10", reef: "#1a3a40", trench: "#0a1018", drowned: "#102828",
   heavens: "#8a8aa0", seraph: "#6a5a40", spire: "#22263a", wheel: "#5a4420", zenith: "#8a7a50" };
 // Ground names and colours per open-air theme (g / d / r in the file).
@@ -232,7 +232,7 @@ const GROUND_KIND = {
   overworld: [{ g: "grass", d: "dirt", r: "road" }, { g: "#3e6a2a", d: "#7a4a36", r: "#6a6660" }],
   tundra: [{ g: "snow", d: "lake ice", r: "snowy road" }, { g: "#d8e2ee", d: "#9ac8e8", r: "#a8a49c" }],
   mistwood: [{ g: "earth", d: "glowing moss", r: "mud road" }, { g: "#3a4652", d: "#3a6a50", r: "#5a4a3a" }],
-  mechanus: [{ g: "brass plate", d: "verdigris", r: "conveyor" }, { g: "#6a5230", d: "#3a7a6a", r: "#3a3a40" }],
+  dominion: [{ g: "brass plate", d: "verdigris", r: "conveyor" }, { g: "#6a5230", d: "#3a7a6a", r: "#3a3a40" }],
   deep: [{ g: "sand", d: "tide flats (flood at high tide)", r: "boardwalk" }, { g: "#c8b088", d: "#6a8a80", r: "#7a5a3a" }],
   heavens: [{ g: "cloud marble", d: "sky grass", r: "chain bridge" }, { g: "#d8d8e0", d: "#7ab060", r: "#8a7a60" }],
 };
@@ -247,18 +247,18 @@ let DUNGEONS = [["bone_crypt", "THE BONE CRYPT", 2, "crypt", 1.0], ["rotting_war
   ["archive_of_gears", "THE ARCHIVE OF GEARS", 3, "archive", 8.6], ["heart_of_the_clock", "THE HEART OF THE CLOCK", 3, "clock", 9.2]];
 let BOSSES = ["boss_bone", "boss_plague", "boss_hex", "boss_ashking", "boss_giant", "boss_yeti", "boss_witch", "boss_dragon", "boss_ossric", "boss_grimhilde", "boss_malgrave", "boss_vardak", "boss_forgemother", "boss_cantor", "boss_archivist", "boss_clockmaker"];
 // Open-air themes have ground (grass / dirt / road, or snow / lake ice / snowy road).
-let isOpen = theme => theme === "overworld" || theme === "tundra" || theme === "mistwood" || theme === "mechanus";
+let isOpen = theme => theme === "overworld" || theme === "tundra" || theme === "mistwood" || theme === "dominion";
 let isSky = theme => false;
-let OVERLANDS = ["overworld", "frostmarch", "mistwood", "mechanus"];
+let OVERLANDS = ["overworld", "frostmarch", "mistwood", "dominion"];
 // Per overland: act, theme, name, tier, dungeon range, passes it needs, story NPC (+name), shop NPCs.
 let LANDS = {
   overworld: { theme: "overworld", name: "THE ASHLANDS", tier: 1, doors: [0, 4], passes: ["pass1"], story: ["elder", "Elder Maren"], shops: ["merchant", "healer"] },
   frostmarch: { theme: "tundra", name: "THE FROSTMARCH", tier: 3.4, doors: [4, 8], passes: ["pass0", "pass2"], story: ["captain", "Captain Brenna"], shops: ["trader", "seer"] },
   mistwood: { theme: "mistwood", name: "THE MISTWOOD", tier: 5.2, doors: [8, 12], passes: ["pass1", "pass3"], story: ["hunter", "Abelard"], shops: ["widow", "priest"] },
-  mechanus: { theme: "mechanus", name: "THE GRINDING FIELDS", tier: 7.2, doors: [12, 16], passes: ["pass2"], story: ["tally", "Tally"], shops: ["vesper", "oiler"] },
+  dominion: { theme: "dominion", name: "THE GRINDING FIELDS", tier: 7.2, doors: [12, 16], passes: ["pass2"], story: ["tally", "Tally"], shops: ["vesper", "oiler"] },
 };
 // Pass portals lead to the act with that index (pass0 = Act 1 ... pass5 = Act 6).
-const PASS_NAMES = ["Way to Act 1 (Ashlands)", "Way to Act 2 (Frostmarch)", "Way to Act 3 (Mistwood)", "Way to Act 4 (Mechanus)",
+const PASS_NAMES = ["Way to Act 1 (Ashlands)", "Way to Act 2 (Frostmarch)", "Way to Act 3 (Mistwood)", "Way to Act 4 (Dominion)",
   "Way to Act 5 (Sunken Reach)", "Way to Act 6 (the Heavens)"];
 const ACT_COLORS = ["#e0d8c0", "#90c8ff", "#80f0a0", "#ffb040", "#40d0c0", "#fff0a0"];
 // Area ids and their file names (area:0:3 -> the_rotwood), from the catalog.
@@ -274,7 +274,7 @@ if (window.CATALOG) {
   DUNGEONS = C.dungeons.map(d => [d.slug, d.name, d.floors, d.theme, d.tier, d.boss, d.act]);
   BOSSES = C.dungeons.map(d => d.boss);
   // In act order: each act's town map, then its areas (area:<act>:<n>).
-  const ORDER = ["overworld", "frostmarch", "mistwood", "mechanus", "deep", "heavens"];
+  const ORDER = ["overworld", "frostmarch", "mistwood", "dominion", "deep", "heavens"];
   const key = id => { const m = /^area:(\d+):(\d+)$/.exec(id); return m ? +m[1] * 100 + +m[2] : ORDER.indexOf(id) * 100; };
   C_SLUGS = C.slugs || {};
   OVERLANDS = Object.keys(C.lands).sort((a, b) => key(a) - key(b));
