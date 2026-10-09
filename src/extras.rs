@@ -405,6 +405,16 @@ impl Game {
         self.ex.rival_moves += 1;
         let tier = self.mobs[i].tier;
         let dmg = 9.0 * tier.powf(0.8) * if self.level.act() == 0 { 0.7 } else { 1.0 };
+        let third = self.ex.rival_moves % 3 == 0;
+        self.hero_attack(i, form, dmg, third);
+    }
+
+    /// One attack in the style of a hero class (0-7, as RIVALS): the rivals use it, and the Mirror Abbot turns
+    /// your own class's against you (chaos.rs).
+    pub(crate) fn hero_attack(&mut self, i: usize, form: u8, dmg: f32, third: bool) {
+        let (x, y, tier) = (self.mobs[i].x, self.mobs[i].y, self.mobs[i].tier);
+        let (px, py) = (self.p.x, self.p.y);
+        let dist = ((px - x).powi(2) + (py - y).powi(2)).sqrt().max(0.01);
         let a0 = (py - y).atan2(px - x);
         let fan = |g: &mut Game, n: i32, spread: f32, speed: f32, kind: ShotKind| {
             for k in -(n / 2)..=(n / 2) {
@@ -412,7 +422,6 @@ impl Game {
                 g.shots.push(crate::mobs::Shot { x, y, vx: a.cos() * speed, vy: a.sin() * speed, life: 2.0, dmg, kind });
             }
         };
-        let third = self.ex.rival_moves % 3 == 0;
         match form {
             // Vesna: fireball fans.
             0 => fan(self, 5, 0.16, 7.5, ShotKind::Ash),

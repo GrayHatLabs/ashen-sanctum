@@ -12,7 +12,15 @@ Status: **being built in stages, with a review after each.**
   Shattered Monastery, the Eye of the Churn), the way down through a crack in the Zenith once Solanthos is
   ended, chaos surges, anchor stones, the stillness meter, and lava, ice and water ground. Monsters are
   borrowed from earlier acts for now; the art is stand-ins (chaos-stone is graded stone).
-- Stage 2: the Churn's own monsters and the three herald dungeons.
+- **Stage 2 (done 2026-10-08, `src/churnfolk.rs`):** chaos toads (red leap, blue frost, green takes your
+  shape, grey champions), the Unmade, chaos knights (charge and slam), riftmaws (swallow you and spit you out
+  elsewhere), chaos matter (splits twice), and surges that recolour toads and reroll champions' powers. The
+  herald dungeons and their Anchor Keys: the Unfinished Cathedral (the Breach; its floors surge too) with the
+  Architect of Nothing (walls you in, throws bricks), the Toad King's Warren (the Spawning Mire) with
+  Grumbleguts the Many-Hued (red, then blue, then green by thirds of its life), and the Hall of Mirrors (the
+  Shattered Monastery) with the Mirror Abbot (your own class's attacks, and copies of you). Art: OpenAI for the
+  toad, the chaos matter, the Architect, the Mirror Abbot and the three entrances; PixelLab for the chaos
+  knight. Bot survey: all 8 heroes take the three keys in 7-10 minutes with no deaths.
 - Stage 3: Ylgrath and the Stillpoint, the story, and Nightmare moved to after Act 7.
 - Stage 4: side content, the extras, art and music.
 

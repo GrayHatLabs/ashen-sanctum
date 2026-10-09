@@ -189,6 +189,8 @@ pub enum Drop {
     /// A chest out on the tide flats, and a message in a bottle (reef.rs).
     TideChest,
     Bottle(u8),
+    /// An Anchor Key from one of the Churn's heralds (churnfolk.rs).
+    AKey(usize),
     /// The storm relic, a lost singer, one of Bram's crates (isles.rs).
     StormRelic,
     Singer(u8),
@@ -1348,6 +1350,7 @@ impl Game {
         self.features_enter();
         self.mist_enter();
         self.chaos_enter();
+        self.churnfolk_enter();
         self.gears_enter();
         self.reef_enter();
         self.isles_enter();
@@ -1401,7 +1404,7 @@ impl Game {
     pub fn bot_food(&self) -> Option<(f32, f32)> {
         self.pickups
             .iter()
-            .filter(|k| matches!(k.kind, Drop::Food(_) | Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Pearl(_) | Drop::Shard(_)))
+            .filter(|k| matches!(k.kind, Drop::Food(_) | Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Pearl(_) | Drop::Shard(_) | Drop::AKey(_)))
             .map(|k| (k.x, k.y, (k.x - self.p.x).powi(2) + (k.y - self.p.y).powi(2)))
             .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap())
             .map(|(x, y, _)| (x, y))
@@ -1432,7 +1435,7 @@ impl Game {
 
     /// A herald token (seal, rune, sigil, key) lying on this level.
     pub fn bot_token(&self) -> Option<(f32, f32)> {
-        self.pickups.iter().find(|k| matches!(k.kind, Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Pearl(_) | Drop::Shard(_))).map(|k| (k.x, k.y))
+        self.pickups.iter().find(|k| matches!(k.kind, Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Pearl(_) | Drop::Shard(_) | Drop::AKey(_))).map(|k| (k.x, k.y))
     }
 
     /// The role of the NPC that talking now would address (for the bot).
@@ -1472,17 +1475,13 @@ impl Game {
     }
 
     fn bot_dungeon(&self) -> usize {
-        let a = self.level.act().min(5);
-        let got = match a {
-            0 => self.quest.seals,
-            1 => self.quest.runes,
-            2 => self.quest.sigils,
-            3 => self.quest.keys,
-            4 => self.quest.pearls,
-            _ => self.quest.shards,
-        };
+        let a = self.level.act().min(6);
+        let got = self.quest.tokens_of(a);
         let _ = SANCTUM;
-        (0..3).find(|&k| !got[k]).map_or(a * 4 + 3, |k| a * 4 + k)
+        // An act's heralds are its first three dungeons, its last boss the fourth.
+        let first = crate::world::DUNGEONS.iter().position(|d| d.act == a).unwrap_or(0);
+        let last = if crate::world::DUNGEONS.get(first + 3).map_or(false, |d| d.act == a) { first + 3 } else { first + 2 };
+        (0..3).find(|&k| !got[k]).map_or(last, |k| first + k)
     }
 
     /// The quest log line for the act you're in.
@@ -1780,6 +1779,7 @@ impl Game {
         self.update_isles();
         self.update_extras();
         self.update_chaos();
+        self.update_churnfolk();
         self.update_sky();
         self.update_rift();
         self.second_wind_t = (self.second_wind_t - DT).max(0.0);
@@ -1982,7 +1982,7 @@ impl Game {
                 let (px, py) = (self.p.x, self.p.y);
                 let mut any = false;
                 for k in self.pickups.iter_mut() {
-                    if matches!(k.kind, Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Pearl(_) | Drop::Shard(_)) {
+                    if matches!(k.kind, Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Pearl(_) | Drop::Shard(_) | Drop::AKey(_)) {
                         (k.x, k.y, k.t) = (px, py, 1.0);
                         any = true;
                     }
@@ -2710,6 +2710,25 @@ impl Game {
                         self.say(format!("THE KEY TURNS ITSELF IN YOUR HAND, AND YOU FEEL STRONGER ({n}/3)"));
                     }
                 }
+                Drop::AKey(i) => {
+                    self.quest.akeys[i] = true;
+                    self.p.skills.points += 1;
+                    self.p.base_hp += 36.0;
+                    self.p.base_mana += 22.0;
+                    self.p.recalc();
+                    self.p.power *= 1.1;
+                    self.p.hp = self.p.max_hp;
+                    self.p.mana = self.p.max_mana;
+                    self.sfx.push(Sfx::Descend);
+                    let name = ["THE ARCHITECT OF NOTHING", "GRUMBLEGUTS", "THE MIRROR ABBOT"][i];
+                    self.floater(px, py, format!("THE ANCHOR KEY OF {name}"), rgb(0xd0b0ff));
+                    let n = self.quest.akeys.iter().filter(|k| **k).count();
+                    if n == 3 {
+                        self.say("ALL THREE ANCHOR KEYS. THE EYE OF THE CHURN CAN BE OPENED".into());
+                    } else {
+                        self.say(format!("THE KEY HOLDS STILL IN YOUR HAND, WHEN NOTHING ELSE HERE DOES ({n}/3)"));
+                    }
+                }
                 Drop::Shard(i) => {
                     self.quest.shards[i] = true;
                     self.p.skills.points += 1;
@@ -3290,6 +3309,10 @@ impl Game {
                 self.side_progress(crate::side::Goal::Ghosts);
             }
         }
+        // Chaos matter splits (churnfolk.rs).
+        if kind == Kind::ChaosBlob {
+            self.blob_splits(i);
+        }
         // The rival yields (extras.rs).
         if kind == Kind::Rival {
             self.rival_beaten(x, y);
@@ -3430,6 +3453,9 @@ impl Game {
                     self.state = State::Victory(0.0);
                     self.dialog = None;
                 }
+                Kind::Architect => self.pickups.push(Pickup { x, y, kind: Drop::AKey(0), t: 0.0 }),
+                Kind::Grumbleguts => self.pickups.push(Pickup { x, y, kind: Drop::AKey(1), t: 0.0 }),
+                Kind::MirrorAbbot => self.pickups.push(Pickup { x, y, kind: Drop::AKey(2), t: 0.0 }),
                 _ => {}
             }
             }
@@ -3540,6 +3566,17 @@ impl Game {
                 Kind::Solanthos => "solanthos",
                 Kind::WellWitch => "wellwitch",
                 Kind::FireWyrm => "firewyrm",
+                // The optional dungeons' bosses (they fell through to the Ash King's unique before 2026-10-08).
+                Kind::Hrolf => "hrolf",
+                Kind::Elspeth => "elspeth",
+                Kind::Gravedigger => "gravedigger",
+                Kind::JunkGolem => "junkgolem",
+                Kind::Barnacle => "barnacle",
+                Kind::Astronomer => "astronomer",
+                // Act 7's heralds (churnfolk.rs).
+                Kind::Architect => "architect",
+                Kind::Grumbleguts => "grumbleguts",
+                Kind::MirrorAbbot => "mirrorabbot",
                 _ => "ashking",
             };
             drops.extend(items::boss_unique(key));

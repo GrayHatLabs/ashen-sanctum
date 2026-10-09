@@ -1597,6 +1597,7 @@ impl Game {
     }
 
     fn draw_player(&self, scr: &mut Screen, (sx, sy): (i32, i32)) {
+        let _ = class_sheet;
         blend_ellipse(scr, sx, sy, 11, 4, BLACK, 0.5);
         let vampire = self.p.skills.class == crate::skills::Class::Vampire;
         let sheet = match self.p.skills.class {
@@ -1723,6 +1724,23 @@ impl Game {
         if crate::breakables::is_prop(m.kind) {
             return self.draw_prop(scr, i, sx, sy);
         }
+        if m.kind == crate::mobs::Kind::Riftmaw {
+            if !m.alive() {
+                return;
+            }
+            let t = (self.tick as f32 * 0.12 + i as f32).sin();
+            let open = 16 + (t * 4.0) as i32;
+            blend_ellipse(scr, sx, sy, 30, 13, rgb(0x2a1038), 0.75);
+            blend_ellipse(scr, sx, sy, open + 4, open / 2 + 2, rgb(0x6a2a8a), 0.8);
+            blend_ellipse(scr, sx, sy, open, open / 2, rgb(0x060208), 1.0);
+            for k in 0..10 {
+                let a = k as f32 / 10.0 * std::f32::consts::TAU;
+                let (tx, ty) = (sx + (a.cos() * open as f32) as i32, sy + (a.sin() * open as f32 * 0.5) as i32);
+                scr.fill(tx - 1, ty - 2, 2, 3, if m.flash > 0.0 { WHITE } else { rgb(0xe8e0d0) });
+            }
+            scr.glow(sx, sy, 28.0, rgb(0xa060ff), 0.45 + 0.15 * t);
+            return;
+        }
         if m.kind == crate::mobs::Kind::StarMetal {
             if !m.alive() {
                 return;
@@ -1800,10 +1818,41 @@ impl Game {
             (crate::mobs::Kind::Clockmaker, 1) => "boss_clockmaker_engine",
             // A rival is drawn as a hero of their class (extras.rs).
             (crate::mobs::Kind::Rival, f) => crate::extras::RIVALS[f as usize % 8].1,
+            // Act 7 (churnfolk.rs): a green toad wearing your shape, copies of you, smaller chaos matter.
+            (crate::mobs::Kind::ChaosToad, 4) | (crate::mobs::Kind::MirrorImage, _) => crate::render::class_sheet(self.p.skills.class),
+            (crate::mobs::Kind::ChaosBlob, 1) => "chaos_blob_m",
+            (crate::mobs::Kind::ChaosBlob, 2) => "chaos_blob_s",
+            (crate::mobs::Kind::Unmade, f) => crate::churnfolk::UNMADE[f as usize % 4].0,
             _ => def(m.kind).art,
         };
         let (art, scale, ..) = self.art.char_art(name);
         let mut fx = Fx::default();
+        // Act 7's colours (churnfolk.rs): toads by colour, the toad king by phase, copies of you pale as glass.
+        match m.kind {
+            crate::mobs::Kind::ChaosToad if m.form < 4 => {
+                fx.tint = rgb(crate::churnfolk::TOAD_TINTS[m.form as usize]);
+                fx.tint_a = 0.45;
+            }
+            crate::mobs::Kind::ChaosToad => {
+                fx.tint = rgb(0x60c060);
+                fx.tint_a = 0.2;
+            }
+            crate::mobs::Kind::Grumbleguts => {
+                fx.tint = rgb(crate::churnfolk::TOAD_TINTS[m.form as usize % 3]);
+                fx.tint_a = 0.5;
+            }
+            crate::mobs::Kind::Unmade => {
+                fx.tint = rgb(0x8060c0);
+                fx.tint_a = 0.3;
+                fx.dither = self.tick % 3 == 0;
+            }
+            crate::mobs::Kind::MirrorImage => {
+                fx.tint = rgb(0xd0d8ff);
+                fx.tint_a = 0.45;
+                fx.dither = self.tick % 2 == 0;
+            }
+            _ => {}
+        }
         if m.poison_t > 0.0 && m.frozen <= 0.0 {
             fx.tint = rgb(0x70c030);
             fx.tint_a = 0.3;
@@ -2617,6 +2666,18 @@ fn draw_pickup(scr: &mut Screen, k: &Pickup, sx: i32, sy: i32, tick: u32, art: &
                 }
             }
         }
+        &Drop::AKey(i) => {
+            // An Anchor Key: a heavy stone key that holds perfectly still while the light round it swirls.
+            let tint = [rgb(0xd8c8a8), rgb(0xa8d090), rgb(0xd0d8ff)][i];
+            let y = sy - 10 - pop;
+            let t = (tick as f32 * 0.1).sin();
+            scr.glow(sx, y, 24.0, rgb(0xa060ff), 0.6 + 0.2 * t);
+            scr.fill(sx - 1, y - 7, 3, 12, tint);
+            scr.fill(sx - 4, y - 9, 9, 4, tint);
+            scr.fill(sx - 2, y - 8, 5, 2, rgb(0x6a4a8a));
+            scr.fill(sx + 2, y + 1, 3, 2, tint);
+            scr.fill(sx + 2, y + 4, 2, 2, tint);
+        }
         &Drop::Shard(i) => {
             let tint = [rgb(0xfff0c0), rgb(0xc0a0ff), rgb(0xffe080)][i];
             let y = sy - 10 - pop + bob;
@@ -2865,4 +2926,19 @@ fn draw_scythe(scr: &mut Screen, cx: i32, cy: i32, ang: f32, swinging: bool, run
     scr.fill(lx - 1, ly - 1, 3, 4, rgb(0x202026));
     scr.pset(lx, ly, rgb(0xb8e8ff));
     scr.glow(lx, ly, 6.0, rgb(0x60b0ff), 0.5);
+}
+
+/// The sheet a hero of this class is drawn with (the player's, a mirror image's, a disguised toad's).
+pub fn class_sheet(c: crate::skills::Class) -> &'static str {
+    use crate::skills::Class;
+    match c {
+        Class::Vampire => "vampire",
+        Class::Inventor => "inventor",
+        Class::Valkyrie => "valkyrie",
+        Class::Berserker => "berserker",
+        Class::Reaper => "reaper",
+        Class::Druid => "druid",
+        Class::Inquisitor => "inquisitor_hero",
+        Class::Sorceress => "mage",
+    }
 }

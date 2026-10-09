@@ -115,10 +115,14 @@ pub enum Theme {
     Zenith,
     /// Act 7 overland: the Churn, a patchwork of every world, and chaos-stone (chaos.rs ground codes).
     Churn,
+    /// Act 7's herald dungeons: the half-built cathedral, the toad warren, the hall of mirrors.
+    Unfinished,
+    ToadWarren,
+    MirrorHall,
 }
 
 impl Theme {
-    pub const ALL: [Theme; 31] = [
+    pub const ALL: [Theme; 34] = [
         Theme::Overworld,
         Theme::Crypt,
         Theme::Warrens,
@@ -150,6 +154,9 @@ impl Theme {
         Theme::Wheel,
         Theme::Zenith,
         Theme::Churn,
+        Theme::Unfinished,
+        Theme::ToadWarren,
+        Theme::MirrorHall,
     ];
 
     /// Open-air (grass or snow ground, palisade walls).
@@ -219,6 +226,9 @@ impl Theme {
             Theme::Zenith => (240.0, 0.1),
             // The Churn: a bruised violet-gold half light, everywhere and from nowhere.
             Theme::Churn => (340.0, 0.36),
+            Theme::Unfinished => (260.0, 0.16),
+            Theme::ToadWarren => (230.0, 0.1),
+            Theme::MirrorHall => (280.0, 0.18),
             _ => (250.0, 0.10),
         }
     }
@@ -237,7 +247,7 @@ pub struct DungeonDef {
     pub act: usize,
 }
 
-pub const DUNGEONS: [DungeonDef; 32] = [
+pub const DUNGEONS: [DungeonDef; 35] = [
     DungeonDef {
         name: "THE BONE CRYPT",
         floors: 2,
@@ -561,6 +571,37 @@ pub const DUNGEONS: [DungeonDef; 32] = [
         entrance: (0, 0),
         act: 5,
     },
+    // ---- Act 7: the Churning Chaos (churnfolk.rs) ----
+    DungeonDef {
+        name: "THE UNFINISHED CATHEDRAL",
+        floors: 2,
+        theme: Theme::Unfinished,
+        boss: Kind::Architect,
+        monsters: &[Kind::ChaosKnight, Kind::ChaosBlob, Kind::Unmade],
+        tier: 15.2,
+        entrance: (0, 0),
+        act: 6,
+    },
+    DungeonDef {
+        name: "THE TOAD KING'S WARREN",
+        floors: 2,
+        theme: Theme::ToadWarren,
+        boss: Kind::Grumbleguts,
+        monsters: &[Kind::ChaosToad, Kind::ChaosBlob],
+        tier: 15.6,
+        entrance: (0, 0),
+        act: 6,
+    },
+    DungeonDef {
+        name: "THE HALL OF MIRRORS",
+        floors: 3,
+        theme: Theme::MirrorHall,
+        boss: Kind::MirrorAbbot,
+        monsters: &[Kind::ChaosKnight, Kind::Unmade, Kind::ChaosToad],
+        tier: 16.0,
+        entrance: (0, 0),
+        act: 6,
+    },
 ];
 
 /// The Ashen Sanctum (needs all three seals).
@@ -590,6 +631,10 @@ pub const SCRAPHEAP: usize = 29;
 pub const GROTTO: usize = 30;
 /// Act 6's optional dungeon (isles.rs), out in the Drifting Isles.
 pub const OBSERVATORY: usize = 31;
+/// Act 7's herald dungeons (churnfolk.rs): their bosses hold the three Anchor Keys.
+pub const CATHEDRAL: usize = 32;
+pub const WARREN: usize = 33;
+pub const MIRRORS: usize = 34;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum PortalKind {
@@ -736,6 +781,9 @@ impl PropKind {
             PropKind::Entrance(SCRAPHEAP) => "ent_scrapheap",
             PropKind::Entrance(GROTTO) => "ent_grotto",
             PropKind::Entrance(OBSERVATORY) => "ent_observatory",
+            PropKind::Entrance(CATHEDRAL) => "ent_cathedral",
+            PropKind::Entrance(WARREN) => "ent_warren",
+            PropKind::Entrance(MIRRORS) => "ent_mirrors",
             PropKind::Bell => "bell_shrine",
             PropKind::Tomb => "tomb_shade",
             PropKind::Entrance(_) => "ent_zenith",

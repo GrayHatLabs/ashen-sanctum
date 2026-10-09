@@ -196,7 +196,7 @@ impl Bot {
 fn bench(g: &mut Game) {
     use crate::mobs::{Kind, Mob, MobState};
     let act = g.level.act();
-    let k = act * 4;
+    let k = crate::world::DUNGEONS.iter().position(|d| d.act == act).unwrap_or(0);
     let def = &crate::world::DUNGEONS[k];
     g.debug_goto(LevelId::Dungeon(k, 0));
     g.banner_t = 0.0;
@@ -1789,6 +1789,56 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         idle(&mut g, 160);
         g.message = None;
         save(&mut g, scr, "churn_surge_after");
+    }
+    // Act 7's monsters and heralds (churnfolk.rs): a line-up, a riftmaw, and the three bosses.
+    {
+        use crate::mobs::{Kind, Mob};
+        let mut g = Game::new(7, h);
+        g.act_start(6);
+        g.p.base_hp = 99999.0;
+        g.p.recalc();
+        g.p.hp = g.p.max_hp;
+        let quiet = |g: &mut Game| {
+            g.banner_t = 0.0;
+            g.event_cd = 9999.0;
+            g.message = None;
+            g.feats.surge_t = 9999.0;
+        };
+        g.debug_goto(LevelId::Area(6, 5));
+        quiet(&mut g);
+        g.mobs.clear();
+        let (px, py) = (g.p.x, g.p.y);
+        let line: [(Kind, u8); 9] = [(Kind::ChaosToad, 0), (Kind::ChaosToad, 1), (Kind::ChaosToad, 2), (Kind::ChaosToad, 3), (Kind::Unmade, 1), (Kind::ChaosKnight, 0), (Kind::ChaosBlob, 0), (Kind::ChaosBlob, 1), (Kind::ChaosBlob, 2)];
+        for (k, (kind, form)) in line.iter().enumerate() {
+            let (x, y) = (px - 4.0 + (k % 5) as f32 * 2.0, py - 3.0 + (k / 5) as f32 * 2.5);
+            if g.d.blocked(x, y, 0.3) {
+                continue;
+            }
+            let mut m = Mob::new(*kind, x, y, g.tier, &mut g.rng);
+            m.form = *form;
+            m.cue = 1;
+            g.mobs.push(m);
+        }
+        idle(&mut g, 2);
+        save(&mut g, scr, "churn_monsters");
+        g.debug_goto(LevelId::Area(6, 4));
+        quiet(&mut g);
+        if let Some((x, y)) = g.mobs.iter().find(|m| m.kind == Kind::Riftmaw).map(|m| (m.x, m.y)) {
+            g.mobs.retain(|m| m.kind == Kind::Riftmaw || (m.x - x).powi(2) + (m.y - y).powi(2) > 100.0);
+            g.debug_place_near(x, y, 5.0);
+            idle(&mut g, 10);
+            save(&mut g, scr, "churn_riftmaw");
+        }
+        for (k, name) in [(crate::world::CATHEDRAL, "churn_architect"), (crate::world::WARREN, "churn_grumbleguts"), (crate::world::MIRRORS, "churn_mirrorabbot")] {
+            let last = crate::world::DUNGEONS[k].floors - 1;
+            g.debug_goto(LevelId::Dungeon(k, last));
+            quiet(&mut g);
+            if g.debug_near_boss() {
+                idle(&mut g, 70);
+                g.message = None;
+                save(&mut g, scr, name);
+            }
+        }
     }
     // Side content (side.rs): a shrine and its blessing, Skrat One-Ear and his gang, the Charnel Well, the
     // Well-Witch, a lore page and the journal on the map.

@@ -288,6 +288,33 @@ window.CATALOG = {
       "slug": "fallen_observatory",
       "theme": "wheel",
       "tier": 13.199999809265137
+    },
+    {
+      "act": 6,
+      "boss": "boss_architect",
+      "floors": 2,
+      "name": "THE UNFINISHED CATHEDRAL",
+      "slug": "unfinished_cathedral",
+      "theme": "unfinished",
+      "tier": 15.199999809265137
+    },
+    {
+      "act": 6,
+      "boss": "boss_grumbleguts",
+      "floors": 2,
+      "name": "THE TOAD KING'S WARREN",
+      "slug": "toad_kings_warren",
+      "theme": "toadwarren",
+      "tier": 15.600000381469727
+    },
+    {
+      "act": 6,
+      "boss": "boss_mirrorabbot",
+      "floors": 3,
+      "name": "THE HALL OF MIRRORS",
+      "slug": "hall_of_mirrors",
+      "theme": "mirrorhall",
+      "tier": 16.0
     }
   ],
   "lands": {
@@ -1280,7 +1307,9 @@ window.CATALOG = {
         ]
       ],
       "name": "THE ZENITH",
-      "passes": [],
+      "passes": [
+        "pass6"
+      ],
       "shops": [],
       "size": [
         96,
@@ -1313,6 +1342,189 @@ window.CATALOG = {
       "theme": "heavens",
       "tier": 12.600000381469727,
       "town": false
+    },
+    "area:6:1": {
+      "act": 6,
+      "doors": [
+        32
+      ],
+      "exits": [
+        [
+          0,
+          "STILLHOLD"
+        ],
+        [
+          2,
+          "THE DRIFT OF WORLDS"
+        ]
+      ],
+      "name": "THE BREACH",
+      "passes": [
+        "pass5"
+      ],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "churn",
+      "tier": 14.600000381469727,
+      "town": false
+    },
+    "area:6:2": {
+      "act": 6,
+      "doors": [],
+      "exits": [
+        [
+          1,
+          "THE BREACH"
+        ],
+        [
+          3,
+          "THE ELEMENTAL TANGLE"
+        ]
+      ],
+      "name": "THE DRIFT OF WORLDS",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "churn",
+      "tier": 15.0,
+      "town": false
+    },
+    "area:6:3": {
+      "act": 6,
+      "doors": [],
+      "exits": [
+        [
+          2,
+          "THE DRIFT OF WORLDS"
+        ],
+        [
+          4,
+          "THE SPAWNING MIRE"
+        ],
+        [
+          5,
+          "THE SHATTERED MONASTERY"
+        ]
+      ],
+      "name": "THE ELEMENTAL TANGLE",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "churn",
+      "tier": 15.399999618530273,
+      "town": false
+    },
+    "area:6:4": {
+      "act": 6,
+      "doors": [
+        33
+      ],
+      "exits": [
+        [
+          3,
+          "THE ELEMENTAL TANGLE"
+        ]
+      ],
+      "name": "THE SPAWNING MIRE",
+      "passes": [],
+      "shops": [],
+      "size": [
+        80,
+        80
+      ],
+      "story": null,
+      "theme": "churn",
+      "tier": 15.199999809265137,
+      "town": false
+    },
+    "area:6:5": {
+      "act": 6,
+      "doors": [
+        34
+      ],
+      "exits": [
+        [
+          3,
+          "THE ELEMENTAL TANGLE"
+        ],
+        [
+          6,
+          "THE EYE OF THE CHURN"
+        ]
+      ],
+      "name": "THE SHATTERED MONASTERY",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "churn",
+      "tier": 15.800000190734863,
+      "town": false
+    },
+    "area:6:6": {
+      "act": 6,
+      "doors": [],
+      "exits": [
+        [
+          5,
+          "THE SHATTERED MONASTERY"
+        ]
+      ],
+      "name": "THE EYE OF THE CHURN",
+      "passes": [],
+      "shops": [],
+      "size": [
+        96,
+        96
+      ],
+      "story": null,
+      "theme": "churn",
+      "tier": 16.200000762939453,
+      "town": false
+    },
+    "churn": {
+      "act": 6,
+      "doors": [],
+      "exits": [
+        [
+          1,
+          "THE BREACH"
+        ]
+      ],
+      "name": "STILLHOLD",
+      "passes": [],
+      "shops": [
+        "abbot",
+        "ferro",
+        "hush",
+        "jeweler6"
+      ],
+      "size": [
+        80,
+        80
+      ],
+      "story": [
+        "seraphine",
+        "SERAPHINE"
+      ],
+      "theme": "churn",
+      "tier": 14.0,
+      "town": true
     },
     "deep": {
       "act": 4,
@@ -2004,6 +2216,60 @@ window.CATALOG = {
       "kind": "mage",
       "name": "RIVAL",
       "prop": false
+    },
+    {
+      "boss": false,
+      "kind": "chaos_toad",
+      "name": "CHAOS TOAD",
+      "prop": false
+    },
+    {
+      "boss": false,
+      "kind": "unmade",
+      "name": "THE UNMADE",
+      "prop": false
+    },
+    {
+      "boss": false,
+      "kind": "chaos_knight",
+      "name": "CHAOS KNIGHT",
+      "prop": false
+    },
+    {
+      "boss": false,
+      "kind": "riftmaw",
+      "name": "RIFTMAW",
+      "prop": false
+    },
+    {
+      "boss": false,
+      "kind": "chaos_blob",
+      "name": "CHAOS MATTER",
+      "prop": false
+    },
+    {
+      "boss": false,
+      "kind": "mirror_image",
+      "name": "MIRROR IMAGE",
+      "prop": false
+    },
+    {
+      "boss": true,
+      "kind": "boss_architect",
+      "name": "THE ARCHITECT OF NOTHING",
+      "prop": false
+    },
+    {
+      "boss": true,
+      "kind": "boss_grumbleguts",
+      "name": "GRUMBLEGUTS THE MANY-HUED",
+      "prop": false
+    },
+    {
+      "boss": true,
+      "kind": "boss_mirrorabbot",
+      "name": "THE MIRROR ABBOT",
+      "prop": false
     }
   ],
   "npcs": [
@@ -2226,6 +2492,41 @@ window.CATALOG = {
       "img": "npc_jeweler5",
       "kind": "jeweler5",
       "name": "THE GILDER"
+    },
+    {
+      "img": "npc_priest",
+      "kind": "abbot",
+      "name": "ABBOT QUIET"
+    },
+    {
+      "img": "npc_vesper",
+      "kind": "ferro",
+      "name": "SISTER FERRO"
+    },
+    {
+      "img": "npc_healer",
+      "kind": "hush",
+      "name": "BROTHER HUSH"
+    },
+    {
+      "img": "npc_peasant",
+      "kind": "monk0",
+      "name": "MONK"
+    },
+    {
+      "img": "npc_peasant",
+      "kind": "monk1",
+      "name": "MONK"
+    },
+    {
+      "img": "npc_peasant",
+      "kind": "monk2",
+      "name": "MONK"
+    },
+    {
+      "img": "npc_jeweler6",
+      "kind": "jeweler6",
+      "name": "THE CUTTER"
     }
   ],
   "props": [
@@ -2708,6 +3009,21 @@ window.CATALOG = {
       "h": 1,
       "kind": "shrine_sky",
       "w": 1
+    },
+    {
+      "h": 3,
+      "kind": "ent_cathedral",
+      "w": 3
+    },
+    {
+      "h": 3,
+      "kind": "ent_warren",
+      "w": 3
+    },
+    {
+      "h": 3,
+      "kind": "ent_mirrors",
+      "w": 3
     }
   ],
   "slugs": {
@@ -2749,7 +3065,13 @@ window.CATALOG = {
     "area:5:3": "the_fallen_gardens",
     "area:5:4": "the_halo_isles",
     "area:5:5": "the_zenith",
-    "area:5:6": "the_drifting_isles"
+    "area:5:6": "the_drifting_isles",
+    "area:6:1": "the_breach",
+    "area:6:2": "the_drift_of_worlds",
+    "area:6:3": "the_elemental_tangle",
+    "area:6:4": "the_spawning_mire",
+    "area:6:5": "the_shattered_monastery",
+    "area:6:6": "the_eye_of_the_churn"
   },
   "themes": [
     {
@@ -2901,6 +3223,26 @@ window.CATALOG = {
       "name": "zenith",
       "open": false,
       "sky": true
+    },
+    {
+      "name": "churn",
+      "open": true,
+      "sky": false
+    },
+    {
+      "name": "unfinished",
+      "open": false,
+      "sky": false
+    },
+    {
+      "name": "toadwarren",
+      "open": false,
+      "sky": false
+    },
+    {
+      "name": "mirrorhall",
+      "open": false,
+      "sky": false
     }
   ]
 };

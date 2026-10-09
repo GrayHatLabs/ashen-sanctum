@@ -278,8 +278,18 @@ nothing holds its shape unless a mind holds it still. Start a test hero there wi
 - **Stillness:** a meter that fills while you stand still (faster by a lit anchor). Full when a surge comes,
   it's spent and the surge passes you by.
 - **The ground:** lava burns, ice and water chill.
-- Still to come: the Churn's monsters, three herald dungeons, Ylgrath and the Stillpoint, side content and
-  art (docs/ACT7_PLAN.md).
+- **Monsters:** chaos toads in four colours (red ones leap and slam, blue ones spit frost, green ones take
+  your shape, grey ones are champions), the Unmade (two monsters half fused), chaos knights, riftmaws (mouths
+  in the ground that swallow you and spit you out elsewhere) and chaos matter (it splits as it dies). A surge
+  can recolour a toad and reroll a champion's powers.
+- **The three heralds** hold the **Anchor Keys**:
+  - **The Unfinished Cathedral** (the Breach), whose floors surge like the land outside: **the Architect of
+    Nothing** raises walls around you and throws bricks.
+  - **The Toad King's Warren** (the Spawning Mire): **Grumbleguts the Many-Hued** turns red (leaps), then blue
+    (frost), then green (breeds toads) as it weakens.
+  - **The Hall of Mirrors** (the Shattered Monastery): **the Mirror Abbot** fights with your own class's
+    attacks, and sends copies of you out of the glass.
+- Still to come: the Eye of the Churn, Ylgrath and the Stillpoint, side content and art (docs/ACT7_PLAN.md).
 
 ## After the Clockmaker
 

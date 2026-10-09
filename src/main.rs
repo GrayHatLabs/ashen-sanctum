@@ -44,6 +44,7 @@ mod reef;
 mod isles;
 mod extras;
 mod chaos;
+mod churnfolk;
 mod world;
 
 use game::{Game, Input};

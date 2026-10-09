@@ -65,7 +65,7 @@ pub struct LevelFile {
 
 // ---------------------------------------------------------------- names
 
-pub const DUNGEON_SLUGS: [&str; 32] = [
+pub const DUNGEON_SLUGS: [&str; 35] = [
     "bone_crypt",
     "rotting_warrens",
     "hexed_catacombs",
@@ -98,6 +98,9 @@ pub const DUNGEON_SLUGS: [&str; 32] = [
     "scrapheap_labyrinth",
     "pearl_grotto",
     "fallen_observatory",
+    "unfinished_cathedral",
+    "toad_kings_warren",
+    "hall_of_mirrors",
 ];
 
 /// File name (without .json) for a level.
@@ -192,7 +195,7 @@ pub fn id_from_name(name: &str) -> Option<LevelId> {
     all_ids().into_iter().find(|id| file_name(*id) == stem)
 }
 
-const THEMES: [(&str, Theme); 31] = [
+const THEMES: [(&str, Theme); 34] = [
     ("overworld", Theme::Overworld),
     ("crypt", Theme::Crypt),
     ("warrens", Theme::Warrens),
@@ -224,9 +227,12 @@ const THEMES: [(&str, Theme); 31] = [
     ("wheel", Theme::Wheel),
     ("zenith", Theme::Zenith),
     ("churn", Theme::Churn),
+    ("unfinished", Theme::Unfinished),
+    ("toadwarren", Theme::ToadWarren),
+    ("mirrorhall", Theme::MirrorHall),
 ];
 
-const PROPS: [PropKind; 98] = [
+const PROPS: [PropKind; 101] = [
     PropKind::TreeOak,
     PropKind::TreePine,
     PropKind::TreeDead,
@@ -325,9 +331,12 @@ const PROPS: [PropKind; 98] = [
     PropKind::Shrine(4),
     PropKind::Entrance(31),
     PropKind::Shrine(5),
+    PropKind::Entrance(32),
+    PropKind::Entrance(33),
+    PropKind::Entrance(34),
 ];
 
-const KINDS: [Kind; 85] = [
+const KINDS: [Kind; 94] = [
     Kind::Zombie,
     Kind::Skeleton,
     Kind::Wolf,
@@ -413,6 +422,15 @@ const KINDS: [Kind; 85] = [
     Kind::Astronomer,
     Kind::StarMetal,
     Kind::Rival,
+    Kind::ChaosToad,
+    Kind::Unmade,
+    Kind::ChaosKnight,
+    Kind::Riftmaw,
+    Kind::ChaosBlob,
+    Kind::MirrorImage,
+    Kind::Architect,
+    Kind::Grumbleguts,
+    Kind::MirrorAbbot,
 ];
 
 fn portal_name(k: PortalKind) -> String {
@@ -508,7 +526,7 @@ fn item_name(d: &Drop) -> Option<String> {
         Drop::Health => "health_potion".into(),
         Drop::Mana => "mana_potion".into(),
         Drop::Gold(n) => format!("gold{n}"),
-        Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Pearl(_) | Drop::Shard(_) | Drop::Page(_) | Drop::Hoard(_) | Drop::Herb | Drop::Heirloom | Drop::Clue | Drop::Keepsake(_) | Drop::Gear(_) | Drop::TideChest | Drop::Bottle(_) | Drop::StormRelic | Drop::Singer(_) | Drop::Cargo(_) | Drop::Item(_) => return None,
+        Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Pearl(_) | Drop::Shard(_) | Drop::Page(_) | Drop::Hoard(_) | Drop::Herb | Drop::Heirloom | Drop::Clue | Drop::Keepsake(_) | Drop::Gear(_) | Drop::TideChest | Drop::Bottle(_) | Drop::StormRelic | Drop::Singer(_) | Drop::Cargo(_) | Drop::AKey(_) | Drop::Item(_) => return None,
     })
 }
 
@@ -858,7 +876,7 @@ mod tests {
             assert_eq!(parse_id(&id_string(id)), Some(id));
             assert_eq!(id_from_name(&format!("levels/{}.json", file_name(id))), Some(id));
         }
-        assert_eq!(parse_id("dungeon:32:0"), None);
+        assert_eq!(parse_id("dungeon:35:0"), None);
     }
 
     #[test]

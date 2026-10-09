@@ -254,9 +254,11 @@ impl Quest {
 
     /// Act 7's quest log (the story itself comes in stage 3 of docs/ACT7_PLAN.md).
     pub fn log7(&self) -> String {
+        let n = self.akeys.iter().filter(|k| **k).count();
         match self.stage7 {
-            0 => "FIND ABBOT QUIET IN STILLHOLD. LIGHT THE ANCHOR STONES".into(),
-            _ => "SOMETHING AT THE HEART OF THE CHURN IS AWAKE".into(),
+            _ if n == 3 => "ALL THREE ANCHOR KEYS. THE EYE OF THE CHURN AWAITS".into(),
+            0 if n == 0 => "FIND ABBOT QUIET IN STILLHOLD. LIGHT THE ANCHOR STONES".into(),
+            _ => format!("SLAY THE THREE HERALDS OF THE CHURN  ({n}/3 ANCHOR KEYS)"),
         }
     }
 

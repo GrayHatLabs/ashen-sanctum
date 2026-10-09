@@ -75,7 +75,7 @@ pub fn surge_grounds(n: u8) -> &'static [u8] {
 
 /// Is this an area of the Churn (where the land surges)?
 pub fn churning(id: LevelId) -> bool {
-    matches!(id, LevelId::Area(6, _))
+    matches!(id, LevelId::Area(6, _) | LevelId::Dungeon(crate::world::CATHEDRAL, _))
 }
 
 impl Game {
@@ -206,7 +206,12 @@ impl Game {
 
     /// The land reshapes in patches around you.
     pub(crate) fn surge(&mut self) {
-        let LevelId::Area(_, n) = self.level else { return };
+        // The Unfinished Cathedral builds and unbuilds itself like the land outside (as the Breach).
+        let n = match self.level {
+            LevelId::Area(_, n) => n,
+            LevelId::Dungeon(..) => 1,
+            _ => return,
+        };
         if self.feats.lifeline.0 != Some(self.level) {
             self.lifelines();
         }
@@ -292,6 +297,7 @@ impl Game {
         self.shake = self.shake.max(0.6);
         self.sfx.push(Sfx::Boom);
         self.feats.surges += 1;
+        self.surge_stirs((px, py));
         if changed > 0 {
             self.say("THE LAND HEAVES AND RESHAPES ITSELF".into());
         }

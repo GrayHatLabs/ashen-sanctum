@@ -145,6 +145,22 @@ pub enum Kind {
     StarMetal,
     /// A rival adventurer (extras.rs): `form` is which one, drawn as a hero of their class.
     Rival,
+    // ---- Act 7: the Churning Chaos (churnfolk.rs has their tricks) ----
+    /// Chaos toads: `form` is the colour (0 red leaps, 1 blue frost, 2 green mimic, 3 grey champion, 4 wearing your shape).
+    ChaosToad,
+    /// Two earlier monsters half fused (`form` is which pair).
+    Unmade,
+    ChaosKnight,
+    /// A mouth in the ground: it swallows you and spits you out elsewhere.
+    Riftmaw,
+    /// Chaos matter: `form` is its size (0 big, 1, 2 small); it splits when it dies.
+    ChaosBlob,
+    /// A copy of you, out of the Mirror Abbot's glass.
+    MirrorImage,
+    /// The heralds of the Churn.
+    Architect,
+    Grumbleguts,
+    MirrorAbbot,
     // ---- breakables (breakables.rs): no mind, smashed by any hit; the act is in `Mob::form` ----
     Crate,
     Barrel,
@@ -347,6 +363,32 @@ pub fn def(k: Kind) -> Def {
             ranged: true,
             boss: true,
             ..d("boss_astronomer", "THE ASTRONOMER", 1500.0, 2.0, (26.0, 36.0), 0.6, 1.6, 2400.0)
+        },
+        Kind::ChaosToad => Def { r: 0.4, ..d("chaos_toad", "CHAOS TOAD", 150.0, 2.7, (16.0, 24.0), 0.45, 1.3, 70.0) },
+        Kind::Unmade => Def { r: 0.42, ..d("unmade", "THE UNMADE", 170.0, 2.3, (18.0, 26.0), 0.5, 1.4, 75.0) },
+        Kind::ChaosKnight => Def { r: 0.4, reach: 1.4, ..d("chaos_knight", "CHAOS KNIGHT", 190.0, 2.2, (20.0, 30.0), 0.55, 1.5, 85.0) },
+        Kind::Riftmaw => Def { r: 0.8, reach: 0.0, ..d("riftmaw", "RIFTMAW", 260.0, 0.0, (0.0, 0.0), 9.0, 99.0, 90.0) },
+        Kind::ChaosBlob => Def { r: 0.4, ..d("chaos_blob", "CHAOS MATTER", 160.0, 2.0, (12.0, 18.0), 0.45, 1.2, 50.0) },
+        Kind::MirrorImage => Def { r: 0.32, ..d("mirror_image", "MIRROR IMAGE", 70.0, 3.2, (12.0, 18.0), 0.4, 1.1, 20.0) },
+        Kind::Architect => Def {
+            r: 0.55,
+            reach: 1.4,
+            boss: true,
+            ranged: true,
+            ..d("boss_architect", "THE ARCHITECT OF NOTHING", 1300.0, 1.8, (24.0, 34.0), 0.6, 1.6, 3400.0)
+        },
+        Kind::Grumbleguts => Def {
+            r: 0.8,
+            reach: 1.8,
+            boss: true,
+            ..d("boss_grumbleguts", "GRUMBLEGUTS THE MANY-HUED", 1500.0, 2.0, (30.0, 42.0), 0.7, 1.7, 3600.0)
+        },
+        Kind::MirrorAbbot => Def {
+            r: 0.5,
+            reach: 1.4,
+            boss: true,
+            ranged: true,
+            ..d("boss_mirrorabbot", "THE MIRROR ABBOT", 1250.0, 2.4, (24.0, 34.0), 0.55, 1.5, 3800.0)
         },
         Kind::Rival => Def { r: 0.35, reach: 1.3, ..d("mage", "RIVAL", 110.0, 3.0, (4.0, 7.0), 0.45, 1.2, 900.0) },
         Kind::StarMetal => Def { r: 0.45, reach: 0.0, ..d("star_metal", "STAR-METAL", 60.0, 0.0, (0.0, 0.0), 9.0, 99.0, 30.0) },

@@ -876,6 +876,10 @@ pub static UNIQUES: &[UniqueDef] = &[
     UniqueDef { name: "SKRAT'S LUCKY EAR", base: "amulet", req: 4, stats: &[(Stat::Gold, 40), (Stat::Magic, 25), (Stat::Move, 10)], boss: Some("skrat") },
     UniqueDef { name: "BONEJAW'S GRIN", base: "ring", req: 5, stats: &[(Stat::LifeOnKill, 4), (Stat::Armor, 6), (Stat::Cast, 10)], boss: Some("bonejaw") },
     UniqueDef { name: "THE SHEPHERD'S GIRDLE", base: "hbelt", req: 5, stats: &[(Stat::Life, 30), (Stat::LifeRegen, 3), (Stat::Hunger, 30)], boss: Some("shepherd") },
+    // Act 7's heralds (churnfolk.rs).
+    UniqueDef { name: "THE PLUMB LINE", base: "amulet", req: 50, stats: &[(Stat::Skills, 1), (Stat::Armor, 60), (Stat::Life, 70), (Stat::Cast, 15)], boss: Some("architect") },
+    UniqueDef { name: "MANY-HUED HIDE", base: "chain", req: 50, stats: &[(Stat::Armor, 80), (Stat::Life, 100), (Stat::LifeRegen, 12), (Stat::Hunger, 25)], boss: Some("grumbleguts") },
+    UniqueDef { name: "THE ABBOT'S LAST REFLECTION", base: "ring", req: 50, stats: &[(Stat::Skills, 1), (Stat::Mana, 80), (Stat::ManaOnKill, 8), (Stat::Magic, 30)], boss: Some("mirrorabbot") },
     // The rivals (extras.rs): paid on each one's first defeat only.
     UniqueDef { name: "VESNA'S EMBER", base: "ring", req: 12, stats: &[(Stat::Fire, 30), (Stat::Mana, 40), (Stat::Cast, 10)], boss: Some("rival0") },
     UniqueDef { name: "CASIMIR'S SIGNET", base: "ring", req: 12, stats: &[(Stat::Life, 40), (Stat::LifeOnKill, 6), (Stat::Move, 8)], boss: Some("rival1") },

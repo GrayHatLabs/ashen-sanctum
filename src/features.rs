@@ -167,6 +167,11 @@ pub struct Feats {
     pub anchors: Vec<crate::chaos::Anchor>,
     /// The roads that never close, for this level.
     pub lifeline: (Option<LevelId>, Vec<bool>),
+    /// Act 7's monsters (churnfolk.rs): where riftmaws opened, the Architect's walls (x, y, time left), the
+    /// Mirror Abbot's count of attacks.
+    pub maws_placed: Vec<LevelId>,
+    pub temp_walls: Vec<(i32, i32, f32)>,
+    pub mirror_moves: u32,
 }
 
 impl Game {

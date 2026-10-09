@@ -164,6 +164,9 @@ fn theme_grade(t: Theme) -> (u32, f32, f32) {
         Theme::Wheel => (0x4a3a10, 0.3, 0.9),
         Theme::Zenith => (0x2a1008, 0.4, 0.8),
         Theme::Churn => (0x4a2060, 0.38, 0.85),
+        Theme::Unfinished => (0x5a5068, 0.35, 0.85),
+        Theme::ToadWarren => (0x2a3a18, 0.45, 0.75),
+        Theme::MirrorHall => (0x6a6a90, 0.3, 0.9),
     }
 }
 
@@ -536,6 +539,18 @@ impl Art {
             "yeti_cub" => ("yeti", 0.55, 0xffffff, 0.15),
             "automaton" => ("inquisitor", 1.0, 0xe0c060, 0.45),
             "npc_jeweler6" => ("npc_jeweler3", 1.0, 0x8060c0, 0.4),
+            // Act 7 (churnfolk.rs): the toad king is a great toad; small chaos matter is big chaos matter, smaller.
+            "boss_grumbleguts" => ("chaos_toad", 2.3, 0xc03020, 0.0),
+            "chaos_blob_m" => ("chaos_blob", 0.72, 0x8060c0, 0.0),
+            "chaos_blob_s" => ("chaos_blob", 0.5, 0x8060c0, 0.0),
+            "chaos_toad" => ("boss_barnacle", 0.55, 0x608040, 0.4),
+            "chaos_blob" => ("jelly", 1.2, 0x8040c0, 0.5),
+            "chaos_knight" => ("inquisitor", 1.05, 0x40304a, 0.55),
+            "boss_architect" => ("fallen_seraph", 1.5, 0x8a7a90, 0.5),
+            "boss_mirrorabbot" => ("npc_priest", 1.5, 0xc0c8e0, 0.4),
+            "unmade" => ("ghoul", 1.0, 0x8060c0, 0.4),
+            "riftmaw" => ("chaos_blob", 1.0, 0x200830, 0.6),
+            "mirror_image" => ("mage", 1.0, 0xc0c8e0, 0.4),
             "boss_junkgolem" => ("boiler_brute", 1.6, 0x8a6040, 0.4),
             "npc_magistrate" => ("inquisitor", 1.05, 0x303030, 0.3),
             "boss_gravedigger" => ("ghoul", 1.7, 0x6a6050, 0.4),

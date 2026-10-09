@@ -94,7 +94,8 @@ impl Game {
     pub(crate) fn boss_story_done(&self, kind: Kind) -> bool {
         let Some(k) = DUNGEONS.iter().position(|d| d.boss == kind) else { return false };
         let act = DUNGEONS[k].act;
-        let slot = k - act * 4;
+        let first = DUNGEONS.iter().position(|d| d.act == act).unwrap_or(0);
+        let slot = k - first;
         if slot < 3 {
             self.quest.tokens_of(act)[slot]
         } else {
