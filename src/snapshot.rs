@@ -696,7 +696,7 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             scr.fill(0, hh - 64, w, 1, crate::gfx::rgb(0x8a6a38));
             let col = crate::gfx::rgb(0xd8c090);
             scr.text("STICK / D-PAD: MOVE   A / X: SKILLS   B: RUN", w / 2, hh - 54, col, crate::gfx::Align::Center, 1);
-            scr.text("L1 / Y: POTIONS   R1: CYCLE SKILL   START: BAG   SELECT: MAP", w / 2, hh - 40, col, crate::gfx::Align::Center, 1);
+            scr.text("L1 / Y: POTIONS   R1: CYCLE SKILL   L2: SKILL TREE   START: BAG   SELECT: MAP", w / 2, hh - 40, col, crate::gfx::Align::Center, 1);
             scr.text("PRESS START", w / 2, hh - 22, crate::gfx::rgb(0xff8040), crate::gfx::Align::Center, 1);
             write_bmp(&format!("{d}/port_cover.bmp"), scr).expect("write snapshot");
             println!("staged port_cover");

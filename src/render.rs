@@ -2336,7 +2336,7 @@ impl Game {
                 let hint = mix(BLACK, rgb(0x8a7a68), a);
                 scr.text("CLICK PEOPLE (OR PRESS A / F NEAR THEM) TO TALK. FIND ELDER MAREN BY THE FIRE.", w / 2, top - 46, hint, Align::Center, 1);
                 scr.text("LEFT CLICK: MOVE   RIGHT CLICK: SKILL   K: SKILLS   I: BAG   R: RUN   Q / E: POTIONS   TAB: MAP", w / 2, top - 34, hint, Align::Center, 1);
-                scr.text("PAD: STICK MOVE   A / X: SKILLS   B: RUN   START: BAG   SELECT: MAP (HOLD: SKILLS)", w / 2, top - 22, hint, Align::Center, 1);
+                scr.text("PAD: STICK MOVE   A / X: SKILLS   B: RUN   START: BAG   SELECT: MAP   L2: SKILL TREE", w / 2, top - 22, hint, Align::Center, 1);
             }
         }
         (skill_rects, bag)

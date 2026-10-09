@@ -426,10 +426,10 @@ Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`;
 | Primary skill (L slot) | Left click a monster, Shift + left click, F | A, RT or the right stick (auto-aims at the nearest foe) |
 | Secondary skill (R slot) | Right click, Space | X |
 | Pick the secondary skill | 1-4 | R1 (cycles) |
-| Skill tree | K, or click the skill slots / the + button | Hold SELECT |
+| Skill tree | K, or click the skill slots / the + button | L2 (or click a stick, or hold SELECT) |
 | Inventory | I, or click BAG | START |
 | Run / walk toggle | R | B |
-| Health potion | Q or 1 | L1 / L2 |
+| Health potion | Q or 1 | L1 |
 | Talk to someone | Left click them, or F / Space next to them | A next to them |
 | Choose in a conversation | Up / Down + Enter, or click | D-pad + A |
 | Map | Tab or M | SELECT |

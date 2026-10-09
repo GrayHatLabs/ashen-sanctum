@@ -317,6 +317,8 @@ fn main() -> Result<(), String> {
     let mut last = Instant::now();
     let mut acc = Duration::ZERO;
     let mut back_held = false;
+    // L2 opens the skill tree (on the press, not while it's held).
+    let mut l2_held = false;
     // One-shot presses, cleared after each simulated tick.
     let (mut confirm, mut pot_hp, mut pot_mp, mut map, mut run_toggle, mut cancel) = (false, false, false, false, false, false);
     let (mut skills_key, mut cycle, mut slot): (bool, bool, Option<u8>) = (false, false, None);
@@ -425,6 +427,8 @@ fn main() -> Result<(), String> {
                         Button::B => run_toggle = true,
                         Button::LeftShoulder => pot_hp = true,
                         Button::Y => pot_mp = true,
+                        // Clicking either stick opens the skill tree too (pads with sticks).
+                        Button::LeftStick | Button::RightStick => skills_key = true,
                         Button::DPadUp => pad.dup = true,
                         Button::DPadDown => pad.ddown = true,
                         Button::DPadLeft => pad.dleft = true,
@@ -460,10 +464,13 @@ fn main() -> Result<(), String> {
                     Axis::RightX => pad.rx = dead(value),
                     Axis::RightY => pad.ry = dead(value),
                     Axis::TriggerRight => pad.rt = value > 12000,
+                    // L2: the skill tree (holding SELECT was the only way before, and nothing on screen said so).
                     Axis::TriggerLeft => {
-                        if value > 12000 {
-                            pot_hp = true;
+                        let down = value > 12000;
+                        if down && !l2_held {
+                            skills_key = true;
                         }
+                        l2_held = down;
                     }
                 },
                 Event::Window { win_event: WindowEvent::FocusLost, .. } => {

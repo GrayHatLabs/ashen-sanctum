@@ -535,7 +535,7 @@ impl Menu {
         let lines = [
             "CONTROLS",
             "MOVE: LEFT CLICK OR WASD / LEFT STICK      RUN: R / B",
-            "SKILLS: LEFT / RIGHT CLICK, F / SPACE / A / X      SKILL TREE: K / HOLD SELECT",
+            "SKILLS: LEFT / RIGHT CLICK, F / SPACE / A / X      SKILL TREE: K / L2 / HOLD SELECT",
             "INVENTORY: I / START      MAP: TAB / SELECT      POTIONS: Q / E / L1 / Y",
             "MUSIC ON / OFF IN GAME: N      ESC: SAVE AND RETURN TO THE HEROES",
         ];
