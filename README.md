@@ -9,6 +9,17 @@ ANBERNIC RG35XX H), with pixel art generated with PixelLab and embedded in the b
 Sound effects and music are synthesised in code: a plucked-guitar theme in town, wind and
 drones in the wilds, bells and a heartbeat in the dungeons, drums for boss fights.
 
+## Download
+
+Ready-to-play builds are on the [releases page](https://github.com/GrayHatLabs/ashen-sanctum/releases/latest):
+Windows (`AshenSanctum-windows.zip`), Linux x86_64 (`AshenSanctum-linux-x86_64.tar.gz`), aarch64 handhelds
+with PortMaster (`AshenSanctum-handheld-aarch64.zip`) and Android (`AshenSanctum-android.apk`). Nothing else
+to install: the art, music and SDL2 are built in.
+
+GitHub Actions builds them: `.github/workflows/ci.yml` runs the tests and the bot's self-test on every push,
+and `.github/workflows/release.yml` builds every platform and publishes a release when a version tag is
+pushed (`git tag v1.3.0 && git push origin v1.3.0`).
+
 ## Title screen and heroes
 
 The game opens on the **title screen**: Play, Options (music, controls), Quit.
