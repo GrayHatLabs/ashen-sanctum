@@ -105,6 +105,22 @@ pub extern "C" fn SDL_main(_argc: std::os::raw::c_int, _argv: *const *const std:
     }
 }
 
+/// Anbernic pads are positional (SDL/Xbox naming): the right face button printed A is SDL `B`,
+/// the bottom one printed B is SDL `A`, and X / Y are swapped the same way. On handhelds the
+/// bindings follow the printed labels, so A confirms / casts and B goes back / toggles run.
+fn by_label(b: Button, handheld: bool) -> Button {
+    if !handheld {
+        return b;
+    }
+    match b {
+        Button::A => Button::B,
+        Button::B => Button::A,
+        Button::X => Button::Y,
+        Button::Y => Button::X,
+        other => other,
+    }
+}
+
 fn main() -> Result<(), String> {
     let args: Vec<String> = std::env::args().collect();
     // Android (RG477V, Odin 2 on stock firmware): saves in the app's own storage, landscape only, and the
@@ -375,6 +391,7 @@ fn main() -> Result<(), String> {
                     }
                 }
                 Event::ControllerButtonDown { button, .. } => {
+                    let button = by_label(button, handheld);
                     match button {
                         Button::Back => {
                             back_held = true;
@@ -403,7 +420,7 @@ fn main() -> Result<(), String> {
                         inp.mouse = None; // pad in use: stop steering by the mouse cursor
                     }
                 }
-                Event::ControllerButtonUp { button, .. } => match button {
+                Event::ControllerButtonUp { button, .. } => match by_label(button, handheld) {
                     // SELECT on its own toggles the map (SELECT + START quits above).
                     // SELECT tapped: map; held: skill tree (SELECT + START quits above).
                     Button::Back => {
