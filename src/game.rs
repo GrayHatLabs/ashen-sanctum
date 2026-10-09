@@ -611,9 +611,26 @@ pub struct Stats {
     pub kills_fell: u32,
 }
 
+/// The art, unpacked once per run and shared by every Game (a new hero from the menu, the tests).
+fn shared_art() -> std::rc::Rc<Art> {
+    thread_local! {
+        static ART: std::cell::OnceCell<std::rc::Rc<Art>> = const { std::cell::OnceCell::new() };
+    }
+    ART.with(|a| a.get_or_init(|| std::rc::Rc::new(Art::load())).clone())
+}
+
+/// A trip to another level, waiting a frame for the loading card.
+#[derive(Clone, Copy, Debug)]
+pub enum Travel {
+    Go(LevelId, Option<LevelId>),
+    Town(usize),
+    Waypoint(LevelId),
+}
+
 pub struct Game {
     pub(crate) rng: Rng,
-    pub art: Art,
+    /// Shared by every game this run (unpacking it takes seconds on a handheld: once is enough).
+    pub art: std::rc::Rc<Art>,
     pub p: Player,
     // ---- the current level (swapped in and out of `parked`) ----
     pub level: LevelId,
@@ -752,6 +769,13 @@ pub struct Game {
     pub(crate) view_h: i32,
     pub(crate) light_ready: bool,
     pub(crate) portal_cd: f32,
+    /// A way in or out only works once you've stepped clear of the one you arrived by (no bouncing back and
+    /// forth between areas).
+    pub(crate) portal_armed: bool,
+    /// The real game (main.rs) travels a frame late, behind a loading card (on a slow handheld building a map
+    /// can take a moment, and a frozen or black screen looked like a crash). Tests and the bot travel at once.
+    pub defer_travel: bool,
+    pub(crate) pending_travel: Option<Travel>,
     /// Where you stood over the last three seconds (the Clockmaker's rewind).
     trail: std::collections::VecDeque<(f32, f32)>,
     pub(crate) prev: Input,
@@ -768,7 +792,7 @@ impl Game {
         let lv = world::build_at(LevelId::Overworld, world_seed, 0);
         let mut g = Game {
             rng: Rng::new(seed),
-            art: Art::load(),
+            art: shared_art(),
             p: Player::new(),
             level: LevelId::Overworld,
             level_name: String::new(),
@@ -877,6 +901,9 @@ impl Game {
             view_h,
             light_ready: false,
             portal_cd: 0.0,
+            portal_armed: true,
+            defer_travel: false,
+            pending_travel: None,
             trail: Default::default(),
             prev: Input::default(),
             show_map: false,
@@ -967,6 +994,7 @@ impl Game {
         self.dialog = None;
         self.light_ready = false;
         self.portal_cd = 0.8;
+        self.portal_armed = false;
         self.banner_t = 3.0;
         self.waypoint = self.find_waypoint();
         self.wp_armed = true;
@@ -1247,6 +1275,10 @@ impl Game {
     /// Waypoint travel: you arrive standing on the other waypoint.
     pub(crate) fn travel(&mut self, id: LevelId) {
         self.dialog = None;
+        if self.defer_travel && id != self.level {
+            self.pending_travel = Some(Travel::Waypoint(id));
+            return;
+        }
         if id != self.level {
             self.go_to(id, None);
         }
@@ -1256,6 +1288,23 @@ impl Game {
             let (x, y) = (self.p.x, self.p.y);
             self.spray_at(x, y, PKind::Magic, 8.0);
         }
+    }
+
+    /// Through a way in or out: at once, or (in the real game) next frame behind the loading card.
+    fn go_soon(&mut self, id: LevelId, from: Option<LevelId>) {
+        if self.defer_travel {
+            self.pending_travel = Some(Travel::Go(id, from));
+        } else {
+            self.go_to(id, from);
+        }
+    }
+
+    /// Where a trip is headed (for the loading card).
+    pub fn travel_label(&self) -> Option<String> {
+        self.pending_travel.as_ref().map(|t| match *t {
+            Travel::Go(id, _) | Travel::Waypoint(id) => Game::waypoint_name(id),
+            Travel::Town(act) => Game::waypoint_name(LevelId::land(act)),
+        })
     }
 
     /// Moves to another level and places the player at the matching entrance.
@@ -1365,15 +1414,33 @@ impl Game {
     }
 
     /// A walkable spot next to a portal of this kind (so you don't land back on it).
+    /// Where you arrive by a way in: a couple of tiles from it, on the side toward the middle of the map (not
+    /// between it and the map's edge, where walking on would take you straight back through it).
     fn portal_spot(&self, kind: PortalKind) -> Option<(f32, f32)> {
         let p = self.portals.iter().find(|p| p.kind == kind)?;
-        for (dx, dy) in [(0.0, 1.2), (1.2, 0.0), (-1.2, 0.0), (0.0, -1.2), (1.0, 1.0), (-1.0, 1.0), (1.0, -1.0), (-1.0, -1.0)] {
-            let (x, y) = (p.x + dx, p.y + dy);
-            if !self.d.blocked(x, y, PLAYER_R + 0.05) {
-                return Some((x, y));
+        let (cx, cy) = (self.d.w as f32 / 2.0, self.d.h as f32 / 2.0);
+        let mut best: Option<(f32, f32, f32)> = None;
+        for r in [2.2f32, 1.6, 1.2] {
+            for k in 0..16 {
+                let a = k as f32 / 16.0 * std::f32::consts::TAU;
+                let (x, y) = (p.x + a.cos() * r, p.y + a.sin() * r);
+                if self.d.blocked(x, y, PLAYER_R + 0.05) {
+                    continue;
+                }
+                // No other way in or out underfoot either.
+                if self.portals.iter().any(|q| (q.x - x).powi(2) + (q.y - y).powi(2) < 1.0) {
+                    continue;
+                }
+                let d = (x - cx).powi(2) + (y - cy).powi(2);
+                if best.map_or(true, |b| d < b.2) {
+                    best = Some((x, y, d));
+                }
+            }
+            if best.is_some() {
+                break;
             }
         }
-        Some((p.x, p.y))
+        Some(best.map_or((p.x, p.y + 1.2), |b| (b.0, b.1)))
     }
 
     pub fn in_safe(&self, x: f32, y: f32) -> bool {
@@ -1680,6 +1747,26 @@ impl Game {
     // ------------------------------------------------------------------ update
 
     pub fn update(&mut self, inp: &Input) {
+        // A trip asked for last frame, now that the loading card is on screen.
+        if let Some(t) = self.pending_travel.take() {
+            let msg = self.message.take();
+            match t {
+                Travel::Go(id, from) => self.go_to(id, from),
+                Travel::Town(act) => {
+                    self.go_to(LevelId::land(act), None);
+                    (self.p.x, self.p.y) = self.town_start;
+                }
+                Travel::Waypoint(id) => {
+                    self.defer_travel = false;
+                    self.travel(id);
+                    self.defer_travel = true;
+                }
+            }
+            if msg.is_some() {
+                self.message = msg;
+            }
+            return;
+        }
         self.tick += 1;
         self.banner_t = (self.banner_t - DT).max(0.0);
         self.level_up_t = (self.level_up_t - DT).max(0.0);
@@ -1859,6 +1946,13 @@ impl Game {
             return;
         }
         let (px, py) = (self.p.x, self.p.y);
+        // Arm the ways in and out once you're clear of them all.
+        if !self.portal_armed {
+            if self.portals.iter().all(|p| (p.x - px).powi(2) + (p.y - py).powi(2) > 1.1 * 1.1) {
+                self.portal_armed = true;
+            }
+            return;
+        }
         let Some(kind) = self.portals.iter().find(|p| (p.x - px).powi(2) + (p.y - py).powi(2) < 0.55 * 0.55).map(|p| p.kind) else { return };
         let here = self.level;
         match kind {
@@ -1904,13 +1998,13 @@ impl Game {
                     self.say(format!("THREE HOLLOWS IN THE STONE, SHAPED FOR PEARLS. ({n}/3 PEARLS)"));
                     return;
                 }
-                self.go_to(LevelId::Dungeon(k, 0), Some(here));
+                self.go_soon(LevelId::Dungeon(k, 0), Some(here));
             }
             PortalKind::Dock(n) => self.fly_airship(n),
             PortalKind::Exit(n) => {
                 let to = crate::areas::level(here.act(), n);
                 let first = !self.waypoints.contains(&to) && !self.parked.contains_key(&to);
-                self.go_to(to, Some(here));
+                self.go_soon(to, Some(here));
                 if first {
                     self.banner_t = 3.0;
                 }
@@ -1947,7 +2041,7 @@ impl Game {
                     return;
                 }
                 // Coming back from the next act lands you at this act's pass (an area, or the overland).
-                self.go_to(crate::areas::pass_home(act, here.act()), Some(here));
+                self.go_soon(crate::areas::pass_home(act, here.act()), Some(here));
                 if act == 1 && here.act() == 0 && !self.waypoints.contains(&LevelId::Frostmarch) {
                     self.say("THE FROSTMARCH. FIND KALDHOLM, BY THE FROZEN LAKE".into());
                 }
@@ -1968,13 +2062,13 @@ impl Game {
                 }
             }
             PortalKind::Up => match here {
-                LevelId::Dungeon(k, 0) => self.go_to(crate::areas::dungeon_home(k), Some(LevelId::Dungeon(k, 0))),
-                LevelId::Dungeon(k, f) => self.go_to(LevelId::Dungeon(k, f - 1), Some(here)),
+                LevelId::Dungeon(k, 0) => self.go_soon(crate::areas::dungeon_home(k), Some(LevelId::Dungeon(k, 0))),
+                LevelId::Dungeon(k, f) => self.go_soon(LevelId::Dungeon(k, f - 1), Some(here)),
                 _ => {}
             },
             PortalKind::Down => {
                 if let LevelId::Dungeon(k, f) = here {
-                    self.go_to(LevelId::Dungeon(k, f + 1), Some(here));
+                    self.go_soon(LevelId::Dungeon(k, f + 1), Some(here));
                 }
             }
             PortalKind::TownPortal => {
@@ -1990,8 +2084,12 @@ impl Game {
                 if any {
                     self.collect_pickups();
                 }
-                self.go_to(LevelId::land(here.act()), None);
-                (self.p.x, self.p.y) = self.town_start;
+                if self.defer_travel {
+                    self.pending_travel = Some(Travel::Town(here.act()));
+                } else {
+                    self.go_to(LevelId::land(here.act()), None);
+                    (self.p.x, self.p.y) = self.town_start;
+                }
             }
         }
     }
@@ -3772,6 +3870,20 @@ mod tests {
         g.pickups.clear();
         g.banner_t = 0.0;
         g.portal_cd = 1000.0;
+        // Somewhere with open floor around (the fights below happen east of you), away from the stairs.
+        let open = |g: &Game, x: f32, y: f32| (-2..=8).all(|dx| (-2..=2).all(|dy| !g.d.blocked(x + dx as f32, y + dy as f32, 0.45)));
+        let (sx, sy) = (g.p.x, g.p.y);
+        'find: for r in 0..30 {
+            for dy in -r..=r {
+                for dx in -r..=r {
+                    let (x, y) = (sx.floor() + dx as f32 + 0.5, sy.floor() + dy as f32 + 0.5);
+                    if open(&g, x, y) && g.portals.iter().all(|p| (p.x - x).powi(2) + (p.y - y).powi(2) > 9.0) {
+                        (g.p.x, g.p.y) = (x, y);
+                        break 'find;
+                    }
+                }
+            }
+        }
         g
     }
 
@@ -3860,6 +3972,7 @@ mod tests {
         g.p.x = e.0;
         g.p.y = e.1;
         g.portal_cd = 0.0;
+        g.portal_armed = true;
         g.update(&Input::default());
         assert_eq!(g.level, LevelId::Dungeon(0, 0));
         assert!(g.d.walkable(g.p.x as i32, g.p.y as i32));
@@ -3869,6 +3982,7 @@ mod tests {
         g.p.x = down.0;
         g.p.y = down.1;
         g.portal_cd = 0.0;
+        g.portal_armed = true;
         g.update(&Input::default());
         assert_eq!(g.level, LevelId::Dungeon(0, 1));
         assert!(g.boss_alive(), "the Bone Warden waits on the bottom floor");
@@ -3876,6 +3990,7 @@ mod tests {
         g.p.x = up.0;
         g.p.y = up.1;
         g.portal_cd = 0.0;
+        g.portal_armed = true;
         g.update(&Input::default());
         assert_eq!(g.level, LevelId::Dungeon(0, 0));
         assert!(g.mobs.is_empty(), "levels remember their state");
@@ -3883,6 +3998,7 @@ mod tests {
         g.p.x = up.0;
         g.p.y = up.1;
         g.portal_cd = 0.0;
+        g.portal_armed = true;
         g.update(&Input::default());
         assert_eq!(g.level, LevelId::Area(0, 2), "out by the crypt's door");
         assert!(g.portals.iter().any(|p| p.kind == PortalKind::Entrance(0) && (p.x - g.p.x).abs() + (p.y - g.p.y).abs() < 3.0));
@@ -3909,6 +4025,7 @@ mod tests {
         g.p.x = s.0;
         g.p.y = s.1;
         g.portal_cd = 0.0;
+        g.portal_armed = true;
         g.update(&Input::default());
         assert_eq!(g.level, LevelId::Area(0, 6), "ash barrier holds");
         g.debug_goto(LevelId::Overworld);
@@ -3926,6 +4043,7 @@ mod tests {
         g.p.x = tp.0;
         g.p.y = tp.1;
         g.portal_cd = 0.0;
+        g.portal_armed = true;
         g.update(&Input::default());
         assert_eq!(g.level, LevelId::Overworld);
         assert!(g.in_safe(g.p.x, g.p.y));
@@ -3942,6 +4060,7 @@ mod tests {
         g.p.x = s.0;
         g.p.y = s.1;
         g.portal_cd = 0.0;
+        g.portal_armed = true;
         g.update(&Input::default());
         assert_eq!(g.level, LevelId::Dungeon(SANCTUM, 0));
         g.debug_goto(LevelId::Dungeon(SANCTUM, DUNGEONS[SANCTUM].floors - 1));
@@ -3960,6 +4079,52 @@ mod tests {
         }
     }
 
+    #[test]
+    fn the_real_game_travels_a_frame_late_behind_the_loading_card() {
+        let mut g = Game::new(7, 360);
+        g.defer_travel = true;
+        g.debug_goto(LevelId::Area(0, 1));
+        let here = g.level;
+        let (x, y) = g.portals.iter().find(|p| matches!(p.kind, PortalKind::Exit(_))).map(|p| (p.x, p.y)).unwrap();
+        (g.p.x, g.p.y) = (x, y);
+        g.portal_cd = 0.0;
+        g.portal_armed = true;
+        g.update(&Input::default());
+        assert_eq!(g.level, here, "not yet: the loading card shows first");
+        assert!(g.travel_label().is_some());
+        g.update(&Input::default());
+        assert_ne!(g.level, here, "and then you're there");
+        assert!(g.travel_label().is_none());
+    }
+
+    #[test]
+    fn crossing_into_an_area_doesnt_bounce_you_back() {
+        // Every area of every act: arrive by each road, then walk on into the area (and back over where you came
+        // in): you stay put until you've stepped clear and walked onto the road again on purpose.
+        let mut g = Game::new(7, 360);
+        for a in crate::areas::AREAS {
+            let here = LevelId::Area(a.act, a.n);
+            for &(_, _, to) in a.exits {
+                let there = crate::areas::level(a.act as usize, to);
+                g.debug_goto(here);
+                g.go_to(there, Some(here));
+                let back = g.portals.iter().find(|p| p.kind == PortalKind::Exit(a.n)).map(|p| (p.x, p.y)).expect("the road back");
+                let arrived = (g.p.x, g.p.y);
+                let gap = ((arrived.0 - back.0).powi(2) + (arrived.1 - back.1).powi(2)).sqrt();
+                assert!(gap > 1.0, "{} -> {:?}: arrived {gap:.1} tiles from the road back", a.name, there);
+                // Closer to the middle than the road back is (not out between it and the map's edge).
+                let (cx, cy) = (g.d.w as f32 / 2.0, g.d.h as f32 / 2.0);
+                let d = |(x, y): (f32, f32)| (x - cx).powi(2) + (y - cy).powi(2);
+                assert!(d(arrived) < d(back), "{} -> {:?}: arrived on the far side of the road back", a.name, there);
+                // Even standing right on it straight away, it doesn't fire until you've stepped clear.
+                g.portal_cd = 0.0;
+                (g.p.x, g.p.y) = back;
+                g.update(&Input::default());
+                assert_eq!(g.level, there, "{} -> {:?}: bounced straight back", a.name, there);
+            }
+        }
+    }
+
     fn walk_onto(g: &mut Game, kind: PortalKind) {
         // Doors and the ways on live out in the areas now: go to the one that has it.
         if !g.portals.iter().any(|p| p.kind == kind) {
@@ -3973,6 +4138,7 @@ mod tests {
         let s = g.portals.iter().find(|p| p.kind == kind).map(|p| (p.x, p.y)).expect("portal");
         (g.p.x, g.p.y) = s;
         g.portal_cd = 0.0;
+        g.portal_armed = true;
         g.update(&Input::default());
     }
 
@@ -3985,6 +4151,7 @@ mod tests {
         assert_eq!(g.level, LevelId::Area(0, 6), "pass closed");
         g.quest.stage = 3;
         g.portal_cd = 0.0;
+        g.portal_armed = true;
         g.update(&Input::default());
         assert_eq!(g.level, LevelId::Frostmarch, "through the pass");
         assert!(g.portals.iter().any(|p| p.kind == PortalKind::Pass(0) && (p.x - g.p.x).abs() + (p.y - g.p.y).abs() < 3.0), "arrive by the pass");
@@ -4257,6 +4424,7 @@ mod tests {
         g.quest.stage4 = 3;
         g.quest.keys = [true; 3];
         g.portal_cd = 0.0;
+        g.portal_armed = true;
         walk_onto(&mut g, PortalKind::Pass(4));
         assert!(g.level.act() == LevelId::Deep.act() && !matches!(g.level, LevelId::Dungeon(..)));
         assert!(g.quest.ysolde_has_news());
@@ -4265,6 +4433,7 @@ mod tests {
         assert_eq!(g.quest.stage5, 1);
         // The sanctum is sealed until the pearls are set.
         g.portal_cd = 0.0;
+        g.portal_armed = true;
         walk_onto(&mut g, PortalKind::Entrance(ABYSS));
         assert!(g.level.act() == LevelId::Deep.act() && !matches!(g.level, LevelId::Dungeon(..)), "the sanctum is sealed");
         for (i, k) in (16..19).enumerate() {
@@ -4279,6 +4448,7 @@ mod tests {
         read_through(&mut g);
         assert_eq!(g.quest.stage5, 2);
         g.portal_cd = 0.0;
+        g.portal_armed = true;
         walk_onto(&mut g, PortalKind::Entrance(ABYSS));
         assert_eq!(g.level, LevelId::Dungeon(ABYSS, 0));
         g.debug_goto(LevelId::Dungeon(ABYSS, DUNGEONS[ABYSS].floors - 1));
@@ -4306,6 +4476,7 @@ mod tests {
         g.quest.stage5 = 3;
         g.quest.pearls = [true; 3];
         g.portal_cd = 0.0;
+        g.portal_armed = true;
         walk_onto(&mut g, PortalKind::Pass(5));
         assert!(g.level.act() == LevelId::Heavens.act() && !matches!(g.level, LevelId::Dungeon(..)));
         assert!(g.quest.seraphine_has_news());
@@ -4313,6 +4484,7 @@ mod tests {
         read_through(&mut g);
         assert_eq!(g.quest.stage6, 1);
         g.portal_cd = 0.0;
+        g.portal_armed = true;
         walk_onto(&mut g, PortalKind::Entrance(ZENITH));
         assert!(g.level.act() == LevelId::Heavens.act() && !matches!(g.level, LevelId::Dungeon(..)), "the true sanctum is sealed");
         for (i, k) in (20..23).enumerate() {
@@ -4326,6 +4498,7 @@ mod tests {
         read_through(&mut g);
         assert_eq!(g.quest.stage6, 2);
         g.portal_cd = 0.0;
+        g.portal_armed = true;
         walk_onto(&mut g, PortalKind::Entrance(ZENITH));
         assert_eq!(g.level, LevelId::Dungeon(ZENITH, 0));
         g.debug_goto(LevelId::Dungeon(ZENITH, DUNGEONS[ZENITH].floors - 1));

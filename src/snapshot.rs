@@ -1741,6 +1741,19 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         save(&mut g, scr, "extra_bestiary");
         g.show_map = false;
     }
+    // The loading card (main.rs travels a frame late behind it).
+    {
+        let mut g = Game::new(7, h);
+        g.defer_travel = true;
+        g.debug_goto(LevelId::Area(0, 1));
+        if let Some((x, y)) = g.portals.iter().find(|p| matches!(p.kind, crate::world::PortalKind::Exit(_))).map(|p| (p.x, p.y)) {
+            (g.p.x, g.p.y) = (x, y);
+            g.portal_cd = 0.0;
+            g.portal_armed = true;
+            g.update(&crate::game::Input::default());
+            save(&mut g, scr, "loading_card");
+        }
+    }
     // Act 7, the Churning Chaos (chaos.rs): Stillhold, the Breach and an anchor stone, the Drift of Worlds,
     // the Elemental Tangle, a surge coming and the land after it.
     {

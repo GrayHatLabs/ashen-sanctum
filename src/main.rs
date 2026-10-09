@@ -233,7 +233,22 @@ fn main() -> Result<(), String> {
     // Continue the saved character (fresh world from the same seed), unless --new.
     let saved = if menu.is_some() || args.iter().any(|a| a == "--new") { None } else { save::read() };
     let seed = seed_arg.or_else(|| saved.as_deref().and_then(save::seed_of)).unwrap_or(seed);
+    // The loading card while the art is unpacked (a few seconds on a handheld: no black screen meanwhile).
+    {
+        let mut splash = gfx::Screen::new(view_h);
+        render::draw_loading(&mut splash, "UNPACKING THE ART");
+        // SAFETY: a Vec<u32> is contiguous; ARGB8888 is a native-endian packed u32 format.
+        let bytes = unsafe { std::slice::from_raw_parts(splash.px.as_ptr() as *const u8, splash.px.len() * 4) };
+        tex.update(None, bytes, gfx::SW as usize * 4).map_err(|e| e.to_string())?;
+        for _ in 0..2 {
+            canvas.set_draw_color(Color::RGB(0, 0, 0));
+            canvas.clear();
+            canvas.copy(&tex, None, None)?;
+            canvas.present();
+        }
+    }
     let mut game = Game::new(seed, view_h);
+    game.defer_travel = true;
     let mut loaded = false;
     if let Some(text) = saved.as_deref() {
         if save::apply(&mut game, text) {
@@ -530,6 +545,7 @@ fn main() -> Result<(), String> {
                 let text = save::read().unwrap_or_default();
                 let seed = save::seed_of(&text).unwrap_or(seed);
                 game = Game::new(seed, view_h);
+                game.defer_travel = true;
                 if save::apply(&mut game, &text) {
                     game.welcome_back();
                 }
@@ -540,6 +556,7 @@ fn main() -> Result<(), String> {
                 save::use_hero(&slot);
                 let seed = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_nanos() as u64).unwrap_or(1);
                 game = Game::new(seed, view_h);
+                game.defer_travel = true;
                 game.set_class(class);
                 game.hero_name = name;
                 save::write(&game);

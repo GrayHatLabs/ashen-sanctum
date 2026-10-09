@@ -15,6 +15,10 @@ const LOW_WALL: i32 = 8;
 
 impl Game {
     pub fn draw(&mut self, scr: &mut Screen) {
+        if let Some(name) = self.travel_label() {
+            draw_loading(scr, &name);
+            return;
+        }
         let (ox, oy) = self.cam_origin();
         if !self.light_ready {
             let (radius, ambient) = self.theme.light();
@@ -2941,4 +2945,17 @@ pub fn class_sheet(c: crate::skills::Class) -> &'static str {
         Class::Inquisitor => "inquisitor_hero",
         Class::Sorceress => "mage",
     }
+}
+
+/// The loading card: shown while a map is built, and at startup while the art is unpacked.
+pub fn draw_loading(scr: &mut Screen, what: &str) {
+    scr.clear(rgb(0x0a0706));
+    let (w, h) = (scr.w, scr.h);
+    // A faint ember glow behind the title.
+    for k in 0..6 {
+        scr.blend(w / 2 - 140 + k * 10, h / 2 - 50 + k * 4, 280 - k * 20, 60 - k * 8, rgb(0x3a1408), 0.12);
+    }
+    scr.text("ASHEN SANCTUM", w / 2, h / 2 - 34, rgb(0xd8a050), Align::Center, 2);
+    scr.text(what, w / 2, h / 2 + 2, rgb(0xc8b088), Align::Center, 1);
+    scr.text("LOADING...", w / 2, h / 2 + 18, rgb(0x8a7a68), Align::Center, 1);
 }
