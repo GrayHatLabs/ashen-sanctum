@@ -31,6 +31,8 @@ fn windows_details() {
     if std::env::var("CARGO_CFG_TARGET_OS").as_deref() != Ok("windows") {
         return;
     }
+    // SDL2's registry calls need advapi32, which the sdl2 crate doesn't link on its own.
+    println!("cargo:rustc-link-lib=advapi32");
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
     let icon = root.join("assets/icon.ico");
     println!("cargo:rerun-if-changed={}", icon.display());
