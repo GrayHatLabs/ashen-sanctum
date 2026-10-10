@@ -390,6 +390,10 @@ pub fn run(dir: Option<&str>, tall: bool) -> i32 {
         let inp = bot.act(&g, t);
         g.update(&inp);
         g.sfx.clear();
+        // Ylgrath fled: the bot can't cross acts for the Stillpoint, so it's handed over (tests cover the fetch).
+        if g.quest.stillpoint == 1 && g.dialog.is_none() {
+            g.debug_grant_stillpoint();
+        }
         if god && g.p.hp < g.p.max_hp * 0.5 {
             g.p.hp = g.p.max_hp;
         }
@@ -569,7 +573,9 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             save(&mut g, scr, &format!("boss{k}"));
         }
     }
-    // The ending.
+    // The ending (Ylgrath only dies for good to one carrying the Stillpoint).
+    g.quest.stage7 = 2;
+    g.quest.stillpoint = 2;
     g.debug_kill_boss();
     idle(&mut g, 60 * 6);
     save(&mut g, scr, "victory");
@@ -1842,7 +1848,7 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             idle(&mut g, 10);
             save(&mut g, scr, "churn_riftmaw");
         }
-        for (k, name) in [(crate::world::CATHEDRAL, "churn_architect"), (crate::world::WARREN, "churn_grumbleguts"), (crate::world::MIRRORS, "churn_mirrorabbot")] {
+        for (k, name) in [(crate::world::CATHEDRAL, "churn_architect"), (crate::world::WARREN, "churn_grumbleguts"), (crate::world::MIRRORS, "churn_mirrorabbot"), (crate::world::EYE, "churn_ylgrath")] {
             let last = crate::world::DUNGEONS[k].floors - 1;
             g.debug_goto(LevelId::Dungeon(k, last));
             quiet(&mut g);
@@ -1851,6 +1857,24 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
                 g.message = None;
                 save(&mut g, scr, name);
             }
+        }
+        // Ylgrath's own shape (his last fifth), and his throne's way in, out in the Eye of the Churn.
+        if let Some(i) = g.mobs.iter().position(|m| m.kind == Kind::Ylgrath && m.alive()) {
+            g.mobs[i].form = crate::churnfolk::YLGRATH_FORMS.len() as u8;
+            g.mobs[i].special2 = 99.0;
+            g.mobs[i].hp = g.mobs[i].max_hp * 0.15;
+            idle(&mut g, 40);
+            g.message = None;
+            save(&mut g, scr, "churn_ylgrath_storm");
+        }
+        g.debug_goto(LevelId::Area(6, 6));
+        quiet(&mut g);
+        if let Some((x, y)) = g.portals.iter().find(|p| p.kind == crate::world::PortalKind::Entrance(crate::world::EYE)).map(|p| (p.x, p.y)) {
+            g.mobs.retain(|m| (m.x - x).powi(2) + (m.y - y).powi(2) > 144.0);
+            g.debug_place_near(x, y + 2.5, 1.0);
+            idle(&mut g, 10);
+            g.message = None;
+            save(&mut g, scr, "churn_throne_door");
         }
     }
     // Side content (side.rs): a shrine and its blessing, Skrat One-Ear and his gang, the Charnel Well, the

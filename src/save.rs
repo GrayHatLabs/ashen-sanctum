@@ -155,7 +155,7 @@ pub fn to_text(g: &Game) -> String {
     s += &format!("stage4={}\nkeys={}\n", q.stage4, bits(&q.keys));
     s += &format!("stage5={}\npearls={}\n", q.stage5, bits(&q.pearls));
     s += &format!("stage6={}\nshards={}\n", q.stage6, bits(&q.shards));
-    s += &format!("stage7={}\nakeys={}\n", q.stage7, bits(&q.akeys));
+    s += &format!("stage7={}\nakeys={}\nstillpoint={}\n", q.stage7, bits(&q.akeys), q.stillpoint);
     let p = &g.p;
     let list = |v: &[u32]| v.iter().map(|n| n.to_string()).collect::<Vec<_>>().join(",");
     s += &format!("rekindles={}\nrift_best={}\nrift_runs={}\nembers={}\nember_points={}\n", list(&p.rekindles), p.rift_best, p.rift_runs, list(&p.embers.map(|e| e as u32)), p.ember_points);
@@ -311,6 +311,7 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
         }
     }
     g.quest.stage7 = (num("stage7").unwrap_or(0.0) as u8).min(3);
+    g.quest.stillpoint = (num("stillpoint").unwrap_or(0.0) as u8).min(2);
     if let Some(s) = get("akeys") {
         for (i, c) in s.chars().take(3).enumerate() {
             g.quest.akeys[i] = c == '1';

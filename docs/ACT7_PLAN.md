@@ -21,7 +21,21 @@ Status: **being built in stages, with a review after each.**
   Shattered Monastery) with the Mirror Abbot (your own class's attacks, and copies of you). Art: OpenAI for the
   toad, the chaos matter, the Architect, the Mirror Abbot and the three entrances; PixelLab for the chaos
   knight. Bot survey: all 8 heroes take the three keys in 7-10 minutes with no deaths.
-- Stage 3: Ylgrath and the Stillpoint, the story, and Nightmare moved to after Act 7.
+- **Stage 3 (done 2026-10-09, `src/churnfolk.rs`, `src/story.rs`):** Abbot Quiet's story (advance codes 61/62:
+  meet him, then bring him the three Anchor Keys), the final dungeon **the Unshaped Throne** (3 floors, door in
+  the Eye of the Churn, Area(6,6)), and **Ylgrath the Unshaped**. He wears the old act bosses' shapes one after
+  another (the Ash King, the Rime Wyrm, Count Vardak, the Clockmaker, the Leviathan, Solanthos), never the same
+  one twice running, and fights as each; in his last fifth he takes his own shape (a storm, everything at once,
+  spitting chaos matter). Without the Stillpoint he flees: a rare, gold, and a page of the Clockmaker's notebook
+  (no unique), a gloat that names the Stillpoint, and the throne seals (nothing to farm). The Stillpoint then
+  waits on the last floor of the Heart of the Clock (Act 4), as far from the stair as you can walk, guarded by
+  four Unmade at Act 7 strength; the quest log points there in Act 4 too. With it the throne opens, rebuilt, and
+  he dies for good: his unique (THE SHAPE YLGRATH LEFT BEHIND), EPILOGUE7, then Abbot Quiet offers Nightmare
+  (moved from Seraphine, who now points you to the crack). Resets per difficulty. The survey bot is handed the
+  Stillpoint when he flees (it can't cross acts); a test walks the real fetch. Art: OpenAI for Ylgrath, the
+  vortex entrance and the Stillpoint. Bot survey (20 min): all 8 heroes, no deaths; 7 of 8 took the keys, made
+  him flee (10-13 min), killed him for good (12-15 min) and went on into Nightmare; the inventor reached the
+  flee at 15 min and ran out of time.
 - Stage 4: side content, the extras, art and music.
 
 ## The user's picks (2026-10-08)

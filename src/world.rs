@@ -247,7 +247,7 @@ pub struct DungeonDef {
     pub act: usize,
 }
 
-pub const DUNGEONS: [DungeonDef; 35] = [
+pub const DUNGEONS: [DungeonDef; 36] = [
     DungeonDef {
         name: "THE BONE CRYPT",
         floors: 2,
@@ -602,6 +602,17 @@ pub const DUNGEONS: [DungeonDef; 35] = [
         entrance: (0, 0),
         act: 6,
     },
+    // Act 7's last: Ylgrath's throne, in the Eye of the Churn (needs the three Anchor Keys).
+    DungeonDef {
+        name: "THE UNSHAPED THRONE",
+        floors: 3,
+        theme: Theme::Unfinished,
+        boss: Kind::Ylgrath,
+        monsters: &[Kind::ChaosKnight, Kind::Unmade, Kind::ChaosToad, Kind::ChaosBlob],
+        tier: 16.6,
+        entrance: (0, 0),
+        act: 6,
+    },
 ];
 
 /// The Ashen Sanctum (needs all three seals).
@@ -635,6 +646,8 @@ pub const OBSERVATORY: usize = 31;
 pub const CATHEDRAL: usize = 32;
 pub const WARREN: usize = 33;
 pub const MIRRORS: usize = 34;
+/// Act 7's last dungeon: Ylgrath's throne (needs the three Anchor Keys; he only dies to one carrying the Stillpoint).
+pub const EYE: usize = 35;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum PortalKind {
@@ -784,6 +797,7 @@ impl PropKind {
             PropKind::Entrance(CATHEDRAL) => "ent_cathedral",
             PropKind::Entrance(WARREN) => "ent_warren",
             PropKind::Entrance(MIRRORS) => "ent_mirrors",
+            PropKind::Entrance(EYE) => "ent_eye",
             PropKind::Bell => "bell_shrine",
             PropKind::Tomb => "tomb_shade",
             PropKind::Entrance(_) => "ent_zenith",
@@ -2676,4 +2690,51 @@ mod tests {
             }
         }
     }
+}
+
+/// The nearest walkable tile to (x, y) on a map (within 6 tiles), for things placed where a boss stood.
+pub fn nearest_open_on(d: &crate::dungeon::Dungeon, x: f32, y: f32) -> Option<(i32, i32)> {
+    let (cx, cy) = (x as i32, y as i32);
+    for r in 0..=6i32 {
+        for dy in -r..=r {
+            for dx in -r..=r {
+                if dx.abs() != r && dy.abs() != r {
+                    continue;
+                }
+                let (tx, ty) = (cx + dx, cy + dy);
+                if !d.blocked(tx as f32 + 0.5, ty as f32 + 0.5, 0.4) {
+                    return Some((tx, ty));
+                }
+            }
+        }
+    }
+    None
+}
+
+/// The walkable tile farthest (by walking) from `from`, with room around it.
+pub fn farthest_walk(d: &crate::dungeon::Dungeon, from: (i32, i32)) -> Option<(i32, i32)> {
+    let (w, h) = (d.w, d.h);
+    let mut dist = vec![u32::MAX; (w * h) as usize];
+    let mut queue = std::collections::VecDeque::new();
+    if from.0 < 0 || from.1 < 0 || from.0 >= w || from.1 >= h {
+        return None;
+    }
+    dist[(from.1 * w + from.0) as usize] = 0;
+    queue.push_back(from);
+    let mut best = None;
+    let mut far = 0;
+    while let Some((x, y)) = queue.pop_front() {
+        let dd = dist[(y * w + x) as usize];
+        if dd > far && !d.blocked(x as f32 + 0.5, y as f32 + 0.5, 0.6) {
+            far = dd;
+            best = Some((x, y));
+        }
+        for (nx, ny) in [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)] {
+            if nx >= 0 && ny >= 0 && nx < w && ny < h && d.walkable(nx, ny) && dist[(ny * w + nx) as usize] == u32::MAX {
+                dist[(ny * w + nx) as usize] = dd + 1;
+                queue.push_back((nx, ny));
+            }
+        }
+    }
+    best
 }

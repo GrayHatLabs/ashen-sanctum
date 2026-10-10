@@ -683,7 +683,7 @@ pub const AREAS: &[AreaDef] = &[
         tier: 16.2,
         size: (96, 96),
         exits: &[(Side::W, 0.5, 5)],
-        doors: &[],
+        doors: &[(crate::world::EYE, (62, 44))],
         pass: None,
         monsters: &[Kind::ChaosKnight, Kind::ChaosToad, Kind::Unmade, Kind::ChaosBlob],
         packs: 20,

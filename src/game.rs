@@ -191,6 +191,8 @@ pub enum Drop {
     Bottle(u8),
     /// An Anchor Key from one of the Churn's heralds (churnfolk.rs).
     AKey(usize),
+    /// The Clockmaker's Stillpoint, at the heart of his clock (churnfolk.rs): Ylgrath dies to one carrying it.
+    Stillpoint,
     /// The storm relic, a lost singer, one of Bram's crates (isles.rs).
     StormRelic,
     Singer(u8),
@@ -1240,6 +1242,7 @@ impl Game {
             shards: [done(5); 3],
             stage7: 0,
             akeys: [false; 3],
+            stillpoint: 0,
             side: [0; 32],
         };
         self.waypoints = (0..=act).map(LevelId::land).collect();
@@ -1260,7 +1263,7 @@ impl Game {
     /// Nightmare / Hell: the world is rebuilt harder, the quests start over, your hero carries on.
     pub(crate) fn next_difficulty(&mut self) {
         let d = (self.quest.difficulty + 1).min(2);
-        self.quest = Quest { stage: 1, seals: [false; 3], difficulty: d, stage2: 0, runes: [false; 3], stage3: 0, sigils: [false; 3], stage4: 0, keys: [false; 3], stage5: 0, pearls: [false; 3], stage6: 0, shards: [false; 3], stage7: 0, akeys: [false; 3], side: [0; 32] };
+        self.quest = Quest { stage: 1, seals: [false; 3], difficulty: d, stage2: 0, runes: [false; 3], stage3: 0, sigils: [false; 3], stage4: 0, keys: [false; 3], stage5: 0, pearls: [false; 3], stage6: 0, shards: [false; 3], stage7: 0, akeys: [false; 3], stillpoint: 0, side: [0; 32] };
         self.parked.clear();
         // New tasks on the new difficulty.
         self.errands.clear();
@@ -1406,6 +1409,7 @@ impl Game {
         self.mist_enter();
         self.chaos_enter();
         self.churnfolk_enter();
+        self.stillpoint_enter();
         self.gears_enter();
         self.reef_enter();
         self.isles_enter();
@@ -1508,7 +1512,7 @@ impl Game {
 
     /// A herald token (seal, rune, sigil, key) lying on this level.
     pub fn bot_token(&self) -> Option<(f32, f32)> {
-        self.pickups.iter().find(|k| matches!(k.kind, Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Pearl(_) | Drop::Shard(_) | Drop::AKey(_))).map(|k| (k.x, k.y))
+        self.pickups.iter().find(|k| matches!(k.kind, Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Pearl(_) | Drop::Shard(_) | Drop::AKey(_) | Drop::Stillpoint)).map(|k| (k.x, k.y))
     }
 
     /// The role of the NPC that talking now would address (for the bot).
@@ -1570,6 +1574,8 @@ impl Game {
         }
         match self.level.act() {
             6 => self.quest.log7(),
+            // Back in the Dominion for the Stillpoint.
+            3 if self.quest.stillpoint == 1 => self.quest.log7(),
             5 => self.quest.log6(),
             4 => self.quest.log5(),
             3 => self.quest.log4(),
@@ -1589,6 +1595,7 @@ impl Game {
             LevelId::Dominion if q.tally_has_news() => Some(Role::Tally),
             LevelId::Deep if q.ysolde_has_news() => Some(Role::Ysolde),
             LevelId::Heavens if q.seraphine_has_news() => Some(Role::Seraphine),
+            LevelId::Churn if q.abbot_has_news() => Some(Role::Abbot),
             _ => None,
         }
     }
@@ -1998,6 +2005,17 @@ impl Game {
                     self.say(format!("A GATE OF BLACK STONE, THREE SUNBURSTS CARVED IN IT. ({n}/3 SHARDS)"));
                     return;
                 }
+                if k == world::EYE && self.quest.stage7 < 2 {
+                    self.portal_cd = 2.0;
+                    let n = self.quest.akeys.iter().filter(|k| **k).count();
+                    self.say(format!("THE VORTEX WILL NOT LET YOU IN. THREE STILL POINTS IN IT, WAITING FOR KEYS. ({n}/3 ANCHOR KEYS)"));
+                    return;
+                }
+                if k == world::EYE && self.quest.throne_sealed() {
+                    self.portal_cd = 2.0;
+                    self.say("THE VORTEX HAS CLOSED. IT WON'T OPEN FOR YOU WITHOUT THE STILLPOINT".into());
+                    return;
+                }
                 if k == ABYSS && self.quest.stage5 < 2 {
                     self.portal_cd = 2.0;
                     let n = self.quest.pearl_count();
@@ -2082,7 +2100,7 @@ impl Game {
                 let (px, py) = (self.p.x, self.p.y);
                 let mut any = false;
                 for k in self.pickups.iter_mut() {
-                    if matches!(k.kind, Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Pearl(_) | Drop::Shard(_) | Drop::AKey(_)) {
+                    if matches!(k.kind, Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Pearl(_) | Drop::Shard(_) | Drop::AKey(_) | Drop::Stillpoint) {
                         (k.x, k.y, k.t) = (px, py, 1.0);
                         any = true;
                     }
@@ -2304,6 +2322,20 @@ impl Game {
     }
 
     fn advance_quest(&mut self, stage: u8) {
+        // 61 and 62 are Act 7's stages 1 and 2 (Abbot Quiet).
+        if stage > 60 {
+            let s7 = stage - 60;
+            if s7 > self.quest.stage7 {
+                self.quest.stage7 = s7;
+                self.sfx.push(Sfx::Pickup);
+                match s7 {
+                    1 => self.say("NEW QUEST: SLAY THE THREE HERALDS OF THE CHURN".into()),
+                    2 => self.say("THE UNSHAPED THRONE IS OPEN".into()),
+                    _ => {}
+                }
+            }
+            return;
+        }
         // 51 and 52 are Act 6's stages 1 and 2 (Seraphine).
         if stage > 50 {
             let s6 = stage - 50;
@@ -2814,6 +2846,7 @@ impl Game {
                         self.say(format!("THE KEY TURNS ITSELF IN YOUR HAND, AND YOU FEEL STRONGER ({n}/3)"));
                     }
                 }
+                Drop::Stillpoint => self.take_stillpoint(px, py),
                 Drop::AKey(i) => {
                     self.quest.akeys[i] = true;
                     self.p.skills.points += 1;
@@ -3351,6 +3384,10 @@ impl Game {
         if self.golem_rebuilds(i) {
             return;
         }
+        // Ylgrath can't truly die without the Stillpoint: he flees (churnfolk.rs).
+        if self.ylgrath_flees(i) {
+            return;
+        }
         // A crate, barrel or urn: it breaks (no XP, no kill hooks).
         if crate::breakables::is_prop(self.mobs[i].kind) {
             self.break_prop(i);
@@ -3560,6 +3597,11 @@ impl Game {
                 Kind::Architect => self.pickups.push(Pickup { x, y, kind: Drop::AKey(0), t: 0.0 }),
                 Kind::Grumbleguts => self.pickups.push(Pickup { x, y, kind: Drop::AKey(1), t: 0.0 }),
                 Kind::MirrorAbbot => self.pickups.push(Pickup { x, y, kind: Drop::AKey(2), t: 0.0 }),
+                Kind::Ylgrath => {
+                    self.quest.stage7 = 3;
+                    self.state = State::Victory(0.0);
+                    self.dialog = None;
+                }
                 _ => {}
             }
             }
@@ -3681,6 +3723,7 @@ impl Game {
                 Kind::Architect => "architect",
                 Kind::Grumbleguts => "grumbleguts",
                 Kind::MirrorAbbot => "mirrorabbot",
+                Kind::Ylgrath => "ylgrath",
                 _ => "ashking",
             };
             drops.extend(items::boss_unique(key));
@@ -4131,6 +4174,77 @@ mod tests {
         }
     }
 
+    #[test]
+    fn the_churn_story_ylgrath_flees_until_you_bring_the_stillpoint() {
+        use crate::items::Rarity;
+        use crate::mobs::Kind;
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        g.act_start(6);
+        g.p.base_hp = 50000.0;
+        g.p.recalc();
+        assert!(g.quest.abbot_has_news());
+        // No Stillpoint at the heart of the clock before he lets slip it's there.
+        let heart_last = LevelId::Dungeon(world::HEART, DUNGEONS[world::HEART].floors - 1);
+        g.debug_goto(heart_last);
+        assert!(!g.pickups.iter().any(|k| matches!(k.kind, Drop::Stillpoint)));
+        g.debug_goto(LevelId::Churn);
+        assert!(g.debug_talk(Role::Abbot));
+        read_through(&mut g);
+        assert_eq!(g.quest.stage7, 1);
+        walk_onto(&mut g, PortalKind::Entrance(world::EYE));
+        assert!(!matches!(g.level, LevelId::Dungeon(..)), "the throne is sealed without the keys");
+        g.quest.akeys = [true; 3];
+        g.debug_goto(LevelId::Churn);
+        assert!(g.quest.abbot_has_news());
+        assert!(g.debug_talk(Role::Abbot));
+        read_through(&mut g);
+        assert_eq!(g.quest.stage7, 2);
+        walk_onto(&mut g, PortalKind::Entrance(world::EYE));
+        assert_eq!(g.level, LevelId::Dungeon(world::EYE, 0));
+        let last = LevelId::Dungeon(world::EYE, DUNGEONS[world::EYE].floors - 1);
+        g.debug_goto(last);
+        // Beaten without the Stillpoint: he flees, with a fair reward but no unique, and tells you what he fears.
+        assert!(g.debug_kill_boss());
+        assert_eq!((g.quest.stage7, g.quest.stillpoint), (2, 1));
+        assert!(!matches!(g.state, State::Victory(_)));
+        assert!(g.dialog.as_ref().map_or(false, |d| d.name == "YLGRATH THE UNSHAPED"), "he gloats");
+        assert!(g.pickups.iter().all(|k| !matches!(&k.kind, Drop::Item(it) if it.rarity == Rarity::Unique)), "no unique");
+        assert!(g.pickups.iter().any(|k| matches!(&k.kind, Drop::Item(it) if it.rarity == Rarity::Rare)), "a rare");
+        assert!(g.pickups.iter().any(|k| matches!(k.kind, Drop::Page(_))), "the notebook page");
+        assert!(g.portals.iter().any(|p| p.kind == PortalKind::TownPortal), "a way home");
+        assert!(g.quest.log7().contains("STILLPOINT"));
+        g.dialog = None;
+        walk_onto(&mut g, PortalKind::Entrance(world::EYE));
+        assert!(!matches!(g.level, LevelId::Dungeon(..)), "his throne closes behind him: nothing to farm");
+        // The Stillpoint waits at the heart of the clock now, somewhere you can walk to, guarded.
+        g.debug_goto(heart_last);
+        assert!(g.quest_log().contains("STILLPOINT"), "the Dominion's log points to it");
+        let sp = g.pickups.iter().find(|k| matches!(k.kind, Drop::Stillpoint)).map(|k| (k.x, k.y)).expect("the stillpoint");
+        assert!(g.bot_path(sp.0, sp.1).is_some(), "reachable");
+        assert!(g.mobs.iter().any(|m| m.kind == Kind::Unmade && m.alive() && (m.x - sp.0).powi(2) + (m.y - sp.1).powi(2) < 16.0), "guarded");
+        g.debug_collect_all();
+        g.dialog = None;
+        assert_eq!(g.quest.stillpoint, 2);
+        // Saved and loaded.
+        let text = crate::save::to_text(&g);
+        let mut h = Game::new(5, crate::gfx::SH_WIDE);
+        crate::save::apply(&mut h, &text);
+        assert_eq!((h.quest.stage7, h.quest.stillpoint), (2, 2));
+        // With it, the throne opens, he's back on it, and he dies for good.
+        walk_onto(&mut g, PortalKind::Entrance(world::EYE));
+        assert_eq!(g.level, LevelId::Dungeon(world::EYE, 0));
+        g.debug_goto(last);
+        assert!(g.mobs.iter().any(|m| m.kind == Kind::Ylgrath && m.alive()), "back on his throne");
+        assert!(g.debug_kill_boss());
+        assert!(matches!(g.state, State::Victory(_)));
+        assert_eq!(g.quest.stage7, 3);
+        assert!(g.pickups.iter().any(|k| matches!(&k.kind, Drop::Item(it) if it.name == "THE SHAPE YLGRATH LEFT BEHIND")), "his unique");
+        assert!(g.quest.abbot_has_news(), "abbot quiet offers nightmare");
+        // On nightmare it all starts over: he needs the Stillpoint again.
+        g.next_difficulty();
+        assert_eq!((g.quest.stage7, g.quest.stillpoint), (0, 0));
+    }
+
     fn walk_onto(g: &mut Game, kind: PortalKind) {
         // Doors and the ways on live out in the areas now: go to the one that has it.
         if !g.portals.iter().any(|p| p.kind == kind) {
@@ -4511,7 +4625,7 @@ mod tests {
         assert!(g.debug_kill_boss());
         assert!(matches!(g.state, State::Victory(_)));
         assert_eq!(g.quest.stage6, 3);
-        assert!(g.quest.seraphine_has_news(), "seraphine offers nightmare");
+        assert!(!g.quest.seraphine_has_news(), "nightmare comes after act 7 now");
         g.debug_goto(LevelId::Heavens);
         let text = crate::save::to_text(&g);
         let mut h = Game::new(5, crate::gfx::SH_WIDE);
@@ -6062,7 +6176,14 @@ mod tests {
         g.quest.shards = [true; 3];
         g.debug_goto(LevelId::Heavens);
         assert!(g.debug_talk(Role::Seraphine));
-        for _ in 0..3 {
+        assert!(!g.dialog.as_ref().unwrap().last_options.iter().any(|o| o.1 == Act::NextDifficulty), "not after act 6");
+        g.dialog = None;
+        g.quest.stage7 = 3;
+        g.quest.akeys = [true; 3];
+        g.quest.stillpoint = 2;
+        g.debug_goto(LevelId::Churn);
+        assert!(g.debug_talk(Role::Abbot));
+        for _ in 0..4 {
             let d = g.dialog.as_ref().unwrap();
             if d.options.iter().any(|o| o.1 == Act::NextDifficulty) {
                 break;

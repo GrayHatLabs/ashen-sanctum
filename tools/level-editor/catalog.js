@@ -315,6 +315,15 @@ window.CATALOG = {
       "slug": "hall_of_mirrors",
       "theme": "mirrorhall",
       "tier": 16.0
+    },
+    {
+      "act": 6,
+      "boss": "boss_ylgrath",
+      "floors": 3,
+      "name": "THE UNSHAPED THRONE",
+      "slug": "unshaped_throne",
+      "theme": "unfinished",
+      "tier": 16.600000381469727
     }
   ],
   "lands": {
@@ -1478,7 +1487,9 @@ window.CATALOG = {
     },
     "area:6:6": {
       "act": 6,
-      "doors": [],
+      "doors": [
+        35
+      ],
       "exits": [
         [
           5,
@@ -2270,6 +2281,12 @@ window.CATALOG = {
       "kind": "boss_mirrorabbot",
       "name": "THE MIRROR ABBOT",
       "prop": false
+    },
+    {
+      "boss": true,
+      "kind": "boss_ylgrath",
+      "name": "YLGRATH THE UNSHAPED",
+      "prop": false
     }
   ],
   "npcs": [
@@ -3023,6 +3040,11 @@ window.CATALOG = {
     {
       "h": 3,
       "kind": "ent_mirrors",
+      "w": 3
+    },
+    {
+      "h": 3,
+      "kind": "ent_eye",
       "w": 3
     }
   ],

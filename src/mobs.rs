@@ -161,6 +161,9 @@ pub enum Kind {
     Architect,
     Grumbleguts,
     MirrorAbbot,
+    /// Act 7's last boss (churnfolk.rs): he wears the shapes of the old bosses, and only dies for good to one
+    /// carrying the Stillpoint.
+    Ylgrath,
     // ---- breakables (breakables.rs): no mind, smashed by any hit; the act is in `Mob::form` ----
     Crate,
     Barrel,
@@ -389,6 +392,13 @@ pub fn def(k: Kind) -> Def {
             boss: true,
             ranged: true,
             ..d("boss_mirrorabbot", "THE MIRROR ABBOT", 1250.0, 2.4, (24.0, 34.0), 0.55, 1.5, 3800.0)
+        },
+        Kind::Ylgrath => Def {
+            r: 0.8,
+            reach: 1.8,
+            boss: true,
+            ranged: true,
+            ..d("boss_ylgrath", "YLGRATH THE UNSHAPED", 4200.0, 1.7, (36.0, 52.0), 0.6, 1.6, 18000.0)
         },
         Kind::Rival => Def { r: 0.35, reach: 1.3, ..d("mage", "RIVAL", 110.0, 3.0, (4.0, 7.0), 0.45, 1.2, 900.0) },
         Kind::StarMetal => Def { r: 0.45, reach: 0.0, ..d("star_metal", "STAR-METAL", 60.0, 0.0, (0.0, 0.0), 9.0, 99.0, 30.0) },

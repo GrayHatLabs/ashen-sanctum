@@ -6,7 +6,7 @@ MIN=${MIN:-12}
 for act in ${ACTS:-1 2 3 4 5 6}; do
   for h in ${HEROES:-sorceress vampire inventor valkyrie berserker reaper druid inquisitor}; do
     out=$(ASHEN_ACT=$act ASHEN_CLASS=$h ASHEN_MINUTES=$MIN "$HOME/.cache/ashensanctum-target/release/ashensanctum" --selftest 2>&1)
-    bosses=$(echo "$out" | grep -o "\[ *[0-9]* min\] boss down in [A-Z' ]*" | head -4 | sed -E 's/\[ *([0-9]+) min\] boss down in (THE )?/\1m:/' | cut -c1-22 | paste -sd'|' -)
+    bosses=$(echo "$out" | grep -o "\[ *[0-9]* min\] boss down in [A-Z' ]*" | head -6 | sed -E 's/\[ *([0-9]+) min\] boss down in (THE )?/\1m:/' | cut -c1-22 | paste -sd'|' -)
     deaths=$(echo "$out" | grep -o "deaths: [0-9]*" | tail -1 | cut -d' ' -f2)
     dmg=$(echo "$out" | grep -o "damage_taken: [0-9.]*" | tail -1 | cut -d' ' -f2 | cut -d. -f1)
     kills=$(echo "$out" | grep -o "kills=[0-9]*" | tail -1 | cut -d= -f2)

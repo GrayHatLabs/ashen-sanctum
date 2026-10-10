@@ -1854,6 +1854,8 @@ impl Game {
             (crate::mobs::Kind::ChaosBlob, 1) => "chaos_blob_m",
             (crate::mobs::Kind::ChaosBlob, 2) => "chaos_blob_s",
             (crate::mobs::Kind::Unmade, f) => crate::churnfolk::UNMADE[f as usize % 4].0,
+            // Ylgrath wearing an old boss's shape.
+            (crate::mobs::Kind::Ylgrath, f) if (f as usize) < crate::churnfolk::YLGRATH_FORMS.len() => crate::churnfolk::YLGRATH_FORMS[f as usize].0,
             _ => def(m.kind).art,
         };
         let (art, scale, ..) = self.art.char_art(name);
@@ -1881,6 +1883,12 @@ impl Game {
                 fx.tint = rgb(0xd0d8ff);
                 fx.tint_a = 0.45;
                 fx.dither = self.tick % 2 == 0;
+            }
+            // A borrowed shape is never quite right: violet, and flickering.
+            crate::mobs::Kind::Ylgrath if (m.form as usize) < crate::churnfolk::YLGRATH_FORMS.len() => {
+                fx.tint = rgb(0x9050d0);
+                fx.tint_a = 0.4;
+                fx.dither = self.tick % 5 == 0;
             }
             _ => {}
         }
@@ -2415,7 +2423,9 @@ impl Game {
             }
             State::Victory(t) => {
                 scr.blend(0, 0, w, top, BLACK, (t * 0.3).min(0.7));
-                let epilogue = if self.quest.stage6 >= 3 {
+                let epilogue = if self.quest.stage7 >= 3 {
+                    story::EPILOGUE7
+                } else if self.quest.stage6 >= 3 {
                     story::EPILOGUE6
                 } else if self.quest.stage5 >= 3 {
                     story::EPILOGUE5
@@ -2428,16 +2438,20 @@ impl Game {
                 } else {
                     story::EPILOGUE
                 };
+                // The first line is the title: as big as fits the screen in two lines; the rest flow below it.
+                let fit = |sc: i32| story::wrap(epilogue[0], ((w - 24) / crate::gfx::text_width("M", sc).max(1)) as usize);
+                let tsc = (1..=3).rev().find(|&sc| fit(sc).len() <= 2).unwrap_or(1);
+                let mut y = top / 2 - 70;
                 for (i, line) in epilogue.iter().enumerate() {
                     let a = ((t - i as f32 * 1.2) * 0.8).clamp(0.0, 1.0);
-                    if a <= 0.0 {
-                        continue;
+                    let (sc, col) = if i == 0 { (tsc, rgb(0xffc060)) } else { (1, rgb(0xd8c8b0)) };
+                    let lines = if i == 0 { fit(tsc) } else { story::wrap(line, 80) };
+                    for (j, l) in lines.iter().enumerate() {
+                        if a > 0.0 {
+                            scr.text(l, w / 2, y + j as i32 * (8 * sc + 2), mix(BLACK, col, a), Align::Center, sc);
+                        }
                     }
-                    let (sc, col) = if i == 0 { (3, rgb(0xffc060)) } else { (1, rgb(0xd8c8b0)) };
-                    let y = top / 2 - 60 + i as i32 * 26 + if i > 0 { 14 } else { 0 };
-                    for (j, l) in story::wrap(line, 80).iter().enumerate() {
-                        scr.text(l, w / 2, y + j as i32 * 10, mix(BLACK, col, a), Align::Center, sc);
-                    }
+                    y += lines.len() as i32 * (8 * sc + 2) + if i == 0 { 14 } else { 8 };
                 }
                 if t > 3.0 {
                     scr.text("PRESS ENTER TO CONTINUE EXPLORING", w / 2, top - 24, rgb(0x9a8a78), Align::Center, 1);
@@ -2694,6 +2708,18 @@ fn draw_pickup(scr: &mut Screen, k: &Pickup, sx: i32, sy: i32, tick: u32, art: &
                 None => {
                     scr.disc(sx, y, 5, BLACK);
                     scr.disc(sx, y, 4, tint);
+                }
+            }
+        }
+        Drop::Stillpoint => {
+            // The Stillpoint: perfectly still (no bob), in a pool of pale quiet light.
+            let y = sy - 2 - pop;
+            scr.glow(sx, y - 20, 30.0, rgb(0xb0d8ff), 0.7);
+            match art.item("stillpoint") {
+                Some(s) => scr.blit(s, sx, y + 2, Fx::default()),
+                None => {
+                    scr.disc(sx, y - 20, 6, rgb(0x6a5030));
+                    scr.disc(sx, y - 20, 4, rgb(0xd0e8ff));
                 }
             }
         }

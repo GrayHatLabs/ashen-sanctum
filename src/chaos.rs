@@ -75,7 +75,7 @@ pub fn surge_grounds(n: u8) -> &'static [u8] {
 
 /// Is this an area of the Churn (where the land surges)?
 pub fn churning(id: LevelId) -> bool {
-    matches!(id, LevelId::Area(6, _) | LevelId::Dungeon(crate::world::CATHEDRAL, _))
+    matches!(id, LevelId::Area(6, _) | LevelId::Dungeon(crate::world::CATHEDRAL | crate::world::EYE, _))
 }
 
 impl Game {

@@ -142,10 +142,13 @@ pub struct Quest {
     pub stage6: u8,
     /// Sun-shards from Vael, the Tempest Drake and the Ophan Prime.
     pub shards: [bool; 3],
-    /// Act 7 (chaos.rs; the story comes in stage 3): 0 = haven't met Abbot Quiet ... 3 = Ylgrath is unmade;
-    /// the three Anchor Keys.
+    /// Act 7: 0 = haven't met Abbot Quiet, 1 = hunting the heralds of the Churn, 2 = the Unshaped Throne is
+    /// open, 3 = Ylgrath is unmade. The three Anchor Keys.
     pub stage7: u8,
     pub akeys: [bool; 3],
+    /// The Stillpoint (churnfolk.rs): 0 = never heard of it, 1 = Ylgrath fled and let slip where it is (the
+    /// throne is sealed until you have it), 2 = you carry it. Per difficulty, like the rest.
+    pub stillpoint: u8,
     /// Side quests (side.rs SIDES): 0 not given, 1 given, 2 done, 3 rewarded. Per difficulty, like D2.
     pub side: [u8; 32],
 }
@@ -247,24 +250,39 @@ impl Quest {
             1 if self.shard_count() < 3 => format!("SLAY THE THREE HERALDS OF THE SKY  ({}/3 SHARDS)", self.shard_count()),
             1 => "BRING THE SUN-SHARDS TO SERAPHINE".into(),
             2 => "ENTER THE TRUE SANCTUM. END SOLANTHOS".into(),
-            _ if self.difficulty < 2 => "THE SUN IS OUT. SERAPHINE WANTS A WORD".into(),
-            _ => "THE ASH HAS STOPPED FALLING. THE WORLD IS YOURS AGAIN".into(),
+            _ => "THE SUN IS OUT. SOMETHING STIRS UNDER THE ZENITH'S FLOOR".into(),
         }
     }
 
-    /// Act 7's quest log (the story itself comes in stage 3 of docs/ACT7_PLAN.md).
+    /// Act 7's quest log.
     pub fn log7(&self) -> String {
         let n = self.akeys.iter().filter(|k| **k).count();
         match self.stage7 {
-            _ if n == 3 => "ALL THREE ANCHOR KEYS. THE EYE OF THE CHURN AWAITS".into(),
-            0 if n == 0 => "FIND ABBOT QUIET IN STILLHOLD. LIGHT THE ANCHOR STONES".into(),
-            _ => format!("SLAY THE THREE HERALDS OF THE CHURN  ({n}/3 ANCHOR KEYS)"),
+            0 => "FIND ABBOT QUIET IN STILLHOLD. LIGHT THE ANCHOR STONES".into(),
+            1 if n < 3 => format!("SLAY THE THREE HERALDS OF THE CHURN  ({n}/3 ANCHOR KEYS)"),
+            1 => "BRING THE ANCHOR KEYS TO ABBOT QUIET".into(),
+            2 if self.stillpoint == 1 => "FIND THE STILLPOINT, AT THE HEART OF THE CLOCK (ACT 4)".into(),
+            2 if self.stillpoint == 2 => "YOU CARRY THE STILLPOINT. UNMAKE YLGRATH ON HIS THRONE".into(),
+            2 => "ENTER THE UNSHAPED THRONE, IN THE EYE OF THE CHURN. FACE YLGRATH".into(),
+            _ if self.difficulty < 2 => "YLGRATH IS UNMADE. ABBOT QUIET WANTS A WORD".into(),
+            _ => "THE CHURN HOLDS STILL. THE WORLD IS YOURS AGAIN".into(),
         }
+    }
+
+    /// Does Abbot Quiet have news (a marker over his head)?
+    pub fn abbot_has_news(&self) -> bool {
+        let n = self.akeys.iter().filter(|k| **k).count();
+        self.stage7 == 0 || (self.stage7 == 1 && n == 3) || (self.stage7 == 3 && self.difficulty < 2)
+    }
+
+    /// Ylgrath fled, and his throne is closed until you come back with the Stillpoint.
+    pub fn throne_sealed(&self) -> bool {
+        self.stage7 == 2 && self.stillpoint == 1
     }
 
     /// Does Seraphine have news (a marker over her head)?
     pub fn seraphine_has_news(&self) -> bool {
-        self.stage6 == 0 || (self.stage6 == 1 && self.shard_count() == 3) || (self.stage6 == 3 && self.difficulty < 2)
+        self.stage6 == 0 || (self.stage6 == 1 && self.shard_count() == 3)
     }
 
     pub fn log4(&self) -> String {
@@ -682,20 +700,14 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
                 Dialog::new("SERAPHINE", &[&line])
             }
             2 => Dialog::new("SERAPHINE", &["THE TRUE SANCTUM IS NORTH. WHEN THE LIGHT GOES OUT, DON'T STOP MOVING."]),
-            _ if q.difficulty < 2 => {
-                let next = DIFFICULTIES[q.difficulty as usize + 1];
-                let mut d = Dialog::new(
-                    "SERAPHINE",
-                    &[
-                        "IT'S OVER. NO MORE ASH FALLS. FOR THE FIRST TIME SINCE I CAN REMEMBER, THE SKY IS ONLY SKY.",
-                        "BUT A SUN DOESN'T STAY OUT FOREVER. ASH, ICE, BLOOD, BRASS, BRINE AND FIRE... THEY WILL ALL KINDLE AGAIN, HOTTER.",
-                        "IF YOU WOULD FACE THEM ONCE MORE, THE WORLD WILL BE HARDER, BUT ITS TREASURES RICHER. YOU KEEP ALL YOU HAVE LEARNED AND CARRY.",
-                    ],
-                );
-                d.last_options = vec![(format!("BEGIN {next}"), Act::NextDifficulty), ("NOT YET".into(), Act::Close)];
-                d
-            }
-            _ => Dialog::new("SERAPHINE", &["EVEN HELL'S SUN WENT OUT BEFORE YOU DID. REST NOW. YOU'VE EARNED THE QUIET."]),
+            _ => Dialog::new(
+                "SERAPHINE",
+                &[
+                    "IT'S OVER. NO MORE ASH FALLS. FOR THE FIRST TIME SINCE I CAN REMEMBER, THE SKY IS ONLY SKY.",
+                    "BUT LISTEN. THERE'S A CRACK IN THE ZENITH'S FLOOR NOW, WHERE HE FELL. HIS LIGHT WAS HOLDING SOMETHING DOWN. IT ISN'T ANY MORE.",
+                    "I WON'T ASK YOU TO GO. I DON'T THINK I'LL NEED TO.",
+                ],
+            ),
         },
         Role::Bram => {
             let mut d = Dialog::new("QUARTERMASTER BRAM", &["EVERYTHING HERE CAME UP ON AN AIRSHIP. POTIONS, BISCUIT, AND GEAR OFF THE ONES WHO FELL. TAKE A LOOK."]);
@@ -709,15 +721,66 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
             ];
             d
         }
-        Role::Abbot => Dialog::new(
-            "ABBOT QUIET",
-            &[
-                "(THE ABBOT DOES NOT SPEAK. HIS WORDS SIMPLY ARRIVE, THE WAY A THOUGHT DOES.)",
-                "YOU PUT OUT THE SUN. WE FELT IT HERE. HIS LIGHT WAS THE LID ON ALL OF THIS, AND NOW THE LID IS OFF.",
-                "STILLHOLD STANDS BECAUSE WE DO NOT STOP MEDITATING. THE LAND OUT THERE DOES NOT HOLD STILL FOR ANYONE. LIGHT THE ANCHOR STONES AND IT WILL HOLD STILL FOR YOU.",
-                "WHEN THE GROUND SHUDDERS, A SURGE IS COMING. BE STILL, IF YOU CAN. STILLNESS IS THE ONLY ARMOUR THAT WORKS HERE.",
-            ],
-        ),
+        Role::Abbot => {
+            let n = q.akeys.iter().filter(|k| **k).count();
+            match q.stage7 {
+                0 => {
+                    let mut d = Dialog::new(
+                        "ABBOT QUIET",
+                        &[
+                            "(THE ABBOT DOES NOT SPEAK. HIS WORDS SIMPLY ARRIVE, THE WAY A THOUGHT DOES.)",
+                            "YOU PUT OUT THE SUN. WE FELT IT HERE. HIS LIGHT WAS THE LID ON ALL OF THIS, AND NOW THE LID IS OFF.",
+                            "AT THE HEART OF THE CHURN SITS YLGRATH, THE UNSHAPED. HE IS WHAT CHAOS BECOMES WHEN IT WANTS SOMETHING. HE WANTS EVERYTHING TO BE AS HE IS.",
+                            "HIS THRONE IS SEALED WITH THREE ANCHOR KEYS. THE ARCHITECT OF NOTHING HOLDS ONE IN HIS CATHEDRAL, IN THE BREACH. GRUMBLEGUTS SITS ON ANOTHER IN THE SPAWNING MIRE. THE MIRROR ABBOT, MY TWIN, KEEPS THE LAST IN THE SHATTERED MONASTERY.",
+                            "LIGHT THE ANCHOR STONES AND THE LAND WILL HOLD STILL FOR YOU. WHEN THE GROUND SHUDDERS, A SURGE IS COMING. STILLNESS IS THE ONLY ARMOUR THAT WORKS HERE.",
+                        ],
+                    );
+                    d.advance_to = Some(61);
+                    d
+                }
+                1 if n == 3 => {
+                    let mut d = Dialog::new(
+                        "ABBOT QUIET",
+                        &[
+                            "THREE ANCHOR KEYS. FEEL HOW THEY REFUSE TO MOVE. THAT IS WHAT HE CANNOT BEAR.",
+                            "THE UNSHAPED THRONE WILL OPEN FOR THEM, IN THE EYE OF THE CHURN, EAST OF THE MONASTERY. GO. AND DO NOT BELIEVE ANY SHAPE HE SHOWS YOU.",
+                        ],
+                    );
+                    d.advance_to = Some(62);
+                    d
+                }
+                1 => {
+                    let line = format!("THE HERALDS OF THE CHURN STILL HOLD {} OF THE 3 ANCHOR KEYS. SISTER FERRO WILL ARM YOU. BROTHER HUSH WILL MEND YOU.", 3 - n);
+                    Dialog::new("ABBOT QUIET", &[&line])
+                }
+                2 if q.stillpoint == 1 => Dialog::new(
+                    "ABBOT QUIET",
+                    &[
+                        "HE FLED. OF COURSE HE FLED. YOU CANNOT KILL A STORM WITH A SWORD. IT ONLY BLOWS ELSEWHERE.",
+                        "BUT HE TOLD YOU WHAT HE FEARS. THE CLOCKMAKER'S STILLPOINT, THE ONE MOMENT IN THE WORLD THAT DOES NOT MOVE. IT IS STILL AT THE HEART OF HIS CLOCK, IN THE DOMINION. BRING IT HERE, AND HIS THRONE WILL OPEN AGAIN.",
+                    ],
+                ),
+                2 if q.stillpoint == 2 => Dialog::new(
+                    "ABBOT QUIET",
+                    &["YOU CARRY THE STILLPOINT. EVEN I CAN FEEL IT, A HOLE OF QUIET IN THE WORLD. HE CANNOT CHANGE IN ITS PRESENCE. HE CANNOT RUN. GO AND END IT."],
+                ),
+                2 => Dialog::new("ABBOT QUIET", &["THE UNSHAPED THRONE IS OPEN, IN THE EYE OF THE CHURN. WHATEVER HE BECOMES, KEEP STILL."]),
+                _ if q.difficulty < 2 => {
+                    let next = DIFFICULTIES[q.difficulty as usize + 1];
+                    let mut d = Dialog::new(
+                        "ABBOT QUIET",
+                        &[
+                            "IT IS DONE. LISTEN. NOTHING OUT THERE IS CHANGING ANY MORE. FOR THE FIRST TIME IN NINE YEARS, I CAN STOP.",
+                            "BUT NOTHING STAYS STILL FOREVER. ASH, ICE, BLOOD, BRASS, BRINE, FIRE AND CHAOS... THEY WILL ALL STIR AGAIN, WORSE.",
+                            "IF YOU WOULD FACE THEM ONCE MORE, THE WORLD WILL BE HARDER, BUT ITS TREASURES RICHER. YOU KEEP ALL YOU HAVE LEARNED AND CARRY.",
+                        ],
+                    );
+                    d.last_options = vec![(format!("BEGIN {next}"), Act::NextDifficulty), ("NOT YET".into(), Act::Close)];
+                    d
+                }
+                _ => Dialog::new("ABBOT QUIET", &["EVEN HELL'S CHAOS HELD STILL FOR YOU IN THE END. REST NOW. YOU'VE EARNED THE QUIET."]),
+            }
+        }
         Role::Ferro => {
             let mut d = Dialog::new("SISTER FERRO", &["CHAOS-STEEL, STILLED IN THE FORGE. IT HOLDS AN EDGE AS LONG AS YOU HOLD YOUR NERVE. POTIONS TOO, AND BREAD THAT STAYS BREAD."]);
             d.options = vec![
@@ -941,7 +1004,21 @@ pub const EPILOGUE6: [&str; 4] = [
     "SOLANTHOS GUTTERS LIKE A CANDLE, AND GOES OUT. THE LAST OF HIS ASH DRIFTS DOWN THROUGH CLEAN AIR.",
     "SERAPHINE STANDS AT THE EDGE OF THE ANCHORAGE AND WATCHES A NEW SUN RISE BEHIND THE CLOUDS. SMALL, AND YOUNG, AND KIND.",
     "IN HOLLOWMERE, KALDHOLM, MOURNHOLD, THE ESCAPEMENT AND BRINEHOLLOW, PEOPLE LOOK UP. FOR THE FIRST TIME IN AN AGE, NOTHING IS FALLING.",
+    "BUT IN THE ZENITH'S FLOOR, WHERE HIS LIGHT HELD IT DOWN, A HAIRLINE CRACK OPENS... AND SOMETHING WITHOUT A SHAPE PUSHES THROUGH.",
+];
+
+pub const EPILOGUE7: [&str; 4] = [
+    "IN THE STILLPOINT'S QUIET YLGRATH CANNOT CHANGE, AND CANNOT RUN. HE IS ONLY ONE THING AT LAST: GONE.",
+    "THE CHURN SLOWS. ISLANDS OF OTHER WORLDS SETTLE WHERE THEY LIE. THE TOADS, FOR SOME REASON, KEEP THEIR COLOURS.",
+    "IN STILLHOLD THE MONKS OPEN THEIR EYES, ONE BY ONE, AND ABBOT QUIET SAYS HIS FIRST SPOKEN WORD IN NINE YEARS. NO ONE WILL TELL YOU WHAT IT WAS.",
     "THANK YOU FOR PLAYING ASHEN SANCTUM.",
+];
+
+/// Ylgrath, beaten without the Stillpoint: he gloats, lets slip what he fears, and flees (churnfolk.rs).
+pub const YLGRATH_FLEES: [&str; 3] = [
+    "(THE STORM THAT WAS YLGRATH COMES APART... AND LAUGHS, FROM EVERYWHERE AT ONCE.)",
+    "YOU CANNOT KILL WHAT HAS NO SHAPE, LITTLE THING. CUT ME AND I AM A DIFFERENT ME. ONLY THE CLOCKMAKER EVER FRIGHTENED ME, WITH HIS STILLPOINT, HIS ONE MOMENT THAT WOULD NOT MOVE.",
+    "BUT HE IS DEAD, AND HIS CLOCK IS STOPPED, AND HIS STILLPOINT SITS FORGOTTEN AT ITS HEART. AND I... AM ELSEWHERE. MY THRONE IS CLOSED TO YOU.",
 ];
 
 /// Breaks text into lines of at most `width` characters on word boundaries.

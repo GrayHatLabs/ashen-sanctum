@@ -951,6 +951,7 @@ pub static UNIQUES: &[UniqueDef] = &[
     UniqueDef { name: "THE STORM'S EYE", base: "ring", req: 49, stats: &[(Stat::Skills, 2), (Stat::Cast, 30), (Stat::Move, 15), (Stat::Mana, 90)], boss: Some("tempest") },
     UniqueDef { name: "THE THOUSAND-EYED WHEEL", base: "amulet", req: 50, stats: &[(Stat::Skills, 2), (Stat::Magic, 100), (Stat::ManaOnKill, 12), (Stat::Life, 80)], boss: Some("ophan") },
     UniqueDef { name: "THE LAST EMBER OF THE SUN", base: "amulet", req: 52, stats: &[(Stat::Skills, 4), (Stat::Fire, 80), (Stat::Cast, 30), (Stat::LifeOnKill, 16)], boss: Some("solanthos") },
+    UniqueDef { name: "THE SHAPE YLGRATH LEFT BEHIND", base: "amulet", req: 58, stats: &[(Stat::Skills, 4), (Stat::Life, 140), (Stat::Cast, 25), (Stat::ManaOnKill, 14)], boss: Some("ylgrath") },
     UniqueDef { name: "SKALD'S STRIDE", base: "iboots", req: 16, stats: &[(Stat::Armor, 12), (Stat::Move, 25), (Stat::Stamina, 40), (Stat::Gold, 40)], boss: None },
 ];
 

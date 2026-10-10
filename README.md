@@ -304,11 +304,19 @@ nothing holds its shape unless a mind holds it still. Start a test hero there wi
     (frost), then green (breeds toads) as it weakens.
   - **The Hall of Mirrors** (the Shattered Monastery): **the Mirror Abbot** fights with your own class's
     attacks, and sends copies of you out of the glass.
-- Still to come: the Eye of the Churn, Ylgrath and the Stillpoint, side content and art (docs/ACT7_PLAN.md).
+- **Abbot Quiet's story:** bring him the three keys and **the Unshaped Throne** opens, in the Eye of the
+  Churn. There waits **Ylgrath the Unshaped**, chaos given a will. He wears the old act bosses' shapes one
+  after another (the Ash King, the Rime Wyrm, Count Vardak, the Clockmaker, the Leviathan, Solanthos) and
+  fights as each, then a storm of his own near the end.
+- **He can't truly die** unless you carry **the Stillpoint**. Beat him without it and he flees with a gloat
+  (a fair reward, no unique) and his throne seals; the Stillpoint waits, guarded, at the heart of the
+  Clockmaker's clock back in the Dominion. With it, he dies for good: his unique, and the true ending.
+- Still to come: side content, the extras, art and music (docs/ACT7_PLAN.md).
 
-## After the Clockmaker
+## Nightmare and Hell
 
-Like Diablo 2, beating the game opens **Nightmare**, then **Hell**: talk to Tally. The
+Like Diablo 2, beating the game (Ylgrath, at the end of Act 7) opens **Nightmare**, then **Hell**: talk to
+Abbot Quiet. The
 world is rebuilt with much tougher monsters and richer drops, and the quests start over, while
 your character, skills and gear carry on.
 
