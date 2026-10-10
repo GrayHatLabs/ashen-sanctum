@@ -772,6 +772,10 @@ pub struct Game {
     /// A way in or out only works once you've stepped clear of the one you arrived by (no bouncing back and
     /// forth between areas).
     pub(crate) portal_armed: bool,
+    /// The inquisitor's sprite frame as last drawn, and where (render.rs): her chain starts from her hand in it.
+    pub(crate) hero_frame: std::cell::RefCell<Option<(i32, i32, crate::gfx::Sprite)>>,
+    /// Where her hand held the censer in that frame (screen pixels), while she lashes.
+    pub(crate) hero_hold: std::cell::RefCell<Option<(f32, f32)>>,
     /// The real game (main.rs) travels a frame late, behind a loading card (on a slow handheld building a map
     /// can take a moment, and a frozen or black screen looked like a crash). Tests and the bot travel at once.
     pub defer_travel: bool,
@@ -902,6 +906,8 @@ impl Game {
             light_ready: false,
             portal_cd: 0.0,
             portal_armed: true,
+            hero_frame: std::cell::RefCell::new(None),
+            hero_hold: std::cell::RefCell::new(None),
             defer_travel: false,
             pending_travel: None,
             trail: Default::default(),

@@ -665,7 +665,20 @@ impl Game {
             let (x1, y1) = to_scr(c.x1, c.y1);
             let fade = 1.0 - (c.t / c.max).min(1.0);
             let (sx, sy) = scr.shake;
-            let hand = (x0 as f32, (y0 - 22) as f32);
+            let mut hand = (x0 as f32, (y0 - 22) as f32);
+            // Her own lash or censer: from her hand as her sprite draws it this frame (reaching toward the target
+            // as she strikes, drawn back behind her in the wind-up), not from a fixed point over her feet.
+            let hers = c.whip && (c.x0 - self.p.x).powi(2) + (c.y0 - self.p.y).powi(2) < 9.0;
+            if hers {
+                let (px, py) = to_scr(self.p.x, self.p.y);
+                let aim = ((x1 - px) as f32, (y1 - 14 - (py - 22)) as f32);
+                let back = c.t < c.wind;
+                if let Some(h) = *self.hero_hold.borrow() {
+                    hand = h;
+                } else if let Some(h) = hand_in_frame(&self.hero_frame.borrow(), if back { (-aim.0, -aim.1) } else { aim }) {
+                    hand = h;
+                }
+            }
             let end = (x1 as f32, (y1 - 14) as f32);
             let (dx, dy) = (end.0 - hand.0, end.1 - hand.1);
             let len = (dx * dx + dy * dy).sqrt().max(1.0);
@@ -1687,7 +1700,21 @@ impl Game {
                 }
             }
         }
-        self.blit_char(scr, sheet, anim, (sx, sy), fx, self.p.moving);
+        // The inquisitor's lash: her generated attack frames draw a censer and chain of their own, in a different
+        // place in every direction, so while the lash is out she stands facing it with the censer gone from her
+        // hand, and the chain (drawn after her) leaves from where she held it: one chain, one censer, in her hand.
+        let lashing = self.p.skills.class == crate::skills::Class::Inquisitor && self.links.iter().any(|c| c.whip && (c.x0 - self.p.x).powi(2) + (c.y0 - self.p.y).powi(2) < 9.0);
+        let (art_now, scale, ..) = self.art.char_art(sheet);
+        if lashing && (scale - 1.0).abs() < 0.01 && !matches!(self.state, State::Dead(_)) {
+            let (frame, hold) = empty_handed(CharFrame::Loop("idle", self.p.dir, 0.0).pick(art_now));
+            scr.blit(&frame, sx, sy, fx);
+            *self.hero_frame.borrow_mut() = Some((sx, sy, frame));
+            *self.hero_hold.borrow_mut() = hold.map(|(x, y)| ((sx + x) as f32, (sy + y) as f32));
+        } else {
+            *self.hero_frame.borrow_mut() = None;
+            *self.hero_hold.borrow_mut() = None;
+            self.blit_char(scr, sheet, anim, (sx, sy), fx, self.p.moving);
+        }
         // Until her own sprite exists, draw the scythe in her hands (resting, or swinging with the cut).
         if self.p.skills.class == crate::skills::Class::Reaper && !self.art.has_char("reaper") && !matches!(self.state, State::Dead(_)) {
             let swing = self.sweeps.last().filter(|a| a.t < crate::reaper::ARC_TIME);
@@ -2958,4 +2985,101 @@ pub fn draw_loading(scr: &mut Screen, what: &str) {
     scr.text("ASHEN SANCTUM", w / 2, h / 2 - 34, rgb(0xd8a050), Align::Center, 2);
     scr.text(what, w / 2, h / 2 + 2, rgb(0xc8b088), Align::Center, 1);
     scr.text("LOADING...", w / 2, h / 2 + 18, rgb(0x8a7a68), Align::Center, 1);
+}
+
+/// Where a hero's hand is in a drawn sprite frame (sprite, and where it was blitted): the solid pixel of her arm's
+/// height (between her shoulders and her knees, so not the halo over her head) that reaches furthest in `dir`.
+fn hand_in_frame(frame: &Option<(i32, i32, Sprite)>, dir: (f32, f32)) -> Option<(f32, f32)> {
+    let (bx, by, spr) = frame.as_ref()?;
+    let l = (dir.0 * dir.0 + dir.1 * dir.1).sqrt();
+    if l < 0.01 {
+        return None;
+    }
+    let (ux, uy) = (dir.0 / l, dir.1 / l);
+    let (top, bottom) = (spr.ay - (spr.ay as f32 * 0.78) as i32, spr.ay - (spr.ay as f32 * 0.22) as i32);
+    let mut best: Option<(f32, i32, i32)> = None;
+    for y in top.max(0)..bottom.min(spr.h) {
+        for x in 0..spr.w {
+            if spr.px[(y * spr.w + x) as usize] >> 24 == 0 {
+                continue;
+            }
+            let d = (x - spr.ax) as f32 * ux + (y - spr.ay) as f32 * uy;
+            if best.map_or(true, |b| d > b.0) {
+                best = Some((d, x, y));
+            }
+        }
+    }
+    best.map(|(_, x, y)| ((bx + x - spr.ax) as f32, (by + y - spr.ay) as f32))
+}
+
+/// The inquisitor's frame with the golden censer taken out of her hand, and where she held it (the top of the
+/// censer, relative to the sprite's anchor). The censer is the gold below her waist and off her middle (not the
+/// halo over her head, nor the gold chain at her waist).
+fn empty_handed(spr: &Sprite) -> (Sprite, Option<(i32, i32)>) {
+    let mut out = spr.clone();
+    // Her censer is old brass (warm, yellow over blue), unlike her skin (pink, nearly as blue as it is green).
+    let brass = |x: i32, y: i32| {
+        if x < 0 || y < 0 || x >= spr.w || y >= spr.h {
+            return false;
+        }
+        let c = spr.px[(y * spr.w + x) as usize];
+        let (r, g, b) = (((c >> 16) & 255) as i32, ((c >> 8) & 255) as i32, (c & 255) as i32);
+        c >> 24 != 0 && r > 60 && g - b > 25 && r + 10 >= g
+    };
+    // The brass below her shoulders, in connected pieces: the belt chain wraps round her middle, the censer hangs
+    // off to one side. The censer is the biggest piece whose middle is well off hers.
+    let shoulders = spr.ay - (spr.ay as f32 * 0.62) as i32;
+    let mut seen = vec![false; (spr.w * spr.h) as usize];
+    let mut best: Option<Vec<(i32, i32)>> = None;
+    for y0 in shoulders.max(0)..spr.h {
+        for x0 in 0..spr.w {
+            if seen[(y0 * spr.w + x0) as usize] || !brass(x0, y0) {
+                continue;
+            }
+            let mut piece = vec![];
+            let mut stack = vec![(x0, y0)];
+            seen[(y0 * spr.w + x0) as usize] = true;
+            while let Some((x, y)) = stack.pop() {
+                piece.push((x, y));
+                for (dx, dy) in [(1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (-1, 1), (1, -1), (-1, -1)] {
+                    let (nx, ny) = (x + dx, y + dy);
+                    if ny >= shoulders && brass(nx, ny) && !seen[(ny * spr.w + nx) as usize] {
+                        seen[(ny * spr.w + nx) as usize] = true;
+                        stack.push((nx, ny));
+                    }
+                }
+            }
+            let cx = piece.iter().map(|p| p.0).sum::<i32>() as f32 / piece.len() as f32;
+            if (cx - spr.ax as f32).abs() >= 6.0 && piece.len() >= 6 && best.as_ref().map_or(true, |b| piece.len() > b.len()) {
+                best = Some(piece);
+            }
+        }
+    }
+    let Some(piece) = best else { return (out, None) };
+    for &(x, y) in &piece {
+        out.px[(y * spr.w + x) as usize] = 0;
+    }
+    // The top of the censer (its handle) is where her hand is.
+    let &(hx, hy) = piece.iter().min_by_key(|p| p.1).unwrap();
+    (out, Some((hx - spr.ax, hy - spr.ay)))
+}
+
+#[cfg(test)]
+mod censer_tests {
+    #[test]
+    fn the_censer_comes_out_of_her_hand_in_every_direction() {
+        let art = crate::art::Art::load();
+        let (sheet, ..) = art.char_art("inquisitor_hero");
+        for dir in 0..8 {
+            let spr = super::CharFrame::Loop("idle", dir, 0.0).pick(sheet);
+            let (out, hold) = super::empty_handed(spr);
+            let gone = spr.px.iter().zip(&out.px).filter(|(a, b)| a != b).count();
+            // Facing us or half-turned, the censer hangs at her side: it comes out, and her hand is where it hung.
+            // Side-on and from behind it's in front of or behind her (the lash then leaves from her furthest reach).
+            if [0, 1, 3, 5, 7].contains(&dir) {
+                assert!(gone >= 30 && hold.is_some_and(|(x, y)| x.abs() >= 6 && (-30..-10).contains(&y)), "dir {dir}: {gone} pixels, hand {hold:?}");
+            }
+
+        }
+    }
 }
