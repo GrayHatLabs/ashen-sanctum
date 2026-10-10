@@ -169,6 +169,7 @@ pub fn to_text(g: &Game) -> String {
     s += &format!("mech={},{},{},{},{}\n", f.gears, f.automaton as u8, f.court, f.writ as u8, f.vault_looted as u8);
     s += &format!("reef={},{},{},{}\n", f.choir_done as u8, f.kraken_done as u8, f.bottle, f.ghosts);
     s += &format!("isles={},{},{},{},{},{}\n", f.relic.min(3), f.star_done as u8, f.singers, f.sanctum, f.cargo, f.tears);
+    s += &format!("churnside={},{},{},{}\n", f.words, f.ore, f.wander_done as u8, f.echo_done as u8);
     s += &crate::extras::to_line(&g.ex);
     s += &format!("act={}\n", g.level.act());
     s += &p.skills.save_text();

@@ -206,6 +206,33 @@ impl Game {
             scr.glow(sx, sy - 20, 40.0, rgb(0xfff0c0), if self.feats.sanctum == 1 { 0.3 + 0.08 * t } else { 0.15 });
             ring(scr, sx, sy, 24, 9, rgb(0xffe8a0));
         }
+        // Act 7 (churnside.rs): gravity wells, and the Wandering Room.
+        for (x, y) in self.wells_here() {
+            let (sx, sy) = to_scr(x, y);
+            let r = (crate::churnside::WELL_R * 16.0) as i32;
+            // Rings falling inward to a dark heart with a violet glow round it.
+            blend_ellipse(scr, sx, sy, r, r / 2, rgb(0x6030c0), 0.12);
+            for k in 0..4 {
+                let t = (self.tick as f32 * 0.04 + k as f32 * 1.6) % 6.4 / 6.4;
+                let rr = (r as f32 * (1.0 - t)) as i32;
+                ring(scr, sx, sy, rr, rr / 2, mix(rgb(0xc0a0ff), rgb(0x6030c0), t));
+            }
+            scr.glow(sx, sy - 4, 26.0, rgb(0xa070ff), 0.45);
+            blend_ellipse(scr, sx, sy, r / 5, r / 10, rgb(0x080410), 0.85);
+        }
+        if let Some((x, y)) = self.wander_here() {
+            let (sx, sy) = to_scr(x, y);
+            let t = (self.tick as f32 * 0.07).sin();
+            let r = (crate::churnside::WANDER_R * 16.0) as i32;
+            // A patch of some other world's floor, flickering at the edges.
+            blend_ellipse(scr, sx, sy, r, r / 2, rgb(0x60a0c0), 0.25 + 0.1 * t);
+            ring(scr, sx, sy, r, r / 2, rgb(0xc0f0ff));
+            ring(scr, sx, sy, r - 4, r / 2 - 2, mix(rgb(0x80c0ff), BLACK, 0.4));
+            scr.glow(sx, sy - 10, 30.0, rgb(0xa0e0ff), 0.3 + 0.1 * t);
+            scr.fill(sx - 7, sy - 12, 14, 10, rgb(0x3a2a14));
+            scr.fill(sx - 6, sy - 11, 12, 8, rgb(0x8a6a3a));
+            scr.fill(sx - 1, sy - 9, 2, 3, rgb(0xe0c060));
+        }
         // The siren choir's whirlpool, and Captain Salt's X.
         if self.level == crate::reef::CHOIR && !self.feats.choir_done && self.feats.whirl != (0.0, 0.0) {
             let (sx, sy) = to_scr(self.feats.whirl.0, self.feats.whirl.1);
@@ -1890,6 +1917,12 @@ impl Game {
                 fx.tint_a = 0.4;
                 fx.dither = self.tick % 5 == 0;
             }
+            // An echo of an old boss (churnside.rs): pale violet, half there.
+            _ if m.boss && m.name.as_deref().map_or(false, |n| n.starts_with("ECHO OF")) => {
+                fx.tint = rgb(0xb090e0);
+                fx.tint_a = 0.45;
+                fx.dither = self.tick % 3 == 0;
+            }
             _ => {}
         }
         if m.poison_t > 0.0 && m.frozen <= 0.0 {
@@ -2710,6 +2743,33 @@ fn draw_pickup(scr: &mut Screen, k: &Pickup, sx: i32, sy: i32, tick: u32, art: &
                     scr.disc(sx, y, 4, tint);
                 }
             }
+        }
+        &Drop::Word(i) => {
+            // A lost word: an ordinary thing (a pebble, a knot of rope, a bowl) humming with a voice.
+            let y = sy - 6 - pop + bob;
+            scr.glow(sx, y, 16.0, rgb(0xfff0d0), 0.4);
+            match i {
+                0 => scr.disc(sx, y, 3, rgb(0x9a9890)),
+                1 => {
+                    ring(scr, sx, y, 4, 3, rgb(0xb09060));
+                    scr.fill(sx - 1, y - 1, 3, 3, rgb(0xb09060));
+                }
+                _ => {
+                    scr.fill(sx - 5, y - 1, 10, 3, rgb(0xd8d0c0));
+                    scr.fill(sx - 4, y + 2, 8, 1, rgb(0xa8a090));
+                }
+            }
+            let ny = y - 8 - ((tick / 5) % 8) as i32;
+            scr.fill(sx + 3, ny, 2, 1, rgb(0xfff0d0));
+        }
+        Drop::Ore => {
+            // A lump of chaos ore: dark violet rock shot with gold.
+            let y = sy - 4 - pop;
+            scr.glow(sx, y, 14.0, rgb(0xb080ff), 0.4);
+            scr.fill(sx - 4, y - 3, 8, 6, rgb(0x2a1a40));
+            scr.fill(sx - 3, y - 4, 5, 2, rgb(0x4a2a70));
+            scr.fill(sx - 1, y - 2, 2, 2, rgb(0xe0c060));
+            scr.fill(sx + 2, y, 1, 1, rgb(0xe0c060));
         }
         Drop::Stillpoint => {
             // The Stillpoint: perfectly still (no bob), in a pool of pale quiet light.

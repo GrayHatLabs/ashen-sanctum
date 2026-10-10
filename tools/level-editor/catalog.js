@@ -324,6 +324,15 @@ window.CATALOG = {
       "slug": "unshaped_throne",
       "theme": "unfinished",
       "tier": 16.600000381469727
+    },
+    {
+      "act": 6,
+      "boss": "boss_dicesaint",
+      "floors": 2,
+      "name": "THE PROBABILITY VAULT",
+      "slug": "probability_vault",
+      "theme": "mirrorhall",
+      "tier": 16.399999618530273
     }
   ],
   "lands": {
@@ -1383,7 +1392,9 @@ window.CATALOG = {
     },
     "area:6:2": {
       "act": 6,
-      "doors": [],
+      "doors": [
+        36
+      ],
       "exits": [
         [
           1,
@@ -2287,6 +2298,18 @@ window.CATALOG = {
       "kind": "boss_ylgrath",
       "name": "YLGRATH THE UNSHAPED",
       "prop": false
+    },
+    {
+      "boss": true,
+      "kind": "boss_dicesaint",
+      "name": "THE DICE-SAINT",
+      "prop": false
+    },
+    {
+      "boss": false,
+      "kind": "vault_coffer",
+      "name": "VAULT COFFER",
+      "prop": false
     }
   ],
   "npcs": [
@@ -3045,6 +3068,11 @@ window.CATALOG = {
     {
       "h": 3,
       "kind": "ent_eye",
+      "w": 3
+    },
+    {
+      "h": 3,
+      "kind": "ent_vault",
       "w": 3
     }
   ],

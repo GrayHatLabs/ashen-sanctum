@@ -65,7 +65,7 @@ pub struct LevelFile {
 
 // ---------------------------------------------------------------- names
 
-pub const DUNGEON_SLUGS: [&str; 36] = [
+pub const DUNGEON_SLUGS: [&str; 37] = [
     "bone_crypt",
     "rotting_warrens",
     "hexed_catacombs",
@@ -102,6 +102,7 @@ pub const DUNGEON_SLUGS: [&str; 36] = [
     "toad_kings_warren",
     "hall_of_mirrors",
     "unshaped_throne",
+    "probability_vault",
 ];
 
 /// File name (without .json) for a level.
@@ -233,7 +234,7 @@ const THEMES: [(&str, Theme); 34] = [
     ("mirrorhall", Theme::MirrorHall),
 ];
 
-const PROPS: [PropKind; 102] = [
+const PROPS: [PropKind; 103] = [
     PropKind::TreeOak,
     PropKind::TreePine,
     PropKind::TreeDead,
@@ -336,9 +337,10 @@ const PROPS: [PropKind; 102] = [
     PropKind::Entrance(33),
     PropKind::Entrance(34),
     PropKind::Entrance(35),
+    PropKind::Entrance(36),
 ];
 
-const KINDS: [Kind; 95] = [
+const KINDS: [Kind; 97] = [
     Kind::Zombie,
     Kind::Skeleton,
     Kind::Wolf,
@@ -434,6 +436,8 @@ const KINDS: [Kind; 95] = [
     Kind::Grumbleguts,
     Kind::MirrorAbbot,
     Kind::Ylgrath,
+    Kind::DiceSaint,
+    Kind::Coffer,
 ];
 
 fn portal_name(k: PortalKind) -> String {
@@ -529,7 +533,7 @@ fn item_name(d: &Drop) -> Option<String> {
         Drop::Health => "health_potion".into(),
         Drop::Mana => "mana_potion".into(),
         Drop::Gold(n) => format!("gold{n}"),
-        Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Pearl(_) | Drop::Shard(_) | Drop::Page(_) | Drop::Hoard(_) | Drop::Herb | Drop::Heirloom | Drop::Clue | Drop::Keepsake(_) | Drop::Gear(_) | Drop::TideChest | Drop::Bottle(_) | Drop::StormRelic | Drop::Singer(_) | Drop::Cargo(_) | Drop::AKey(_) | Drop::Stillpoint | Drop::Item(_) => return None,
+        Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Pearl(_) | Drop::Shard(_) | Drop::Page(_) | Drop::Hoard(_) | Drop::Herb | Drop::Heirloom | Drop::Clue | Drop::Keepsake(_) | Drop::Gear(_) | Drop::TideChest | Drop::Bottle(_) | Drop::StormRelic | Drop::Singer(_) | Drop::Cargo(_) | Drop::AKey(_) | Drop::Stillpoint | Drop::Word(_) | Drop::Ore | Drop::Item(_) => return None,
     })
 }
 
@@ -879,7 +883,7 @@ mod tests {
             assert_eq!(parse_id(&id_string(id)), Some(id));
             assert_eq!(id_from_name(&format!("levels/{}.json", file_name(id))), Some(id));
         }
-        assert_eq!(parse_id("dungeon:36:0"), None);
+        assert_eq!(parse_id("dungeon:37:0"), None);
     }
 
     #[test]

@@ -46,6 +46,8 @@ pub struct Anchor {
     pub x: f32,
     pub y: f32,
     pub lit: bool,
+    /// It's given Sister Ferro its lump of chaos ore (churnside.rs).
+    pub ore: bool,
 }
 
 /// The act an Act 7 ground belongs to (its props and its look), 6 for the Churn's own.
@@ -107,7 +109,7 @@ impl Game {
                     continue;
                 }
                 placed.push((x, y));
-                self.feats.anchors.push(Anchor { level: self.level, x, y, lit: false });
+                self.feats.anchors.push(Anchor { level: self.level, x, y, lit: false, ore: false });
             }
         }
         self.lifelines();

@@ -36,7 +36,29 @@ Status: **being built in stages, with a review after each.**
   vortex entrance and the Stillpoint. Bot survey (20 min): all 8 heroes, no deaths; 7 of 8 took the keys, made
   him flee (10-13 min), killed him for good (12-15 min) and went on into Nightmare; the inventor reached the
   flee at 15 min and ran out of time.
-- Stage 4: side content, the extras, art and music.
+- **Stage 4 (done 2026-10-09, `src/churnside.rs`):** the side content and the four extras.
+  - **The Probability Vault** (dungeon 36, 2 floors, door in the Drift of Worlds): 6-8 coffers a floor, each a
+    gamble (22% a mimic, 40% gold, 34% a rare, 4% a high-magic-find drop); boss **the Dice-Saint**, who rolls a
+    die for every attack (twice when enraged): 1 fumbles, 2 toads, 3 novas, 4 a ring of dice, 5 steps in and
+    slams, 6 a fan of dice and a little healing. His unique: THE LOADED DIE.
+  - **Side quests:** The House Always Wins (the monk by the gate: the Dice-Saint, -5% damage taken), The
+    Abbot's Lost Voice (three words in three areas, a skill point), The Other You (Brother Hush: a 4x-life
+    copy of you in the Shattered Monastery, a respec), Stilled Steel (Sister Ferro: ore flakes off anchor
+    stones while the quest is open, a socket).
+  - **Super uniques:** Grundle the Red, Skimble the Blue, Mossmouth the Green (named toads keep their colour),
+    Knight-Commander Ordo, the Riftmaw Queen, and the Other You; each with a unique. **Lore:** six pages
+    (five carried by the supers, one on the vault's first floor).
+  - **Extras:** Chaos Roulette (the Elemental Tangle: 55% a 3-minute blessing, 37% a curse (burn, void, the
+    house takes gold, or the Unmade), 8% a jackpot; a minute between spins); the Wandering Room (drifts to
+    another area every minute while you're in the Churn; catch it once per difficulty for A ROOM OF ONE'S OWN
+    and loot); Gravity Wells (three each in the Drift and the Monastery: they bend shots, fireballs, spears
+    and axes, and drag you in); Echo Hunt (one act boss's echo per playthrough in a random area, at 60% of
+    its life, dropping that boss's unique).
+  - **Music:** the Churn (whole-tone drift, switching to a fourth higher at every surge), the Rift (Act 7's
+    dungeons), and Stillhold (singing bowls).
+  - Art (OpenAI): the Dice-Saint, the coffer, the vault door, the roulette shrine (third take kept: the first
+    two were too dark).
+  - Bot survey (20 min): all 8 heroes, no deaths, all through Ylgrath's true death; three met the echo.
 
 ## The user's picks (2026-10-08)
 

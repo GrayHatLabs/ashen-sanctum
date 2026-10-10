@@ -164,6 +164,10 @@ pub enum Kind {
     /// Act 7's last boss (churnfolk.rs): he wears the shapes of the old bosses, and only dies for good to one
     /// carrying the Stillpoint.
     Ylgrath,
+    /// The Probability Vault's keeper (churnside.rs): every attack is a roll of the dice.
+    DiceSaint,
+    /// A vault coffer (churnside.rs): break it open and take your chances.
+    Coffer,
     // ---- breakables (breakables.rs): no mind, smashed by any hit; the act is in `Mob::form` ----
     Crate,
     Barrel,
@@ -400,6 +404,14 @@ pub fn def(k: Kind) -> Def {
             ranged: true,
             ..d("boss_ylgrath", "YLGRATH THE UNSHAPED", 4200.0, 1.7, (36.0, 52.0), 0.6, 1.6, 18000.0)
         },
+        Kind::DiceSaint => Def {
+            r: 0.5,
+            reach: 1.4,
+            boss: true,
+            ranged: true,
+            ..d("boss_dicesaint", "THE DICE-SAINT", 1400.0, 2.0, (26.0, 36.0), 0.55, 1.5, 4200.0)
+        },
+        Kind::Coffer => Def { r: 0.45, reach: 0.0, ..d("vault_coffer", "VAULT COFFER", 50.0, 0.0, (0.0, 0.0), 9.0, 99.0, 20.0) },
         Kind::Rival => Def { r: 0.35, reach: 1.3, ..d("mage", "RIVAL", 110.0, 3.0, (4.0, 7.0), 0.45, 1.2, 900.0) },
         Kind::StarMetal => Def { r: 0.45, reach: 0.0, ..d("star_metal", "STAR-METAL", 60.0, 0.0, (0.0, 0.0), 9.0, 99.0, 30.0) },
         Kind::KrakenArm => Def { r: 0.8, reach: 2.2, ..d("kraken_arm", "THE KRAKEN'S ARM", 220.0, 0.0, (20.0, 30.0), 0.7, 2.2, 600.0) },

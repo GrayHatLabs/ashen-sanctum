@@ -117,6 +117,8 @@ pub fn shrine_art(act: u8) -> &'static str {
         3 => "shrine_gear",
         4 => "shrine_coral",
         5 => "shrine_sky",
+        // The Churn's roulette (churnside.rs); its ordinary shrines keep the ash look.
+        7 => "shrine_chaos",
         _ => "shrine_ash",
     }
 }
@@ -325,6 +327,14 @@ pub const SUPERS: &[SuperDef] = &[
     SuperDef { name: "CHOIRMASTER EZEKAR", kind: Kind::Zealot, home: LevelId::Area(5, 5), spot: (0, 0), mods: M_FIERY | M_STRONG, gang: (Kind::Zealot, 4), tint: 0xffe080, line: "SING, OR BURN! THERE IS NO THIRD VERSE!", unique: "ezekar", page: Some(25), camp: None },
     SuperDef { name: "STORMWING", kind: Kind::Thunderbird, home: LevelId::Area(5, 2), spot: (0, 0), mods: M_FAST | crate::mobs::M_MANABURN, gang: (Kind::StormDrake, 2), tint: 0xa0c0ff, line: "(A SCREAM LIKE THUNDER SPLITTING THE SKY)", unique: "stormwing", page: Some(26), camp: None },
     SuperDef { name: "SABINE THE HALO-KNIGHT", kind: Kind::Sentinel, home: LevelId::Area(5, 4), spot: (0, 0), mods: M_STONE | M_STRONG, gang: (Kind::FallenSeraph, 3), tint: 0xfff0c0, line: "THE SUN IS DEAD. I GUARD HIS GRAVE ALL THE SAME.", unique: "sabine", page: Some(27), camp: None },
+    // ---- Act 7: the Churning Chaos (three named toads, one per colour; churnfolk.rs keeps their colours) ----
+    SuperDef { name: "GRUNDLE THE RED", kind: Kind::ChaosToad, home: LevelId::Area(6, 4), spot: (0, 0), mods: M_STRONG | M_FIERY, gang: (Kind::ChaosToad, 4), tint: 0xc03020, line: "GRUNDLE HUNGRY. GRUNDLE ALWAYS HUNGRY.", unique: "grundle", page: Some(33), camp: None },
+    SuperDef { name: "SKIMBLE THE BLUE", kind: Kind::ChaosToad, home: LevelId::Area(6, 3), spot: (0, 0), mods: M_FAST | crate::mobs::M_MANABURN, gang: (Kind::ChaosToad, 3), tint: 0x3060d0, line: "COLD! COLD COLD COLD! YOU'RE WARM. GIVE IT HERE.", unique: "skimble", page: Some(32), camp: None },
+    SuperDef { name: "MOSSMOUTH THE GREEN", kind: Kind::ChaosToad, home: LevelId::Area(6, 2), spot: (0, 0), mods: M_STONE | crate::mobs::M_VAMPIRE, gang: (Kind::ChaosBlob, 3), tint: 0x40a040, line: "(IT SMILES WITH YOUR FACE. IT DOESN'T HAVE THE TEETH FOR IT.)", unique: "mossmouth", page: Some(31), camp: None },
+    SuperDef { name: "KNIGHT-COMMANDER ORDO", kind: Kind::ChaosKnight, home: LevelId::Area(6, 1), spot: (0, 0), mods: M_STRONG | M_STONE, gang: (Kind::ChaosKnight, 4), tint: 0x50405a, line: "ARTICLE ONE: NOTHING CHANGES. ARTICLE TWO: YOU ARE A CHANGE.", unique: "ordo", page: Some(34), camp: None },
+    SuperDef { name: "THE RIFTMAW QUEEN", kind: Kind::Riftmaw, home: LevelId::Area(6, 4), spot: (0, 0), mods: M_STRONG, gang: (Kind::ChaosBlob, 3), tint: 0x400860, line: "(THE GROUND OPENS ITS MOUTH, AND KEEPS OPENING IT)", unique: "queen", page: Some(35), camp: None },
+    // Brother Hush's quest: the version of you that went wrong.
+    SuperDef { name: "THE OTHER YOU", kind: Kind::MirrorImage, home: LevelId::Area(6, 5), spot: (0, 0), mods: M_STRONG | M_FAST, gang: (Kind::MirrorImage, 3), tint: 0x8060a0, line: "OH. IT'S YOU. I WONDERED WHEN YOU'D CATCH UP.", unique: "otheryou", page: None, camp: None },
 ];
 
 /// Jarl Hrogar's index in SUPERS (features.rs).
@@ -334,6 +344,9 @@ pub const GHOSTS: [usize; 3] = [18, 19, 20];
 pub const CHOIR: [usize; 3] = [21, 22, 23];
 /// The sky's three super uniques, whose tears the Weeping Seraph wants (isles.rs).
 pub const TEARS: [usize; 3] = [24, 25, 26];
+/// Act 7's named toads (red, blue, green) in SUPERS, and the Other You (churnfolk.rs, churnside.rs).
+pub const CHURN_TOADS: [usize; 3] = [27, 28, 29];
+pub const OTHER_YOU: usize = 32;
 /// Vardak's brides in SUPERS (mist.rs places them).
 pub const BRIDES: [usize; 3] = [9, 10, 11];
 
@@ -393,6 +406,10 @@ pub enum Goal {
     Cargo,
     /// The tears of the sky's three super uniques (isles.rs).
     Tears,
+    /// Abbot Quiet's three lost words (churnside.rs).
+    Words,
+    /// Three lumps of chaos ore from the anchor stones, for Sister Ferro (churnside.rs).
+    Ore,
 }
 
 pub struct SideDef {
@@ -687,6 +704,59 @@ pub const SIDES: &[SideDef] = &[
         reward: Reward::Unique("tears"),
         todo: "BRING THE WEEPING SERAPH THREE TEARS: EZEKAR (THE ZENITH), STORMWING (THE STORMFIELDS), SABINE (THE HALO ISLES)",
     },
+    // ---- Act 7 ----
+    SideDef {
+        name: "THE HOUSE ALWAYS WINS",
+        act: 6,
+        giver: Role::Monk(0),
+        giver_name: "THE MONK BY THE GATE",
+        ask: "ASK WHY HE KEEPS COUNTING",
+        offer: &["I COUNT SO I DON'T THINK ABOUT HIM. THE DICE-SAINT. A HOLY MAN WHO PRAYED TO CHANCE, AND CHANCE ANSWERED. HE KEEPS A VAULT IN THE DRIFT OF WORLDS, FULL OF COFFERS, AND EVERY ONE OF THEM IS A BET. I LOST MY BROTHER TO ONE. BREAK HIS BANK."],
+        remind: "THE PROBABILITY VAULT, IN THE DRIFT OF WORLDS. MIND THE COFFERS. SOME OF THEM BITE.",
+        thanks: &["THE HOUSE LOST. FOR ONCE, THE HOUSE LOST. HERE, BROTHER HUSH TAUGHT ME THIS. IT TURNS ASIDE A LITTLE OF WHAT FATE THROWS AT YOU."],
+        goal: Goal::Boss(Kind::DiceSaint),
+        reward: Reward::Ward,
+        todo: "BREAK THE DICE-SAINT IN THE PROBABILITY VAULT (THE DRIFT OF WORLDS)",
+    },
+    SideDef {
+        name: "THE ABBOT'S LOST VOICE",
+        act: 6,
+        giver: Role::Abbot,
+        giver_name: "ABBOT QUIET",
+        ask: "ASK WHY HE NEVER SPEAKS",
+        offer: &["(THE THOUGHT ARRIVES, A LITTLE EMBARRASSED.) WHEN WE FOUNDED STILLHOLD I GAVE UP THREE WORDS, SO THE MONASTERY WOULD HOLD. I THREW THEM INTO THE CHURN. I WOULD LIKE THEM BACK NOW. THEY WILL LOOK LIKE ORDINARY THINGS, SOMEWHERE OUT THERE. YOU WILL HEAR THEM WHEN YOU HOLD THEM."],
+        remind: "THREE WORDS, OUT IN THE CHURN. A STONE, A ROPE, A BOWL, PERHAPS. THEY WILL SOUND LIKE ME.",
+        thanks: &["\"STILL. HOLD. HOME.\" (HE SAYS IT ALOUD. HIS VOICE IS ROUGH FROM DISUSE, AND VERY KIND.) THANK YOU. LET ME GIVE YOU SOMETHING I LEARNED IN ALL THAT QUIET."],
+        goal: Goal::Words,
+        reward: Reward::SkillPoint,
+        todo: "FIND ABBOT QUIET'S THREE LOST WORDS, OUT IN THE CHURN",
+    },
+    SideDef {
+        name: "THE OTHER YOU",
+        act: 6,
+        giver: Role::Hush,
+        giver_name: "BROTHER HUSH",
+        ask: "ASK ABOUT THE STRANGER",
+        offer: &["SOMEONE CAME THROUGH HERE A WEEK AGO WEARING YOUR FACE. IT WAS YOU, I THINK: A YOU THE CHURN SPAT OUT, WHO TOOK EVERY WRONG TURN YOU DIDN'T. IT HURT THE NOVICES. IT WENT TOWARD THE SHATTERED MONASTERY. YOU ARE THE ONLY ONE WHO CAN FIGHT IT FAIRLY."],
+        remind: "THE OTHER YOU WENT TOWARD THE SHATTERED MONASTERY. IT KNOWS EVERYTHING YOU KNOW. ALMOST.",
+        thanks: &["IT'S DONE? THEN SIT. YOU'VE SEEN WHO YOU MIGHT HAVE BEEN; THAT CHANGES A PERSON. LET ME HELP YOU CHOOSE AGAIN, IF YOU LIKE."],
+        goal: Goal::Super(OTHER_YOU),
+        reward: Reward::Respec,
+        todo: "END THE OTHER YOU, IN THE SHATTERED MONASTERY",
+    },
+    SideDef {
+        name: "STILLED STEEL",
+        act: 6,
+        giver: Role::Ferro,
+        giver_name: "SISTER FERRO",
+        ask: "ASK ABOUT CHAOS-STEEL",
+        offer: &["CHAOS-STEEL STARTS AS CHAOS ORE: IT GROWS ON THE ANCHOR STONES, WHERE THE LAND HOLDS STILL LONG ENOUGH. GO TO THE ANCHORS OUT THERE AND THE ORE WILL FLAKE OFF FOR YOU. BRING ME THREE LUMPS AND I'LL OPEN A SOCKET IN WHATEVER YOU'RE CARRYING."],
+        remind: "THREE LUMPS OF CHAOS ORE. STAND BY THE ANCHOR STONES, LIT OR NOT, AND IT FLAKES OFF.",
+        thanks: &["GOOD ORE. STILL WARM WITH NOT-CHANGING. HAND ME THAT... THERE. A SOCKET, CLEAN AS A BELL."],
+        goal: Goal::Ore,
+        reward: Reward::Socket,
+        todo: "BRING SISTER FERRO THREE LUMPS OF CHAOS ORE FROM THE ANCHOR STONES",
+    },
 ];
 
 // ------------------------------------------------------------------ lore
@@ -722,8 +792,14 @@ pub const LORE: &[(u8, &str, &str)] = &[
     (5, "A SKY-PIRATE'S LOG", "SAW THE GREAT BIRD AGAIN TODAY, RIDING THE FRONT OF THE STORM. LOST TWO MEN AND A SAIL. BRAM SAYS WE'RE CURSED. BRAM SAYS THAT EVERY DAY."),
     (5, "THE HALO-KNIGHT'S OATH", "I WILL GUARD THE LIGHT UNTIL THE LIGHT GOES OUT. AND THEN? (SOMEONE HAS ADDED, IN A DIFFERENT HAND: AND THEN YOU GUARD THE DARK.)"),
     (5, "THE ASTRONOMER'S LAST CHART", "EVERY STAR IN ITS PLACE. EVERY ONE. BUT HERE, WHERE THE SUN SHOULD BE: NOTHING. I HAVE CHECKED MY SUMS A THOUSAND TIMES. THE SKY IS WRONG."),
-    (6, "A PAGE OF THE CLOCKMAKER'S NOTEBOOK", "I HAVE BUILT ONE MOMENT THAT DOES NOT MOVE. NOT A GEAR TURNS IN IT, NOT A GRAIN FALLS. I KEEP IT AT THE VERY HEART OF MY CLOCK, IN THE STILLPOINT, WHERE NOTHING CAN TOUCH IT. THE THING UNDER THE SUN HATES IT. GOOD. LET IT."),
     (5, "SERAPHINE'S LETTER", "SISTER, I CUT MY WINGS SO I COULD NOT FOLLOW HIM UP. I AM SORRY I DID NOT ASK YOU TO CUT YOURS. I AM SORRY YOU ARE STONE. - S."),
+    (6, "A PAGE OF THE CLOCKMAKER'S NOTEBOOK", "I HAVE BUILT ONE MOMENT THAT DOES NOT MOVE. NOT A GEAR TURNS IN IT, NOT A GRAIN FALLS. I KEEP IT AT THE VERY HEART OF MY CLOCK, IN THE STILLPOINT, WHERE NOTHING CAN TOUCH IT. THE THING UNDER THE SUN HATES IT. GOOD. LET IT."),
+    (6, "THE GODS' BARGAIN", "BEFORE THE ASH, THE GODS SAT AROUND THE CHURN LIKE MEN AROUND A FIRE, AND AGREED: ONE OF US WILL SHINE ON IT, FOREVER, SO IT SLEEPS. THEY DREW LOTS. THE SUN LOST."),
+    (6, "A NOVICE'S LESSON BOOK", "LESSON ONE: SIT. LESSON TWO: DO NOT GET UP. LESSON THREE: IF THE WALL FLICKERS, YOU GOT UP. GO BACK TO LESSON ONE."),
+    (6, "THE TOAD-HERD'S SONG", "RED ONES JUMP AND BLUE ONES SPIT, GREEN ONES WEAR YOU LIKE A FIT, GREY ONES CARRY SWORDS AND SPITE: COUNT YOUR TOES AGAIN TONIGHT."),
+    (6, "ORDO'S ARTICLES", "THE LAW OF THE STILL ORDER, ARTICLES ONE THROUGH NINE HUNDRED: NOTHING CHANGES. (THE OTHER EIGHT HUNDRED AND NINETY-NINE ARTICLES ARE THE SAME, IN DIFFERENT HANDWRITING.)"),
+    (6, "STILLHOLD'S FOUNDING STONE", "HERE THE FIRST TWELVE SAT DOWN, AND DID NOT GET UP, AND THE CHURN WENT AROUND THEM LIKE WATER AROUND A ROCK. WHOEVER READS THIS: SIT A WHILE. IT HELPS."),
+    (6, "THE DICE-SAINT'S PRAYER", "O CHANCE, WHO ANSWERS EVERY PRAYER, THOUGH NOT ALWAYS THE ONE I SAID: LET THE NEXT ONE BE A SIX. I WILL NOT ASK WHAT IT COSTS. I NEVER DO."),
 ];
 
 pub fn pages_of(act: usize) -> impl Iterator<Item = usize> {
@@ -858,7 +934,7 @@ pub fn place(lv: &mut Level, seed: u64) {
 }
 
 /// The optional dungeons: (dungeon index, the lore page on its first floor).
-pub const OPTIONAL: &[(usize, u8)] = &[(crate::world::CHARNEL, 3), (crate::world::LONGSHIP, 9), (crate::world::CELLAR, 13), (crate::world::MANOR, 14), (crate::world::SCRAPHEAP, 18), (crate::world::GROTTO, 23), (crate::world::OBSERVATORY, 28)];
+pub const OPTIONAL: &[(usize, u8)] = &[(crate::world::CHARNEL, 3), (crate::world::LONGSHIP, 9), (crate::world::CELLAR, 13), (crate::world::MANOR, 14), (crate::world::SCRAPHEAP, 18), (crate::world::GROTTO, 23), (crate::world::OBSERVATORY, 28), (crate::world::VAULT, 36)];
 
 // ------------------------------------------------------------------ the game side
 

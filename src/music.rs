@@ -42,9 +42,17 @@ pub enum Track {
     Storm,
     /// Windward Anchorage: a bright harbour waltz on fiddle and bells.
     Harbor,
+    /// Act 7: the Churn (a restless whole-tone drift), and the same a fourth higher: the game switches between
+    /// the two at each surge, so the key changes when the land does.
+    Churn,
+    ChurnShift,
+    /// Act 7's dungeons: a dissonant hum, things moving in the dark.
+    Rift,
+    /// Stillhold: singing bowls over a breath-slow drone.
+    Stillhold,
 }
 
-pub const TRACKS: [Track; 19] = [
+pub const TRACKS: [Track; 23] = [
     Track::Town,
     Track::Wilds,
     Track::Dungeon,
@@ -64,6 +72,10 @@ pub const TRACKS: [Track; 19] = [
     Track::Sky,
     Track::Storm,
     Track::Harbor,
+    Track::Churn,
+    Track::ChurnShift,
+    Track::Rift,
+    Track::Stillhold,
 ];
 
 fn hz(midi: f32) -> f32 {
@@ -288,6 +300,9 @@ pub fn render(track: Track) -> Vec<f32> {
         Track::Sky => 149,
         Track::Storm => 151,
         Track::Harbor => 157,
+        Track::Churn | Track::ChurnShift => 163,
+        Track::Rift => 167,
+        Track::Stillhold => 173,
     });
     match track {
         Track::Town => town(&mut rng),
@@ -309,7 +324,79 @@ pub fn render(track: Track) -> Vec<f32> {
         Track::Sky => sky(&mut rng),
         Track::Storm => storm(&mut rng),
         Track::Harbor => harbor(&mut rng),
+        Track::Churn => churn(&mut rng, 0.0),
+        Track::ChurnShift => churn(&mut rng, 5.0),
+        Track::Rift => rift(&mut rng),
+        Track::Stillhold => stillhold(&mut rng),
     }
+}
+
+/// The Churn: augmented chords drifting a whole tone at a time (they never land), whole-tone bells at odd
+/// moments, a slow heartbeat drum under the wind. `shift` raises it all (semitones).
+fn churn(rng: &mut Rng, shift: f32) -> Vec<f32> {
+    let secs = 48.0;
+    let mut b = Buf::new(secs);
+    b.wind(0.05, rng);
+    b.drone(37.0 + shift, 0.05);
+    let roots = [49.0, 51.0, 47.0, 53.0];
+    for (k, r) in roots.iter().enumerate() {
+        let r = r + shift;
+        b.pad(k as f32 * 12.0, 11.5, &[r, r + 4.0, r + 8.0, r + 12.0], 0.08, 900.0);
+    }
+    let whole = [0.0, 2.0, 4.0, 6.0, 8.0, 10.0];
+    for k in 0..14 {
+        let t = 1.0 + k as f32 * 3.3 + rng.rf(0.0, 1.5);
+        let m = 73.0 + shift + whole[rng.range(0, 6) as usize];
+        b.bell(t, m, 0.04);
+        if k % 3 == 1 {
+            b.pluck(t + 0.4, m - 24.0, 0.12, 0.4, 0.996, rng);
+        }
+    }
+    let mut t = 0.5;
+    while t < secs {
+        b.drum(t, 0.16, 44.0 + shift, rng);
+        b.drum(t + 0.28, 0.09, 44.0 + shift, rng);
+        t += 2.4;
+    }
+    b.finish(0.65, 0.58)
+}
+
+/// Act 7's dungeons: a low drone with a semitone rubbing against it, clusters that swell and fade, a pluck
+/// somewhere in the dark now and then.
+fn rift(rng: &mut Rng) -> Vec<f32> {
+    let secs = 44.0;
+    let mut b = Buf::new(secs);
+    b.drone(30.0, 0.07);
+    b.drone(31.0, 0.03);
+    let clusters = [(42.0, 43.0, 48.0), (41.0, 46.0, 47.0), (44.0, 45.0, 50.0), (40.0, 41.0, 46.0)];
+    for (k, &(a, c, e)) in clusters.iter().enumerate() {
+        b.pad(k as f32 * 11.0, 10.0, &[a, c, e], 0.1, 500.0);
+    }
+    for k in 0..10 {
+        let t = 2.0 + k as f32 * 4.1 + rng.rf(0.0, 2.0);
+        b.pluck(t, 38.0 + rng.range(0, 12) as f32, 0.2, 0.2, 0.997, rng);
+    }
+    for k in 0..5 {
+        b.drum(4.0 + k as f32 * 8.5 + rng.rf(0.0, 1.0), 0.22, 36.0, rng);
+    }
+    b.finish(0.7, 0.6)
+}
+
+/// Stillhold: singing bowls (low bells, long and far apart) over a drone as slow as breathing.
+fn stillhold(rng: &mut Rng) -> Vec<f32> {
+    let secs = 56.0;
+    let mut b = Buf::new(secs);
+    b.drone(36.0, 0.05);
+    for k in 0..4 {
+        b.pad(k as f32 * 14.0, 13.5, &[48.0, 55.0, 62.0, 67.0], 0.05, 700.0);
+    }
+    let bowls = [60.0, 67.0, 64.0, 72.0, 62.0, 69.0, 60.0];
+    for (k, m) in bowls.iter().enumerate() {
+        let t = 2.0 + k as f32 * 7.6 + rng.rf(0.0, 1.0);
+        b.bell(t, *m, 0.06);
+        b.bell(t + 0.05, m + 12.02, 0.015);
+    }
+    b.finish(0.75, 0.5)
 }
 
 /// The Skyreach: a slow, soaring choir of pads in D major over the wind, with high bells like sunlight.

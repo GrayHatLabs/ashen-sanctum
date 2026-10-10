@@ -92,6 +92,8 @@ pub static CHARS: &[CharDef] = &[
     CharDef { name: "boss_architect", cell: (32, 96), anchor: (15, 83), data: include_bytes!("../assets/art/boss_architect.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
     CharDef { name: "boss_mirrorabbot", cell: (30, 87), anchor: (15, 79), data: include_bytes!("../assets/art/boss_mirrorabbot.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
     CharDef { name: "boss_ylgrath", cell: (120, 132), anchor: (60, 130), data: include_bytes!("../assets/art/boss_ylgrath.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
+    CharDef { name: "boss_dicesaint", cell: (52, 73), anchor: (26, 71), data: include_bytes!("../assets/art/boss_dicesaint.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
+    CharDef { name: "vault_coffer", cell: (30, 28), anchor: (15, 26), data: include_bytes!("../assets/art/vault_coffer.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
     CharDef { name: "chaos_knight", cell: (68, 72), anchor: (23, 56), data: include_bytes!("../assets/art/chaos_knight.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }, AnimDef { name: "walk", row: 8, frames: 6, fps: 8 }, AnimDef { name: "attack", row: 16, frames: 6, fps: 12 }] },
     CharDef { name: "boss_barnacle", cell: (61, 84), anchor: (31, 82), data: include_bytes!("../assets/art/boss_barnacle.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
     CharDef { name: "boss_astronomer", cell: (64, 96), anchor: (31, 94), data: include_bytes!("../assets/art/boss_astronomer.bin"), anims: &[AnimDef { name: "idle", row: 0, frames: 1, fps: 1 }] },
@@ -350,4 +352,6 @@ pub static ITEMS: &[ItemDef] = &[
     ItemDef { name: "ent_mirrors", data: include_bytes!("../assets/art/item_ent_mirrors.bin") },
     ItemDef { name: "ent_eye", data: include_bytes!("../assets/art/item_ent_eye.bin") },
     ItemDef { name: "stillpoint", data: include_bytes!("../assets/art/item_stillpoint.bin") },
+    ItemDef { name: "ent_vault", data: include_bytes!("../assets/art/item_ent_vault.bin") },
+    ItemDef { name: "shrine_chaos", data: include_bytes!("../assets/art/item_shrine_chaos.bin") },
 ];

@@ -1876,6 +1876,65 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             g.message = None;
             save(&mut g, scr, "churn_throne_door");
         }
+        // Stage 4 (churnside.rs): the vault's coffers and its Dice-Saint, the roulette, a gravity well, the
+        // Wandering Room and an echo.
+        g.debug_goto(LevelId::Dungeon(crate::world::VAULT, 0));
+        quiet(&mut g);
+        if let Some((x, y)) = g.mobs.iter().find(|m| m.kind == Kind::Coffer).map(|m| (m.x, m.y)) {
+            g.mobs.retain(|m| m.kind == Kind::Coffer || (m.x - x).powi(2) + (m.y - y).powi(2) > 144.0);
+            g.debug_place_near(x, y, 2.5);
+            idle(&mut g, 10);
+            g.message = None;
+            save(&mut g, scr, "churn_vault");
+        }
+        g.debug_goto(LevelId::Dungeon(crate::world::VAULT, crate::world::DUNGEONS[crate::world::VAULT].floors - 1));
+        quiet(&mut g);
+        if g.debug_near_boss() {
+            idle(&mut g, 90);
+            g.message = None;
+            save(&mut g, scr, "churn_dicesaint");
+        }
+        g.debug_goto(crate::churnside::TANGLE);
+        quiet(&mut g);
+        if let Some((_, x, y)) = g.feats.roulette {
+            g.mobs.retain(|m| (m.x - x).powi(2) + (m.y - y).powi(2) > 144.0);
+            g.feats.roulette_cd = 999.0;
+            g.debug_place_near(x, y + 2.0, 1.0);
+            idle(&mut g, 10);
+            g.message = None;
+            save(&mut g, scr, "churn_roulette");
+        }
+        g.debug_goto(crate::churnside::DRIFT);
+        quiet(&mut g);
+        if let Some(&(x, y)) = g.wells_here().first() {
+            g.mobs.retain(|m| (m.x - x).powi(2) + (m.y - y).powi(2) > 144.0);
+            g.debug_place_near(x + 3.0, y, 1.0);
+            idle(&mut g, 20);
+            g.message = None;
+            save(&mut g, scr, "churn_well");
+        }
+        g.feats.wander_done = false;
+        g.feats.wander_area = 2;
+        g.debug_goto(LevelId::Area(6, 1));
+        g.debug_goto(crate::churnside::DRIFT);
+        quiet(&mut g);
+        if let Some((x, y)) = g.wander_here() {
+            g.mobs.retain(|m| (m.x - x).powi(2) + (m.y - y).powi(2) > 144.0);
+            g.feats.wander_t = 999.0;
+            g.debug_place_near(x + 4.0, y + 1.0, 1.0);
+            idle(&mut g, 10);
+            g.message = None;
+            save(&mut g, scr, "churn_wander");
+        }
+        let (_, area, _) = crate::churnside::rolls(g.world_seed, g.quest.difficulty);
+        g.debug_goto(LevelId::Area(6, area));
+        quiet(&mut g);
+        if let Some((x, y)) = g.mobs.iter().find(|m| m.boss && m.alive()).map(|m| (m.x, m.y)) {
+            g.debug_place_near(x, y, 5.0);
+            idle(&mut g, 60);
+            g.message = None;
+            save(&mut g, scr, "churn_echo");
+        }
     }
     // Side content (side.rs): a shrine and its blessing, Skrat One-Ear and his gang, the Charnel Well, the
     // Well-Witch, a lore page and the journal on the map.

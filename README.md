@@ -277,7 +277,7 @@ servants who grew souls hide from their maker.
   shapes (cubits, prisms and a marshal) that march in step. Kill the marshal and the squad falls into disorder.
 - Drifting steam and brass sparks; a ticking harpsichord outside, an engine's clangour in the works.
 
-## Act 7: the Churning Chaos (being built)
+## Act 7: the Churning Chaos
 
 Ending Solanthos takes the lid off the world. A crack opens in the Zenith's floor (Act 6, area 5), down into
 **the Churn**: a realm of raw chaos, where the ground is a patchwork of every world the ash fell on, and
@@ -311,7 +311,12 @@ nothing holds its shape unless a mind holds it still. Start a test hero there wi
 - **He can't truly die** unless you carry **the Stillpoint**. Beat him without it and he flees with a gloat
   (a fair reward, no unique) and his throne seals; the Stillpoint waits, guarded, at the heart of the
   Clockmaker's clock back in the Dominion. With it, he dies for good: his unique, and the true ending.
-- Still to come: side content, the extras, art and music (docs/ACT7_PLAN.md).
+- **Off the path:** the **Probability Vault** (every coffer is a gamble, some bite) and its **Dice-Saint**, who
+  rolls a die for each attack; four side quests (the Dice-Saint, Abbot Quiet's three lost words, the version
+  of you that went wrong, and chaos ore from the anchor stones); three named toads, a chaos-knight commander,
+  a riftmaw queen; **Chaos Roulette** (a wheel of blessings, curses and jackpots), **the Wandering Room**
+  (catch it before it drifts away), **Gravity Wells** that bend every bolt and arrow, and the **Echo** of one
+  old act boss, somewhere in the Churn. The music changes key with every surge.
 
 ## Nightmare and Hell
 
@@ -448,7 +453,7 @@ Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`;
 
 ## Level editor
 
-Every map in all six acts (each overland with its town, and every dungeon floor) can be hand-made in
+Every map in all seven acts (each overland with its town, and every dungeon floor) can be hand-made in
 the browser level editor:
 
 ```powershell

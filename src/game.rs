@@ -193,6 +193,9 @@ pub enum Drop {
     AKey(usize),
     /// The Clockmaker's Stillpoint, at the heart of his clock (churnfolk.rs): Ylgrath dies to one carrying it.
     Stillpoint,
+    /// One of Abbot Quiet's lost words, and a lump of chaos ore for Sister Ferro (churnside.rs).
+    Word(u8),
+    Ore,
     /// The storm relic, a lost singer, one of Bram's crates (isles.rs).
     StormRelic,
     Singer(u8),
@@ -1410,6 +1413,7 @@ impl Game {
         self.chaos_enter();
         self.churnfolk_enter();
         self.stillpoint_enter();
+        self.churnside_enter();
         self.gears_enter();
         self.reef_enter();
         self.isles_enter();
@@ -1701,7 +1705,16 @@ impl Game {
             Track::Boss
         } else if self.in_safe(self.p.x, self.p.y) || matches!(self.state, State::Victory(_)) {
             // Each town has its own tune.
-            [Track::Town, Track::Hearth, Track::Vigil, Track::Refuge, Track::Brine, Track::Harbor][self.level.act().min(5)]
+            [Track::Town, Track::Hearth, Track::Vigil, Track::Refuge, Track::Brine, Track::Harbor, Track::Stillhold][self.level.act().min(6)]
+        } else if self.level.act() == 6 {
+            // The Churn: a restless drift that changes key at every surge; something worse below.
+            if !self.level.overland() {
+                Track::Rift
+            } else if self.feats.surges % 2 == 0 {
+                Track::Churn
+            } else {
+                Track::ChurnShift
+            }
         } else if self.level.act() == 5 {
             // The heavens: a soaring choir and wind outside, the storm and the burning sanctum within.
             if self.level.overland() {
@@ -1880,6 +1893,7 @@ impl Game {
         self.update_extras();
         self.update_chaos();
         self.update_churnfolk();
+        self.update_churnside();
         self.update_sky();
         self.update_rift();
         self.second_wind_t = (self.second_wind_t - DT).max(0.0);
@@ -2847,6 +2861,8 @@ impl Game {
                     }
                 }
                 Drop::Stillpoint => self.take_stillpoint(px, py),
+                Drop::Word(n) => self.find_word(n),
+                Drop::Ore => self.find_ore(),
                 Drop::AKey(i) => {
                     self.quest.akeys[i] = true;
                     self.p.skills.points += 1;
@@ -3450,6 +3466,13 @@ impl Game {
                 self.side_progress(crate::side::Goal::Ghosts);
             }
         }
+        // Act 7 (churnside.rs): a vault coffer's gamble, an old boss's echo.
+        if kind == Kind::Coffer {
+            self.coffer_opens(x, y);
+        }
+        if boss {
+            self.echo_check(i);
+        }
         // Chaos matter splits (churnfolk.rs).
         if kind == Kind::ChaosBlob {
             self.blob_splits(i);
@@ -3724,6 +3747,7 @@ impl Game {
                 Kind::Grumbleguts => "grumbleguts",
                 Kind::MirrorAbbot => "mirrorabbot",
                 Kind::Ylgrath => "ylgrath",
+                Kind::DiceSaint => "dicesaint",
                 _ => "ashking",
             };
             drops.extend(items::boss_unique(key));

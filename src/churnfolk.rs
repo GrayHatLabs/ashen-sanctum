@@ -63,9 +63,18 @@ impl Game {
                 Kind::ChaosToad => {
                     m.cue = 1;
                     m.form = r;
-                    if r == 3 && m.rank == Rank::Normal {
+                    // A named toad keeps its own colour.
+                    if let Some(c) = crate::side::CHURN_TOADS.iter().position(|&s| s + 1 == m.superu as usize) {
+                        m.form = c as u8;
+                    } else if r == 3 && m.rank == Rank::Normal {
                         m.promote(Rank::Champion, crate::mobs::M_STRONG, None);
                     }
+                }
+                // The Other You is as tough as you are.
+                Kind::MirrorImage if m.superu as usize == crate::side::OTHER_YOU + 1 => {
+                    m.cue = 1;
+                    m.max_hp *= 4.0;
+                    m.hp = m.max_hp;
                 }
                 Kind::Unmade => {
                     m.cue = 1;
@@ -144,7 +153,7 @@ impl Game {
         let (px, py) = (self.p.x, self.p.y);
         for i in 0..self.mobs.len() {
             let m = &self.mobs[i];
-            if !m.alive() || m.charm > 0.0 || !matches!(m.kind, Kind::ChaosToad | Kind::ChaosKnight | Kind::Riftmaw | Kind::Architect | Kind::Grumbleguts | Kind::MirrorAbbot | Kind::Ylgrath) {
+            if !m.alive() || m.charm > 0.0 || !matches!(m.kind, Kind::ChaosToad | Kind::ChaosKnight | Kind::Riftmaw | Kind::Architect | Kind::Grumbleguts | Kind::MirrorAbbot | Kind::Ylgrath | Kind::DiceSaint) {
                 continue;
             }
             let (kind, x, y) = (m.kind, m.x, m.y);
@@ -169,6 +178,7 @@ impl Game {
                 Kind::Grumbleguts if dist < 14.0 => self.grumbleguts_trick(i, dist),
                 Kind::MirrorAbbot if dist < 14.0 => self.mirror_trick(i),
                 Kind::Ylgrath if dist < 16.0 => self.ylgrath_trick(i, dist),
+                Kind::DiceSaint if dist < 14.0 => self.dice_trick(i, dist),
                 _ => {}
             }
         }

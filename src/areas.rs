@@ -627,7 +627,7 @@ pub const AREAS: &[AreaDef] = &[
         tier: 15.0,
         size: (96, 96),
         exits: &[(Side::S, 0.5, 1), (Side::N, 0.5, 3)],
-        doors: &[],
+        doors: &[(crate::world::VAULT, (30, 58))],
         pass: None,
         monsters: &[Kind::Unmade, Kind::ChaosToad, Kind::Werewolf, Kind::IceTroll, Kind::BoilerBrute, Kind::Merrow],
         packs: 18,

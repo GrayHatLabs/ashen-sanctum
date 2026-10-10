@@ -951,6 +951,15 @@ pub static UNIQUES: &[UniqueDef] = &[
     UniqueDef { name: "THE STORM'S EYE", base: "ring", req: 49, stats: &[(Stat::Skills, 2), (Stat::Cast, 30), (Stat::Move, 15), (Stat::Mana, 90)], boss: Some("tempest") },
     UniqueDef { name: "THE THOUSAND-EYED WHEEL", base: "amulet", req: 50, stats: &[(Stat::Skills, 2), (Stat::Magic, 100), (Stat::ManaOnKill, 12), (Stat::Life, 80)], boss: Some("ophan") },
     UniqueDef { name: "THE LAST EMBER OF THE SUN", base: "amulet", req: 52, stats: &[(Stat::Skills, 4), (Stat::Fire, 80), (Stat::Cast, 30), (Stat::LifeOnKill, 16)], boss: Some("solanthos") },
+    // Act 7's side content (side.rs SUPERS, churnside.rs).
+    UniqueDef { name: "THE LOADED DIE", base: "ring", req: 54, stats: &[(Stat::Magic, 60), (Stat::Gold, 80), (Stat::Skills, 1), (Stat::Life, 60)], boss: Some("dicesaint") },
+    UniqueDef { name: "A ROOM OF ONE'S OWN", base: "amulet", req: 54, stats: &[(Stat::Skills, 2), (Stat::Move, 15), (Stat::Mana, 90), (Stat::LifeRegen, 14)], boss: Some("wander") },
+    UniqueDef { name: "GRUNDLE'S BELLYFIRE", base: "hbelt", req: 52, stats: &[(Stat::Fire, 60), (Stat::Life, 90), (Stat::Hunger, 30)], boss: Some("grundle") },
+    UniqueDef { name: "SKIMBLE'S COLD FEET", base: "cboots", req: 52, stats: &[(Stat::Move, 20), (Stat::Armor, 60), (Stat::Mana, 70)], boss: Some("skimble") },
+    UniqueDef { name: "MOSSMOUTH'S TONGUE", base: "amulet", req: 52, stats: &[(Stat::LifeOnKill, 14), (Stat::LifeRegen, 16), (Stat::Life, 70)], boss: Some("mossmouth") },
+    UniqueDef { name: "THE COMMANDER'S LAW", base: "gauntlets", req: 53, stats: &[(Stat::Power, 25), (Stat::Armor, 80), (Stat::Cast, 15)], boss: Some("ordo") },
+    UniqueDef { name: "THE QUEEN'S GULLET", base: "ring", req: 53, stats: &[(Stat::ManaOnKill, 14), (Stat::Mana, 80), (Stat::Magic, 30)], boss: Some("queen") },
+    UniqueDef { name: "THE FACE YOU LEFT BEHIND", base: "circlet", req: 54, stats: &[(Stat::Skills, 2), (Stat::Life, 80), (Stat::Cast, 20)], boss: Some("otheryou") },
     UniqueDef { name: "THE SHAPE YLGRATH LEFT BEHIND", base: "amulet", req: 58, stats: &[(Stat::Skills, 4), (Stat::Life, 140), (Stat::Cast, 25), (Stat::ManaOnKill, 14)], boss: Some("ylgrath") },
     UniqueDef { name: "SKALD'S STRIDE", base: "iboots", req: 16, stats: &[(Stat::Armor, 12), (Stat::Move, 25), (Stat::Stamina, 40), (Stat::Gold, 40)], boss: None },
 ];

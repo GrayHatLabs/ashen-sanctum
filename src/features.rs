@@ -172,6 +172,26 @@ pub struct Feats {
     pub maws_placed: Vec<LevelId>,
     pub temp_walls: Vec<(i32, i32, f32)>,
     pub mirror_moves: u32,
+    // ---- Act 7's side content (churnside.rs) ----
+    pub churn_placed: Vec<LevelId>,
+    pub coffers_placed: Vec<LevelId>,
+    /// Abbot Quiet's words found (bits); lumps of chaos ore found for Sister Ferro.
+    pub words: u8,
+    pub ore: u8,
+    /// The roulette: where it stands, seconds until it can spin again, spins so far.
+    pub roulette: Option<(LevelId, f32, f32)>,
+    pub roulette_cd: f32,
+    pub spins: u32,
+    /// Gravity wells: (level, x, y).
+    pub wells: Vec<(LevelId, f32, f32)>,
+    /// The Wandering Room: the area it's in (1-6, 0 = not yet), seconds until it drifts on, where it is on
+    /// this level, and whether it's been caught.
+    pub wander_area: u8,
+    pub wander_t: f32,
+    pub wander_spot: Option<(LevelId, f32, f32)>,
+    pub wander_done: bool,
+    /// The echo of an old boss has fallen.
+    pub echo_done: bool,
 }
 
 impl Game {

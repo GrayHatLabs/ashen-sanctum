@@ -46,6 +46,7 @@ mod extras;
 mod chaos;
 mod mapcheck;
 mod churnfolk;
+mod churnside;
 mod world;
 
 use game::{Game, Input};

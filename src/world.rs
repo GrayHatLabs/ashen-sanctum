@@ -247,7 +247,7 @@ pub struct DungeonDef {
     pub act: usize,
 }
 
-pub const DUNGEONS: [DungeonDef; 36] = [
+pub const DUNGEONS: [DungeonDef; 37] = [
     DungeonDef {
         name: "THE BONE CRYPT",
         floors: 2,
@@ -613,6 +613,17 @@ pub const DUNGEONS: [DungeonDef; 36] = [
         entrance: (0, 0),
         act: 6,
     },
+    // Act 7's optional dungeon (churnside.rs), off the Drift of Worlds: every coffer a gamble.
+    DungeonDef {
+        name: "THE PROBABILITY VAULT",
+        floors: 2,
+        theme: Theme::MirrorHall,
+        boss: Kind::DiceSaint,
+        monsters: &[Kind::ChaosToad, Kind::Unmade, Kind::ChaosKnight],
+        tier: 16.4,
+        entrance: (0, 0),
+        act: 6,
+    },
 ];
 
 /// The Ashen Sanctum (needs all three seals).
@@ -648,6 +659,8 @@ pub const WARREN: usize = 33;
 pub const MIRRORS: usize = 34;
 /// Act 7's last dungeon: Ylgrath's throne (needs the three Anchor Keys; he only dies to one carrying the Stillpoint).
 pub const EYE: usize = 35;
+/// Act 7's optional dungeon (churnside.rs): the Dice-Saint's vault.
+pub const VAULT: usize = 36;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum PortalKind {
@@ -798,6 +811,7 @@ impl PropKind {
             PropKind::Entrance(WARREN) => "ent_warren",
             PropKind::Entrance(MIRRORS) => "ent_mirrors",
             PropKind::Entrance(EYE) => "ent_eye",
+            PropKind::Entrance(VAULT) => "ent_vault",
             PropKind::Bell => "bell_shrine",
             PropKind::Tomb => "tomb_shade",
             PropKind::Entrance(_) => "ent_zenith",
