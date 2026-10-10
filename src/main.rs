@@ -83,12 +83,14 @@ struct Pad {
     rt: bool,
 }
 
-fn dead(v: i16) -> f32 {
-    let f = v as f32 / 32767.0;
-    if f.abs() < 0.2 {
-        0.0
+/// A stick, with a dead zone round its middle (not per axis): handheld sticks often rest a little off centre, and
+/// that used to walk you, or steer every attack, the same way. Below `zone` of a full push it reads as centred.
+fn stick(x: f32, y: f32, zone: f32) -> (f32, f32) {
+    let m = (x * x + y * y).sqrt();
+    if m < zone {
+        (0.0, 0.0)
     } else {
-        f
+        (x, y)
     }
 }
 
@@ -459,10 +461,10 @@ fn main() -> Result<(), String> {
                     _ => {}
                 },
                 Event::ControllerAxisMotion { axis, value, .. } => match axis {
-                    Axis::LeftX => pad.lx = dead(value),
-                    Axis::LeftY => pad.ly = dead(value),
-                    Axis::RightX => pad.rx = dead(value),
-                    Axis::RightY => pad.ry = dead(value),
+                    Axis::LeftX => pad.lx = value as f32 / 32767.0,
+                    Axis::LeftY => pad.ly = value as f32 / 32767.0,
+                    Axis::RightX => pad.rx = value as f32 / 32767.0,
+                    Axis::RightY => pad.ry = value as f32 / 32767.0,
                     Axis::TriggerRight => pad.rt = value > 12000,
                     // L2: the skill tree (holding SELECT was the only way before, and nothing on screen said so).
                     Axis::TriggerLeft => {
@@ -486,12 +488,17 @@ fn main() -> Result<(), String> {
         let b = |v: bool| if v { 1.0 } else { 0.0 };
         let kx = b(keys.right || pad.dright) - b(keys.left || pad.dleft);
         let ky = b(keys.down || pad.ddown) - b(keys.up || pad.dup);
-        inp.move_x = if pad.lx != 0.0 || pad.ly != 0.0 { pad.lx } else { kx };
-        inp.move_y = if pad.lx != 0.0 || pad.ly != 0.0 { pad.ly } else { ky };
-        inp.aim_x = pad.rx;
-        inp.aim_y = pad.ry;
-        // Twin-stick: pushing the right stick far casts in that direction.
-        let aim_cast = pad.rx * pad.rx + pad.ry * pad.ry > 0.5;
+        // The left stick moves only past 30% of a full push (measured round the middle, like the right stick): a
+        // stick resting off centre no longer walks you one way.
+        let (mx, my) = stick(pad.lx, pad.ly, 0.3);
+        inp.move_x = if mx != 0.0 || my != 0.0 { mx } else { kx };
+        inp.move_y = if mx != 0.0 || my != 0.0 { my } else { ky };
+        // The right stick aims only when clearly pushed (45%), and casts by itself only when pushed nearly all the
+        // way (80%): a stick resting off centre no longer steers every attack one way.
+        let (ax, ay) = stick(pad.rx, pad.ry, 0.45);
+        inp.aim_x = ax;
+        inp.aim_y = ay;
+        let aim_cast = ax * ax + ay * ay > 0.8 * 0.8;
         inp.cast = keys.cast || pad.cast || pad.rt || aim_cast;
         inp.cast2 = keys.cast2 || pad.cast2;
         inp.stand = keys.shift;
@@ -647,5 +654,18 @@ fn draw_cursor(scr: &mut gfx::Screen, x: i32, y: i32) {
     }
     for i in 1..7 {
         scr.fill(x + 1, y + i + 1, (i - 1).min(4), 1, gfx::rgb(0xd8b878));
+    }
+}
+
+#[cfg(test)]
+mod stick_tests {
+    #[test]
+    fn a_resting_stick_doesnt_aim() {
+        // A stick resting 30% off centre on both axes (a common handheld): not aiming.
+        assert_eq!(super::stick(0.3, 0.3, 0.45), (0.0, 0.0));
+        // Pushed: aims where it's pushed.
+        assert_eq!(super::stick(0.7, 0.0, 0.45), (0.7, 0.0));
+        // A movement stick resting 20% off centre: not walking.
+        assert_eq!(super::stick(0.2, -0.15, 0.3), (0.0, 0.0));
     }
 }
