@@ -1475,6 +1475,17 @@ impl Game {
         self.draw_tree(scr);
         self.draw_inventory(scr);
         self.draw_choose(scr);
+        // With the bag or the skill tree open, its panel hides the message line: say it again on top (why an
+        // item won't go on, "NEEDS CHAR LEVEL 30", used to vanish behind the bag).
+        if self.inv.is_some() || self.tree.is_some() {
+            if let Some((text, t)) = &self.message {
+                let c = if *t < 0.5 { mix(BLACK, rgb(0xffe0a0), *t * 2.0) } else { rgb(0xffe0a0) };
+                let (w, top) = (scr.w, self.view_h - HUD_H);
+                let tw = crate::gfx::text_width(text, 1);
+                scr.blend(w / 2 - tw / 2 - 6, top - 74, tw + 12, 15, BLACK, 0.85);
+                scr.text(text, w / 2, top - 70, c, Align::Center, 1);
+            }
+        }
         self.draw_overlays(scr);
     }
 

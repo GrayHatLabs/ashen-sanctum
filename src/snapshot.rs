@@ -2274,6 +2274,13 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         save(&mut g, scr, "inventory");
         g.inv.as_mut().unwrap().sel = crate::inventory::Cell::Bag(14);
         save(&mut g, scr, "inventory_unique");
+        // An item you're too low for: ENTER says why, on top of the bag.
+        if let Some(it) = g.p.gear.bag[14].as_mut() {
+            it.req = 60;
+        }
+        g.update(&Input { confirm: true, ..Input::default() });
+        g.update(&Input::default());
+        save(&mut g, scr, "inventory_refused");
         g.inv = None;
         // The stash, in town.
         g.debug_goto(LevelId::Overworld);

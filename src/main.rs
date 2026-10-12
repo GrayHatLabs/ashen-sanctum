@@ -136,7 +136,8 @@ fn main() -> Result<(), String> {
         sdl2::hint::set("SDL_ANDROID_TRAP_BACK_BUTTON", "1");
         sdl2::hint::set("SDL_IOS_ORIENTATIONS", "LandscapeLeft LandscapeRight");
     }
-    let handheld = cfg!(target_arch = "aarch64") || cfg!(target_os = "android");
+    // Handhelds: ARM Linux (Anbernic, the Odin 2 on ROCKNIX) and Android. Not an Apple Silicon Mac, which is ARM too.
+    let handheld = cfg!(all(target_arch = "aarch64", target_os = "linux")) || cfg!(target_os = "android");
     let tall = args.iter().any(|a| a == "--tall") || (handheld && !args.iter().any(|a| a == "--wide"));
     let seed_arg = args.iter().position(|a| a == "--seed").and_then(|i| args.get(i + 1)).and_then(|s| s.parse::<u64>().ok());
     // --export-music [dir]: write the music loops as WAV files (to listen to them outside the game).

@@ -4287,6 +4287,37 @@ mod tests {
         assert!(g.inv.is_some(), "the bag stays open");
     }
 
+    #[test]
+    fn enter_wears_what_you_pick_in_the_bag_on_every_slot() {
+        // Every base that can be worn, picked in the bag and confirmed with ENTER (the keyboard), as a new hero
+        // and as an act 7 hero.
+        for act in [0usize, 6] {
+            let mut g = Game::new(5, crate::gfx::SH_WIDE);
+            if act > 0 {
+                g.act_start(act);
+            }
+            let mut fails = vec![];
+            for b in 0..crate::items::BASES.len() {
+                let mut it = crate::items::roll_base(b, 40, crate::items::Rarity::Magic, &mut g.rng);
+                if it.slot() == crate::items::Slot::Gem {
+                    continue;
+                }
+                it.req = 1;
+                let name = it.name.clone();
+                g.p.gear.bag = vec![None; g.p.gear.bag.len()];
+                g.p.gear.bag[0] = Some(it);
+                g.open_inventory();
+                g.update(&Input::default());
+                g.update(&Input { confirm: true, ..Input::default() });
+                if !g.p.gear.worn.iter().flatten().any(|w| w.name == name) {
+                    fails.push((crate::items::BASES[b].key, g.message.clone()));
+                }
+                g.inv = None;
+            }
+            assert!(fails.is_empty(), "act {act}: these didn't go on: {fails:?}");
+        }
+    }
+
     fn walk_onto(g: &mut Game, kind: PortalKind) {
         // Doors and the ways on live out in the areas now: go to the one that has it.
         if !g.portals.iter().any(|p| p.kind == kind) {

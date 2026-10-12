@@ -18,10 +18,12 @@ pub fn dir() -> PathBuf {
     if let Ok(p) = std::env::var("ASHEN_SAVE") {
         return PathBuf::from(p).parent().map(PathBuf::from).unwrap_or_else(|| PathBuf::from("."));
     }
-    // Windows: %APPDATA%shensanctum. Linux / handhelds: $XDG_DATA_HOME or ~/.local/share.
+    // Windows: %APPDATA%\ashensanctum. macOS: ~/Library/Application Support/ashensanctum. Linux / handhelds:
+    // $XDG_DATA_HOME or ~/.local/share.
     let base = std::env::var("XDG_DATA_HOME")
         .map(PathBuf::from)
         .or_else(|_| if cfg!(windows) { std::env::var("APPDATA").map(PathBuf::from) } else { Err(std::env::VarError::NotPresent) })
+        .or_else(|_| if cfg!(target_os = "macos") { std::env::var("HOME").map(|h| PathBuf::from(h).join("Library/Application Support")) } else { Err(std::env::VarError::NotPresent) })
         .or_else(|_| std::env::var("HOME").map(|h| PathBuf::from(h).join(".local/share")))
         .unwrap_or_else(|_| PathBuf::from("."));
     base.join("ashensanctum")
