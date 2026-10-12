@@ -1833,7 +1833,9 @@ impl Game {
             return;
         }
         if self.inv.is_some() {
-            self.update_inventory(inp, p_confirm, p_lmb);
+            // A (the attack button) wears / takes off / buys, as the screen says: on a handheld START closes the
+            // bag, so ENTER alone left nothing to press.
+            self.update_inventory(inp, p_confirm || p_cast, p_lmb);
             self.prev = inp.clone();
             return;
         }
@@ -4267,6 +4269,22 @@ mod tests {
         // On nightmare it all starts over: he needs the Stillpoint again.
         g.next_difficulty();
         assert_eq!((g.quest.stage7, g.quest.stillpoint), (0, 0));
+    }
+
+    #[test]
+    fn the_attack_button_wears_what_you_pick_in_the_bag() {
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        g.p.gear.bag = vec![None; g.p.gear.bag.len()];
+        let mut it = crate::items::roll(5, crate::items::Rarity::Magic, &mut g.rng);
+        it.req = 1;
+        let name = it.name.clone();
+        g.p.gear.bag[0] = Some(it);
+        g.open_inventory();
+        g.update(&Input::default());
+        g.update(&Input { cast: true, ..Input::default() });
+        assert!(g.p.gear.bag[0].as_ref().map_or(true, |b| b.name != name), "it left the bag");
+        assert!(g.p.gear.worn.iter().flatten().any(|w| w.name == name), "and is worn");
+        assert!(g.inv.is_some(), "the bag stays open");
     }
 
     fn walk_onto(g: &mut Game, kind: PortalKind) {
