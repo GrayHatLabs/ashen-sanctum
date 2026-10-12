@@ -5,6 +5,7 @@ use std::fmt::Write;
 
 fn main() {
     windows_details();
+    mac_details();
     println!("cargo:rerun-if-changed=levels");
     // The Android crate (android/rust) builds the same source from two folders down.
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
@@ -23,6 +24,22 @@ fn main() {
     out.push_str("];\n");
     let dest = std::path::Path::new(&std::env::var("OUT_DIR").unwrap()).join("levels_gen.rs");
     std::fs::write(dest, out).unwrap();
+}
+
+/// On macOS, SDL2 (built in) asks clang's runtime which macOS it's running on (`___isPlatformVersionAtLeast`, from
+/// `@available`), and Rust links without clang's runtime: link it in.
+fn mac_details() {
+    if std::env::var("CARGO_CFG_TARGET_OS").as_deref() != Ok("macos") {
+        return;
+    }
+    let Ok(out) = std::process::Command::new("clang").arg("--print-resource-dir").output() else { return };
+    let dir = std::path::PathBuf::from(String::from_utf8_lossy(&out.stdout).trim()).join("lib/darwin");
+    if dir.join("libclang_rt.osx.a").exists() {
+        println!("cargo:rustc-link-search=native={}", dir.display());
+        println!("cargo:rustc-link-lib=static=clang_rt.osx");
+    } else {
+        println!("cargo:warning=no clang runtime in {}", dir.display());
+    }
 }
 
 /// On Windows, the .exe carries an icon and its name, version and maker (an unlabelled .exe is more likely to
