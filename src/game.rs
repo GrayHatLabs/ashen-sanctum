@@ -121,6 +121,8 @@ pub enum Sfx {
     Drink,
     Descend,
     Eat,
+    /// The flintlock's crack.
+    Shot,
 }
 
 pub struct Fireball {
@@ -707,6 +709,8 @@ pub struct Game {
     pub(crate) turrets: Vec<crate::inventor::TurretFx>,
     pub(crate) spiders: Vec<crate::inventor::SpiderFx>,
     pub(crate) airships: Vec<crate::inventor::AirshipFx>,
+    /// The pirate's rapier thrusts as they flash: (from x, y, to x, y, age).
+    pub(crate) thrusts: Vec<(f32, f32, f32, f32, f32)>,
     /// The skill tree screen, while open.
     pub tree: Option<crate::skills::TreeUi>,
     /// The inventory screen, while open.
@@ -874,6 +878,7 @@ impl Game {
             turrets: vec![],
             spiders: vec![],
             airships: vec![],
+            thrusts: vec![],
             tree: None,
             inv: None,
             hero_name: "HERO".into(),
@@ -3309,9 +3314,8 @@ impl Game {
             if !ember {
                 p.mana -= crate::inventor::ray_heat(r);
             }
-            p.cast_cd = 0.22;
-            p.cast_t = 0.22;
-            p.cast_len = 0.22;
+            let t = crate::inventor::FLINTLOCK_TIME;
+            (p.cast_cd, p.cast_t, p.cast_len) = (t, t, t);
             let (px, py) = (p.x, p.y);
             let (dx, dy) = (tx - px, ty - py);
             let l = (dx * dx + dy * dy).sqrt().max(0.001);
@@ -3321,7 +3325,16 @@ impl Game {
             let dmg = if ember { self.rng.rf(3.0, 5.0) * self.p.power.sqrt() } else { self.rng.rf(lo, hi) * self.fire_power() };
             self.balls.push(Fireball { x, y, vx: ux * 15.0, vy: uy * 15.0, life: 0.6, dmg, ember: true });
             self.stats.casts += 1;
-            self.sfx.push(Sfx::Cast);
+            // The flintlock's crack: a flash at the muzzle and a puff of powder smoke.
+            self.sfx.push(Sfx::Shot);
+            let (mx, my) = (px + ux * 0.6, py + uy * 0.6);
+            for _ in 0..3 {
+                self.spray_at(mx, my, PKind::Fire, 3.0);
+            }
+            for _ in 0..6 {
+                self.spray_at(mx, my, PKind::Smoke, 2.5);
+            }
+            self.lights.push(Light { x: mx, y: my, r: 70.0, s: 0.9, life: 0.12, max: 0.12 });
             return;
         }
         let fb_rank = p.skills.rank(if vampire { crate::skills::Skill::BloodLance } else { crate::skills::Skill::Fireball });
@@ -5474,6 +5487,34 @@ mod tests {
             g.p.skills.rank[s as usize] = 3;
         }
         g
+    }
+
+    #[test]
+    fn the_pirates_rapier_runs_through_the_foe_in_front_even_overheated() {
+        use crate::skills::Skill;
+        let mut g = inventor_game();
+        g.mobs.clear();
+        let mut m = Mob::new(Kind::Zombie, g.p.x + 1.5, g.p.y, 1.0, &mut g.rng);
+        (m.max_hp, m.hp) = (9000.0, 9000.0);
+        g.mobs.push(m);
+        let far = Mob::new(Kind::Zombie, g.p.x + 6.0, g.p.y, 1.0, &mut g.rng);
+        g.mobs.push(far);
+        let (hp0, hp1) = (g.mobs[0].hp, g.mobs[1].hp);
+        let heat = g.p.mana;
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::Rapier, g.p.x + 3.0, g.p.y);
+        assert!(g.mobs[0].hp < hp0, "the foe in reach is run through");
+        assert_eq!(g.mobs[1].hp, hp1, "the one out of reach isn't");
+        assert_eq!(g.p.mana, heat, "no heat");
+        assert_eq!(g.p.pose, "lunge");
+        // Overheated, the guns lock but the blade doesn't.
+        g.p.overheat = 2.0;
+        g.p.cast_cd = 0.0;
+        let hp = g.mobs[0].hp;
+        g.cast_skill(Skill::Rapier, g.p.x + 3.0, g.p.y);
+        assert!(g.mobs[0].hp < hp);
+        // The tree: the rapier opens the boarding hook.
+        assert_eq!(crate::skills::def(Skill::Grapple).prereq, Some(Skill::Rapier));
     }
 
     #[test]

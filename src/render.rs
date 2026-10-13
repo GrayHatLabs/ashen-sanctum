@@ -493,6 +493,20 @@ impl Game {
             } else {
                 (rgb(0xff5010), rgb(0xffd060), rgb(0xfff4c0))
             };
+            if inventor && b.ember {
+                // A lead ball: a dark round shot, a glint, and a thin grey trail of powder smoke behind it.
+                let l = (b.vx * b.vx + b.vy * b.vy).sqrt().max(0.01);
+                let (ex, ey) = iso::to_screen(b.vx / l * 0.5, b.vy / l * 0.5);
+                let (ax, ay) = (sx + scr.shake.0, sy - 20 + scr.shake.1);
+                for k in 1..=4 {
+                    let f = k as f32 / 4.0;
+                    let (tx, ty) = (ax - (ex * f) as i32, ay - (ey * f) as i32);
+                    scr.blend(tx - 1, ty - 1, 2, 2, rgb(0xb0b0b0), 0.45 * (1.0 - f));
+                }
+                scr.disc(ax, ay, 2, rgb(0x202024));
+                scr.pset(ax - 1, ay - 1, rgb(0xd0d0d8));
+                continue;
+            }
             if inventor {
                 // A short streak of aether.
                 let l = (b.vx * b.vx + b.vy * b.vy).sqrt().max(0.01);
@@ -526,6 +540,14 @@ impl Game {
                 let dx = ((d as f32 * 2.3).sin() * rx as f32 * 0.6) as i32;
                 scr.fill(sx + dx, sy - 70 + (ph * 66.0) as i32, 1, 3, rgb(0xd02030));
             }
+        }
+        // The pirate's rapier: a bright steel line flashing out from her hand to the point.
+        for &(x0, y0, x1, y1, t) in &self.thrusts {
+            let (ax, ay) = to_scr(x0, y0);
+            let (bx, by) = to_scr(x1, y1);
+            let k = 1.0 - t / 0.18;
+            line(scr, ax, ay - 22, bx, by - 20, mix(rgb(0x606878), rgb(0xf0f4ff), k));
+            scr.glow(bx, by - 20, 8.0, rgb(0xd0e0ff), 0.6 * k);
         }
         // The inventor's gadgets.
         for b in &self.bombs {
@@ -1681,6 +1703,8 @@ impl Game {
         let claw = vampire && (self.p.cast_len - 0.3).abs() < 0.001 && art.has("attack");
         let anim = if self.p.cast_t > 0.0 && claw {
             CharFrame::At("attack", self.p.dir, 1.0 - self.p.cast_t / self.p.cast_len)
+        } else if self.p.cast_t > 0.0 && self.p.pose == "lunge" && art.has("lunge") {
+            CharFrame::At("lunge", self.p.dir, 1.0 - self.p.cast_t / self.p.cast_len)
         } else if self.p.cast_t > 0.0 && valkyrie && art.has(self.p.pose) {
             CharFrame::At(self.p.pose, self.p.dir, 1.0 - self.p.cast_t / self.p.cast_len)
         } else if self.p.charge.is_some() && art.has("walk") {

@@ -95,7 +95,7 @@ impl Audio {
         let dev = sys.open_playback(None, &spec, |_| Mixer { voices: v2, music: m2 }).ok()?;
         dev.resume();
         let mut rng = Rng::new(99);
-        let bank = [Sfx::Cast, Sfx::Boom, Sfx::Hit, Sfx::Hurt, Sfx::Die, Sfx::Swing, Sfx::Pickup, Sfx::Drink, Sfx::Descend, Sfx::Eat]
+        let bank = [Sfx::Cast, Sfx::Boom, Sfx::Hit, Sfx::Hurt, Sfx::Die, Sfx::Swing, Sfx::Pickup, Sfx::Drink, Sfx::Descend, Sfx::Eat, Sfx::Shot]
             .into_iter()
             .map(|s| (s, (0..3).map(|_| Arc::new(synth(s, &mut rng))).collect()))
             .collect();
@@ -154,6 +154,7 @@ fn synth(s: Sfx, rng: &mut Rng) -> Vec<f32> {
         Sfx::Drink => 0.35,
         Sfx::Descend => 1.2,
         Sfx::Eat => 0.3,
+        Sfx::Shot => 0.45,
     };
     let n = (secs * RATE as f32) as usize;
     let mut out = vec![0.0f32; n];
@@ -203,6 +204,14 @@ fn synth(s: Sfx, rng: &mut Rng) -> Vec<f32> {
             Sfx::Drink => {
                 phase += (300.0 + 200.0 * (t * 30.0).sin().abs()) / RATE as f32;
                 (phase * std::f32::consts::TAU).sin() * 0.25 * (1.0 - k)
+            }
+            Sfx::Shot => {
+                // A flintlock: the sharp crack of the powder, a low thump, and a hiss of smoke after.
+                lp += (noise - lp) * (0.9 - 0.8 * k);
+                phase += (95.0 - 50.0 * k) * detune / RATE as f32;
+                let crack = noise * (1.0 - k * 25.0).max(0.0) * 1.2;
+                let thump = (phase * std::f32::consts::TAU).sin() * (1.0 - k).powi(4) * 0.9;
+                crack + thump + lp * (1.0 - k).powi(2) * 0.5
             }
             Sfx::Eat => {
                 // Three quick crunches.

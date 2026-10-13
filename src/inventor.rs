@@ -27,12 +27,21 @@ pub const VENT_RADIUS: f32 = 2.6;
 /// Heat capacity cooled per second (before Tinkerer).
 pub const COOLING: f32 = 9.0;
 
+/// The flintlock: one heavy lead ball every FLINTLOCK_TIME seconds (an 1800s pistol: slow to fire, hard to take;
+/// it was a quick aether shot every 0.22 s for 6-10 until 2026-10-13).
+pub const FLINTLOCK_TIME: f32 = 0.6;
 pub fn ray_dmg(r: u8) -> (f32, f32) {
     let k = 1.0 + 0.15 * up(r);
-    (6.0 * k, 10.0 * k)
+    (18.0 * k, 30.0 * k)
 }
 pub fn ray_heat(r: u8) -> f32 {
-    4.0 + 0.2 * up(r)
+    9.0 + 0.4 * up(r)
+}
+/// The rapier: how far it reaches, and how hard it thrusts (it pierces a second foe from rank 3).
+pub const RAPIER_REACH: f32 = 2.0;
+pub fn rapier_dmg(r: u8) -> (f32, f32) {
+    let k = 1.0 + 0.18 * up(r);
+    (16.0 * k, 26.0 * k)
 }
 pub fn bomb_dmg(r: u8) -> f32 {
     22.0 + 8.0 * up(r)
@@ -142,11 +151,16 @@ pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
             Skill::Overclock => format!("+{}% AETHER DAMAGE, FLINTLOCK {}% FASTER", 8 * r.max(1) as i32, 4 * r.max(1) as i32),
             Skill::AirshipStrike => format!("{} DAMAGE PER BOMB, {:.0} HEAT, {:.0} SEC COOLDOWN", (airship_dmg(r) * power) as i32, airship_heat(r), AIRSHIP_CD),
             Skill::SteamSuit => format!("{:.0} SEC, HALF DAMAGE TAKEN, {:.0} HEAT, {:.0} SEC COOLDOWN", suit_time(r), suit_heat(r), SUIT_CD),
+            Skill::Rapier => {
+                let (a, b) = rapier_dmg(r);
+                let pierce = if r >= 3 { ", PIERCES A SECOND FOE" } else { "" };
+                format!("{}-{} DAMAGE, NO HEAT{pierce}", (a * power) as i32, (b * power) as i32)
+            }
             _ => String::new(),
         }
     };
     let what = match s {
-        Skill::RayPistol => "FAST AETHER SHOTS FROM YOUR BRASS FLINTLOCK. A PIRATE'S BREAD AND BUTTER.",
+        Skill::RayPistol => "A HEAVY LEAD BALL FROM YOUR BRASS FLINTLOCK: SLOW TO FIRE, HARD TO TAKE. A PIRATE'S BREAD AND BUTTER.",
         Skill::ClockBomb => "LOBS A FUSED POWDER KEG. IT BURSTS A SECOND LATER AND HURLS FOES BACK.",
         Skill::Tinkerer => "PASSIVE. YOUR GEAR COOLS FASTER AND YOUR GADGETS LAST LONGER.",
         Skill::ArcCoil => "A BOLT OF AETHER LIGHTNING THAT LEAPS FROM FOE TO FOE.",
@@ -157,6 +171,7 @@ pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
         Skill::Overclock => "PASSIVE. MORE AETHER DAMAGE, AND THE FLINTLOCK FIRES FASTER.",
         Skill::AirshipStrike => "YOUR PIRATE AIRSHIP SWEEPS OVERHEAD AND FIRES A BROADSIDE DOWN A LINE TOWARD THE TARGET.",
         Skill::SteamSuit => "CLIMB INTO YOUR STEAM SUIT: HALF DAMAGE TAKEN, FASTER, AND YOUR SKILLS RUN COLD.",
+        Skill::Rapier => "A QUICK LUNGE WITH YOUR RAPIER AT THE FOE IN FRONT. IT COSTS NO HEAT, SO IT STILL WORKS WHEN YOUR GUNS OVERHEAT.",
         _ => "",
     };
     let mut v = vec![what.to_string()];
@@ -246,11 +261,13 @@ impl Game {
         if self.p.cast_cd > 0.0 {
             return;
         }
+        self.p.pose = "cast";
         match s {
+            Skill::Rapier => self.rapier(tx, ty, r),
             Skill::RayPistol => {
                 self.cast_fireball(tx, ty, false);
                 let oc = self.p.skills.rank(Skill::Overclock) as f32;
-                let t = 0.22 * (1.0 - 0.04 * oc).max(0.5);
+                let t = FLINTLOCK_TIME * (1.0 - 0.04 * oc).max(0.5);
                 self.cast_pose(t);
             }
             Skill::ClockBomb => {
@@ -428,7 +445,43 @@ impl Game {
     }
 
     /// Bombs, arcs, turrets, the spider, airships, the Tesla field and the suit, every tick.
+    /// The rapier: a lunge toward (tx, ty) that runs through the nearest foe in front (and one behind it, from rank
+    /// 3), within RAPIER_REACH.
+    pub(crate) fn rapier(&mut self, tx: f32, ty: f32, r: u8) {
+        self.cast_pose(0.38);
+        self.p.pose = "lunge";
+        self.sfx.push(Sfx::Swing);
+        let (px, py) = (self.p.x, self.p.y);
+        let (dx, dy) = (tx - px, ty - py);
+        let l = (dx * dx + dy * dy).sqrt().max(0.01);
+        let (ux, uy) = (dx / l, dy / l);
+        let mut in_line: Vec<(f32, usize)> = (0..self.mobs.len())
+            .filter(|&i| self.mobs[i].alive() && self.mobs[i].charm <= 0.0 && self.mobs[i].neutral == 0)
+            .filter_map(|i| {
+                let (mx, my) = (self.mobs[i].x - px, self.mobs[i].y - py);
+                let along = mx * ux + my * uy;
+                let side = (mx * uy - my * ux).abs();
+                (along > -0.2 && along < RAPIER_REACH + self.mobs[i].r && side < 0.6 + self.mobs[i].r * 0.5).then_some((along, i))
+            })
+            .collect();
+        in_line.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
+        let n = if r >= 3 { 2 } else { 1 };
+        let (lo, hi) = rapier_dmg(r);
+        let mut tip = (px + ux * RAPIER_REACH, py + uy * RAPIER_REACH);
+        for &(_, i) in in_line.iter().take(n) {
+            let dmg = self.rng.rf(lo, hi) * self.fire_power();
+            tip = (self.mobs[i].x, self.mobs[i].y);
+            self.hit_mob(i, dmg, 0.0, 0.0, None, true);
+        }
+        self.thrusts.push((px + ux * 0.4, py + uy * 0.4, tip.0, tip.1, 0.0));
+        self.stats.casts += 1;
+    }
+
     pub(crate) fn update_inventor(&mut self) {
+        for t in self.thrusts.iter_mut() {
+            t.4 += DT;
+        }
+        self.thrusts.retain(|t| t.4 < 0.18);
         self.p.overheat = (self.p.overheat - DT).max(0.0);
         self.p.vent_cd = (self.p.vent_cd - DT).max(0.0);
         self.p.suit_t = (self.p.suit_t - DT).max(0.0);
@@ -573,7 +626,7 @@ mod tests {
         let sk = Skills::new(Class::Inventor);
         assert_eq!(sk.rank(Skill::RayPistol), 1);
         assert_eq!(sk.actives(), vec![Skill::RayPistol]);
-        assert_eq!(sk.tree().len(), 11);
+        assert_eq!(sk.tree().len(), 12, "eleven, and the rapier");
         for s in sk.tree() {
             assert!(is_inventor(*s));
             assert!(!describe(*s, 1, 1.0, &sk).is_empty());

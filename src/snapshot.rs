@@ -836,6 +836,12 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         idle(&mut g, 3);
         g.p.mana = g.p.max_mana * 0.2;
         save(&mut g, scr, "inventor_gadgets");
+        // Her rapier, mid-lunge.
+        g.p.skills.rank[Skill::Rapier as usize] = 3;
+        g.p.cast_cd = 0.0;
+        g.cast_skill(Skill::Rapier, target.0, target.1);
+        idle(&mut g, 8);
+        save(&mut g, scr, "inventor_rapier");
         cast(&mut g, Skill::AirshipStrike, target.0, target.1);
         cast(&mut g, Skill::TeslaField, target.0, target.1);
         idle(&mut g, 25);

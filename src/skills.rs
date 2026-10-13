@@ -44,6 +44,8 @@ pub enum Skill {
     Overclock,
     AirshipStrike,
     SteamSuit,
+    /// The sky pirate's rapier (the user, 2026-10-13): a lunge at the foe in front. No heat, so it works overheated.
+    Rapier,
     // ---- the Valkyrie ----
     RuneSpear,
     RimeSweep,
@@ -214,7 +216,7 @@ pub const VAMPIRE: [Skill; 11] = [
     Skill::Embrace,
 ];
 
-pub const INVENTOR: [Skill; 11] = [
+pub const INVENTOR: [Skill; 12] = [
     Skill::RayPistol,
     Skill::ClockBomb,
     Skill::Tinkerer,
@@ -226,6 +228,7 @@ pub const INVENTOR: [Skill; 11] = [
     Skill::Overclock,
     Skill::AirshipStrike,
     Skill::SteamSuit,
+    Skill::Rapier,
 ];
 
 pub const VALKYRIE: [Skill; 11] = [
@@ -299,7 +302,7 @@ pub const INQUISITOR: [Skill; 11] = [
 ];
 
 /// Every skill of every class (save files, rank arrays).
-pub const ALL: [Skill; 88] = [
+pub const ALL: [Skill; 89] = [
     Skill::Fireball,
     Skill::Inferno,
     Skill::Warmth,
@@ -333,6 +336,7 @@ pub const ALL: [Skill; 88] = [
     Skill::Overclock,
     Skill::AirshipStrike,
     Skill::SteamSuit,
+    Skill::Rapier,
     Skill::RuneSpear,
     Skill::RimeSweep,
     Skill::Northborn,
@@ -428,12 +432,13 @@ pub fn def(s: Skill) -> Def {
         Skill::NightMastery => Def { name: "NIGHT MASTERY", key: "nightmastery", level: 12, prereq: Some(Skill::MistStep), passive: true, cell: (2, 2) },
         Skill::BloodMoon => Def { name: "BLOOD MOON", key: "bloodmoon", level: 18, prereq: Some(Skill::CrimsonNova), passive: false, cell: (3, 0) },
         Skill::Embrace => Def { name: "EMBRACE", key: "embrace", level: 18, prereq: Some(Skill::Thrall), passive: false, cell: (3, 1) },
-        Skill::RayPistol => Def { name: "AETHER FLINTLOCK", key: "raypistol", level: 1, prereq: None, passive: false, cell: (0, 0) },
+        Skill::RayPistol => Def { name: "FLINTLOCK PISTOL", key: "raypistol", level: 1, prereq: None, passive: false, cell: (0, 0) },
         Skill::ClockBomb => Def { name: "POWDER KEG", key: "clockbomb", level: 1, prereq: None, passive: false, cell: (0, 1) },
-        Skill::Tinkerer => Def { name: "TINKERER", key: "tinkerer", level: 1, prereq: None, passive: true, cell: (0, 2) },
+        Skill::Rapier => Def { name: "RAPIER", key: "rapier", level: 1, prereq: None, passive: false, cell: (0, 2) },
+        Skill::Tinkerer => Def { name: "TINKERER", key: "tinkerer", level: 18, prereq: Some(Skill::Overclock), passive: true, cell: (3, 2) },
         Skill::ArcCoil => Def { name: "ARC COIL", key: "arccoil", level: 6, prereq: Some(Skill::RayPistol), passive: false, cell: (1, 0) },
         Skill::Turret => Def { name: "SWIVEL GUN", key: "turret", level: 6, prereq: Some(Skill::ClockBomb), passive: false, cell: (1, 1) },
-        Skill::Grapple => Def { name: "BOARDING HOOK", key: "grapple", level: 6, prereq: Some(Skill::Tinkerer), passive: false, cell: (1, 2) },
+        Skill::Grapple => Def { name: "BOARDING HOOK", key: "grapple", level: 6, prereq: Some(Skill::Rapier), passive: false, cell: (1, 2) },
         Skill::TeslaField => Def { name: "TESLA FIELD", key: "tesla", level: 12, prereq: Some(Skill::ArcCoil), passive: false, cell: (2, 0) },
         Skill::Spider => Def { name: "CLOCK SPIDER", key: "spider", level: 12, prereq: Some(Skill::Turret), passive: false, cell: (2, 1) },
         Skill::Overclock => Def { name: "OVERCLOCK", key: "overclock", level: 12, prereq: Some(Skill::Grapple), passive: true, cell: (2, 2) },
@@ -999,7 +1004,7 @@ impl Game {
         }
         // Out of mana: the free Ember Bolt keeps you fighting.
         // The inventor: overheated guns only fire the weak shot.
-        let mut locked = self.p.skills.class == Class::Inventor && self.p.overheat > 0.0;
+        let mut locked = self.p.skills.class == Class::Inventor && self.p.overheat > 0.0 && s != Skill::Rapier;
         // Firing past the top of her gauge overheats her.
         if self.p.skills.class == Class::Inventor && !locked && self.p.mana < mana_cost(s, r) && self.p.cast_cd <= 0.0 {
             self.p.mana = 0.0;

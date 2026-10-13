@@ -339,10 +339,30 @@ fn inventor_icon(s: crate::skills::Skill, im: &mut Sprite) {
     };
     match s {
         Skill::RayPistol => {
-            im.fill(4, 9, 12, 5, brass);
-            im.fill(5, 14, 4, 7, dark);
-            im.fill(16, 10, 5, 3, teal);
-            im.set(22, 11, rgb(0xe0fffa));
+            // An 1800s flintlock, side on, barrel to the right: a long iron barrel on a wooden stock, a brass lock
+            // with its hammer cocked, a trigger guard, and a curved wooden grip with a brass butt cap.
+            let (wood, wood_lt, iron, iron_lt) = (rgb(0x5a3016), rgb(0x8a5428), rgb(0x3a3a42), rgb(0x8a8a96));
+            im.fill(9, 8, 12, 3, iron);
+            im.fill(9, 8, 12, 1, iron_lt);
+            im.fill(20, 7, 2, 5, brass);
+            im.fill(9, 11, 10, 2, wood);
+            im.fill(9, 11, 10, 1, wood_lt);
+            im.fill(6, 9, 5, 4, brass);
+            im.fill(5, 6, 2, 3, dark);
+            im.set(7, 5, dark);
+            im.set(8, 5, rgb(0xd0c8b0));
+            for y in 12..21 {
+                let x0 = 7 - (y - 12) * 2 / 3;
+                im.fill(x0, y, 4, 1, if y % 3 == 0 { wood_lt } else { wood });
+            }
+            im.fill(1, 20, 5, 2, brass);
+            for (x, y) in [(10, 13), (10, 14), (11, 15), (12, 15), (13, 14), (13, 13)] {
+                im.set(x, y, brass);
+            }
+            im.set(11, 13, dark);
+            // A wisp of smoke at the muzzle.
+            im.set(22, 6, rgb(0x9a9a9a));
+            im.set(23, 5, rgb(0x7a7a7a));
         }
         Skill::ClockBomb => {
             im.ellipse(11.0, 14.0, 7.0, 7.0, brass);
@@ -410,6 +430,22 @@ fn inventor_icon(s: crate::skills::Skill, im: &mut Sprite) {
             for k in 0..3 {
                 im.fill(7 + k * 5, 19 + (k % 2) * 2, 2, 2, rgb(0x2a2018));
             }
+        }
+        Skill::Rapier => {
+            // A rapier, point up and to the right: a thin bright blade, a swept brass hilt, a dark grip.
+            for k in 0..15 {
+                im.set(6 + k, 17 - k, rgb(0xd8dce8));
+                if k < 13 {
+                    im.set(6 + k, 18 - k, rgb(0x8a8e9a));
+                }
+            }
+            im.set(21, 2, rgb(0xffffff));
+            for (x, y) in [(3, 15), (4, 14), (5, 15), (6, 16), (7, 19), (8, 20), (9, 19), (4, 16), (5, 18)] {
+                im.set(x, y, brass);
+            }
+            im.fill(3, 18, 2, 2, dark);
+            im.fill(1, 20, 3, 3, dark);
+            im.set(2, 21, brass);
         }
         Skill::SteamSuit => {
             im.fill(7, 6, 10, 11, brass);
