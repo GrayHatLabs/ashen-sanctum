@@ -2486,6 +2486,62 @@ pub fn boss_hit(act: usize) -> f32 {
     [1.35, 1.25, 1.2, 1.15, 1.15, 1.15, 1.15][act.min(6)]
 }
 
+/// Each act's last dungeon (its boss fights in a hall of its own: `boss_arena`).
+pub const FINALS: [usize; 7] = [SANCTUM, GLACIER, CASTLE, HEART, ABYSS, ZENITH, EYE];
+/// How far the boss hall reaches from its middle (tiles).
+pub const ARENA_R: i32 = 9;
+
+/// The hall an act's last boss fights in: the end room opened out into a great round chamber, a ring of pillars,
+/// and the act's own furnishings (fires, ice, tombs, gears, coral, statues; the Churn a patchwork of them all)
+/// round its edge. Returns its middle, where the boss stands.
+fn boss_arena(lv: &mut Level, act: usize, (ex, ey): (i32, i32), rng: &mut Rng) -> (i32, i32) {
+    let (w, h) = (lv.d.w, lv.d.h);
+    let r = ARENA_R;
+    let (cx, cy) = (ex.clamp(r + 2, w - r - 3), ey.clamp(r + 2, h - r - 3));
+    // Keep clear of the way in and the start.
+    let near_way = |lv: &Level, x: i32, y: i32| {
+        lv.portals.iter().any(|p| (p.x - x as f32 - 0.5).powi(2) + (p.y - y as f32 - 0.5).powi(2) < 9.0)
+            || (lv.start.0 - x as f32 - 0.5).powi(2) + (lv.start.1 - y as f32 - 0.5).powi(2) < 9.0
+    };
+    for y in cy - r..=cy + r {
+        for x in cx - r..=cx + r {
+            let d2 = (x - cx).pow(2) + (y - cy).pow(2);
+            if d2 <= r * r + r && lv.d.get(x, y) != crate::dungeon::Tile::Prop {
+                lv.d.set(x, y, crate::dungeon::Tile::Floor);
+            }
+        }
+    }
+    // A ring of pillars.
+    for k in 0..8 {
+        let a = k as f32 / 8.0 * std::f32::consts::TAU + 0.39;
+        let (px, py) = (cx + (a.cos() * 6.0).round() as i32, cy + (a.sin() * 6.0).round() as i32);
+        if !near_way(lv, px, py) {
+            lv.d.set(px, py, crate::dungeon::Tile::Wall);
+        }
+    }
+    // The act's furnishings round the edge: lights on the four sides, the rest between.
+    let (lights, decor): (&[PropKind], &[PropKind]) = match act {
+        0 => (&[PropKind::Campfire], &[PropKind::Tomb, PropKind::Rock]),
+        1 => (&[PropKind::IceCrystal], &[PropKind::SnowRock, PropKind::IceCrystal]),
+        2 => (&[PropKind::Campfire], &[PropKind::Gravestone, PropKind::Tomb]),
+        3 => (&[PropKind::GasLamp], &[PropKind::CogPile, PropKind::SteamVent]),
+        4 => (&[PropKind::ShellLamp], &[PropKind::Coral1, PropKind::Coral2, PropKind::Kelp]),
+        5 => (&[PropKind::SkyLamp], &[PropKind::AngelStatue, PropKind::MarbleRuin]),
+        _ => (&[PropKind::Campfire, PropKind::IceCrystal], &[PropKind::Gravestone, PropKind::CogPile, PropKind::Coral1, PropKind::AngelStatue]),
+    };
+    for k in 0..12 {
+        let a = k as f32 / 12.0 * std::f32::consts::TAU;
+        let (px, py) = (cx + (a.cos() * 8.0).round() as i32, cy + (a.sin() * 8.0).round() as i32);
+        if near_way(lv, px, py) || lv.d.get(px, py) != crate::dungeon::Tile::Floor {
+            continue;
+        }
+        let kind = if k % 3 == 0 { lights[(k / 3) % lights.len()] } else { decor[rng.range(0, decor.len() as i32) as usize] };
+        lv.d.set(px, py, crate::dungeon::Tile::Prop);
+        lv.props.push(Prop::on(kind, px, py, 1, 1));
+    }
+    (cx, cy)
+}
+
 /// One floor of a dungeon: stairs up in the first room, stairs down (or the boss)
 /// in the last, monster packs in between.
 pub fn dungeon_floor(k: usize, floor: usize, seed: u64) -> Level {
@@ -2503,6 +2559,8 @@ pub fn dungeon_floor(k: usize, floor: usize, seed: u64) -> Level {
     lv.props.push(Prop::stairs(PropKind::StairsUp, sx, sy));
     let end = *rooms.last().unwrap();
     let (ex, ey) = end.center();
+    // The last boss of an act fights in its own hall (the user, 2026-10-13: "special battle rooms").
+    let (ex, ey) = if last && FINALS.contains(&k) { boss_arena(&mut lv, def.act, (ex, ey), &mut rng) } else { (ex, ey) };
     if last {
         let mut boss = Mob::new(def.boss, ex as f32 + 0.5, ey as f32 + 0.5, tier * 0.5 + 0.5, &mut rng);
         boss.max_hp *= boss_life(def.act);

@@ -435,6 +435,15 @@ impl Game {
             }
         }
         for pr in &self.props {
+            let lamp = match pr.kind {
+                PropKind::GasLamp | PropKind::ShellLamp | PropKind::SkyLamp => Some(110.0),
+                PropKind::IceCrystal => Some(80.0),
+                _ => None,
+            };
+            if let (Some(r), true) = (lamp, in_view(pr.x, pr.y)) {
+                let (sx, sy) = to_scr(pr.x, pr.y);
+                scr.add_light(sx, sy - 12, r, 0.7);
+            }
             if pr.kind == PropKind::Campfire && in_view(pr.x, pr.y) {
                 let (sx, sy) = to_scr(pr.x, pr.y);
                 let fl = ((self.tick as f32) * 0.3).sin() * 6.0;

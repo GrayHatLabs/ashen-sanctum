@@ -39,6 +39,17 @@ const FOOD_DRAIN_RUN: f32 = 0.8;
 const STARVE_DPS: f32 = 1.2;
 /// Apple, bread, roast: food restored, bonus life.
 pub const FOODS: [(&str, f32, f32); 3] = [("APPLE", 20.0, 0.0), ("BREAD", 35.0, 0.0), ("ROAST", 60.0, 10.0)];
+/// The boss halls (world.rs `boss_arena`): what each is called, and how its boss fights.
+const ARENA_NOTES: [(&str, &str); 7] = [
+    ("THE ASH THRONE", "THE ASH KING HOLDS COURT HERE. KEEP MOVING: HIS ASH NOVAS BURST WHERE YOU STAND."),
+    ("THE FROZEN HEART", "VORTHRAX COILS AT THE CENTRE. STAY OUT OF ITS FROST BREATH AND THE FALLING ICICLES."),
+    ("THE BLOOD HALL", "COUNT VARDAK DUELS, TURNS TO MIST, THEN TAKES WING. WHEN HE FADES, WAIT FOR HIM TO COME BACK."),
+    ("THE CLOCK'S HEART", "THE CLOCKMAKER TURNS TIME BACK ON YOU, THEN WAKES HIS GREAT ENGINE. KEEP HITTING HIM."),
+    ("THE DROWNED HALL", "THE LEVIATHAN DRAGS YOU IN AND PUTS OUT THE LIGHTS. FIGHT WHAT'S CLOSE, AND STAY OUT OF ITS BEAM."),
+    ("THE COURT OF THE SUN", "SOLANTHOS BURNS, THEN GOES DARK, THEN ECLIPSES. KEEP MOVING: THE SKY AND THE FLOOR BOTH STRIKE."),
+    ("THE EYE OF THE STORM", "YLGRATH WEARS THE OLD BOSSES' SHAPES. EACH SHAPE FIGHTS AS THAT BOSS DID."),
+];
+
 /// A road off the edge of an area: how near its gate you go through (tiles; see `in_gate`).
 pub const EXIT_GATE: f32 = 1.4;
 /// Chance a normal monster drops a piece of equipment (0.1 until 2026-10-13: too much loot, said the user).
@@ -820,6 +831,8 @@ pub struct Game {
     /// A way in or out only works once you've stepped clear of the one you arrived by (no bouncing back and
     /// forth between areas).
     pub(crate) portal_armed: bool,
+    /// This floor's boss hall (its middle, and the act), and whether it's been announced.
+    pub(crate) arena: Option<(f32, f32, usize, bool)>,
     /// Where the last town portal was taken from (level, x, y): the town's portal leads back there.
     pub(crate) tp_return: Option<(LevelId, f32, f32)>,
     /// The inquisitor's sprite frame as last drawn, and where (render.rs): her chain starts from her hand in it.
@@ -963,6 +976,7 @@ impl Game {
             portal_cd: 0.0,
             portal_armed: true,
             tp_return: None,
+            arena: None,
             hero_frame: std::cell::RefCell::new(None),
             hero_hold: std::cell::RefCell::new(None),
             defer_travel: false,
@@ -1478,6 +1492,12 @@ impl Game {
         self.stillpoint_enter();
         self.churnside_enter();
         self.town_portal_enter();
+        self.arena = match self.level {
+            LevelId::Dungeon(k, f) if world::FINALS.contains(&k) && f + 1 == world::DUNGEONS[k].floors => {
+                self.mobs.iter().find(|m| m.boss && m.alive()).map(|m| (m.x, m.y, world::DUNGEONS[k].act, false))
+            }
+            _ => None,
+        };
         self.gears_enter();
         self.reef_enter();
         self.isles_enter();
@@ -3010,6 +3030,14 @@ impl Game {
         }
         if inp.scroll {
             self.read_portal_scroll();
+        }
+        if let Some((ax, ay, act, false)) = self.arena {
+            let r = world::ARENA_R as f32;
+            if (self.p.x - ax).powi(2) + (self.p.y - ay).powi(2) < r * r {
+                self.arena = Some((ax, ay, act, true));
+                let (title, hint) = ARENA_NOTES[act.min(6)];
+                self.notice("arena", title, hint);
+            }
         }
         if inp.potion_hp && self.p.hp_pots > 0 && self.p.hp < self.p.max_hp {
             self.p.hp_pots -= 1;
