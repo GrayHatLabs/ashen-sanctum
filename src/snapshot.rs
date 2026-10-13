@@ -2304,6 +2304,14 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         }
         save(&mut g, scr, "quit_ask");
         g.dialog = None;
+        // The help menu, a topic, and the gamepad buttons.
+        g.open_help();
+        save(&mut g, scr, "help_menu");
+        g.open_topic(9);
+        save(&mut g, scr, "help_topic");
+        g.open_binds(0);
+        save(&mut g, scr, "help_binds");
+        g.dialog = None;
         g.inv = None;
         // The stash, in town.
         g.debug_goto(LevelId::Overworld);

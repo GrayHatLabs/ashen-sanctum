@@ -372,8 +372,14 @@ pub enum Act {
     /// Save and go back to the character select screen; save and close the game.
     QuitToHeroes,
     QuitGame,
-    /// The how-to-play guide.
+    /// The help menu (its list of topics), one topic, the gamepad buttons screen, picking a button's action,
+    /// setting it (255: nothing), and the default layout.
     Guide,
+    Help(u8),
+    Binds,
+    BindPick(u8),
+    BindSet(u8, u8),
+    BindReset,
     /// The jeweler joins every three alike gems in your bag.
     Combine,
     /// The jeweler's bench: opens the inventory to add sockets or take gems out.

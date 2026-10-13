@@ -2260,7 +2260,13 @@ impl Game {
             rgb(0x908070)
         };
         scr.text(if self.p.running { "RUN" } else { "WALK" }, rx + 12, iy + 8, col, Align::Center, 1);
-        let label = if self.p.winded { "TIRED" } else { "R/B" };
+        // The keys that toggle it: R, and whichever pad button has run / walk (L3 out of the box; binds.rs).
+        let pad = crate::binds::PAD_BTNS.iter().find(|&&b| crate::binds::get(b) == Some(crate::binds::PadAct::Run)).map(|b| b.name().split(' ').next().unwrap_or(""));
+        let keys = match pad {
+            Some(b) => format!("R/{b}"),
+            None => "R".to_string(),
+        };
+        let label = if self.p.winded { "TIRED" } else { keys.as_str() };
         scr.text(label, rx + 12, top + 39, if self.p.winded { col } else { rgb(0x908070) }, Align::Center, 1);
         // Bag button (inventory).
         let gx = rx + 32;

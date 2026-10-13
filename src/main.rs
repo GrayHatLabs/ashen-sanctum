@@ -47,6 +47,8 @@ mod chaos;
 mod mapcheck;
 mod churnfolk;
 mod churnside;
+mod binds;
+mod help;
 mod world;
 
 use game::{Game, Input};
@@ -82,6 +84,39 @@ struct Pad {
     cast: bool,
     cast2: bool,
     rt: bool,
+}
+
+/// The remappable pad button an SDL button is (after `by_label`).
+fn pad_btn(b: Button) -> Option<binds::PadBtn> {
+    use binds::PadBtn as P;
+    Some(match b {
+        Button::A => P::A,
+        Button::B => P::B,
+        Button::X => P::X,
+        Button::Y => P::Y,
+        Button::LeftShoulder => P::L1,
+        Button::RightShoulder => P::R1,
+        Button::LeftStick => P::L3,
+        Button::RightStick => P::R3,
+        _ => return None,
+    })
+}
+
+/// A bound pad button pressed (or released): the skills are held, the rest fire once on the press.
+/// `s`: the one-shot presses (switch skill, skill tree, run / walk, healing potion, mana potion, back).
+fn pad_press(a: binds::PadAct, down: bool, pad: &mut Pad, s: &mut (&mut bool, &mut bool, &mut bool, &mut bool, &mut bool, &mut bool)) {
+    use binds::PadAct as A;
+    match a {
+        A::Primary => pad.cast = down,
+        A::Secondary => pad.cast2 = down,
+        _ if !down => {}
+        A::NextSkill => *s.0 = true,
+        A::SkillTree => *s.1 = true,
+        A::Run => *s.2 = true,
+        A::HealPotion => *s.3 = true,
+        A::ManaPotion => *s.4 = true,
+        A::Back => *s.5 = true,
+    }
 }
 
 /// A stick, with a dead zone round its middle (not per axis): handheld sticks often rest a little off centre, and
@@ -327,7 +362,9 @@ fn main() -> Result<(), String> {
     let (mut confirm, mut pot_hp, mut pot_mp, mut map, mut run_toggle, mut cancel) = (false, false, false, false, false, false);
     let (mut skills_key, mut cycle, mut slot): (bool, bool, Option<u8>) = (false, false, None);
     let mut inv_key = false;
-    let (mut eat_key, mut quit_ask, mut help_key) = (false, false, false);
+    let (mut eat_key, mut quit_ask, mut help_key, mut back_key) = (false, false, false, false);
+    binds::load();
+    let mut r2_held = false;
     game::HANDHELD.store(handheld, std::sync::atomic::Ordering::Relaxed);
     let cheats = args.iter().any(|a| a == "--cheats");
     let (mut cheat_level, mut cheat_loot) = (false, false);
@@ -429,19 +466,17 @@ fn main() -> Result<(), String> {
                             confirm = true;
                             inv_key = true;
                         }
-                        Button::A => pad.cast = true,
-                        Button::X => pad.cast2 = true,
-                        Button::RightShoulder => cycle = true,
-                        Button::B => run_toggle = true,
-                        Button::LeftShoulder => pot_hp = true,
-                        Button::Y => pot_mp = true,
-                        // Clicking either stick opens the skill tree too (pads with sticks).
-                        Button::LeftStick | Button::RightStick => skills_key = true,
                         Button::DPadUp => pad.dup = true,
                         Button::DPadDown => pad.ddown = true,
                         Button::DPadLeft => pad.dleft = true,
                         Button::DPadRight => pad.dright = true,
-                        _ => {}
+                        // Everything else does what the bindings say (binds.rs; HELP > GAMEPAD BUTTONS).
+                        other => {
+                            if let Some(a) = pad_btn(other).and_then(binds::get) {
+                                let s = &mut (&mut cycle, &mut skills_key, &mut run_toggle, &mut pot_hp, &mut pot_mp, &mut back_key);
+                                pad_press(a, true, &mut pad, s);
+                            }
+                        }
                     }
                     if !handheld {
                         inp.mouse = None; // pad in use: stop steering by the mouse cursor
@@ -458,27 +493,34 @@ fn main() -> Result<(), String> {
                             map = true;
                         }
                     }
-                    Button::A => pad.cast = false,
-                    Button::X => pad.cast2 = false,
                     Button::DPadUp => pad.dup = false,
                     Button::DPadDown => pad.ddown = false,
                     Button::DPadLeft => pad.dleft = false,
                     Button::DPadRight => pad.dright = false,
-                    _ => {}
+                    other => {
+                        if let Some(a) = pad_btn(other).and_then(binds::get) {
+                            let s = &mut (&mut cycle, &mut skills_key, &mut run_toggle, &mut pot_hp, &mut pot_mp, &mut back_key);
+                            pad_press(a, false, &mut pad, s);
+                        }
+                    }
                 },
                 Event::ControllerAxisMotion { axis, value, .. } => match axis {
                     Axis::LeftX => pad.lx = value as f32 / 32767.0,
                     Axis::LeftY => pad.ly = value as f32 / 32767.0,
                     Axis::RightX => pad.rx = value as f32 / 32767.0,
                     Axis::RightY => pad.ry = value as f32 / 32767.0,
-                    Axis::TriggerRight => pad.rt = value > 12000,
-                    // L2: the skill tree (holding SELECT was the only way before, and nothing on screen said so).
-                    Axis::TriggerLeft => {
+                    // The triggers press and release like buttons, by the bindings (L2: the skill tree, R2: the
+                    // main skill, out of the box).
+                    Axis::TriggerRight | Axis::TriggerLeft => {
                         let down = value > 12000;
-                        if down && !l2_held {
-                            skills_key = true;
+                        let (held, b) = if axis == Axis::TriggerLeft { (&mut l2_held, binds::PadBtn::L2) } else { (&mut r2_held, binds::PadBtn::R2) };
+                        if down != *held {
+                            *held = down;
+                            if let Some(a) = binds::get(b) {
+                                let s = &mut (&mut cycle, &mut skills_key, &mut run_toggle, &mut pot_hp, &mut pot_mp, &mut back_key);
+                                pad_press(a, down, &mut pad, s);
+                            }
                         }
-                        l2_held = down;
                     }
                 },
                 Event::Window { win_event: WindowEvent::FocusLost, .. } => {
@@ -522,6 +564,7 @@ fn main() -> Result<(), String> {
             inp.eat = eat_key;
             inp.quit_ask = quit_ask;
             inp.help = help_key;
+            inp.back = back_key;
             inp.skills = skills_key;
             inp.inv = inv_key;
             inp.typed = std::mem::take(&mut typed);
@@ -545,6 +588,7 @@ fn main() -> Result<(), String> {
             eat_key = false;
             quit_ask = false;
             help_key = false;
+            back_key = false;
             pot_hp = false;
             pot_mp = false;
             map = false;

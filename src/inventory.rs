@@ -257,7 +257,7 @@ impl Game {
         if inp.potion_mp && stash_open {
             act = Some(InvAct::Store);
         }
-        if inp.inv || inp.cancel || inp.run_toggle || inp.skills {
+        if inp.inv || inp.cancel || inp.back || inp.skills {
             act = Some(InvAct::Close);
         }
         let sel = ui.sel;

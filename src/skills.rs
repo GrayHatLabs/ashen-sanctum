@@ -1688,7 +1688,7 @@ impl Game {
         if inp.potion_mp {
             act = Some(TreeAct::Secondary);
         }
-        if inp.skills || inp.run_toggle || inp.cancel {
+        if inp.skills || inp.back || inp.cancel {
             act = Some(TreeAct::Close);
         }
         let s = tree[self.tree.as_ref().unwrap().sel];

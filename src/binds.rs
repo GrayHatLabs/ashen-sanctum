@@ -1,0 +1,138 @@
+//! Gamepad buttons (the GAMEPAD BUTTONS screen in the help menu): what each pad button does. START (bag, and
+//! confirm), SELECT (tap: map, hold: eat or drink; SELECT + START: the quit menu) and the D-pad (move) stay as
+//! they are; the rest can be given any action, or none. Saved in the save folder (controls.txt).
+use std::sync::Mutex;
+
+/// A pad button that can be remapped (by its printed label on a handheld; main.rs `by_label`).
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum PadBtn {
+    A,
+    B,
+    X,
+    Y,
+    L1,
+    R1,
+    L2,
+    R2,
+    L3,
+    R3,
+}
+
+pub const PAD_BTNS: [PadBtn; 10] = [PadBtn::A, PadBtn::B, PadBtn::X, PadBtn::Y, PadBtn::L1, PadBtn::R1, PadBtn::L2, PadBtn::R2, PadBtn::L3, PadBtn::R3];
+
+impl PadBtn {
+    pub fn name(self) -> &'static str {
+        ["A", "B", "X", "Y", "L1", "R1", "L2", "R2", "L3 (LEFT STICK CLICK)", "R3 (RIGHT STICK CLICK)"][self as usize]
+    }
+    fn key(self) -> &'static str {
+        ["a", "b", "x", "y", "l1", "r1", "l2", "r2", "l3", "r3"][self as usize]
+    }
+}
+
+/// What a pad button can do.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum PadAct {
+    Primary,
+    Secondary,
+    NextSkill,
+    SkillTree,
+    Run,
+    HealPotion,
+    ManaPotion,
+    Back,
+}
+
+pub const PAD_ACTS: [PadAct; 8] = [PadAct::Primary, PadAct::Secondary, PadAct::NextSkill, PadAct::SkillTree, PadAct::Run, PadAct::HealPotion, PadAct::ManaPotion, PadAct::Back];
+
+impl PadAct {
+    pub fn name(self) -> &'static str {
+        [
+            "MAIN SKILL (AND TALK, CONFIRM)",
+            "SECOND SKILL (AND DROP / SELL IN THE BAG)",
+            "SWITCH SECOND SKILL",
+            "SKILL TREE",
+            "RUN / WALK",
+            "HEALING POTION",
+            "MANA POTION",
+            "BACK (CLOSE THE BAG, MAP, TALK)",
+        ][self as usize]
+    }
+    fn key(self) -> &'static str {
+        ["primary", "secondary", "next_skill", "skill_tree", "run", "heal_potion", "mana_potion", "back"][self as usize]
+    }
+}
+
+/// The out-of-the-box layout: run / walk on a stick click (it was on B, too easy to hit by accident).
+pub const DEFAULTS: [Option<PadAct>; 10] = [
+    Some(PadAct::Primary),    // A
+    Some(PadAct::Back),       // B
+    Some(PadAct::Secondary),  // X
+    Some(PadAct::ManaPotion), // Y
+    Some(PadAct::HealPotion), // L1
+    Some(PadAct::NextSkill),  // R1
+    Some(PadAct::SkillTree),  // L2
+    Some(PadAct::Primary),    // R2
+    Some(PadAct::Run),        // L3
+    Some(PadAct::SkillTree),  // R3
+];
+
+static BINDS: Mutex<[Option<PadAct>; 10]> = Mutex::new(DEFAULTS);
+
+/// What this button does now.
+pub fn get(b: PadBtn) -> Option<PadAct> {
+    BINDS.lock().map(|m| m[b as usize]).unwrap_or(DEFAULTS[b as usize])
+}
+
+/// Gives a button an action (or none), and saves the layout.
+pub fn set(b: PadBtn, a: Option<PadAct>) {
+    if let Ok(mut m) = BINDS.lock() {
+        m[b as usize] = a;
+    }
+    save();
+}
+
+pub fn reset() {
+    if let Ok(mut m) = BINDS.lock() {
+        *m = DEFAULTS;
+    }
+    save();
+}
+
+/// The buttons that do this, for the help pages ("L1", "A OR R2"; "NO BUTTON" when nothing does).
+pub fn label(a: PadAct) -> String {
+    let names: Vec<&str> = PAD_BTNS.iter().filter(|&&b| get(b) == Some(a)).map(|b| b.name().split(' ').next().unwrap_or("")).collect();
+    if names.is_empty() {
+        "NO BUTTON (SET ONE IN HELP > GAMEPAD BUTTONS)".into()
+    } else {
+        names.join(" OR ")
+    }
+}
+
+fn path() -> std::path::PathBuf {
+    crate::save::dir().join("controls.txt")
+}
+
+/// Reads the saved layout (at startup); a missing or broken file keeps the defaults.
+pub fn load() {
+    let Ok(text) = std::fs::read_to_string(path()) else { return };
+    let mut m = DEFAULTS;
+    for line in text.lines() {
+        let Some((b, a)) = line.split_once('=') else { continue };
+        let Some(b) = PAD_BTNS.iter().find(|x| x.key() == b.trim()) else { continue };
+        m[*b as usize] = PAD_ACTS.iter().find(|x| x.key() == a.trim()).copied();
+    }
+    if let Ok(mut g) = BINDS.lock() {
+        *g = m;
+    }
+}
+
+fn save() {
+    // Tests change bindings too: they mustn't touch a player's saved layout.
+    if cfg!(test) {
+        return;
+    }
+    let Ok(m) = BINDS.lock() else { return };
+    let text: String = PAD_BTNS.iter().map(|b| format!("{}={}\n", b.key(), m[*b as usize].map_or("none", |a| a.key()))).collect();
+    let _ = std::fs::create_dir_all(crate::save::dir());
+    let _ = std::fs::write(path(), text);
+}

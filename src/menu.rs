@@ -153,7 +153,7 @@ impl Menu {
         // While naming, letter keys type (W/A/S/D, F, E... must not also act).
         let (up, down, left, right) = if typing && typed_now { (false, false, false, false) } else { (up, down, left, right) };
         let mut confirm = inp.confirm || (inp.cast && !prev.cast && !(typing && typed_now));
-        let back = inp.cancel || (inp.run_toggle && !typing);
+        let back = inp.cancel || (inp.back && !typing);
         let n = self.items().max(1);
         let horizontal = self.stage == Stage::Create;
         let (left, right) = if horizontal { (left || inp.wheel > 0, right || inp.wheel < 0) } else { (left, right) };

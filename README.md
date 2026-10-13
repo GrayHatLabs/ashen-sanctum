@@ -38,7 +38,9 @@ The game opens on the **title screen**: Play, Options (music, controls), Quit.
   - X / Space deletes one (it asks first).
   - **New Hero** picks a class (the Inventor is coming soon) and a name. Type one, or take a random gothic name.
 - **A new hero** is offered a short **how-to-play guide** (the controls of your device, how to play and how to
-  find your goals); read it again any time with **H**, or from the Esc / SELECT + START menu.
+  find your goals). The **help menu** (H / F1, or the Esc / SELECT + START menu) has it again, and topics on
+  the quest log, finding your way, skills, potions and food, gear and gems, towns, side content, your class,
+  dying and the endgame, saving, and the gamepad buttons.
 - **In game, Esc** asks whether to quit: keep playing, back to the character select, or close the game (the hero is saved either way).
 - Each hero has their own save file in `~/.local/share/ashensanctum/heroes/`. An old single save is copied in as the first hero.
 
@@ -460,19 +462,23 @@ Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`;
 | Primary skill (L slot) | Left click a monster, Shift + left click, F | A, RT or the right stick (auto-aims at the nearest foe) |
 | Secondary skill (R slot) | Right click, Space | X |
 | Pick the secondary skill | 1-4 | R1 (cycles) |
-| Skill tree | K, or click the skill slots / the + button | L2 (or click a stick) |
+| Skill tree | K, or click the skill slots / the + button | L2 or R3 (right stick click) |
 | Inventory | I, or click BAG | START |
-| Run / walk toggle | R | B |
+| Run / walk toggle | R | L3 (left stick click) |
+| Back (close the bag, map, a conversation) | Esc | B |
 | Health potion | Q or 1 | L1 |
 | Talk to someone | Left click them, or F / Space next to them | A next to them |
 | Choose in a conversation | Up / Down + Enter, or click | D-pad + A |
 | Map | Tab or M | SELECT |
 | Mana potion | E or 2 | Y |
 | Eat from the food bag (the Vampire: drink from the blood vial) | G | Hold SELECT |
-| How to play (the guide) | H or F1 | SELECT + START, then HOW TO PLAY |
+| Help (topics, and the gamepad buttons) | H or F1 | SELECT + START, then HELP |
 | Music on / off | N | |
 | Continue after death / the ending | Enter | START |
 | Close menu / quit | Esc (closes a conversation or the map first, then asks whether to quit) | SELECT + START (asks first) |
+
+Every gamepad button except START, SELECT and the D-pad can be given another action (or none) in **HELP >
+GAMEPAD BUTTONS**; the layout is saved (`controls.txt` in the save folder).
 
 ## Level editor
 

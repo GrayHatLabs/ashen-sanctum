@@ -100,8 +100,10 @@ pub struct Input {
     pub eat: bool,
     /// SELECT + START on a handheld: ask whether to quit.
     pub quit_ask: bool,
-    /// H / F1: the how-to-play guide.
+    /// H / F1: the help menu.
     pub help: bool,
+    /// B on a pad (by default): close the bag, the map, a conversation or the skill tree.
+    pub back: bool,
 }
 
 /// Running on a handheld (main.rs sets it): the guide shows the pad's buttons, not the keyboard's.
@@ -1902,12 +1904,15 @@ impl Game {
             self.ask_quit();
         }
         if inp.help && self.dialog.is_none() {
-            self.open_guide();
+            self.open_help();
+        }
+        if inp.back && self.dialog.is_none() && self.show_map {
+            self.show_map = false;
         }
         if self.offer_guide && self.dialog.is_none() && self.state == State::Playing && self.pending_travel.is_none() {
             self.offer_guide = false;
             let mut d = Dialog::new("WELCOME", &["NEW TO ASHEN SANCTUM? A SHORT GUIDE SHOWS THE CONTROLS, AND HOW TO FIND YOUR GOALS."]);
-            d.last_options = vec![("SHOW ME HOW TO PLAY".into(), Act::Guide), ("NO THANKS".into(), Act::Close)];
+            d.last_options = vec![("SHOW ME HOW TO PLAY".into(), Act::Help(0)), ("NO THANKS".into(), Act::Close)];
             d.refresh_options();
             self.dialog = Some(d);
         }
@@ -2279,7 +2284,7 @@ impl Game {
                 let sel = if click { hovered.unwrap_or(d.sel) } else { d.sel };
                 act = d.options.get(sel).map(|o| o.1);
             }
-            if inp.run_toggle {
+            if inp.back {
                 act = Some(Act::Close);
             }
         }
@@ -2298,7 +2303,20 @@ impl Game {
             }
             Some(Act::Buy(w)) => self.buy(w),
             Some(Act::Travel(id)) => self.travel(id),
-            Some(Act::Guide) => self.open_guide(),
+            Some(Act::Guide) => self.open_help(),
+            Some(Act::Help(t)) => self.open_topic(t as usize),
+            Some(Act::Binds) => self.open_binds(0),
+            Some(Act::BindPick(b)) => self.open_bind_pick(b),
+            Some(Act::BindSet(b, a)) => {
+                let btn = crate::binds::PAD_BTNS[b as usize % 10];
+                crate::binds::set(btn, crate::binds::PAD_ACTS.get(a as usize).copied());
+                self.open_binds(b as usize);
+            }
+            Some(Act::BindReset) => {
+                crate::binds::reset();
+                self.say("GAMEPAD BUTTONS BACK TO THE DEFAULTS".into());
+                self.open_binds(0);
+            }
             Some(Act::QuitToHeroes) => {
                 self.dialog = None;
                 self.quit = true;
@@ -2633,12 +2651,50 @@ impl Game {
         }
     }
 
-    /// The how-to-play guide, a page at a time.
-    pub(crate) fn open_guide(&mut self) {
-        let pages = crate::story::guide(HANDHELD.load(std::sync::atomic::Ordering::Relaxed));
-        let refs: Vec<&str> = pages.iter().map(|p| p.as_str()).collect();
-        let mut d = Dialog::new("HOW TO PLAY", &refs);
+    /// The help menu: pick a topic (or the gamepad buttons).
+    pub(crate) fn open_help(&mut self) {
+        let mut d = Dialog::new("HELP", &["WHAT DO YOU NEED HELP WITH?"]);
+        d.last_options = crate::help::TOPICS.iter().enumerate().map(|(i, t)| (t.to_string(), Act::Help(i as u8))).collect();
+        d.last_options.push(("GAMEPAD BUTTONS".into(), Act::Binds));
+        d.last_options.push(("CLOSE".into(), Act::Close));
         d.refresh_options();
+        self.dialog = Some(d);
+    }
+
+    /// One help topic, a page at a time; at the end, back to the topics.
+    pub(crate) fn open_topic(&mut self, t: usize) {
+        let handheld = HANDHELD.load(std::sync::atomic::Ordering::Relaxed);
+        let pages = crate::help::topic(t, handheld, self.p.skills.class);
+        let refs: Vec<&str> = pages.iter().map(|p| p.as_str()).collect();
+        let title = crate::help::TOPICS.get(t).copied().unwrap_or("HELP");
+        let mut d = Dialog::new(title, &refs);
+        d.last_options = vec![("BACK TO HELP".into(), Act::Guide), ("CLOSE".into(), Act::Close)];
+        d.refresh_options();
+        self.dialog = Some(d);
+    }
+
+    /// The gamepad buttons: each remappable button and what it does; pick one to change it.
+    pub(crate) fn open_binds(&mut self, sel: usize) {
+        use crate::binds::{get, PAD_BTNS};
+        let mut d = Dialog::new("GAMEPAD BUTTONS", &["PICK A BUTTON TO CHANGE WHAT IT DOES. START (BAG), SELECT (MAP; HOLD: EAT) AND THE D-PAD STAY AS THEY ARE."]);
+        d.last_options = PAD_BTNS.iter().enumerate().map(|(i, b)| (format!("{}: {}", b.name(), get(*b).map_or("NOTHING", |a| a.name())), Act::BindPick(i as u8))).collect();
+        d.last_options.push(("BACK TO THE DEFAULTS".into(), Act::BindReset));
+        d.last_options.push(("BACK TO HELP".into(), Act::Guide));
+        d.refresh_options();
+        d.sel = sel.min(d.options.len().saturating_sub(1));
+        self.dialog = Some(d);
+    }
+
+    /// What should this button do?
+    pub(crate) fn open_bind_pick(&mut self, b: u8) {
+        use crate::binds::{get, PAD_ACTS, PAD_BTNS};
+        let btn = PAD_BTNS[b as usize % 10];
+        let text = format!("WHAT SHOULD {} DO?", btn.name());
+        let mut d = Dialog::new("GAMEPAD BUTTONS", &[&text]);
+        d.last_options = PAD_ACTS.iter().enumerate().map(|(i, a)| (a.name().to_string(), Act::BindSet(b, i as u8))).collect();
+        d.last_options.push(("NOTHING".into(), Act::BindSet(b, 255)));
+        d.refresh_options();
+        d.sel = get(btn).and_then(|a| PAD_ACTS.iter().position(|x| *x == a)).unwrap_or(PAD_ACTS.len());
         self.dialog = Some(d);
     }
 
@@ -2647,7 +2703,7 @@ impl Game {
         let mut d = Dialog::new("QUIT?", &["ARE YOU SURE YOU WANT TO QUIT? YOUR HERO IS SAVED EITHER WAY."]);
         d.last_options = vec![
             ("KEEP PLAYING".into(), Act::Close),
-            ("HOW TO PLAY".into(), Act::Guide),
+            ("HELP".into(), Act::Guide),
             ("QUIT TO THE HEROES".into(), Act::QuitToHeroes),
             ("QUIT THE GAME".into(), Act::QuitGame),
         ];
@@ -4638,15 +4694,34 @@ mod tests {
         g.update(&Input::default());
         assert_eq!(g.dialog.as_ref().map(|d| d.name), Some("WELCOME"));
         let d = g.dialog.as_mut().unwrap();
-        d.sel = d.options.iter().position(|o| o.1 == Act::Guide).expect("show me");
+        d.sel = d.options.iter().position(|o| o.1 == Act::Help(0)).expect("show me");
         g.update(&Input { confirm: true, ..Input::default() });
         let d = g.dialog.as_ref().expect("the guide");
-        assert_eq!(d.name, "HOW TO PLAY");
+        assert_eq!(d.name, "QUICK START");
         assert!(d.pages.len() >= 9 && d.pages.iter().any(|p| p.contains("QUEST LOG")));
         assert!(!g.offer_guide, "only offered once");
         g.dialog = None;
         g.update(&Input { help: true, ..Input::default() });
-        assert_eq!(g.dialog.as_ref().map(|d| d.name), Some("HOW TO PLAY"));
+        assert_eq!(g.dialog.as_ref().map(|d| d.name), Some("HELP"));
+        // Every topic has pages, for every class, on a handheld and not.
+        for c in crate::skills::ALL_CLASSES {
+            for t in 0..crate::help::TOPICS.len() {
+                for hh in [false, true] {
+                    let pages = crate::help::topic(t, hh, c);
+                    assert!(!pages.is_empty() && pages.iter().all(|p| p.len() < 420), "topic {t} for {c:?}");
+                }
+            }
+        }
+        // The gamepad buttons: give R3 the run toggle, then nothing; then the defaults again.
+        g.open_binds(0);
+        g.open_bind_pick(9);
+        let d = g.dialog.as_mut().unwrap();
+        d.sel = d.options.iter().position(|o| o.1 == Act::BindSet(9, 4)).unwrap();
+        g.update(&Input { confirm: true, ..Input::default() });
+        assert_eq!(crate::binds::get(crate::binds::PadBtn::R3), Some(crate::binds::PadAct::Run));
+        assert!(crate::binds::label(crate::binds::PadAct::Run).contains("R3"));
+        crate::binds::reset();
+        assert_eq!(crate::binds::get(crate::binds::PadBtn::B), Some(crate::binds::PadAct::Back), "B is back, not run");
         // On a handheld it names the pad's buttons.
         assert!(crate::story::guide(true).iter().any(|p| p.contains("HOLDING SELECT")));
         assert!(crate::story::guide(false).iter().any(|p| p.contains("PRESS H")));
