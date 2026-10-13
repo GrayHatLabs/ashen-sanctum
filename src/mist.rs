@@ -85,7 +85,7 @@ impl Game {
         if self.feats.shade == 0 {
             self.feats.shade = 1;
             self.feats.shade_cd = 20.0;
-            self.say("A COLD BREATH ON YOUR NECK... SOMETHING FOLLOWS YOU THROUGH THE MIST".into());
+            self.notice("shade", "SOMETHING FOLLOWS YOU", "A SHADE HAUNTS YOUR STEPS THROUGH THE MIST. FIGHT IT WHEN IT SHOWS ITSELF; WHEN IT FLEES, FOLLOW IT TO ITS GRAVE.");
         }
         if self.feats.mist_placed.contains(&here) {
             return;
@@ -243,7 +243,7 @@ impl Game {
         self.feats.moon = MOON_TIME;
         self.feats.moon_cd = self.rng.rf(MOON_GAP.0, MOON_GAP.1);
         self.light_ready = false;
-        self.say("THE WOLF MOON RISES! WEREWOLVES HUNT, AND EVERY PELT PAYS DOUBLE".into());
+        self.notice("moon", "THE WOLF MOON RISES", "THE NIGHT GOES DARK AND WEREWOLVES HUNT UNTIL IT SETS. FIGHT WITH YOUR BACK TO A WALL: EVERY PELT PAYS DOUBLE.");
         for pack in 0..2 {
             let a = pack as f32 * 3.1 + self.rng.f();
             let (x, y) = (self.p.x + a.cos() * 10.0, self.p.y + a.sin() * 10.0);

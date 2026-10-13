@@ -2299,6 +2299,21 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         g.update(&Input::default());
         save(&mut g, scr, "inventory_refused");
         g.inv = None;
+        // A road off the map (a wide gate with arrows), and an event's notice.
+        g.debug_goto(LevelId::Area(0, 1));
+        g.banner_t = 0.0;
+        if let Some((x, y)) = g.portals.iter().find(|p| matches!(p.kind, crate::world::PortalKind::Exit(_))).map(|p| (p.x, p.y)) {
+            g.mobs.retain(|m| (m.x - x).powi(2) + (m.y - y).powi(2) > 200.0);
+            let (cx, cy) = (g.d.w as f32 / 2.0, g.d.h as f32 / 2.0);
+            let (dx, dy) = (cx - x, cy - y);
+            let l = (dx * dx + dy * dy).sqrt().max(0.01);
+            g.debug_place_near(x + dx / l * 5.0, y + dy / l * 5.0, 1.0);
+            g.portal_armed = false;
+            g.notice("ambush", "AMBUSH!", "TWO PACKS ARE CLOSING IN. BACK INTO A NARROW SPOT SO THEY REACH YOU A FEW AT A TIME.");
+            idle(&mut g, 20);
+            g.message = None;
+            save(&mut g, scr, "exit_gate");
+        }
         // The how-to-play guide (its goals page), and the quit question.
         g.update(&Input { help: true, ..Input::default() });
         if let Some(d) = g.dialog.as_mut() {

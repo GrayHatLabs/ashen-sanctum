@@ -463,7 +463,7 @@ impl Game {
                         self.errands[i].got = 1;
                         self.errands[i].wave_t = 0.0;
                         self.siege_wave(i);
-                        self.say("THE WARD STONE FLARES. HERE THEY COME!".into());
+                        self.notice("ward", "HOLD THE WARD STONE", "WAVES ARE COMING. STAND ON THE STONE AND BEAT THEM ALL.");
                     }
                 } else if wave_alive == 0 {
                     self.errands[i].wave_t += DT;

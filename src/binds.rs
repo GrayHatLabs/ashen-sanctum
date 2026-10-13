@@ -78,6 +78,18 @@ pub const DEFAULTS: [Option<PadAct>; 10] = [
 
 static BINDS: Mutex<[Option<PadAct>; 10]> = Mutex::new(DEFAULTS);
 
+/// Event notices (game.rs `notice`): on, or off (then just the one-line message). Saved with the buttons.
+static NOTICES: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(true);
+
+pub fn notices() -> bool {
+    NOTICES.load(std::sync::atomic::Ordering::Relaxed)
+}
+
+pub fn set_notices(on: bool) {
+    NOTICES.store(on, std::sync::atomic::Ordering::Relaxed);
+    save();
+}
+
 /// What this button does now.
 pub fn get(b: PadBtn) -> Option<PadAct> {
     BINDS.lock().map(|m| m[b as usize]).unwrap_or(DEFAULTS[b as usize])
@@ -118,6 +130,10 @@ pub fn load() {
     let mut m = DEFAULTS;
     for line in text.lines() {
         let Some((b, a)) = line.split_once('=') else { continue };
+        if b.trim() == "notices" {
+            NOTICES.store(a.trim() != "off", std::sync::atomic::Ordering::Relaxed);
+            continue;
+        }
         let Some(b) = PAD_BTNS.iter().find(|x| x.key() == b.trim()) else { continue };
         m[*b as usize] = PAD_ACTS.iter().find(|x| x.key() == a.trim()).copied();
     }
@@ -132,7 +148,8 @@ fn save() {
         return;
     }
     let Ok(m) = BINDS.lock() else { return };
-    let text: String = PAD_BTNS.iter().map(|b| format!("{}={}\n", b.key(), m[*b as usize].map_or("none", |a| a.key()))).collect();
+    let mut text: String = PAD_BTNS.iter().map(|b| format!("{}={}\n", b.key(), m[*b as usize].map_or("none", |a| a.key()))).collect();
+    text += &format!("notices={}\n", if notices() { "on" } else { "off" });
     let _ = std::fs::create_dir_all(crate::save::dir());
     let _ = std::fs::write(path(), text);
 }

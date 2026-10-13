@@ -166,7 +166,7 @@ impl Game {
                 for _ in 0..30 {
                     self.spray_at(mx, my, PKind::Fire, 30.0);
                 }
-                self.say("VAURATH WAKES! RUN!".into());
+                self.notice("wyrm", "VAURATH WAKES!", "THE WYRM IS AWAKE AND ANGRY. GET OUT OF ITS CAVE WITH THE GOLD BEFORE IT CATCHES YOU.");
                 self.floater(mx, my - 1.5, "WHO DARES?!".into(), rgb(0xff6020));
             }
         } else if dist > 30.0 && self.wyrm_noise > 0.0 {

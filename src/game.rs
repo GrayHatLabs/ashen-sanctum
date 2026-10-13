@@ -39,6 +39,8 @@ const FOOD_DRAIN_RUN: f32 = 0.8;
 const STARVE_DPS: f32 = 1.2;
 /// Apple, bread, roast: food restored, bonus life.
 pub const FOODS: [(&str, f32, f32); 3] = [("APPLE", 20.0, 0.0), ("BREAD", 35.0, 0.0), ("ROAST", 60.0, 10.0)];
+/// A road off the edge of an area: how near its gate you go through (tiles; see `in_gate`).
+pub const EXIT_GATE: f32 = 1.4;
 /// Chance a normal monster drops a piece of equipment (0.1 until 2026-10-13: too much loot, said the user).
 pub const ITEM_DROP: f32 = 0.06;
 /// Chance a common monster drops a gem (0.04 until 2026-10-13).
@@ -789,6 +791,10 @@ pub struct Game {
     /// Clickable dialog option rectangles from the last draw (x, y, w, h).
     pub(crate) dlg_rects: Vec<(i32, i32, i32, i32)>,
     pub(crate) message: Option<(String, f32)>,
+    /// An event's banner (the user: an ambush, the dark... it was confusing what was going on): what's happening,
+    /// what to do, seconds left. How often each kind has shown its hint this session.
+    pub(crate) notice: Option<(String, String, f32)>,
+    pub(crate) notice_seen: std::collections::HashMap<&'static str, u32>,
     pub state: State,
     pub kills: u32,
     pub tick: u32,
@@ -955,6 +961,8 @@ impl Game {
             show_map: false,
             quit: false,
             exit: false,
+            notice: None,
+            notice_seen: std::collections::HashMap::new(),
             offer_guide: false,
             save_due: false,
             stats: Stats::default(),
@@ -1474,11 +1482,36 @@ impl Game {
     /// A walkable spot next to a portal of this kind (so you don't land back on it).
     /// Where you arrive by a way in: a couple of tiles from it, on the side toward the middle of the map (not
     /// between it and the map's edge, where walking on would take you straight back through it).
+    /// Is (x, y) in this way in or out (widened by `pad`)? Most are a small spot; a road off the edge of an area is a
+    /// wide gate: near it, or anywhere on the road beyond it toward the edge (stepping past it used to miss it).
+    pub(crate) fn in_gate(&self, p: &Portal, x: f32, y: f32, pad: f32) -> bool {
+        let d2 = (p.x - x).powi(2) + (p.y - y).powi(2);
+        if !matches!(p.kind, PortalKind::Exit(_)) {
+            return d2 < (0.55 + pad).powi(2);
+        }
+        if d2 < (EXIT_GATE + pad).powi(2) {
+            return true;
+        }
+        // Which edge it leads off: the nearest.
+        let (w, h) = (self.d.w as f32, self.d.h as f32);
+        let edges = [(p.y, 0), (h - p.y, 1), (p.x, 2), (w - p.x, 3)];
+        let side = edges.iter().min_by(|a, b| a.0.partial_cmp(&b.0).unwrap()).map_or(0, |e| e.1);
+        let (beyond, across) = match side {
+            0 => (p.y - y, (x - p.x).abs()),
+            1 => (y - p.y, (x - p.x).abs()),
+            2 => (p.x - x, (y - p.y).abs()),
+            _ => (x - p.x, (y - p.y).abs()),
+        };
+        beyond > -pad && across < 2.5 + pad
+    }
+
     fn portal_spot(&self, kind: PortalKind) -> Option<(f32, f32)> {
         let p = self.portals.iter().find(|p| p.kind == kind)?;
         let (cx, cy) = (self.d.w as f32 / 2.0, self.d.h as f32 / 2.0);
         let mut best: Option<(f32, f32, f32)> = None;
-        for r in [2.2f32, 1.6, 1.2] {
+        // Arriving by a road: clear of its gate, a few steps in.
+        let rings: &[f32] = if matches!(kind, PortalKind::Exit(_)) { &[3.2, 2.8, 2.4, 2.0, 1.6] } else { &[2.2, 1.6, 1.2] };
+        for &r in rings {
             for k in 0..16 {
                 let a = k as f32 / 16.0 * std::f32::consts::TAU;
                 let (x, y) = (p.x + a.cos() * r, p.y + a.sin() * r);
@@ -1848,6 +1881,12 @@ impl Game {
                 self.message = None;
             }
         }
+        if let Some((_, _, t)) = self.notice.as_mut() {
+            *t -= DT;
+            if *t <= 0.0 {
+                self.notice = None;
+            }
+        }
         let pressed = |now: bool, before: bool| now && !before;
         let (p_cast, p_lmb, p_confirm) = (pressed(inp.cast, self.prev.cast), pressed(inp.lmb, self.prev.lmb), inp.confirm);
         match self.state {
@@ -2026,6 +2065,20 @@ impl Game {
         self.say(msg);
     }
 
+    /// An event banner: what's happening and what to do. The hint shows the first three times each kind of event
+    /// happens this session; after that only the title, briefly.
+    pub(crate) fn notice(&mut self, key: &'static str, title: &str, hint: &str) {
+        // Turned off (Options, or Help): just the one-line message, as before.
+        if !crate::binds::notices() {
+            self.say(title.to_string());
+            return;
+        }
+        let n = self.notice_seen.entry(key).or_insert(0);
+        *n += 1;
+        let full = *n <= 3;
+        self.notice = Some((title.to_string(), if full { hint.to_string() } else { String::new() }, if full { 7.0 } else { 3.0 }));
+    }
+
     pub(crate) fn say(&mut self, text: String) {
         self.message = Some((text, 4.0));
     }
@@ -2037,12 +2090,12 @@ impl Game {
         let (px, py) = (self.p.x, self.p.y);
         // Arm the ways in and out once you're clear of them all.
         if !self.portal_armed {
-            if self.portals.iter().all(|p| (p.x - px).powi(2) + (p.y - py).powi(2) > 1.1 * 1.1) {
+            if self.portals.iter().all(|p| !self.in_gate(p, px, py, 0.55)) {
                 self.portal_armed = true;
             }
             return;
         }
-        let Some(kind) = self.portals.iter().find(|p| (p.x - px).powi(2) + (p.y - py).powi(2) < 0.55 * 0.55).map(|p| p.kind) else { return };
+        let Some(kind) = self.portals.iter().find(|p| self.in_gate(p, px, py, 0.0)).map(|p| p.kind) else { return };
         let here = self.level;
         match kind {
             PortalKind::Entrance(k) => {
@@ -2309,6 +2362,14 @@ impl Game {
             Some(Act::Buy(w)) => self.buy(w),
             Some(Act::Travel(id)) => self.travel(id),
             Some(Act::Guide) => self.open_help(),
+            Some(Act::ToggleNotices) => {
+                crate::binds::set_notices(!crate::binds::notices());
+                let n = self.dialog.as_ref().map_or(0, |d| d.sel);
+                self.open_help();
+                if let Some(d) = self.dialog.as_mut() {
+                    d.sel = n;
+                }
+            }
             Some(Act::Help(t)) => self.open_topic(t as usize),
             Some(Act::Binds) => self.open_binds(0),
             Some(Act::BindPick(b)) => self.open_bind_pick(b),
@@ -2661,6 +2722,8 @@ impl Game {
         let mut d = Dialog::new("HELP", &["WHAT DO YOU NEED HELP WITH?"]);
         d.last_options = crate::help::TOPICS.iter().enumerate().map(|(i, t)| (t.to_string(), Act::Help(i as u8))).collect();
         d.last_options.push(("GAMEPAD BUTTONS".into(), Act::Binds));
+        let notices = if crate::binds::notices() { "EVENT NOTICES: ON" } else { "EVENT NOTICES: OFF" };
+        d.last_options.push((notices.into(), Act::ToggleNotices));
         d.last_options.push(("CLOSE".into(), Act::Close));
         d.refresh_options();
         self.dialog = Some(d);
@@ -4354,7 +4417,7 @@ mod tests {
         // Out the north road into the Ashlands, then on to the Barrow Fields.
         walk_onto(&mut g, PortalKind::Exit(1));
         assert_eq!(g.level, LevelId::Area(0, 1));
-        assert!(g.portals.iter().any(|p| p.kind == PortalKind::Exit(0) && (p.x - g.p.x).abs() + (p.y - g.p.y).abs() < 3.0), "arrive by the road back");
+        assert!(g.portals.iter().any(|p| p.kind == PortalKind::Exit(0) && (p.x - g.p.x).abs() + (p.y - g.p.y).abs() < 5.0), "arrive by the road back (a few steps in, clear of its gate)");
         walk_onto(&mut g, PortalKind::Exit(2));
         assert_eq!(g.level, LevelId::Area(0, 2));
         // Walk onto the crypt entrance.
@@ -4741,6 +4804,31 @@ mod tests {
     }
 
     #[test]
+    fn events_raise_a_notice_with_a_hint_and_it_can_be_turned_off() {
+        let mut g = quiet_game();
+        g.notice("ambush", "AMBUSH!", "BACK INTO A NARROW SPOT.");
+        let n = g.notice.clone().expect("a notice");
+        assert_eq!(n.0, "AMBUSH!");
+        assert!(n.1.contains("NARROW"));
+        // After three, the title alone.
+        for _ in 0..3 {
+            g.notice("ambush", "AMBUSH!", "BACK INTO A NARROW SPOT.");
+        }
+        assert!(g.notice.as_ref().unwrap().1.is_empty());
+        // It fades.
+        for _ in 0..(8.0 / DT) as i32 {
+            g.update(&Input::default());
+        }
+        assert!(g.notice.is_none());
+        // Turned off: the one-line message instead.
+        crate::binds::set_notices(false);
+        g.notice("thief", "A GOLD-THIEF!", "CATCH IT.");
+        assert!(g.notice.is_none());
+        assert_eq!(g.message.as_ref().map(|m| m.0.as_str()), Some("A GOLD-THIEF!"));
+        crate::binds::set_notices(true);
+    }
+
+    #[test]
     fn quitting_asks_first() {
         let mut g = quiet_game();
         g.update(&Input { cancel: true, ..Input::default() });
@@ -4755,6 +4843,21 @@ mod tests {
         d.sel = d.options.iter().position(|o| o.1 == Act::QuitGame).expect("quit the game");
         g.update(&Input { confirm: true, ..Input::default() });
         assert!(g.exit);
+    }
+
+    #[test]
+    fn a_road_off_the_map_is_a_wide_gate_you_cant_walk_past() {
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        g.debug_goto(LevelId::Area(0, 1));
+        let p = g.portals.iter().find(|p| matches!(p.kind, PortalKind::Exit(_))).map(|p| Portal { x: p.x, y: p.y, kind: p.kind }).unwrap();
+        // Near it, but not on its tile.
+        assert!(g.in_gate(&p, p.x + 1.0, p.y + 0.5, 0.0));
+        // Well past it, out toward the edge, a little to one side.
+        let (w, h) = (g.d.w as f32, g.d.h as f32);
+        let out: (f32, f32) = [((0.0f32, -1.0f32), p.y), ((0.0, 1.0), h - p.y), ((-1.0, 0.0), p.x), ((1.0, 0.0), w - p.x)].iter().min_by(|a, b| a.1.partial_cmp(&b.1).unwrap()).unwrap().0;
+        assert!(g.in_gate(&p, p.x + out.0 * 1.8 + out.1.abs() * 2.0, p.y + out.1 * 1.8 + out.0.abs() * 2.0, 0.0), "past it toward the edge");
+        // Far inward: no.
+        assert!(!g.in_gate(&p, p.x - out.0 * 4.0, p.y - out.1 * 4.0, 0.0));
     }
 
     fn walk_onto(g: &mut Game, kind: PortalKind) {

@@ -591,7 +591,7 @@ impl Game {
                     self.mobs.push(m);
                 }
                 self.ex.caravan_ambush = 1;
-                self.say(format!("RAIDERS ARE ATTACKING {}'S CARAVAN!", name));
+                self.notice("raid", "RAIDERS!", &format!("THEY'RE ATTACKING {name}'S CARAVAN. DRIVE THEM OFF, AND THE MERCHANT WILL THANK YOU."));
                 return;
             }
         }

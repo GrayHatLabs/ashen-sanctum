@@ -106,7 +106,7 @@ impl Game {
         let t = self.tide_t.rem_euclid(TIDE_CYCLE);
         if t >= TIDE_CALM && t - DT < TIDE_CALM {
             self.sfx.push(Sfx::Descend);
-            self.say("THE TIDE BELL TOLLS. GET TO HIGH GROUND!".into());
+            self.notice("tide", "THE TIDE BELL TOLLS", "THE TIDE IS COMING IN. THE FLATS WILL FLOOD AND SLOW YOU TO A WADE: GET TO HIGH, DRY GROUND.");
         }
         if before <= 0.5 && self.tide > 0.5 {
             self.say("THE TIDE IS IN. THE FLATS ARE FLOODED".into());
@@ -133,6 +133,7 @@ impl Game {
             4 => {
                 self.dark_t = 7.0;
                 self.light_ready = false;
+                self.notice("dark", "THE LIGHTS GO OUT", "SOMETHING SWALLOWED THE LIGHT. YOU CAN STILL FIGHT WHAT'S CLOSE: STAY PUT, AND IT COMES BACK IN A FEW SECONDS.");
             }
             _ => {}
         }

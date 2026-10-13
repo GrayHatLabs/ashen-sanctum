@@ -128,7 +128,7 @@ impl Game {
         if struck {
             self.sfx.push(Sfx::Descend);
             self.shake = self.shake.max(0.3);
-            self.say("THE CLOCK STOPS. TIME DRAGS AROUND IT".into());
+            self.notice("clock", "THE CLOCK STOPS", "FOES AROUND IT CRAWL FOR A WHILE: FIGHT THEM INSIDE ITS CIRCLE.");
         }
         // Inside a running field, foes crawl: they move at a third and wind up their blows slowly.
         for c in self.clocks.iter().filter(|c| c.field > 0.0) {

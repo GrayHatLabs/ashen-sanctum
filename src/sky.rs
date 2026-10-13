@@ -63,6 +63,7 @@ impl Game {
                 let a = self.rng.f() * std::f32::consts::TAU;
                 self.wind_dir = (a.cos(), a.sin());
                 self.wind_warn = WARN;
+                self.notice("gust", "A GUST IS COMING", "THE STREAKS SHOW WHICH WAY IT BLOWS. STEP AWAY FROM THE EDGE ON THAT SIDE, OR IT CAN BLOW YOU OFF THE ISLAND.");
             }
         }
     }

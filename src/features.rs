@@ -503,7 +503,7 @@ impl Game {
         self.feats.storm = STORM_TIME;
         self.feats.storm_cd = self.rng.rf(STORM_GAP.0, STORM_GAP.1);
         self.light_ready = false;
-        self.say("AN ASH STORM ROLLS IN. SOMETHING MOVES IN THE GREY".into());
+        self.notice("ashstorm", "AN ASH STORM", "YOU CAN BARELY SEE, AND MONSTERS HIDE IN THE GREY. KEEP MOVING AND KEEP YOUR LIFE UP; IT PASSES SOON.");
         for k in 0..4 {
             let a = k as f32 * 1.57 + self.rng.f();
             let (x, y) = (self.p.x + a.cos() * 8.0, self.p.y + a.sin() * 8.0);
@@ -534,7 +534,7 @@ impl Game {
             return;
         }
         if self.feats.barn_t == 0.0 {
-            self.say("A BARN IS BURNING! PULL THE VILLAGERS OUT BEFORE THE ROOF FALLS!".into());
+            self.notice("barn", "A BARN IS BURNING!", "WALK UP TO EACH TRAPPED VILLAGER TO PULL THEM OUT. HURRY: THE ROOF WON'T HOLD LONG.");
         }
         self.feats.barn_t += DT;
         // Flames lick out of the barn.
@@ -649,7 +649,7 @@ impl Game {
                 self.p.hp = (self.p.hp - dmg).max(1.0);
                 self.p.chill = self.p.chill.max(3.0);
                 (self.p.x, self.p.y) = self.feats.ice.safe;
-                self.say("YOU FALL THROUGH THE ICE! FREEZING WATER...".into());
+                self.notice("ice", "THROUGH THE ICE!", "THE FREEZING WATER HURT AND CHILLED YOU. KEEP TO THE SOLID ICE: THE PALE, CRACKED PATCHES GIVE WAY.");
                 self.shake = 0.6;
             }
         }

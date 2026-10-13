@@ -1184,7 +1184,7 @@ impl Game {
         }
         self.shake = self.shake.max(0.6);
         self.sfx.push(Sfx::Boom);
-        self.say("AMBUSH!".into());
+        self.notice("ambush", "AMBUSH!", "TWO PACKS ARE CLOSING IN. BACK INTO A NARROW SPOT SO THEY REACH YOU A FEW AT A TIME.");
         true
     }
 
@@ -1195,7 +1195,7 @@ impl Game {
         m.state = MobState::Chase;
         m.flee = 1.0;
         self.mobs.push(m);
-        self.say("A GOLD-THIEF! CATCH IT BEFORE IT GETS AWAY".into());
+        self.notice("thief", "A GOLD-THIEF!", "IT RUNS, AND SOON VANISHES WITH ITS HOARD. CATCH IT QUICKLY: THE GOLD SPILLS OUT WHEN IT FALLS.");
         true
     }
 
@@ -1216,7 +1216,7 @@ impl Game {
             let a = k as f32 / n as f32 * std::f32::consts::TAU;
             self.pickups.push(Pickup { x: x + a.cos() * 0.5, y: y + a.sin() * 0.5, kind, t: 0.0 });
         }
-        self.say("A FALLEN ADVENTURER LIES NEARBY. HIS PACK IS STILL FULL".into());
+        self.notice("fallen", "A FALLEN ADVENTURER", "THEIR PACK LIES NEARBY, STILL FULL. WALK OVER IT TO TAKE WHAT'S LEFT.");
         true
     }
 

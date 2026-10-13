@@ -375,6 +375,8 @@ pub enum Act {
     /// The help menu (its list of topics), one topic, the gamepad buttons screen, picking a button's action,
     /// setting it (255: nothing), and the default layout.
     Guide,
+    /// Event notices on / off (the help menu).
+    ToggleNotices,
     Help(u8),
     Binds,
     BindPick(u8),

@@ -110,7 +110,7 @@ impl Menu {
             Stage::Heroes => self.heroes.len() + 3,
             Stage::Create => CLASSES.len(),
             Stage::Name => 3,
-            Stage::Options => 2,
+            Stage::Options => 3,
             Stage::Delete(_) => 2,
         }
     }
@@ -348,6 +348,10 @@ impl Menu {
                         self.music_on = !self.music_on;
                         return Some(MenuOut::ToggleMusic);
                     }
+                    if self.sel == 1 {
+                        crate::binds::set_notices(!crate::binds::notices());
+                        return None;
+                    }
                     self.go(Stage::Title);
                     self.sel = 1;
                 }
@@ -572,18 +576,20 @@ impl Menu {
         self.logo(scr, w, 20, 2);
         scr.text("OPTIONS", w / 2, 52, rgb(0xffd080), Align::Center, 2);
         let music = if self.music_on { "MUSIC: ON" } else { "MUSIC: OFF" };
-        self.button(scr, music, w / 2, 80, 180, 0, true);
-        self.button(scr, "BACK", w / 2, 106, 180, 1, true);
+        self.button(scr, music, w / 2, 80, 200, 0, true);
+        let notices = if crate::binds::notices() { "EVENT NOTICES: ON" } else { "EVENT NOTICES: OFF" };
+        self.button(scr, notices, w / 2, 106, 200, 1, true);
+        self.button(scr, "BACK", w / 2, 132, 200, 2, true);
         let lines = [
-            "CONTROLS",
-            "MOVE: LEFT CLICK OR WASD / LEFT STICK      RUN: R / B",
-            "SKILLS: LEFT / RIGHT CLICK, F / SPACE / A / X      SKILL TREE: K / L2 / HOLD SELECT",
-            "INVENTORY: I / START      MAP: TAB / SELECT      POTIONS: Q / E / L1 / Y",
-            "MUSIC ON / OFF IN GAME: N      ESC: SAVE AND RETURN TO THE HEROES",
+            "CONTROLS (ALL OF THEM: H IN GAME, OR SELECT + START, THEN HELP)",
+            "MOVE: LEFT CLICK OR WASD / LEFT STICK      RUN / WALK: R / L3",
+            "SKILLS: LEFT / RIGHT CLICK, F / SPACE / A / X      SKILL TREE: K / L2",
+            "BAG: I / START      MAP: TAB / SELECT      POTIONS: Q / E / L1 / Y      EAT: G / HOLD SELECT",
+            "EVENT NOTICES: A BANNER WHEN SOMETHING HAPPENS (AN AMBUSH, THE DARK), SAYING WHAT TO DO",
         ];
         for (k, l) in lines.iter().enumerate() {
             let col = if k == 0 { rgb(0xd8b878) } else { rgb(0xa09080) };
-            scr.text(l, w / 2, 150 + k as i32 * 14, col, Align::Center, 1);
+            scr.text(l, w / 2, 166 + k as i32 * 14, col, Align::Center, 1);
         }
     }
 }

@@ -1466,16 +1466,44 @@ impl Game {
             scr.blend(sx - w / 2, y - 1, w, 10, BLACK, 0.65);
             scr.text(&it.name, sx, y, it.col(), Align::Center, 1);
         }
-        // Roads off the map (areas.rs): where they lead, once you're close.
+        // Roads off the map (areas.rs): a glowing gate with arrows pointing the way out, and where it leads; seen
+        // from well off.
         for p in &self.portals {
             if let PortalKind::Exit(n) = p.kind {
                 let d2 = (p.x - self.p.x).powi(2) + (p.y - self.p.y).powi(2);
-                if d2 < 64.0 {
+                if d2 < 18.0 * 18.0 {
                     let (sx, sy) = to_scr(p.x, p.y);
                     let name = Game::waypoint_name(crate::areas::level(self.level.act(), n));
-                    let a = (1.0 - d2.sqrt() / 8.0).clamp(0.0, 1.0);
-                    scr.text(&format!("TO {name}"), sx, sy + 6, mix(BLACK, rgb(0xe8d090), a), Align::Center, 1);
-                    blend_ellipse(scr, sx, sy, 14, 6, rgb(0xffe0a0), 0.18 * a);
+                    let a = (1.0 - (d2.sqrt() - 6.0).max(0.0) / 12.0).clamp(0.35, 1.0);
+                    let pulse = 0.5 + 0.5 * ((self.tick as f32) * 0.08).sin();
+                    let rx = (crate::game::EXIT_GATE * 16.0) as i32 + 6;
+                    blend_ellipse(scr, sx, sy, rx, rx / 2, rgb(0xffd890), (0.22 + 0.12 * pulse) * a);
+                    ring(scr, sx, sy, rx, rx / 2, mix(BLACK, rgb(0xffe0a0), a));
+                    ring(scr, sx, sy, rx - 2, rx / 2 - 1, mix(BLACK, rgb(0xd8a050), a * 0.8));
+                    scr.glow(sx, sy - 6, 26.0, rgb(0xffd080), 0.35 * a);
+                    // Arrows toward the edge it leads off.
+                    let (w, h) = (self.d.w as f32, self.d.h as f32);
+                    let out = [((0.0, -1.0), p.y), ((0.0, 1.0), h - p.y), ((-1.0, 0.0), p.x), ((1.0, 0.0), w - p.x)]
+                        .iter()
+                        .min_by(|x, y| x.1.partial_cmp(&y.1).unwrap())
+                        .map_or((0.0, -1.0), |e| e.0);
+                    let (ux, uy) = iso::to_screen(out.0, out.1);
+                    let l = (ux * ux + uy * uy).sqrt().max(0.01);
+                    let (ux, uy) = (ux / l, uy / l);
+                    for k in 0..3 {
+                        let t = ((self.tick as f32 * 0.03 + k as f32 / 3.0) % 1.0) * 18.0;
+                        let (cx, cy) = (sx as f32 + ux * (t - 6.0), sy as f32 + uy * (t - 6.0) * 0.5);
+                        let (bx, by) = (cx - ux * 5.0, cy - uy * 2.5);
+                        let col = mix(BLACK, rgb(0xfff0b0), a * (1.0 - t / 24.0));
+                        for o in [0, 1] {
+                            line(scr, (bx - uy * 5.0) as i32, (by + ux * 2.5) as i32 + o, cx as i32, cy as i32 + o, col);
+                            line(scr, (bx + uy * 5.0) as i32, (by - ux * 2.5) as i32 + o, cx as i32, cy as i32 + o, col);
+                        }
+                    }
+                    let label = format!("TO {name}");
+                    let tw = crate::gfx::text_width(&label, 1);
+                    scr.blend(sx - tw / 2 - 3, sy + 9, tw + 6, 10, BLACK, 0.55 * a);
+                    scr.text(&label, sx, sy + 10, mix(BLACK, rgb(0xffe0a0), a), Align::Center, 1);
                 }
             }
         }
@@ -1490,6 +1518,22 @@ impl Game {
             self.draw_map(scr);
         }
         (self.hud_skill_rects, self.hud_bag) = self.draw_hud(scr);
+        // An event's banner: what's happening, and what to do.
+        if let Some((title, hint, t)) = &self.notice {
+            let a = (t.min(0.5) / 0.5).clamp(0.0, 1.0);
+            let lines = story::wrap(hint, 62);
+            let w = scr.w;
+            let bw = (lines.iter().map(|l| crate::gfx::text_width(l, 1)).max().unwrap_or(0).max(crate::gfx::text_width(title, 2)) + 20).min(w - 16);
+            let bh = 24 + lines.len() as i32 * 10;
+            let (bx, by) = (w / 2 - bw / 2, 62);
+            scr.blend(bx, by, bw, bh, BLACK, 0.72 * a);
+            scr.fill(bx, by, bw, 1, mix(BLACK, rgb(0xd8a050), a));
+            scr.fill(bx, by + bh - 1, bw, 1, mix(BLACK, rgb(0xd8a050), a));
+            scr.text(title, w / 2, by + 5, mix(BLACK, rgb(0xffc060), a), Align::Center, 2);
+            for (k, l) in lines.iter().enumerate() {
+                scr.text(l, w / 2, by + 23 + k as i32 * 10, mix(BLACK, rgb(0xe8dcc0), a), Align::Center, 1);
+            }
+        }
         self.dlg_rects.clear();
         if self.dialog.is_some() {
             self.draw_dialog(scr);

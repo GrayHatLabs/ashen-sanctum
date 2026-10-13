@@ -200,7 +200,7 @@ impl Game {
             self.feats.surge_t -= DT;
             if self.feats.surge_t <= 0.0 {
                 self.feats.surge_warn = WARN;
-                self.say("THE CHURN SHUDDERS... A SURGE IS COMING".into());
+                self.notice("surge", "A SURGE IS COMING", "THE LAND IS ABOUT TO RESHAPE AROUND YOU. STAND STILL TO FILL YOUR STILLNESS, OR STAY NEAR A LIT ANCHOR STONE.");
                 self.sfx.push(Sfx::Descend);
             }
         }
