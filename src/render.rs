@@ -2499,7 +2499,8 @@ impl Game {
         scr.text(&format!("{used}/{}", self.belt_cap()), bx + 14, top + 34, bcol, Align::Left, 1);
         // Gold, level and the act's relics: the top right corner, across from the area name.
         scr.text(&format!("GOLD {}", self.p.gold), w - 6, 6, rgb(0xe8c050), Align::Right, 1);
-        scr.text(&format!("CHAR LEVEL {}", self.p.clvl), w - 6, 17, rgb(0xd8c090), Align::Right, 1);
+        let lvl = if self.hardcore { format!("HARDCORE  CHAR LEVEL {}", self.p.clvl) } else { format!("CHAR LEVEL {}", self.p.clvl) };
+        scr.text(&lvl, w - 6, 17, rgb(0xd8c090), Align::Right, 1);
         let (relic, col) = match self.level.act() {
             5 => (format!("SHARDS {}/3", self.quest.shard_count()), rgb(0xffe080)),
             4 => (format!("PEARLS {}/3", self.quest.pearl_count()), rgb(0x80e8e0)),
@@ -2682,7 +2683,12 @@ impl Game {
                 scr.text("YOU HAVE DIED", w / 2, top / 2 - 20, rgb(0xc02020), Align::Center, 3);
                 if t > 1.5 {
                     let town = Game::waypoint_name(LevelId::land(self.level.act()));
-                    scr.text(&format!("PRESS ENTER OR START TO WAKE IN {town}"), w / 2, top / 2 + 14, rgb(0xb0a090), Align::Center, 1);
+                    if self.hardcore {
+                        scr.text("A HARDCORE HERO HAS ONE LIFE. YOUR STORY ENDS HERE.", w / 2, top / 2 + 14, rgb(0xd09080), Align::Center, 1);
+                        scr.text("PRESS ENTER OR START", w / 2, top / 2 + 28, rgb(0xb0a090), Align::Center, 1);
+                    } else {
+                        scr.text(&format!("PRESS ENTER OR START TO WAKE IN {town}"), w / 2, top / 2 + 14, rgb(0xb0a090), Align::Center, 1);
+                    }
                 }
             }
             State::Victory(t) => {

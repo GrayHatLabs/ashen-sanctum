@@ -850,6 +850,9 @@ pub struct Game {
     pub quit: bool,
     /// Quit the whole program (after asking; main saves and closes).
     pub exit: bool,
+    /// Hardcore: one life. A hardcore hero who dies has fallen: saved as a memorial, and back to the heroes.
+    pub hardcore: bool,
+    pub fallen: bool,
     /// A new hero: offer the how-to-play guide once the game is under way.
     pub offer_guide: bool,
     /// Set when the game wants the character saved (town, boss kills); main writes it.
@@ -986,6 +989,8 @@ impl Game {
             show_map: false,
             quit: false,
             exit: false,
+            hardcore: false,
+            fallen: false,
             notice: None,
             notice_seen: std::collections::HashMap::new(),
             offer_guide: false,
@@ -1931,8 +1936,18 @@ impl Game {
         match self.state {
             State::Dead(t) => {
                 self.state = State::Dead(t + DT);
+                if self.hardcore && !self.fallen {
+                    // One life: the hero has fallen, saved at once (closing the game now changes nothing).
+                    self.fallen = true;
+                    self.save_due = true;
+                }
                 if t > 1.5 && (inp.confirm || p_cast) {
-                    self.respawn();
+                    if self.hardcore {
+                        // A memorial now: back to the heroes.
+                        self.quit = true;
+                    } else {
+                        self.respawn();
+                    }
                 }
             }
             State::Victory(t) => {

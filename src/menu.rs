@@ -26,7 +26,8 @@ pub enum MenuOut {
     /// Continue a saved hero.
     Load(String),
     /// Start a new hero.
-    New(Class, String),
+    /// A new hero: class, name, hardcore.
+    New(Class, String, bool),
     ToggleMusic,
     Quit,
 }
@@ -64,6 +65,8 @@ pub struct Menu {
     rects: Vec<(i32, i32, i32, i32, usize)>,
     /// The hero last highlighted in the list (what the DELETE HERO button acts on).
     hero_sel: usize,
+    /// The new hero will be hardcore (one life).
+    pub(crate) hardcore: bool,
     /// The "quit the game?" box is up (B / Esc on the title, QUIT, or SELECT + START anywhere in the menus);
     /// its YES and NO buttons, for the mouse.
     quit_armed: bool,
@@ -90,6 +93,7 @@ impl Menu {
             rects: vec![],
             hero_sel: 0,
             quit_armed: false,
+            hardcore: false,
             quit_rects: [(0, 0, 0, 0); 2],
             scroll: 0,
             rows_fit: 7,
@@ -109,7 +113,7 @@ impl Menu {
             Stage::Title => 3,
             Stage::Heroes => self.heroes.len() + 3,
             Stage::Create => CLASSES.len(),
-            Stage::Name => 3,
+            Stage::Name => 4,
             Stage::Options => 5,
             Stage::Delete(_) => 2,
         }
@@ -248,7 +252,9 @@ impl Menu {
                     return None;
                 }
                 if confirm {
-                    if k < self.heroes.len() {
+                    if k < self.heroes.len() && self.heroes[k].fallen {
+                        self.say("THIS HERO HAS FALLEN. THEIR STORY IS OVER (DELETE TO MAKE ROOM)");
+                    } else if k < self.heroes.len() {
                         return Some(MenuOut::Load(self.heroes[k].slot.clone()));
                     } else if k == self.heroes.len() {
                         if self.heroes.len() >= MAX_HEROES {
@@ -313,7 +319,10 @@ impl Menu {
                     self.random_name();
                 }
                 let start = confirm && (self.sel == 0 || inp.confirm);
-                if confirm && self.sel == 1 {
+                if confirm && self.sel == 3 {
+                    self.hardcore = !self.hardcore;
+                    self.say(if self.hardcore { "HARDCORE: ONE LIFE. IF THIS HERO DIES, THEY'RE GONE." } else { "NORMAL: DIE, AND WAKE IN TOWN" });
+                } else if confirm && self.sel == 1 {
                     self.random_name();
                 } else if confirm && self.sel == 2 && !inp.confirm {
                     self.go(Stage::Create);
@@ -333,7 +342,7 @@ impl Menu {
                             7 => Class::Inquisitor,
                             _ => Class::Sorceress,
                         };
-                        return Some(MenuOut::New(class, name));
+                        return Some(MenuOut::New(class, name, self.hardcore));
                     }
                 }
             }
@@ -514,7 +523,9 @@ impl Menu {
                 let fx = Fx { cut: ((row - 2) as f32 / s) as i32, ..Fx::default() };
                 scr.blit_scaled(p, lx + 20, y + 1 + (p.ay as f32 * s) as i32, s, fx);
             }
-            scr.text(&hero.name, lx + 42, y + 5, if on { rgb(0xffe0a0) } else { rgb(0xd0c0a0) }, Align::Left, 1);
+            let tag = if hero.fallen { "  - FALLEN" } else if hero.hardcore { "  - HARDCORE" } else { "" };
+            let ncol = if hero.fallen { rgb(0x7a6a6a) } else if on { rgb(0xffe0a0) } else { rgb(0xd0c0a0) };
+            scr.text(&format!("{}{tag}", hero.name), lx + 42, y + 5, ncol, Align::Left, 1);
             let act = ["ACT 1", "ACT 2", "ACT 3", "ACT 4", "ACT 5", "ACT 6", "ACT 7"][hero.act.min(6)];
             let diff = crate::story::DIFFICULTIES[hero.difficulty.min(2) as usize];
             let line = format!("LEVEL {} {}  {}  {}", hero.clvl, hero.class.name(), act, diff);
@@ -577,6 +588,8 @@ impl Menu {
         self.button(scr, "BEGIN", w / 2 - 110, y, 100, 0, true);
         self.button(scr, "RANDOM NAME", w / 2, y, 110, 1, true);
         self.button(scr, "BACK", w / 2 + 110, y, 100, 2, true);
+        let hc = if self.hardcore { "HARDCORE: ON (ONE LIFE)" } else { "HARDCORE: OFF" };
+        self.button(scr, hc, w / 2, y + 26, 200, 3, true);
         scr.text("TYPE A NAME, ENTER TO BEGIN.  PAD: Y RANDOM NAME, A BEGIN", w / 2, h - 14, rgb(0x7a6a5a), Align::Center, 1);
     }
 
@@ -735,9 +748,9 @@ mod tests {
         }
         press(&mut m, |i| i.typed = "carmilla".into());
         let out = press(&mut m, |i| i.confirm = true);
-        assert_eq!(out, Some(MenuOut::New(Class::Vampire, "CARMILLA".into())));
+        assert_eq!(out, Some(MenuOut::New(Class::Vampire, "CARMILLA".into(), false)));
         // With heroes: Play lists them; pick one to continue.
-        let hero = HeroInfo { slot: "carmilla".into(), name: "CARMILLA".into(), class: Class::Vampire, clvl: 7, act: 0, difficulty: 0 };
+        let hero = HeroInfo { slot: "carmilla".into(), name: "CARMILLA".into(), class: Class::Vampire, clvl: 7, act: 0, difficulty: 0, hardcore: false, fallen: false };
         let mut m = Menu::new(vec![hero]);
         press(&mut m, |i| i.confirm = true);
         assert_eq!(m.stage, Stage::Heroes);
@@ -755,7 +768,7 @@ mod tests {
     #[test]
     fn the_hero_list_scrolls_and_deletes_with_one_click() {
         let heroes: Vec<HeroInfo> = (0..10)
-            .map(|k| HeroInfo { slot: format!("zz_test_{k}"), name: format!("HERO {k}"), clvl: 1, class: Class::Sorceress, act: 0, difficulty: 0 })
+            .map(|k| HeroInfo { slot: format!("zz_test_{k}"), name: format!("HERO {k}"), clvl: 1, class: Class::Sorceress, act: 0, difficulty: 0, hardcore: false, fallen: false })
             .collect();
         let mut m = Menu::new(heroes);
         m.go(Stage::Heroes);

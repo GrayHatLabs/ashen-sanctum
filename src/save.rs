@@ -50,6 +50,9 @@ pub struct HeroInfo {
     /// 0 = Act 1, 1 = Act 2.
     pub act: usize,
     pub difficulty: u8,
+    /// A hardcore hero (one life), and one who has fallen (kept as a memorial, not playable).
+    pub hardcore: bool,
+    pub fallen: bool,
 }
 
 pub fn heroes_dir() -> PathBuf {
@@ -76,6 +79,8 @@ pub fn hero_info(slot: &str, text: &str) -> Option<HeroInfo> {
         clvl: get("clvl")?.parse::<f64>().ok()? as u32,
         act: get("act").and_then(|a| a.parse().ok()).unwrap_or(0),
         difficulty: get("difficulty").and_then(|a| a.parse().ok()).unwrap_or(0),
+        hardcore: get("hardcore") == Some("1"),
+        fallen: get("fallen") == Some("1"),
     })
 }
 
@@ -134,6 +139,7 @@ pub fn to_text(g: &Game) -> String {
     let q = &g.quest;
     let bits = |b: &[bool; 3]| b.iter().map(|s| if *s { '1' } else { '0' }).collect::<String>();
     let mut s = format!("name={}\n", g.hero_name);
+    s += &format!("hardcore={}\nfallen={}\n", g.hardcore as u8, g.fallen as u8);
     s += &format!(
         "version=1\nseed={}\nclvl={}\nxp={}\nmax_hp={}\nmax_mana={}\npower={}\ngold={}\nhp_pots={}\nmp_pots={}\nfood={}\nrunning={}\nstage={}\nseals={}\nkills={}\n",
         g.world_seed(),
@@ -211,6 +217,8 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
     g.quest.stage = num("stage").unwrap_or(0.0) as u8;
     if let Some(n) = get("name") {
         g.hero_name = n.to_string();
+        g.hardcore = get("hardcore") == Some("1");
+        g.fallen = get("fallen") == Some("1");
     }
     g.quest.difficulty = (num("difficulty").unwrap_or(0.0) as u8).min(2);
     g.quest.stage2 = (num("stage2").unwrap_or(0.0) as u8).min(3);
@@ -415,5 +423,23 @@ mod tests {
         assert_eq!(h.quest.stage, 1);
         assert_eq!(h.quest.seals, [true, false, true]);
         assert!(!apply(&mut h, "garbage"));
+    }
+
+    #[test]
+    fn a_fallen_hardcore_hero_stays_fallen() {
+        let mut g = Game::new(42, crate::gfx::SH_WIDE);
+        g.hardcore = true;
+        let text = to_text(&g);
+        let info = hero_info("x", &text).unwrap();
+        assert!(info.hardcore && !info.fallen);
+        g.p.hp = 0.0;
+        g.state = crate::game::State::Dead(0.0);
+        g.update(&crate::game::Input::default());
+        assert!(g.fallen && g.save_due, "fallen and saved the moment they die");
+        let text = to_text(&g);
+        assert!(hero_info("x", &text).unwrap().fallen);
+        let mut h = Game::new(42, crate::gfx::SH_WIDE);
+        assert!(apply(&mut h, &text));
+        assert!(h.hardcore && h.fallen);
     }
 }

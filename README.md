@@ -36,7 +36,9 @@ The game opens on the **title screen**: Play, Options (music, controls), Quit.
 - **Play** opens the **character select**: up to 8 saved heroes, each with their portrait, level, class, act and difficulty.
   - Pick one to continue.
   - X / Space deletes one (it asks first).
-  - **New Hero** picks a class (the Inventor is coming soon) and a name. Type one, or take a random gothic name.
+  - **New Hero** picks a class and a name. Type one, or take a random gothic name.
+  - **Hardcore** (a toggle on the name screen): one life. A hardcore hero who dies has **fallen**: they're saved
+    at once and stay in the list, greyed out, as a memorial that can't be played again (delete them to free the slot).
 - **A new hero** is offered a short **how-to-play guide** (the controls of your device, how to play and how to
   find your goals). The **help menu** (H / F1, or the Esc / SELECT + START menu) has it again, and topics on
   the quest log, finding your way, skills, potions and food, gear and gems, towns, side content, your class,

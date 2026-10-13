@@ -646,7 +646,7 @@ fn main() -> Result<(), String> {
                 }
                 menu = None;
             }
-            Some(menu::MenuOut::New(class, name)) => {
+            Some(menu::MenuOut::New(class, name, hardcore)) => {
                 let slot = save::new_slot(&name);
                 save::use_hero(&slot);
                 let seed = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_nanos() as u64).unwrap_or(1);
@@ -654,6 +654,7 @@ fn main() -> Result<(), String> {
                 game.defer_travel = true;
                 game.set_class(class);
                 game.hero_name = name;
+                game.hardcore = hardcore;
                 game.offer_guide = true;
                 save::write(&game);
                 menu = None;

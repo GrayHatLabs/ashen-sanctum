@@ -688,9 +688,9 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         use crate::skills::Class;
         let g = Game::new(7, h);
         let heroes = vec![
-            HeroInfo { slot: "morwen".into(), name: "MORWEN".into(), class: Class::Sorceress, clvl: 21, act: 1, difficulty: 0 },
-            HeroInfo { slot: "carmilla".into(), name: "CARMILLA".into(), class: Class::Vampire, clvl: 9, act: 0, difficulty: 0 },
-            HeroInfo { slot: "isolde".into(), name: "ISOLDE".into(), class: Class::Sorceress, clvl: 34, act: 1, difficulty: 1 },
+            HeroInfo { slot: "morwen".into(), name: "MORWEN".into(), class: Class::Sorceress, clvl: 21, act: 1, difficulty: 0, hardcore: false, fallen: false },
+            HeroInfo { slot: "carmilla".into(), name: "CARMILLA".into(), class: Class::Vampire, clvl: 9, act: 0, difficulty: 0, hardcore: false, fallen: false },
+            HeroInfo { slot: "isolde".into(), name: "ISOLDE".into(), class: Class::Sorceress, clvl: 34, act: 1, difficulty: 1, hardcore: false, fallen: false },
         ];
         let mut m = Menu::new(heroes);
         let shot = |m: &mut Menu, scr: &mut Screen, name: &str| {
@@ -725,7 +725,7 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             // A full roster: the list scrolls and the buttons stay on screen.
             let classes = crate::skills::ALL_CLASSES;
             let many: Vec<HeroInfo> = (0..10)
-                .map(|k| HeroInfo { slot: format!("h{k}"), name: format!("HERO {}", k + 1), class: classes[k % classes.len()], clvl: 5 + k as u32 * 3, act: k % 4, difficulty: 0 })
+                .map(|k| HeroInfo { slot: format!("h{k}"), name: format!("HERO {}", k + 1), class: classes[k % classes.len()], clvl: 5 + k as u32 * 3, act: k % 4, difficulty: 0, hardcore: k == 2, fallen: k == 1 })
                 .collect();
             let mut mm = Menu::new(many);
             mm.stage = Stage::Heroes;
@@ -741,7 +741,8 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         m.stage = Stage::Name;
         m.class_sel = 1;
         m.name = "CARMILLA".into();
-        m.sel = 0;
+        m.sel = 3;
+        m.hardcore = true;
         shot(&mut m, scr, "menu_name");
         m.stage = Stage::Options;
         m.sel = 0;
