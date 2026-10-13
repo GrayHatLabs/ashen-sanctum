@@ -1387,6 +1387,83 @@ impl Game {
                 scr.glow(x, y, 3.0 + pulse * 2.0, rgb(0x40ff70), 0.5 * pulse + 0.2);
             }
         }
+        // Weather: ash drifting down over the Ashlands (in slow gusts), a few embers rising; dust motes below ground.
+        if matches!(self.theme, crate::world::Theme::Overworld | crate::world::Theme::Crypt | crate::world::Theme::Warrens | crate::world::Theme::Catacombs | crate::world::Theme::Sanctum) {
+            let open = self.theme.open();
+            let (cx, cy) = iso::to_screen(self.p.x, self.p.y);
+            let t = self.tick as f32 / 60.0;
+            let gust = 0.5 + 0.5 * (t * 0.09).sin();
+            let n = if open { 60 + (50.0 * gust) as i32 } else { 28 };
+            let (w, hgt) = (scr.w as f32, view_h as f32);
+            let floor = view_h - crate::game::HUD_H;
+            for i in 0..n {
+                let h1 = ((i as u32).wrapping_mul(2654435761) >> 8) as f32 / 16_777_216.0;
+                let h2 = ((i as u32).wrapping_mul(40503).wrapping_add(977) % 1000) as f32 / 1000.0;
+                // One in eight is an ember, rising and flickering; the rest is ash (or dust), sinking and swaying.
+                let ember = open && i % 8 == 0;
+                let (speed, drift) = if ember {
+                    (-(14.0 + h2 * 12.0), 6.0 + gust * 10.0)
+                } else if open {
+                    (9.0 + h2 * 10.0, 8.0 + gust * 18.0)
+                } else {
+                    (1.5 + h2 * 2.0, 1.0)
+                };
+                let sway = (t * (0.7 + h2) + h1 * 30.0).sin() * if open { 8.0 } else { 3.0 };
+                let x = (h1 * w * 3.0 - cx + t * drift + sway).rem_euclid(w);
+                let y = (h2 * hgt * 3.0 - cy + t * speed).rem_euclid(hgt);
+                let (xi, yi) = (x as i32, y as i32);
+                if yi >= floor {
+                    continue;
+                }
+                if ember {
+                    let f = 0.55 + 0.45 * (t * 7.0 + h1 * 40.0).sin().abs();
+                    scr.fill(xi, yi, 1, 1, mix(rgb(0x802000), rgb(0xffb040), f));
+                    scr.glow(xi, yi, 3.0, rgb(0xff8020), 0.25 * f);
+                } else {
+                    let c = if open { mix(rgb(0x6a6460), rgb(0xb8b0a8), h1) } else { rgb(0xc8b898) };
+                    let idx = (yi * scr.w + xi) as usize;
+                    if idx < scr.px.len() {
+                        let a = if open { 0.6 } else { 0.25 + 0.25 * (t * 1.5 + h1 * 20.0).sin().abs() };
+                        scr.px[idx] = mix(scr.px[idx], c, a);
+                        if open && h2 > 0.75 && idx + 1 < scr.px.len() {
+                            scr.px[idx + 1] = mix(scr.px[idx + 1], c, a * 0.6);
+                        }
+                    }
+                }
+            }
+        }
+        // Weather: the Churn's motes, a little of every act's weather (ash, snow, wisps, sparks, bubbles, sky gold),
+        // wheeling slowly round, the direction turning as the chaos shifts.
+        if crate::chaos::churning(self.level) {
+            let (cx, cy) = iso::to_screen(self.p.x, self.p.y);
+            let t = self.tick as f32 / 60.0;
+            let (w, hgt) = (scr.w as f32, view_h as f32);
+            let floor = view_h - crate::game::HUD_H;
+            const COLS: [u32; 6] = [0xa8a098, 0xf0f6ff, 0x70ff90, 0xffc050, 0x90e0ff, 0xfff0a0];
+            let turn = t * 0.05;
+            for i in 0..90u32 {
+                let h1 = (i.wrapping_mul(2654435761) >> 8) as f32 / 16_777_216.0;
+                let h2 = (i.wrapping_mul(40503).wrapping_add(977) % 1000) as f32 / 1000.0;
+                let ang = turn * std::f32::consts::TAU + (h1 - 0.5) * 1.2;
+                let sp = 10.0 + h2 * 16.0;
+                let curl = (t * (0.4 + h2 * 0.5) + h1 * 25.0).sin() * 10.0;
+                let x = (h1 * w * 3.0 - cx + t * sp * ang.cos() + curl).rem_euclid(w);
+                let y = (h2 * hgt * 3.0 - cy + t * sp * ang.sin() + curl * 0.5).rem_euclid(hgt);
+                let (xi, yi) = (x as i32, y as i32);
+                if yi >= floor {
+                    continue;
+                }
+                let c = rgb(COLS[(i as usize + (t * 0.2) as usize) % COLS.len()]);
+                let a = 0.35 + 0.4 * (t * 2.0 + h1 * 17.0).sin().abs();
+                let idx = (yi * scr.w + xi) as usize;
+                if idx < scr.px.len() {
+                    scr.px[idx] = mix(scr.px[idx], c, a);
+                }
+                if i % 9 == 0 {
+                    scr.glow(xi, yi, 3.0, c, 0.2 * a);
+                }
+            }
+        }
         // Weather: snowfall over the Frostmarch (gusting), frost motes in the ice dungeons.
         if self.theme.cold() {
             let open = self.theme.open();
