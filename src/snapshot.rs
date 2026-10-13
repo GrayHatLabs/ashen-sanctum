@@ -119,6 +119,11 @@ impl Bot {
             self.steer(g, t, tk, &mut inp);
             return inp;
         }
+        // Hungry (or thirsty): eat from the food bag / drink from the vial (the bag's meals don't eat themselves).
+        if g.p.food < 45.0 && t % 30 == 0 && (g.bag_meals() > 0 || g.p.vial >= 1.0) {
+            inp.eat = true;
+            return inp;
+        }
         // (The vampire feeds on blood, not bread: walking onto food she can't eat pinned her among clockwork.)
         if g.p.food < 40.0 && g.p.skills.class != crate::skills::Class::Vampire {
             if let Some(f) = g.bot_food() {
@@ -134,7 +139,8 @@ impl Bot {
             } else if t > self.whiff.1 + 180 && t > self.whiff.2 + 60 {
                 self.whiff = (landed, t, t + 60);
             }
-            if t < self.whiff.2 && dist > 1.2 && !g.level.overland() && self.path_ok(g, t, (mx, my)) {
+            // (Out in the open too, when it's close: a wolf held up behind a fence once froze the bot for minutes.)
+            if t < self.whiff.2 && dist > 1.2 && (!g.level.overland() || dist < 9.0) && self.path_ok(g, t, (mx, my)) {
                 self.steer(g, t, (mx, my), &mut inp);
                 inp.cast = t % 2 == 0;
                 return inp;
@@ -464,10 +470,11 @@ pub fn run(dir: Option<&str>, tall: bool) -> i32 {
                 g.p.y,
                 g.bot_token(),
                 g.dialog.as_ref().map(|d| d.name),
-                g.bot_target().map(|t| (t.0 as i32, t.1 as i32, t.2 as i32, t.3)),
+                g.bot_target().map(|t| (t.0 as i32, t.1 as i32, t.2 as i32, t.3, g.mobs.iter().find(|m| m.alive() && (m.x - t.0).abs() < 0.01 && (m.y - t.1).abs() < 0.01).map(|m| (m.kind, m.name.clone(), m.neutral, m.state)))),
                 g.p.hp,
                 g.state
             );
+            println!("      food={:.0} bag={:?} vial={:.0} pots={}+{}/{} food_on_floor={:?} portal={:?}", g.p.food, g.p.food_bag, g.p.vial, g.p.hp_pots, g.p.mp_pots, g.belt_cap(), g.bot_food(), g.bot_portal());
         }
         if dir.is_none() && minutes > 6 && t > 0 && t % (3600 * 5) == 0 {
             println!("  [{:>3} min] {} at {:.0},{:.0} clvl={} kills={} bosses={} quest={}", t / 3600, g.level_name, g.p.x, g.p.y, g.p.clvl, g.kills, g.stats.bosses, g.quest_log());

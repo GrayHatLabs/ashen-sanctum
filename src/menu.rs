@@ -64,6 +64,8 @@ pub struct Menu {
     rects: Vec<(i32, i32, i32, i32, usize)>,
     /// The hero last highlighted in the list (what the DELETE HERO button acts on).
     hero_sel: usize,
+    /// QUIT was picked once on the title screen: once more to really quit.
+    quit_armed: bool,
     /// First hero row shown (the list scrolls when it doesn't fit).
     scroll: usize,
     /// Rows that fit on screen (from the last draw).
@@ -85,6 +87,7 @@ impl Menu {
             prev: Input::default(),
             rects: vec![],
             hero_sel: 0,
+            quit_armed: false,
             scroll: 0,
             rows_fit: 7,
             seed: 1,
@@ -173,8 +176,12 @@ impl Menu {
         }
         match self.stage {
             Stage::Title => {
+                // Back goes to QUIT; QUIT asks once more before it closes the game.
                 if back {
-                    return Some(MenuOut::Quit);
+                    self.sel = 2;
+                }
+                if self.sel != 2 {
+                    self.quit_armed = false;
                 }
                 if confirm {
                     match self.sel {
@@ -183,7 +190,11 @@ impl Menu {
                             self.go(s);
                         }
                         1 => self.go(Stage::Options),
-                        _ => return Some(MenuOut::Quit),
+                        _ if self.quit_armed => return Some(MenuOut::Quit),
+                        _ => {
+                            self.quit_armed = true;
+                            self.say("ARE YOU SURE? PRESS AGAIN TO QUIT");
+                        }
                     }
                 }
             }
@@ -423,7 +434,8 @@ impl Menu {
         }
         scr.blend(w / 2 - 110, h / 2 + if tall { 40 } else { 10 }, 220, 92, BLACK, 0.5);
         let y0 = h / 2 + if tall { 50 } else { 20 };
-        for (k, label) in ["PLAY", "OPTIONS", "QUIT"].iter().enumerate() {
+        let quit = if self.quit_armed { "QUIT? SURE?" } else { "QUIT" };
+        for (k, label) in ["PLAY", "OPTIONS", quit].iter().enumerate() {
             self.button(scr, label, w / 2, y0 + k as i32 * 26, 150, k, true);
         }
         scr.text("UP / DOWN + ENTER (PAD: A)", w / 2, h - 14, rgb(0x7a6a5a), Align::Center, 1);
@@ -682,9 +694,12 @@ mod tests {
         press(&mut m, |i| i.confirm = true);
         assert_eq!(m.stage, Stage::Heroes);
         assert_eq!(press(&mut m, |i| i.confirm = true), Some(MenuOut::Load("carmilla".into())));
-        // Esc from the title quits.
+        // Esc from the title goes to QUIT, and QUIT asks once more.
         let mut m = Menu::new(vec![]);
-        assert_eq!(press(&mut m, |i| i.cancel = true), Some(MenuOut::Quit));
+        assert_eq!(press(&mut m, |i| i.cancel = true), None);
+        assert_eq!(m.sel, 2);
+        assert_eq!(press(&mut m, |i| i.confirm = true), None, "are you sure?");
+        assert_eq!(press(&mut m, |i| i.confirm = true), Some(MenuOut::Quit));
     }
 
     #[test]

@@ -37,7 +37,7 @@ The game opens on the **title screen**: Play, Options (music, controls), Quit.
   - Pick one to continue.
   - X / Space deletes one (it asks first).
   - **New Hero** picks a class (the Inventor is coming soon) and a name. Type one, or take a random gothic name.
-- **In game, Esc** saves and returns to the character select.
+- **In game, Esc** asks whether to quit: keep playing, back to the character select, or close the game (the hero is saved either way).
 - Each hero has their own save file in `~/.local/share/ashensanctum/heroes/`. An old single save is copied in as the first hero.
 
 ## Seven heroes
@@ -174,7 +174,7 @@ take back their Seals, unseal the Sanctum and end the Ash King.
 - **Run / walk** (R or pad B), like D2: running is fast but drains the yellow **stamina** bar, which refills while you walk or stand. Run it dry and you're tired (walk only) until it recovers.
 - **Food**: the food bar slowly empties, faster while running. When it's empty you're **starving**: you lose life, don't regenerate it, and stamina refills slowly. Apples, bread and roasts lie around and drop from monsters (walk over them to eat), and Gerta sells them.
 - **Experience**: kills level you up (more life, mana and damage) and give a **skill point**; each
-  Warden's Seal gives another. Spend them in the **skill tree** (K / hold SELECT):
+  Warden's Seal gives another. Spend them in the **skill tree** (K / L2):
   - **Fireball**: exploding bolt that sets foes burning.
   - **Inferno**: hold to breathe a cone of flame (drains mana while held).
   - **Warmth** (passive): faster mana regeneration.
@@ -437,6 +437,18 @@ Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`;
 - **Lore pages**, five per act; all five give +5% experience in that act. The map (Tab / M) shows the
   **journal**: pages, side quests, super uniques and shrines.
 
+## Potions and food
+
+- Potions go in your **potion belt**: 6 potions to start (healing and mana together). With the belt full, a
+  potion stays where it lies, and the merchants won't sell you more.
+- Food goes in your **food bag** (3 meals to start). You eat when you choose: **G**, or **hold SELECT** on a
+  pad; it picks the meal that best fills you up. With the bag full and you hungry, food is eaten where it lies.
+- **The Vampire** keeps a **blood vial** instead: blood she drinks past sated goes in it (40 to start), and she
+  drinks from it when she chooses (G / hold SELECT).
+- Six side quests make them bigger (belt up to 16 potions, bag up to 12 meals, vial up to 160 blood): Gerta's
+  Caravan, the Pale Huntsman and Ghosts of the Sovereign (the belt); the Lost Patrol, Tally's Count and Bram's
+  Lost Cargo (the bag, or the vial).
+
 ## Controls
 
 | Action | Mouse + keyboard | Gamepad / handheld |
@@ -445,7 +457,7 @@ Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`;
 | Primary skill (L slot) | Left click a monster, Shift + left click, F | A, RT or the right stick (auto-aims at the nearest foe) |
 | Secondary skill (R slot) | Right click, Space | X |
 | Pick the secondary skill | 1-4 | R1 (cycles) |
-| Skill tree | K, or click the skill slots / the + button | L2 (or click a stick, or hold SELECT) |
+| Skill tree | K, or click the skill slots / the + button | L2 (or click a stick) |
 | Inventory | I, or click BAG | START |
 | Run / walk toggle | R | B |
 | Health potion | Q or 1 | L1 |
@@ -453,9 +465,10 @@ Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`;
 | Choose in a conversation | Up / Down + Enter, or click | D-pad + A |
 | Map | Tab or M | SELECT |
 | Mana potion | E or 2 | Y |
+| Eat from the food bag (the Vampire: drink from the blood vial) | G | Hold SELECT |
 | Music on / off | N | |
 | Continue after death / the ending | Enter | START |
-| Close menu / quit | Esc (closes a conversation or the map first) | SELECT + START |
+| Close menu / quit | Esc (closes a conversation or the map first, then asks whether to quit) | SELECT + START (asks first) |
 
 ## Level editor
 

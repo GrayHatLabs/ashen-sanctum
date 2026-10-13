@@ -387,6 +387,13 @@ impl Reward {
     }
 }
 
+/// The upgrades side quests give, on top of their reward (game.rs BELT, PACK, VIAL).
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub enum Upgrade {
+    Belt,
+    Pack,
+}
+
 /// What finishes a side quest.
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub enum Goal {
@@ -425,6 +432,8 @@ pub struct SideDef {
     pub thanks: &'static [&'static str],
     pub goal: Goal,
     pub reward: Reward,
+    /// And a bigger potion belt, or a bigger food bag (the vampire: blood vial), on top.
+    pub upgrade: Option<Upgrade>,
     /// The quest log line while it's open.
     pub todo: &'static str,
 }
@@ -451,6 +460,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["THE WATER RUNS CLEAR AGAIN. I CAN TEACH YOU SOMETHING FOR THAT: SIT, AND LET YOUR MIND GO STILL..."],
         goal: Goal::Boss(Kind::WellWitch),
         reward: Reward::SkillPoint,
+        upgrade: None,
         todo: "SLAY THE WELL-WITCH IN THE CHARNEL WELL (THE ASHLANDS)",
     },
     SideDef {
@@ -467,6 +477,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["SKRAT'S DEAD? HA! HERE, AS PROMISED: THE PIECE FROM UNDER THE COUNTER, AND A PURSE FOR YOUR TROUBLE."],
         goal: Goal::Super(0),
         reward: Reward::Rare(300),
+        upgrade: Some(Upgrade::Belt),
         todo: "SLAY SKRAT ONE-EAR (SKRAT'S GULCH, EAST OF THE BARROW FIELDS)",
     },
     SideDef {
@@ -483,6 +494,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["THANK YOU. I'LL BURY HIM PROPERLY. TAKE THIS: MY MOTHER'S CHARM. IT KEPT HIM ALIVE THROUGH THREE WINTERS."],
         goal: Goal::Super(2),
         reward: Reward::Life(20),
+        upgrade: None,
         todo: "PUT THE HOLLOW SHEPHERD TO REST (SHEPHERD'S VALE, WEST OF THE ASHLANDS)",
     },
     SideDef {
@@ -499,6 +511,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["YOU WALKED INTO A DRAGON'S BEDROOM AND WALKED OUT RICH! HERE, THE GUARD'S OLD CHARM. IT'S TURNED A FEW BLADES IN ITS TIME."],
         goal: Goal::Heist,
         reward: Reward::Ward,
+        upgrade: None,
         todo: "STEAL 500 GOLD FROM THE EMBER WYRM AND GET OUT (EMBERPEAK PASS, NORTH OF THE CINDER HILLS)",
     },
     // ---- Act 2 ----
@@ -516,6 +529,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["HROLF'S DEAD, AND THE AXE IS HOME. GIVE ME YOUR GEAR A MOMENT... THERE. A SOCKET, CUT CLEAN. MY FATHER WOULD HAVE LIKED YOU."],
         goal: Goal::Boss(Kind::Hrolf),
         reward: Reward::Socket,
+        upgrade: None,
         todo: "SLAY HROLF ICE-BEARD IN THE ICEBOUND LONGSHIP (THE RAIDERS' FJORD)",
     },
     SideDef {
@@ -529,6 +543,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["ALL THREE, HOME AND WARM. TAKE THIS: THE CAPTAIN'S CLOAK-PIN. IT'S TURNED MORE THAN ONE BLADE."],
         goal: Goal::Scouts,
         reward: Reward::Ward,
+        upgrade: Some(Upgrade::Pack),
         todo: "THAW BRENNA'S THREE SCOUTS (FROZEN SHORE, RIME WOODS, WHITE WASTE)",
     },
     SideDef {
@@ -542,6 +557,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["SHE'S AT PEACE. NOW, SIT. CLOSE YOUR EYES. LET YOUR SKILLS RUN OUT OF YOU LIKE MELTWATER... AND LEARN THEM AGAIN AS YOU WILL."],
         goal: Goal::Super(4),
         reward: Reward::Respec,
+        upgrade: None,
         todo: "LAY THE FROZEN BRIDE TO REST (THE RIME WOODS)",
     },
     // ---- Act 3 ----
@@ -556,6 +572,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["THE GRAVEDIGGER IS DEAD? THEN MY HUSBAND CAN SLEEP. TAKE THIS... IT WAS HIS. HE'D WANT IT KEEPING SOMEONE ALIVE."],
         goal: Goal::Boss(Kind::Gravedigger),
         reward: Reward::Life(20),
+        upgrade: None,
         todo: "SLAY THE GRAVEDIGGER IN HIS CELLAR (THE BLIGHTED FIELDS)",
     },
     SideDef {
@@ -569,6 +586,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["I HEARD THEM FROM HERE, ALL THREE. LISTEN... THE MIST IS QUIETER ALREADY. KNEEL, CHILD. A BLESSING, AND SOMETHING MORE: KNOWLEDGE."],
         goal: Goal::Bells,
         reward: Reward::SkillPoint,
+        upgrade: None,
         todo: "RING THE THREE BELLS (BLIGHTED FIELDS, GALLOWS MOOR, BARROW HILLS)",
     },
     SideDef {
@@ -582,6 +600,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["HE'S GONE, THEN. GOOD. HE'D HAVE WANTED IT. HERE: THE HUNTER'S CHARM. IT NEVER MISSED FOR US."],
         goal: Goal::Super(6),
         reward: Reward::Unique("abelard"),
+        upgrade: Some(Upgrade::Belt),
         todo: "SLAY THE PALE HUNTSMAN (THE HOLLOW WOOD)",
     },
     // ---- Act 4 ----
@@ -596,6 +615,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["THE OIL! THE SAINT TURNS AGAIN. MADAME VESPER OWES ME A FAVOUR, AND YOU'RE IT: SHE'S MADE YOU SOMETHING. AND A PURSE, FROM THE COLLECTION PLATE."],
         goal: Goal::Boss(Kind::JunkGolem),
         reward: Reward::Rare(500),
+        upgrade: None,
         todo: "DESTROY THE JUNK GOLEM IN THE SCRAPHEAP LABYRINTH (THE SCRAPYARD)",
     },
     SideDef {
@@ -609,6 +629,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["MY LEDGER. NOT A PAGE MISSING. FIFTEEN HUNDRED GOLD, AS AGREED. I'VE WRITTEN IT DOWN."],
         goal: Goal::Super(14),
         reward: Reward::Gold(1500),
+        upgrade: Some(Upgrade::Pack),
         todo: "CATCH TICK-TOCK JACK (THE COGWORKS)",
     },
     SideDef {
@@ -622,6 +643,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["HALVANE, SILENCED. HOW RESTFUL. HERE: A LITTLE CLOCKWORK OF MY OWN. IT TURNS BLADES ASIDE."],
         goal: Goal::Super(13),
         reward: Reward::Ward,
+        upgrade: None,
         todo: "SILENCE GRAND INQUISITOR HALVANE (THE CLOCKFACE PLAIN)",
     },
     // ---- Act 5 ----
@@ -636,6 +658,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["OLD BARNACLE, DEAD? I'VE DIVED FOR TWENTY YEARS AND NEVER SEEN ANYONE DO THAT. I'LL TEACH YOU A DIVER'S TRICK OR TWO FOR IT. BREATHE IN..."],
         goal: Goal::Boss(Kind::Barnacle),
         reward: Reward::SkillPoint,
+        upgrade: None,
         todo: "SLAY OLD BARNACLE IN THE PEARL GROTTO (THE KELP SHALLOWS, AT LOW TIDE)",
     },
     SideDef {
@@ -649,6 +672,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["ALL THREE. THANK YOU. THEY WERE GOOD MEN. TOBIAS WAS ONLY FOURTEEN. TAKE MY OLD CHARM: IT KEPT ME ALIVE WHEN THE SOVEREIGN DIDN'T."],
         goal: Goal::Ghosts,
         reward: Reward::Life(20),
+        upgrade: Some(Upgrade::Belt),
         todo: "LAY YSOLDE'S DROWNED CREW TO REST (CORAL GARDENS, BONE REEF, ABYSSAL PLAIN)",
     },
     SideDef {
@@ -662,6 +686,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["HE'S HOME, SHIVERING, ALIVE. THE TIDE BLESS YOU. A TIDE-PRIEST'S BLESSING ISN'T NOTHING: IT TURNS BLADES LIKE WATER TURNS STONES."],
         goal: Goal::Super(16),
         reward: Reward::Ward,
+        upgrade: None,
         todo: "SLAY LIRAEL THE SIREN (THE TRENCH RIM)",
     },
     // ---- Act 6 ----
@@ -676,6 +701,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["HIS CHART. EVERY STAR, AND A BLANK WHERE THE SUN WAS. POOR THING. LET ME SHOW YOU WHAT HE SAW: HOLD STILL, AND LOOK UP..."],
         goal: Goal::Boss(Kind::Astronomer),
         reward: Reward::SkillPoint,
+        upgrade: None,
         todo: "SLAY THE ASTRONOMER IN THE FALLEN OBSERVATORY (THE DRIFTING ISLES)",
     },
     SideDef {
@@ -689,6 +715,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["ALL THREE, AND NOT A SEAL BROKEN. YOU'RE HONEST, FOR A GROUNDLING. HERE: YOUR SHARE, AND THE PICK OF THE LOT."],
         goal: Goal::Cargo,
         reward: Reward::Rare(1500),
+        upgrade: Some(Upgrade::Pack),
         todo: "FIND BRAM'S THREE LOST CRATES ON THE ISLANDS OF THE SKYREACH",
     },
     SideDef {
@@ -702,6 +729,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["THREE TEARS. LISTEN: SHE'S STOPPED WEEPING. THANK YOU. SHE LEFT THIS FOR WHOEVER BROUGHT THEM. IT'S STILL WARM."],
         goal: Goal::Tears,
         reward: Reward::Unique("tears"),
+        upgrade: None,
         todo: "BRING THE WEEPING SERAPH THREE TEARS: EZEKAR (THE ZENITH), STORMWING (THE STORMFIELDS), SABINE (THE HALO ISLES)",
     },
     // ---- Act 7 ----
@@ -716,6 +744,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["THE HOUSE LOST. FOR ONCE, THE HOUSE LOST. HERE, BROTHER HUSH TAUGHT ME THIS. IT TURNS ASIDE A LITTLE OF WHAT FATE THROWS AT YOU."],
         goal: Goal::Boss(Kind::DiceSaint),
         reward: Reward::Ward,
+        upgrade: None,
         todo: "BREAK THE DICE-SAINT IN THE PROBABILITY VAULT (THE DRIFT OF WORLDS)",
     },
     SideDef {
@@ -729,6 +758,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["\"STILL. HOLD. HOME.\" (HE SAYS IT ALOUD. HIS VOICE IS ROUGH FROM DISUSE, AND VERY KIND.) THANK YOU. LET ME GIVE YOU SOMETHING I LEARNED IN ALL THAT QUIET."],
         goal: Goal::Words,
         reward: Reward::SkillPoint,
+        upgrade: None,
         todo: "FIND ABBOT QUIET'S THREE LOST WORDS, OUT IN THE CHURN",
     },
     SideDef {
@@ -742,6 +772,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["IT'S DONE? THEN SIT. YOU'VE SEEN WHO YOU MIGHT HAVE BEEN; THAT CHANGES A PERSON. LET ME HELP YOU CHOOSE AGAIN, IF YOU LIKE."],
         goal: Goal::Super(OTHER_YOU),
         reward: Reward::Respec,
+        upgrade: None,
         todo: "END THE OTHER YOU, IN THE SHATTERED MONASTERY",
     },
     SideDef {
@@ -755,6 +786,7 @@ pub const SIDES: &[SideDef] = &[
         thanks: &["GOOD ORE. STILL WARM WITH NOT-CHANGING. HAND ME THAT... THERE. A SOCKET, CLEAN AS A BELL."],
         goal: Goal::Ore,
         reward: Reward::Socket,
+        upgrade: None,
         todo: "BRING SISTER FERRO THREE LUMPS OF CHAOS ORE FROM THE ANCHOR STONES",
     },
 ];
@@ -1296,12 +1328,39 @@ impl Game {
                 let text = self.give_reward(s.reward);
                 let mut pages: Vec<String> = s.thanks.iter().map(|t| t.to_string()).collect();
                 pages.push(format!("{}: {}", s.name, text));
+                if let Some(u) = s.upgrade {
+                    pages.push(self.give_upgrade(u));
+                }
                 let refs: Vec<&str> = pages.iter().map(|p| p.as_str()).collect();
                 Dialog::new(s.giver_name, &refs)
             }
         };
         d.refresh_options();
         self.dialog = Some(d);
+    }
+
+    /// A bigger belt or bag (or vial); past the biggest, gold instead.
+    fn give_upgrade(&mut self, u: Upgrade) -> String {
+        let vampire = self.p.skills.class == crate::skills::Class::Vampire;
+        match u {
+            Upgrade::Belt if self.p.belt_lv < 3 => {
+                self.p.belt_lv += 1;
+                format!("AND A BIGGER POTION BELT: IT HOLDS {} POTIONS NOW", self.belt_cap())
+            }
+            Upgrade::Pack if self.p.pack_lv < 3 && vampire => {
+                self.p.pack_lv += 1;
+                format!("AND A BIGGER BLOOD VIAL: IT HOLDS {:.0} BLOOD NOW", self.vial_cap())
+            }
+            Upgrade::Pack if self.p.pack_lv < 3 => {
+                self.p.pack_lv += 1;
+                format!("AND A BIGGER FOOD BAG: IT HOLDS {} MEALS NOW", self.pack_cap())
+            }
+            _ => {
+                let g = (200.0 * self.tier) as i32;
+                self.p.gold += g;
+                format!("YOUR GEAR IS AS BIG AS IT GETS, SO: {g} GOLD")
+            }
+        }
     }
 
     fn give_reward(&mut self, r: Reward) -> String {

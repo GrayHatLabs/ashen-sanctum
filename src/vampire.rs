@@ -268,7 +268,10 @@ impl Game {
 
     /// Fills the vampire's blood hunger.
     pub(crate) fn feed(&mut self, blood: f32) {
-        self.p.food = (self.p.food + blood).min(crate::game::MAX_FOOD);
+        let room = (crate::game::MAX_FOOD - self.p.food).max(0.0);
+        self.p.food += blood.min(room);
+        // Past sated, the blood goes in her vial, for later (she drinks it herself: G / hold SELECT).
+        self.p.vial = (self.p.vial + (blood - room).max(0.0)).min(self.vial_cap());
         if blood > 0.0 {
             self.p.hunger_msg = self.p.hunger_msg.min(4.0);
         }

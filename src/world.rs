@@ -2477,7 +2477,13 @@ pub fn rift(tier: u16, seed: u64) -> Level {
 /// Bosses past Act 1 fell in seconds (balance pass 2026-10-07, scripts/balance-bench.sh): more life by
 /// act, so a herald lasts ~8 s and an act's last boss ~20-30 s at that act's power.
 pub fn boss_life(act: usize) -> f32 {
-    [1.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0][act.min(6)]
+    // Act 1's bosses went down too easily (the user, 2026-10-13); every act's got tougher.
+    [1.9, 3.2, 3.8, 4.3, 4.9, 5.4, 6.0][act.min(6)]
+}
+
+/// How much harder a boss hits than its kind's base damage, by act.
+pub fn boss_hit(act: usize) -> f32 {
+    [1.35, 1.25, 1.2, 1.15, 1.15, 1.15, 1.15][act.min(6)]
 }
 
 /// One floor of a dungeon: stairs up in the first room, stairs down (or the boss)
@@ -2501,6 +2507,7 @@ pub fn dungeon_floor(k: usize, floor: usize, seed: u64) -> Level {
         let mut boss = Mob::new(def.boss, ex as f32 + 0.5, ey as f32 + 0.5, tier * 0.5 + 0.5, &mut rng);
         boss.max_hp *= boss_life(def.act);
         boss.hp = boss.max_hp;
+        boss.dmg = (boss.dmg.0 * boss_hit(def.act), boss.dmg.1 * boss_hit(def.act));
         boss.home = (-1000.0, -2000.0); // bosses don't wander home
         lv.mobs.push(boss);
     } else {

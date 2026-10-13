@@ -327,6 +327,7 @@ fn main() -> Result<(), String> {
     let (mut confirm, mut pot_hp, mut pot_mp, mut map, mut run_toggle, mut cancel) = (false, false, false, false, false, false);
     let (mut skills_key, mut cycle, mut slot): (bool, bool, Option<u8>) = (false, false, None);
     let mut inv_key = false;
+    let (mut eat_key, mut quit_ask) = (false, false);
     let cheats = args.iter().any(|a| a == "--cheats");
     let (mut cheat_level, mut cheat_loot) = (false, false);
     let mut back_down: Option<Instant> = None;
@@ -345,6 +346,7 @@ fn main() -> Result<(), String> {
                         F => keys.cast = true,
                         Space => keys.cast2 = true,
                         K if !repeat => skills_key = true,
+                        G if !repeat => eat_key = true,
                         I | C if !repeat => inv_key = true,
                         N if !repeat => {
                             if let Some(a) = audio.as_mut() {
@@ -419,7 +421,7 @@ fn main() -> Result<(), String> {
                             back_down = Some(Instant::now());
                         }
                         // SELECT + START quits (the usual handheld hotkey).
-                        Button::Start if back_held => break 'main,
+                        Button::Start if back_held => quit_ask = true,
                         // START confirms in conversations / after death, and opens the inventory otherwise.
                         Button::Start => {
                             confirm = true;
@@ -444,12 +446,12 @@ fn main() -> Result<(), String> {
                     }
                 }
                 Event::ControllerButtonUp { button, .. } => match by_label(button, handheld) {
-                    // SELECT on its own toggles the map (SELECT + START quits above).
-                    // SELECT tapped: map; held: skill tree (SELECT + START quits above).
+                    // SELECT tapped: the map; held: eat from the food bag / drink from the blood vial (the skill tree
+                    // is on L2 and the stick clicks). SELECT + START asks whether to quit.
                     Button::Back => {
                         back_held = false;
                         if back_down.map_or(false, |t| t.elapsed() > Duration::from_millis(400)) {
-                            skills_key = true;
+                            eat_key = true;
                         } else {
                             map = true;
                         }
@@ -515,6 +517,8 @@ fn main() -> Result<(), String> {
             inp.map = map;
             inp.run_toggle = run_toggle;
             inp.cancel = cancel;
+            inp.eat = eat_key;
+            inp.quit_ask = quit_ask;
             inp.skills = skills_key;
             inp.inv = inv_key;
             inp.typed = std::mem::take(&mut typed);
@@ -535,6 +539,8 @@ fn main() -> Result<(), String> {
             backspace = false;
             wheel = 0;
             confirm = false;
+            eat_key = false;
+            quit_ask = false;
             pot_hp = false;
             pot_mp = false;
             map = false;
@@ -592,6 +598,10 @@ fn main() -> Result<(), String> {
         if game.save_due && menu.is_none() {
             game.save_due = false;
             save::write(&game);
+        }
+        if game.exit {
+            save::write(&game);
+            break 'main;
         }
         if game.quit {
             if skip_menu {

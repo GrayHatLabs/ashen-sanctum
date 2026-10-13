@@ -695,6 +695,7 @@ pub fn from_file(f: &LevelFile, seed: u64) -> Result<Level, String> {
                     mob.home = (-1000.0, -2000.0);
                     mob.max_hp *= world::boss_life(id.act());
                     mob.hp = mob.max_hp;
+                    mob.dmg = (mob.dmg.0 * world::boss_hit(id.act()), mob.dmg.1 * world::boss_hit(id.act()));
                 }
                 lv.mobs.push(mob);
             }

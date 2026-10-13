@@ -2290,16 +2290,37 @@ impl Game {
             rgb(0xb07030)
         };
         let flabel = match (vampire, starving, fd < 0.25) {
-            (true, true, _) => "BLOOD - BLOODTHIRSTY!",
-            (true, false, true) => "BLOOD - THIRSTY",
+            (true, true, _) => "THIRST!",
+            (true, false, true) => "THIRSTY",
             (true, ..) => "BLOOD",
-            (false, true, _) => "FOOD - STARVING!",
-            (false, false, true) => "FOOD - HUNGRY",
+            (false, true, _) => "STARVING!",
+            (false, false, true) => "HUNGRY",
             _ => "FOOD",
         };
         let fcol = if starving && (self.tick / 20) % 2 == 0 { rgb(0xff5030) } else { rgb(0xb0a090) };
-        let flabel = flabel.replace("BLOODTHIRSTY", "THIRST").replace(" - ", " ");
-        scr.text(&flabel, bar_x, top + 23, fcol, Align::Left, 1);
+        scr.text(flabel, bar_x, top + 23, fcol, Align::Left, 1);
+        // What's in the food bag (meals / room) or the vampire's blood vial (how much blood), at the bar's far
+        // end behind a little sack or vial (starving, the warning takes the whole line).
+        if !(starving && !vampire) {
+            let (store, have) = if vampire {
+                (format!("{:.0}", self.p.vial), self.p.vial >= 1.0)
+            } else {
+                (format!("{}/{}", self.bag_meals(), self.pack_cap()), self.bag_meals() > 0)
+            };
+            let scol = if have && fd < 0.5 { rgb(0xe0c060) } else { rgb(0x908070) };
+            let rx = bar_x + bar_w;
+            scr.text(&store, rx, top + 23, scol, Align::Right, 1);
+            let ix = rx - crate::gfx::text_width(&store, 1) - 8;
+            if vampire {
+                scr.fill(ix + 1, top + 22, 3, 1, rgb(0x8a6a40));
+                scr.fill(ix, top + 23, 5, 6, rgb(0xd8d0d0));
+                scr.fill(ix + 1, top + 25, 3, 3, rgb(0xb01830));
+            } else {
+                scr.fill(ix + 1, top + 22, 3, 1, rgb(0x6a4a20));
+                scr.fill(ix, top + 23, 5, 6, rgb(0x9a7a40));
+                scr.fill(ix + 1, top + 24, 3, 1, rgb(0x6a4a20));
+            }
+        }
         bar(scr, bar_x, top + 33, bar_w, fd, fd_col);
         // Potions.
         let bx = sock(0) + 8;
@@ -2309,6 +2330,10 @@ impl Game {
         potion(scr, bx + 42, top + 14, rgb(0x2040c0));
         scr.text(&format!("X{}", self.p.mp_pots), bx + 56, top + 18, WHITE, Align::Left, 1);
         scr.text("E", bx + 44, top + 34, rgb(0x908070), Align::Left, 1);
+        // The belt: how full it is.
+        let used = self.p.hp_pots + self.p.mp_pots;
+        let bcol = if used >= self.belt_cap() { rgb(0xe0a040) } else { rgb(0x908070) };
+        scr.text(&format!("{used}/{}", self.belt_cap()), bx + 14, top + 34, bcol, Align::Left, 1);
         // Gold, level and the act's relics: the top right corner, across from the area name.
         scr.text(&format!("GOLD {}", self.p.gold), w - 6, 6, rgb(0xe8c050), Align::Right, 1);
         scr.text(&format!("CHAR LEVEL {}", self.p.clvl), w - 6, 17, rgb(0xd8c090), Align::Right, 1);

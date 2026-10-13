@@ -157,6 +157,7 @@ pub fn to_text(g: &Game) -> String {
     s += &format!("stage4={}\nkeys={}\n", q.stage4, bits(&q.keys));
     s += &format!("stage5={}\npearls={}\n", q.stage5, bits(&q.pearls));
     s += &format!("stage6={}\nshards={}\n", q.stage6, bits(&q.shards));
+    s += &format!("belt_lv={}\npack_lv={}\nvial={}\nfood_bag={},{},{}\n", g.p.belt_lv, g.p.pack_lv, g.p.vial, g.p.food_bag[0], g.p.food_bag[1], g.p.food_bag[2]);
     s += &format!("stage7={}\nakeys={}\nstillpoint={}\n", q.stage7, bits(&q.akeys), q.stillpoint);
     let p = &g.p;
     let list = |v: &[u32]| v.iter().map(|n| n.to_string()).collect::<Vec<_>>().join(",");
@@ -195,6 +196,14 @@ pub fn apply(g: &mut Game, text: &str) -> bool {
     g.p.base_mana = max_mana as f32;
     g.p.power = num("power").unwrap_or(1.0) as f32;
     g.p.gold = num("gold").unwrap_or(0.0) as i32;
+    g.p.belt_lv = (num("belt_lv").unwrap_or(0.0) as u8).min(3);
+    g.p.pack_lv = (num("pack_lv").unwrap_or(0.0) as u8).min(3);
+    g.p.vial = num("vial").unwrap_or(0.0) as f32;
+    if let Some(s) = get("food_bag") {
+        for (i, n) in s.split(',').take(3).enumerate() {
+            g.p.food_bag[i] = n.parse().unwrap_or(0);
+        }
+    }
     g.p.hp_pots = num("hp_pots").unwrap_or(3.0) as i32;
     g.p.mp_pots = num("mp_pots").unwrap_or(3.0) as i32;
     g.p.food = (num("food").unwrap_or(100.0) as f32).max(40.0);

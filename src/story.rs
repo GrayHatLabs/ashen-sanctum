@@ -369,6 +369,9 @@ pub enum Act {
     Shop,
     /// After the Ash King: start the next difficulty.
     NextDifficulty,
+    /// Save and go back to the character select screen; save and close the game.
+    QuitToHeroes,
+    QuitGame,
     /// The jeweler joins every three alike gems in your bag.
     Combine,
     /// The jeweler's bench: opens the inventory to add sockets or take gems out.

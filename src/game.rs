@@ -39,10 +39,15 @@ const FOOD_DRAIN_RUN: f32 = 0.8;
 const STARVE_DPS: f32 = 1.2;
 /// Apple, bread, roast: food restored, bonus life.
 pub const FOODS: [(&str, f32, f32); 3] = [("APPLE", 20.0, 0.0), ("BREAD", 35.0, 0.0), ("ROAST", 60.0, 10.0)];
-/// Chance a normal monster drops a piece of equipment.
-pub const ITEM_DROP: f32 = 0.1;
-/// Chance a common monster drops a gem.
-pub const GEM_DROP: f32 = 0.04;
+/// Chance a normal monster drops a piece of equipment (0.1 until 2026-10-13: too much loot, said the user).
+pub const ITEM_DROP: f32 = 0.06;
+/// Chance a common monster drops a gem (0.04 until 2026-10-13).
+pub const GEM_DROP: f32 = 0.015;
+/// The potion belt: how many potions (healing and mana together) it holds, by upgrade (side quests, side.rs).
+pub const BELT: [i32; 4] = [6, 9, 12, 16];
+/// The food bag: how many meals it holds, by upgrade; the vampire's blood vial: how much blood.
+pub const PACK: [u8; 4] = [3, 5, 8, 12];
+pub const VIAL: [f32; 4] = [40.0, 70.0, 110.0, 160.0];
 /// Talking range to people in town.
 const TALK_RANGE: f32 = 1.8;
 
@@ -89,8 +94,12 @@ pub struct Input {
     /// `--cheats` only: F9 gains a level, F10 drops loot (one-shot).
     pub cheat_level: bool,
     pub cheat_loot: bool,
-    /// Esc: close a conversation or the map; with nothing open, quit.
+    /// Esc: close a conversation or the map; with nothing open, ask whether to quit.
     pub cancel: bool,
+    /// Eat from the food bag (the vampire: drink from the blood vial). G, or holding SELECT.
+    pub eat: bool,
+    /// SELECT + START on a handheld: ask whether to quit.
+    pub quit_ask: bool,
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
@@ -316,6 +325,12 @@ pub struct Player {
     pub flash: f32,
     pub hp_pots: i32,
     pub mp_pots: i32,
+    /// Upgrades of the potion belt and the food bag / blood vial (0-3, side quests).
+    pub belt_lv: u8,
+    pub pack_lv: u8,
+    /// Meals in the food bag (apples, bread, roasts), and blood in the vampire's vial.
+    pub food_bag: [u8; 3],
+    pub vial: f32,
     pub gold: i32,
     /// Character level and experience.
     pub clvl: u32,
@@ -420,6 +435,10 @@ impl Player {
             flash: 0.0,
             hp_pots: 3,
             mp_pots: 3,
+            belt_lv: 0,
+            pack_lv: 0,
+            food_bag: [0; 3],
+            vial: 0.0,
             gold: 40,
             clvl: 1,
             xp: 0.0,
@@ -790,6 +809,8 @@ pub struct Game {
     pub(crate) prev: Input,
     pub show_map: bool,
     pub quit: bool,
+    /// Quit the whole program (after asking; main saves and closes).
+    pub exit: bool,
     /// Set when the game wants the character saved (town, boss kills); main writes it.
     pub save_due: bool,
     pub stats: Stats,
@@ -919,6 +940,7 @@ impl Game {
             prev: Input::default(),
             show_map: false,
             quit: false,
+            exit: false,
             save_due: false,
             stats: Stats::default(),
         };
@@ -1248,6 +1270,13 @@ impl Game {
             stillpoint: 0,
             side: [0; 32],
         };
+        // The belt and bag upgrades from the earlier acts' side quests (side.rs: acts 1, 3, 5 and 2, 4, 6).
+        self.p.belt_lv = [0usize, 2, 4].iter().filter(|&&a| a < act).count() as u8;
+        self.p.pack_lv = [1usize, 3, 5].iter().filter(|&&a| a < act).count() as u8;
+        // No more potions than the belt holds.
+        let cap = self.belt_cap();
+        self.p.hp_pots = self.p.hp_pots.min(cap - cap / 2);
+        self.p.mp_pots = self.p.mp_pots.min(cap / 2);
         self.waypoints = (0..=act).map(LevelId::land).collect();
         self.go_to(LevelId::land(act), None);
         (self.p.x, self.p.y) = self.town_start;
@@ -1858,8 +1887,11 @@ impl Game {
             } else if self.show_map {
                 self.show_map = false;
             } else {
-                self.quit = true;
+                self.ask_quit();
             }
+        }
+        if inp.quit_ask && self.dialog.is_none() {
+            self.ask_quit();
         }
         if inp.map {
             self.show_map = !self.show_map;
@@ -2248,6 +2280,14 @@ impl Game {
             }
             Some(Act::Buy(w)) => self.buy(w),
             Some(Act::Travel(id)) => self.travel(id),
+            Some(Act::QuitToHeroes) => {
+                self.dialog = None;
+                self.quit = true;
+            }
+            Some(Act::QuitGame) => {
+                self.dialog = None;
+                self.exit = true;
+            }
             Some(Act::NextDifficulty) => {
                 self.dialog = None;
                 self.next_difficulty();
@@ -2443,24 +2483,109 @@ impl Game {
             self.say("YOU THIRST FOR BLOOD, NOT BREAD".into());
             return;
         }
+        let potion = matches!(w, Ware::HealthPotion | Ware::ManaPotion);
+        if potion && self.p.hp_pots + self.p.mp_pots >= self.belt_cap() {
+            self.say(format!("YOUR POTION BELT IS FULL ({} POTIONS)", self.belt_cap()));
+            return;
+        }
+        let meal = if w == Ware::Bread { 1 } else { 2 };
+        let bag_room = self.bag_meals() < self.pack_cap();
+        if !potion && !bag_room && self.p.food > MAX_FOOD - 8.0 {
+            self.say("YOUR FOOD BAG IS FULL, AND SO ARE YOU".into());
+            return;
+        }
         self.p.gold -= price;
         self.sfx.push(Sfx::Pickup);
-        match w {
-            Ware::HealthPotion => self.p.hp_pots += 1,
-            Ware::ManaPotion => self.p.mp_pots += 1,
-            Ware::Bread => self.p.food = (self.p.food + FOODS[1].1).min(MAX_FOOD),
-            Ware::Roast => {
-                self.p.food = (self.p.food + FOODS[2].1).min(MAX_FOOD);
-                self.p.hp = (self.p.hp + FOODS[2].2).min(self.p.max_hp);
-            }
-        }
         let name = match w {
-            Ware::HealthPotion => "HEALING POTION",
-            Ware::ManaPotion => "MANA POTION",
-            Ware::Bread => "BREAD - EATEN",
-            Ware::Roast => "ROAST - EATEN",
+            Ware::HealthPotion => {
+                self.p.hp_pots += 1;
+                "HEALING POTION".to_string()
+            }
+            Ware::ManaPotion => {
+                self.p.mp_pots += 1;
+                "MANA POTION".to_string()
+            }
+            _ if bag_room => {
+                self.p.food_bag[meal] += 1;
+                format!("{} (FOOD BAG {}/{})", FOODS[meal].0, self.bag_meals(), self.pack_cap())
+            }
+            _ => {
+                self.eat(meal);
+                format!("{} - EATEN", FOODS[meal].0)
+            }
         };
         self.say(format!("BOUGHT {name}"));
+    }
+
+    pub fn belt_cap(&self) -> i32 {
+        BELT[self.p.belt_lv.min(3) as usize]
+    }
+
+    pub fn pack_cap(&self) -> u8 {
+        PACK[self.p.pack_lv.min(3) as usize]
+    }
+
+    pub fn vial_cap(&self) -> f32 {
+        VIAL[self.p.pack_lv.min(3) as usize]
+    }
+
+    pub fn bag_meals(&self) -> u8 {
+        self.p.food_bag.iter().sum()
+    }
+
+    /// Eats a meal of this kind (FOODS index).
+    fn eat(&mut self, i: usize) {
+        let (name, food, life) = FOODS[i];
+        self.p.food = (self.p.food + food).min(MAX_FOOD);
+        self.p.hp = (self.p.hp + life).min(self.p.max_hp);
+        self.p.hunger_msg = 0.0;
+        self.stats.eaten += 1;
+        self.sfx.push(Sfx::Eat);
+        let (x, y) = (self.p.x, self.p.y);
+        self.floater(x, y, name.into(), rgb(0xe0b060));
+    }
+
+    /// G / holding SELECT: a meal from the food bag (the one that best fills the gap), or, for the vampire, a
+    /// long drink from her blood vial.
+    pub(crate) fn eat_from_bag(&mut self) {
+        let gap = MAX_FOOD - self.p.food;
+        if self.p.skills.class == crate::skills::Class::Vampire {
+            if self.p.vial < 1.0 {
+                self.say("YOUR BLOOD VIAL IS EMPTY. FEED, AND IT FILLS WHEN YOU'RE SATED".into());
+            } else if gap < 1.0 {
+                self.say("YOU'RE SATED. KEEP THE VIAL FOR LATER".into());
+            } else {
+                let sip = self.p.vial.min(gap);
+                self.p.vial -= sip;
+                self.p.food += sip;
+                self.p.hunger_msg = 0.0;
+                self.sfx.push(Sfx::Drink);
+                let (x, y) = (self.p.x, self.p.y);
+                self.floater(x, y, format!("BLOOD (VIAL {:.0}/{:.0})", self.p.vial, self.vial_cap()), rgb(0xd02030));
+            }
+            return;
+        }
+        if self.bag_meals() == 0 {
+            self.say("YOUR FOOD BAG IS EMPTY".into());
+            return;
+        }
+        if gap < 4.0 {
+            self.say("YOU'RE FULL".into());
+            return;
+        }
+        // The biggest meal that fits the gap, or the smallest one there is.
+        let have: Vec<usize> = (0..3).filter(|&i| self.p.food_bag[i] > 0).collect();
+        let i = have.iter().copied().filter(|&i| FOODS[i].1 <= gap + 5.0).max_by_key(|&i| FOODS[i].1 as i32).unwrap_or(have[0]);
+        self.p.food_bag[i] -= 1;
+        self.eat(i);
+    }
+
+    /// Esc (or SELECT + START): keep playing, back to the heroes, or quit the game. The game is saved either way.
+    pub(crate) fn ask_quit(&mut self) {
+        let mut d = Dialog::new("QUIT?", &["ARE YOU SURE YOU WANT TO QUIT? YOUR HERO IS SAVED EITHER WAY."]);
+        d.last_options = vec![("KEEP PLAYING".into(), Act::Close), ("QUIT TO THE HEROES".into(), Act::QuitToHeroes), ("QUIT THE GAME".into(), Act::QuitGame)];
+        d.refresh_options();
+        self.dialog = Some(d);
     }
 
     fn nearest_npc(&self, range: f32) -> Option<usize> {
@@ -2533,10 +2658,19 @@ impl Game {
             }
         } else if self.p.food < 25.0 && self.p.hunger_msg <= 0.0 {
             self.p.hunger_msg = 12.0;
-            let word = if self.p.skills.class == crate::skills::Class::Vampire { "THIRSTY" } else { "HUNGRY" };
+            let vamp = self.p.skills.class == crate::skills::Class::Vampire;
+            let word = match (vamp, if vamp { self.p.vial >= 1.0 } else { self.bag_meals() > 0 }) {
+                (true, true) => "THIRSTY - DRINK FROM YOUR VIAL (G / HOLD SELECT)",
+                (true, false) => "THIRSTY",
+                (false, true) => "HUNGRY - EAT FROM YOUR BAG (G / HOLD SELECT)",
+                (false, false) => "HUNGRY",
+            };
             self.floater(self.p.x, self.p.y, word.into(), rgb(0xe0a040));
         }
 
+        if inp.eat {
+            self.eat_from_bag();
+        }
         if inp.potion_hp && self.p.hp_pots > 0 && self.p.hp < self.p.max_hp {
             self.p.hp_pots -= 1;
             self.p.hp = (self.p.hp + 40.0 + self.p.max_hp * 0.15).min(self.p.max_hp);
@@ -2779,20 +2913,35 @@ impl Game {
         let full = self.p.food > MAX_FOOD - 8.0 || self.p.skills.class == crate::skills::Class::Vampire;
         let mut bag_free = self.p.gear.free();
         let mut bag_full = false;
+        let mut belt_free = self.belt_cap() - self.p.hp_pots - self.p.mp_pots;
+        let mut belt_full = false;
+        let mut pack_free = self.pack_cap() as i32 - self.bag_meals() as i32;
+        let vampire = self.p.skills.class == crate::skills::Class::Vampire;
         let mut got = vec![];
         // A chest on the flats can't be reached under the tide (reef.rs).
         let wet = self.tide > 0.5 && crate::tides::tidal(self.level);
         let d = &self.d;
         self.pickups.retain(|k| {
-            let food_but_full = matches!(k.kind, Drop::Food(_)) && full || matches!(k.kind, Drop::TideChest) && wet && d.ground_at(k.x as i32, k.y as i32) == 1;
+            // Food goes in the food bag; with the bag full you eat it there and then, unless you're full too.
+            let food_but_full = matches!(k.kind, Drop::Food(_)) && (vampire || (full && pack_free <= 0)) || matches!(k.kind, Drop::TideChest) && wet && d.ground_at(k.x as i32, k.y as i32) == 1;
             let near = (k.x - px).powi(2) + (k.y - py).powi(2) < 0.5 && k.t > 0.3;
             let no_room = matches!(k.kind, Drop::Item(_)) && bag_free == 0;
+            let no_belt = matches!(k.kind, Drop::Health | Drop::Mana) && belt_free <= 0;
             if near && no_room {
                 bag_full = true;
             }
-            if near && !food_but_full && !no_room {
+            if near && no_belt {
+                belt_full = true;
+            }
+            if near && !food_but_full && !no_room && !no_belt {
                 if matches!(k.kind, Drop::Item(_)) {
                     bag_free -= 1;
+                }
+                if matches!(k.kind, Drop::Health | Drop::Mana) {
+                    belt_free -= 1;
+                }
+                if matches!(k.kind, Drop::Food(_)) {
+                    pack_free -= 1;
                 }
                 got.push(k.kind.clone());
                 false
@@ -2802,6 +2951,9 @@ impl Game {
         });
         if bag_full && self.message.is_none() {
             self.say("YOUR BAG IS FULL. SELL OR DROP SOMETHING (I)".into());
+        }
+        if belt_full && self.message.is_none() {
+            self.say(format!("YOUR POTION BELT IS FULL ({} POTIONS)", self.belt_cap()));
         }
         for k in got {
             self.sfx.push(Sfx::Pickup);
@@ -2820,14 +2972,14 @@ impl Game {
                     self.floater(px, py, format!("{n} GOLD"), rgb(0xe8c050));
                 }
                 Drop::Food(i) => {
-                    let (name, food, life) = FOODS[i];
-                    self.p.food = (self.p.food + food).min(MAX_FOOD);
-                    self.p.hp = (self.p.hp + life).min(self.p.max_hp);
-                    self.p.hunger_msg = 0.0;
-                    self.stats.eaten += 1;
-                    self.sfx.pop();
-                    self.sfx.push(Sfx::Eat);
-                    self.floater(px, py, name.into(), rgb(0xe0b060));
+                    if self.bag_meals() < self.pack_cap() {
+                        self.p.food_bag[i] += 1;
+                        let (name, ..) = FOODS[i];
+                        self.floater(px, py, format!("{name} (FOOD BAG {}/{})", self.bag_meals(), self.pack_cap()), rgb(0xe0b060));
+                    } else {
+                        self.sfx.pop();
+                        self.eat(i);
+                    }
                 }
                 Drop::Item(it) => {
                     self.floater(px, py, it.name.clone(), it.col());
@@ -3752,8 +3904,15 @@ impl Game {
                 Kind::DiceSaint => "dicesaint",
                 _ => "ashking",
             };
-            drops.extend(items::boss_unique(key));
-            for _ in 0..2 {
+            // Its unique: always the first time you kill it, a one in three chance after (rekindled, rifts).
+            let first = self.ex.kills.get(crate::mobs::def(kind).label).copied().unwrap_or(0) <= 1;
+            if first || self.rng.chance(0.33) {
+                drops.extend(items::boss_unique(key));
+            }
+            for k in 0..2 {
+                if k == 1 && !self.rng.chance(0.4) {
+                    continue;
+                }
                 let mut it = items::drop(ilvl, mf, true, &mut self.rng);
                 if it.rarity == items::Rarity::Normal {
                     it = items::roll(ilvl, items::Rarity::Magic, &mut self.rng);
@@ -3764,9 +3923,9 @@ impl Game {
             // Champions and elites drop more, and better.
             let (n, chance, boost) = match rank {
                 Rank::Normal => (1, ITEM_DROP, false),
-                Rank::Minion => (1, 0.2, false),
-                Rank::Champion => (1, 0.6, true),
-                Rank::Elite => (2, 1.0, true),
+                Rank::Minion => (1, 0.12, false),
+                Rank::Champion => (1, 0.4, true),
+                Rank::Elite => (2, 0.7, true),
             };
             for _ in 0..n {
                 if self.rng.chance(chance) {
@@ -3776,12 +3935,12 @@ impl Game {
         }
         // Gems: now and then from anyone, always from a boss.
         let gem_chance = if boss {
-            1.0
+            0.35
         } else {
             match rank {
                 Rank::Normal | Rank::Minion => GEM_DROP,
-                Rank::Champion => 0.15,
-                Rank::Elite => 0.3,
+                Rank::Champion => 0.06,
+                Rank::Elite => 0.12,
             }
         };
         if self.rng.chance(gem_chance) {
@@ -4002,14 +4161,22 @@ mod tests {
             g.update(&Input::default());
         }
         assert!(g.p.hp < hp - 1.0, "starving hurts");
+        // Food goes in the bag; eating it is up to you (G / hold SELECT).
         g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Food(2), t: 1.0 });
         g.update(&Input::default());
-        assert!(g.p.food > 50.0 && g.pickups.is_empty());
+        assert!(g.pickups.is_empty() && g.p.food_bag == [0, 0, 1] && g.p.food < 5.0, "bagged, not eaten");
+        g.update(&Input { eat: true, ..Input::default() });
+        assert!(g.p.food > 50.0 && g.bag_meals() == 0);
         assert_eq!(g.stats.eaten, 1);
+        // A full bag and a full belly: it stays where it lies. A full bag but hungry: eaten on the spot.
         g.p.food = MAX_FOOD;
+        g.p.food_bag = [3, 0, 0];
         g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Food(0), t: 1.0 });
         g.update(&Input::default());
         assert_eq!(g.pickups.len(), 1);
+        g.p.food = 20.0;
+        g.update(&Input::default());
+        assert!(g.pickups.is_empty() && g.p.food > 35.0 && g.bag_meals() == 3);
         let lv = world::dungeon_floor(0, 0, 11);
         assert!(lv.pickups.iter().filter(|k| matches!(k.kind, Drop::Food(_))).count() >= 3);
     }
@@ -4316,6 +4483,63 @@ mod tests {
             }
             assert!(fails.is_empty(), "act {act}: these didn't go on: {fails:?}");
         }
+    }
+
+    #[test]
+    fn the_belt_holds_so_many_potions_and_quests_make_it_bigger() {
+        let mut g = quiet_game();
+        g.p.hp_pots = 3;
+        g.p.mp_pots = 3;
+        assert_eq!(g.belt_cap(), 6);
+        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Health, t: 1.0 });
+        g.update(&Input::default());
+        assert_eq!((g.p.hp_pots, g.pickups.len()), (3, 1), "full belt: it stays on the ground");
+        assert!(g.message.as_ref().map_or(false, |m| m.0.contains("BELT IS FULL")));
+        // A side quest with a belt on top (Gerta's caravan).
+        let q = crate::side::SIDES.iter().position(|s| s.upgrade == Some(crate::side::Upgrade::Belt)).unwrap();
+        g.quest.side[q] = crate::side::S_DONE;
+        g.debug_goto(LevelId::land(crate::side::SIDES[q].act as usize));
+        g.side_talk(q);
+        assert_eq!(g.belt_cap(), 9, "a bigger belt");
+        g.dialog = None;
+        g.pickups.clear();
+        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Health, t: 1.0 });
+        g.update(&Input::default());
+        assert_eq!(g.p.hp_pots, 4);
+    }
+
+    #[test]
+    fn the_vampire_fills_her_vial_past_sated_and_drinks_when_she_chooses() {
+        let mut g = quiet_game();
+        g.p.skills.class = crate::skills::Class::Vampire;
+        g.p.food = 90.0;
+        g.feed(30.0);
+        assert_eq!(g.p.food, MAX_FOOD);
+        assert!((g.p.vial - 20.0).abs() < 0.01, "the rest in the vial");
+        g.feed(500.0);
+        assert_eq!(g.p.vial, g.vial_cap(), "no more than it holds");
+        g.p.food = 30.0;
+        g.update(&Input::default());
+        assert!(g.p.food < 31.0, "she doesn't drink by herself");
+        g.update(&Input { eat: true, ..Input::default() });
+        assert!(g.p.food > 69.0 && g.p.vial < g.vial_cap(), "a long drink");
+    }
+
+    #[test]
+    fn quitting_asks_first() {
+        let mut g = quiet_game();
+        g.update(&Input { cancel: true, ..Input::default() });
+        assert!(!g.quit && !g.exit);
+        assert_eq!(g.dialog.as_ref().map(|d| d.name), Some("QUIT?"));
+        g.update(&Input { cancel: true, ..Input::default() });
+        assert!(g.dialog.is_none() && !g.quit, "Esc again: keep playing");
+        g.update(&Input { quit_ask: true, ..Input::default() });
+        let d = g.dialog.as_mut().unwrap();
+        d.page = d.pages.len() - 1;
+        d.refresh_options();
+        d.sel = d.options.iter().position(|o| o.1 == Act::QuitGame).expect("quit the game");
+        g.update(&Input { confirm: true, ..Input::default() });
+        assert!(g.exit);
     }
 
     fn walk_onto(g: &mut Game, kind: PortalKind) {
@@ -5729,6 +5953,7 @@ mod tests {
     fn merchant_sells_and_healer_heals() {
         let mut g = Game::new(5, crate::gfx::SH_WIDE);
         g.p.gold = 100;
+        g.p.hp_pots = 1;
         assert!(g.debug_talk(Role::Merchant));
         let pots = g.p.hp_pots;
         g.update(&Input { confirm: true, ..Input::default() }); // first option: healing potion
@@ -6081,12 +6306,12 @@ mod tests {
         let hp = a.max_hp;
         a.promote(Rank::Champion, M_STONE, None);
         assert!(a.max_hp > hp * 4.0);
-        // An elite always drops two items; a fire enchanted one bursts into flame.
+        // An elite drops up to two items; a fire enchanted one bursts into flame.
         let mut m = Mob::new(Kind::Zombie, g.p.x + 1.0, g.p.y, 1.0, &mut g.rng);
         m.promote(Rank::Elite, M_FIERY | M_STONE, Some("TEST THE FOUL".into()));
         g.mobs.push(m);
         g.kill(0);
-        assert_eq!(g.pickups.iter().filter(|k| matches!(k.kind, Drop::Item(_))).count(), 2);
+        assert!(g.pickups.iter().filter(|k| matches!(k.kind, Drop::Item(_))).count() <= 2);
         assert_eq!(g.hazards.len(), 1);
         let hp = g.p.hp;
         for _ in 0..60 {
