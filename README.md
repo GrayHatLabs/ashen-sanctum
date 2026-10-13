@@ -518,3 +518,10 @@ Generated art lives in `D:\projects\AshenSanctum-art`. After generating, run
 One-time setup in WSL: `scripts/setup-android.sh` (JDK 17, Android SDK + NDK, Rust's Android targets, cargo-ndk).
 Then `scripts/build-android.sh` writes `dist/AshenSanctum.apk` (sideload it). `scripts/android-emulator-test.sh`
 runs it in a headless emulator and saves screenshots to `dist/`.
+
+## License
+
+Ashen Sanctum is free to share. The code is under the **MIT licence** ([LICENSE](LICENSE)); the art, levels,
+music and writing are under **Creative Commons BY-NC 4.0** ([LICENSE-ASSETS](LICENSE-ASSETS)): share it, change
+it, give it away, credit GrayHatLabs, but don't sell it. The libraries it's built with keep their own licences
+([THIRD_PARTY_LICENSES.txt](THIRD_PARTY_LICENSES.txt)).

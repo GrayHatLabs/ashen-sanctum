@@ -18,6 +18,8 @@ cp port/ashensanctum.gptk "$OUT/ashensanctum/"
 # Menu art and metadata for the Ports list (PortMaster: port.json + cover/screenshot; EmulationStation: gameinfo.xml).
 cp port/cover.png port/screenshot.png port/port.json port/gameinfo.xml "$OUT/ashensanctum/"
 cp README.md THIRD_PARTY_LICENSES.txt "$OUT/ashensanctum/"
+mkdir -p "$OUT/ashensanctum/licenses"
+cp LICENSE LICENSE-ASSETS THIRD_PARTY_LICENSES.txt "$OUT/ashensanctum/licenses/"
 chmod +x "$OUT/AshenSanctum.sh" "$OUT/ashensanctum/ashensanctum"
 (cd dist && rm -f AshenSanctum-aarch64.zip && python3 -m zipfile -c AshenSanctum-aarch64.zip ports/)
 file "$OUT/ashensanctum/ashensanctum" || true
