@@ -15,6 +15,8 @@ pub enum Slot {
     Amulet,
     /// Gems go in sockets, never on your body.
     Gem,
+    /// Spare potions in the bag (the belt is full): to the belt, or drunk, with ENTER / A.
+    Potion,
 }
 
 /// Worn slots, in paper-doll order (two rings).
@@ -37,6 +39,7 @@ pub fn slot_name(s: Slot) -> &'static str {
         Slot::Ring => "RING",
         Slot::Amulet => "AMULET",
         Slot::Gem => "GEM",
+        Slot::Potion => "POTION",
     }
 }
 
@@ -280,7 +283,16 @@ pub static BASES: &[Base] = &[
     Base { key: "gem_amethyst", name: "AMETHYST", slot: Slot::Gem, icon: "icon_gem_amethyst", lvl: 99, implicit: None, unique_only: true },
     Base { key: "gem_diamond", name: "DIAMOND", slot: Slot::Gem, icon: "icon_gem_diamond", lvl: 99, implicit: None, unique_only: true },
     Base { key: "gem_skull", name: "SKULL", slot: Slot::Gem, icon: "icon_gem_skull", lvl: 99, implicit: None, unique_only: true },
+    // Spare potions, carried in the bag when the belt is full (never dropped as gear).
+    Base { key: "potion_hp", name: "HEALING POTION", slot: Slot::Potion, icon: "icon_potion_hp", lvl: 99, implicit: None, unique_only: true },
+    Base { key: "potion_mp", name: "MANA POTION", slot: Slot::Potion, icon: "icon_potion_mp", lvl: 99, implicit: None, unique_only: true },
 ];
+
+/// A spare potion for the bag: healing (true) or mana.
+pub fn potion_item(healing: bool) -> Item {
+    let base = base_by_key(if healing { "potion_hp" } else { "potion_mp" }).expect("potion base");
+    Item { base, rarity: Rarity::Normal, ilvl: 1, name: BASES[base].name.to_string(), stats: vec![], req: 1, sockets: 0, gems: vec![] }
+}
 
 pub fn base_by_key(k: &str) -> Option<usize> {
     BASES.iter().position(|b| b.key == k)
@@ -337,6 +349,7 @@ fn rare_noun(s: Slot) -> &'static [&'static str] {
         Ring => &["BAND", "LOOP", "COIL", "EYE"],
         Amulet => &["HEART", "CHARM", "EYE", "TOKEN"],
         Gem => &["STONE"],
+        Potion => &["DRAUGHT"],
     }
 }
 
@@ -663,6 +676,9 @@ impl Item {
 
     /// What Gerta pays for it.
     pub fn price(&self) -> i32 {
+        if self.slot() == Slot::Potion {
+            return 6;
+        }
         if let Some(g) = self.gem() {
             return [10, 25, 60, 140, 320][(g.grade - 1) as usize];
         }
@@ -679,6 +695,11 @@ impl Item {
     /// Tooltip lines (after the name).
     pub fn lines(&self) -> Vec<String> {
         let mut v = vec![];
+        if self.slot() == Slot::Potion {
+            v.push("A SPARE POTION, FOR WHEN YOUR BELT HAS ROOM.".into());
+            v.push("ENTER / A: PUT IT IN YOUR BELT (OR DRINK IT, IF THE BELT IS FULL).".into());
+            return v;
+        }
         if let Some(g) = self.gem() {
             for (slot, what) in [(Weapon, "WEAPON"), (Armor, "ARMOR"), (Ring, "JEWELRY")] {
                 let st: Vec<String> = gem_stats(g, slot).iter().map(|(s, n)| stat_text(*s, *n)).collect();
@@ -1160,6 +1181,10 @@ impl Gear {
         if it.slot() == Slot::Gem {
             self.bag[i] = Some(it);
             return Err("GEMS GO IN SOCKETS".into());
+        }
+        if it.slot() == Slot::Potion {
+            self.bag[i] = Some(it);
+            return Err("POTIONS GO IN YOUR BELT".into());
         }
         if it.req > clvl {
             let why = format!("NEEDS CHAR LEVEL {}", it.req);

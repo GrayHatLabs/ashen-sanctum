@@ -281,6 +281,10 @@ impl Game {
         match act {
             Some(InvAct::Select(c)) => self.inv.as_mut().unwrap().sel = c,
             Some(InvAct::Use) if jewel && matches!(sel, Cell::Bag(_) | Cell::Worn(_)) => self.jewel_use(sel),
+            Some(InvAct::Use) if matches!(sel, Cell::Bag(_)) && self.sel_item(sel).map_or(false, |it| it.slot() == Slot::Potion) => {
+                let Cell::Bag(i) = sel else { return };
+                self.use_bag_potion(i);
+            }
             Some(InvAct::Use) if matches!(sel, Cell::Bag(_)) && self.sel_item(sel).map_or(false, |it| it.gem().is_some()) => {
                 let Cell::Bag(i) = sel else { return };
                 self.inv.as_mut().unwrap().holding = Some(i);
@@ -555,6 +559,7 @@ impl Game {
             Cell::Bag(_) | Cell::Worn(_) if holding.is_some() => "SET GEM HERE (ENTER/A)",
             Cell::Bag(_) | Cell::Worn(_) if jewel => "JEWELER (ENTER/A)",
             Cell::Bag(_) if is_gem => "SET IN GEAR (ENTER/A)",
+            Cell::Bag(_) if self.sel_item(sel).map_or(false, |it| it.slot() == Slot::Potion) => "TO YOUR BELT (ENTER/A)",
             Cell::Worn(_) => "TAKE OFF (ENTER/A)",
             Cell::Bag(_) => "WEAR (ENTER/A)",
             Cell::Shop(_) => "BUY (ENTER/A)",
@@ -633,6 +638,16 @@ pub fn draw_icon(scr: &mut Screen, art: &Art, it: &Item, cx: i32, cy: i32, scale
     let fx = Fx { tint: tint.unwrap_or(BLACK), tint_a: if tint.is_some() { 0.12 } else { 0.0 }, ..Fx::default() };
     // One icon per gem kind: better grades draw bigger.
     let scale = it.gem().map_or(scale, |g| scale * (0.55 + g.grade as f32 * 0.1));
+    if it.slot() == Slot::Potion {
+        // A spare potion: a round flask, red or blue.
+        let col = if it.base().key == "potion_hp" { rgb(0xc02020) } else { rgb(0x2040c0) };
+        let k = |v: i32| (v as f32 * scale).round().max(1.0) as i32;
+        scr.fill(cx - k(2), cy - k(9), k(4), k(3), rgb(0x806040));
+        scr.disc(cx, cy + k(1), k(7), BLACK);
+        scr.disc(cx, cy + k(1), k(6), col);
+        scr.fill(cx - k(3), cy - k(2), k(2), k(2), rgb(0xffffff));
+        return;
+    }
     if let Some(s) = art.item(it.base().icon) {
         let (w, h) = ((s.w as f32 * scale) as i32, (s.h as f32 * scale) as i32);
         // Icons are anchored at their feet: offset so they sit centred.
@@ -690,7 +705,7 @@ fn fallback_icon(scr: &mut Screen, slot: Slot, cx: i32, cy: i32, scale: f32, rar
         Rarity::Ancient => rgb(0xff5a20),
     };
     match slot {
-        Slot::Gem => scr.disc(cx, cy, k(5), gem),
+        Slot::Gem | Slot::Potion => scr.disc(cx, cy, k(5), gem),
         Slot::Weapon => {
             for i in -k(9)..=k(9) {
                 scr.fill(cx + i, cy - i, 2, 2, rgb(0x6a4424));

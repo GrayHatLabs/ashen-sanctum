@@ -37,6 +37,8 @@ The game opens on the **title screen**: Play, Options (music, controls), Quit.
   - Pick one to continue.
   - X / Space deletes one (it asks first).
   - **New Hero** picks a class (the Inventor is coming soon) and a name. Type one, or take a random gothic name.
+- **A new hero** is offered a short **how-to-play guide** (the controls of your device, how to play and how to
+  find your goals); read it again any time with **H**, or from the Esc / SELECT + START menu.
 - **In game, Esc** asks whether to quit: keep playing, back to the character select, or close the game (the hero is saved either way).
 - Each hero has their own save file in `~/.local/share/ashensanctum/heroes/`. An old single save is copied in as the first hero.
 
@@ -439,8 +441,9 @@ Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`;
 
 ## Potions and food
 
-- Potions go in your **potion belt**: 6 potions to start (healing and mana together). With the belt full, a
-  potion stays where it lies, and the merchants won't sell you more.
+- Potions go in your **potion belt**: 6 potions to start (healing and mana together). With the belt full, spare
+  potions go in your bag (and merchants sell them into it); pick one there and press Enter / A to move it to the
+  belt when there's room (or drink it, if the belt is still full).
 - Food goes in your **food bag** (3 meals to start). You eat when you choose: **G**, or **hold SELECT** on a
   pad; it picks the meal that best fills you up. With the bag full and you hungry, food is eaten where it lies.
 - **The Vampire** keeps a **blood vial** instead: blood she drinks past sated goes in it (40 to start), and she
@@ -466,6 +469,7 @@ Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`;
 | Map | Tab or M | SELECT |
 | Mana potion | E or 2 | Y |
 | Eat from the food bag (the Vampire: drink from the blood vial) | G | Hold SELECT |
+| How to play (the guide) | H or F1 | SELECT + START, then HOW TO PLAY |
 | Music on / off | N | |
 | Continue after death / the ending | Enter | START |
 | Close menu / quit | Esc (closes a conversation or the map first, then asks whether to quit) | SELECT + START (asks first) |

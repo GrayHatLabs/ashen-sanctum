@@ -2289,6 +2289,22 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         g.update(&Input::default());
         save(&mut g, scr, "inventory_refused");
         g.inv = None;
+        // The how-to-play guide (its goals page), and the quit question.
+        g.update(&Input { help: true, ..Input::default() });
+        if let Some(d) = g.dialog.as_mut() {
+            d.page = 5;
+            d.refresh_options();
+        }
+        save(&mut g, scr, "guide");
+        g.dialog = None;
+        g.update(&Input { cancel: true, ..Input::default() });
+        if let Some(d) = g.dialog.as_mut() {
+            d.page = d.pages.len() - 1;
+            d.refresh_options();
+        }
+        save(&mut g, scr, "quit_ask");
+        g.dialog = None;
+        g.inv = None;
         // The stash, in town.
         g.debug_goto(LevelId::Overworld);
         (g.p.x, g.p.y) = g.start;

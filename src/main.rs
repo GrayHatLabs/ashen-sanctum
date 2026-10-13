@@ -327,7 +327,8 @@ fn main() -> Result<(), String> {
     let (mut confirm, mut pot_hp, mut pot_mp, mut map, mut run_toggle, mut cancel) = (false, false, false, false, false, false);
     let (mut skills_key, mut cycle, mut slot): (bool, bool, Option<u8>) = (false, false, None);
     let mut inv_key = false;
-    let (mut eat_key, mut quit_ask) = (false, false);
+    let (mut eat_key, mut quit_ask, mut help_key) = (false, false, false);
+    game::HANDHELD.store(handheld, std::sync::atomic::Ordering::Relaxed);
     let cheats = args.iter().any(|a| a == "--cheats");
     let (mut cheat_level, mut cheat_loot) = (false, false);
     let mut back_down: Option<Instant> = None;
@@ -347,6 +348,7 @@ fn main() -> Result<(), String> {
                         Space => keys.cast2 = true,
                         K if !repeat => skills_key = true,
                         G if !repeat => eat_key = true,
+                        H | F1 if !repeat => help_key = true,
                         I | C if !repeat => inv_key = true,
                         N if !repeat => {
                             if let Some(a) = audio.as_mut() {
@@ -519,6 +521,7 @@ fn main() -> Result<(), String> {
             inp.cancel = cancel;
             inp.eat = eat_key;
             inp.quit_ask = quit_ask;
+            inp.help = help_key;
             inp.skills = skills_key;
             inp.inv = inv_key;
             inp.typed = std::mem::take(&mut typed);
@@ -541,6 +544,7 @@ fn main() -> Result<(), String> {
             confirm = false;
             eat_key = false;
             quit_ask = false;
+            help_key = false;
             pot_hp = false;
             pot_mp = false;
             map = false;
@@ -581,6 +585,7 @@ fn main() -> Result<(), String> {
                 game.defer_travel = true;
                 game.set_class(class);
                 game.hero_name = name;
+                game.offer_guide = true;
                 save::write(&game);
                 menu = None;
             }

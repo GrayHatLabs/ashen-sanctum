@@ -100,7 +100,12 @@ pub struct Input {
     pub eat: bool,
     /// SELECT + START on a handheld: ask whether to quit.
     pub quit_ask: bool,
+    /// H / F1: the how-to-play guide.
+    pub help: bool,
 }
+
+/// Running on a handheld (main.rs sets it): the guide shows the pad's buttons, not the keyboard's.
+pub static HANDHELD: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub enum Sfx {
@@ -811,6 +816,8 @@ pub struct Game {
     pub quit: bool,
     /// Quit the whole program (after asking; main saves and closes).
     pub exit: bool,
+    /// A new hero: offer the how-to-play guide once the game is under way.
+    pub offer_guide: bool,
     /// Set when the game wants the character saved (town, boss kills); main writes it.
     pub save_due: bool,
     pub stats: Stats,
@@ -941,6 +948,7 @@ impl Game {
             show_map: false,
             quit: false,
             exit: false,
+            offer_guide: false,
             save_due: false,
             stats: Stats::default(),
         };
@@ -1893,6 +1901,16 @@ impl Game {
         if inp.quit_ask && self.dialog.is_none() {
             self.ask_quit();
         }
+        if inp.help && self.dialog.is_none() {
+            self.open_guide();
+        }
+        if self.offer_guide && self.dialog.is_none() && self.state == State::Playing && self.pending_travel.is_none() {
+            self.offer_guide = false;
+            let mut d = Dialog::new("WELCOME", &["NEW TO ASHEN SANCTUM? A SHORT GUIDE SHOWS THE CONTROLS, AND HOW TO FIND YOUR GOALS."]);
+            d.last_options = vec![("SHOW ME HOW TO PLAY".into(), Act::Guide), ("NO THANKS".into(), Act::Close)];
+            d.refresh_options();
+            self.dialog = Some(d);
+        }
         if inp.map {
             self.show_map = !self.show_map;
         }
@@ -2280,6 +2298,7 @@ impl Game {
             }
             Some(Act::Buy(w)) => self.buy(w),
             Some(Act::Travel(id)) => self.travel(id),
+            Some(Act::Guide) => self.open_guide(),
             Some(Act::QuitToHeroes) => {
                 self.dialog = None;
                 self.quit = true;
@@ -2484,8 +2503,9 @@ impl Game {
             return;
         }
         let potion = matches!(w, Ware::HealthPotion | Ware::ManaPotion);
-        if potion && self.p.hp_pots + self.p.mp_pots >= self.belt_cap() {
-            self.say(format!("YOUR POTION BELT IS FULL ({} POTIONS)", self.belt_cap()));
+        let belt_full = self.p.hp_pots + self.p.mp_pots >= self.belt_cap();
+        if potion && belt_full && self.p.gear.free() == 0 {
+            self.say(format!("YOUR POTION BELT ({} POTIONS) AND YOUR BAG ARE FULL", self.belt_cap()));
             return;
         }
         let meal = if w == Ware::Bread { 1 } else { 2 };
@@ -2497,6 +2517,11 @@ impl Game {
         self.p.gold -= price;
         self.sfx.push(Sfx::Pickup);
         let name = match w {
+            Ware::HealthPotion | Ware::ManaPotion if belt_full => {
+                let healing = w == Ware::HealthPotion;
+                let _ = self.p.gear.add(crate::items::potion_item(healing));
+                format!("{} (BELT FULL: IN YOUR BAG)", if healing { "HEALING POTION" } else { "MANA POTION" })
+            }
             Ware::HealthPotion => {
                 self.p.hp_pots += 1;
                 "HEALING POTION".to_string()
@@ -2580,10 +2605,52 @@ impl Game {
         self.eat(i);
     }
 
+    /// ENTER / A on a spare potion in the bag: into the belt if it has room, otherwise drunk on the spot.
+    pub(crate) fn use_bag_potion(&mut self, i: usize) {
+        let Some(it) = self.p.gear.bag[i].as_ref() else { return };
+        let healing = it.base().key == "potion_hp";
+        if self.p.hp_pots + self.p.mp_pots < self.belt_cap() {
+            self.p.gear.bag[i] = None;
+            if healing {
+                self.p.hp_pots += 1;
+            } else {
+                self.p.mp_pots += 1;
+            }
+            self.sfx.push(Sfx::Pickup);
+            self.say(format!("INTO YOUR BELT ({}/{})", self.p.hp_pots + self.p.mp_pots, self.belt_cap()));
+        } else if healing && self.p.hp < self.p.max_hp {
+            self.p.gear.bag[i] = None;
+            self.p.hp = (self.p.hp + 40.0 + self.p.max_hp * 0.15).min(self.p.max_hp);
+            self.sfx.push(Sfx::Drink);
+            self.say("YOUR BELT IS FULL, SO YOU DRINK IT: HEALED".into());
+        } else if !healing && self.p.mana < self.p.max_mana {
+            self.p.gear.bag[i] = None;
+            self.p.mana = (self.p.mana + 35.0 + self.p.max_mana * 0.15).min(self.p.max_mana);
+            self.sfx.push(Sfx::Drink);
+            self.say("YOUR BELT IS FULL, SO YOU DRINK IT".into());
+        } else {
+            self.say("YOUR BELT IS FULL, AND YOU DON'T NEED IT NOW".into());
+        }
+    }
+
+    /// The how-to-play guide, a page at a time.
+    pub(crate) fn open_guide(&mut self) {
+        let pages = crate::story::guide(HANDHELD.load(std::sync::atomic::Ordering::Relaxed));
+        let refs: Vec<&str> = pages.iter().map(|p| p.as_str()).collect();
+        let mut d = Dialog::new("HOW TO PLAY", &refs);
+        d.refresh_options();
+        self.dialog = Some(d);
+    }
+
     /// Esc (or SELECT + START): keep playing, back to the heroes, or quit the game. The game is saved either way.
     pub(crate) fn ask_quit(&mut self) {
         let mut d = Dialog::new("QUIT?", &["ARE YOU SURE YOU WANT TO QUIT? YOUR HERO IS SAVED EITHER WAY."]);
-        d.last_options = vec![("KEEP PLAYING".into(), Act::Close), ("QUIT TO THE HEROES".into(), Act::QuitToHeroes), ("QUIT THE GAME".into(), Act::QuitGame)];
+        d.last_options = vec![
+            ("KEEP PLAYING".into(), Act::Close),
+            ("HOW TO PLAY".into(), Act::Guide),
+            ("QUIT TO THE HEROES".into(), Act::QuitToHeroes),
+            ("QUIT THE GAME".into(), Act::QuitGame),
+        ];
         d.refresh_options();
         self.dialog = Some(d);
     }
@@ -2926,7 +2993,8 @@ impl Game {
             let food_but_full = matches!(k.kind, Drop::Food(_)) && (vampire || (full && pack_free <= 0)) || matches!(k.kind, Drop::TideChest) && wet && d.ground_at(k.x as i32, k.y as i32) == 1;
             let near = (k.x - px).powi(2) + (k.y - py).powi(2) < 0.5 && k.t > 0.3;
             let no_room = matches!(k.kind, Drop::Item(_)) && bag_free == 0;
-            let no_belt = matches!(k.kind, Drop::Health | Drop::Mana) && belt_free <= 0;
+            // A full belt: spare potions go in the bag, while it has room.
+            let no_belt = matches!(k.kind, Drop::Health | Drop::Mana) && belt_free <= 0 && bag_free == 0;
             if near && no_room {
                 bag_full = true;
             }
@@ -2938,7 +3006,11 @@ impl Game {
                     bag_free -= 1;
                 }
                 if matches!(k.kind, Drop::Health | Drop::Mana) {
-                    belt_free -= 1;
+                    if belt_free > 0 {
+                        belt_free -= 1;
+                    } else {
+                        bag_free -= 1;
+                    }
                 }
                 if matches!(k.kind, Drop::Food(_)) {
                     pack_free -= 1;
@@ -2953,18 +3025,25 @@ impl Game {
             self.say("YOUR BAG IS FULL. SELL OR DROP SOMETHING (I)".into());
         }
         if belt_full && self.message.is_none() {
-            self.say(format!("YOUR POTION BELT IS FULL ({} POTIONS)", self.belt_cap()));
+            self.say(format!("YOUR POTION BELT ({} POTIONS) AND YOUR BAG ARE FULL", self.belt_cap()));
         }
         for k in got {
             self.sfx.push(Sfx::Pickup);
             match k {
-                Drop::Health => {
-                    self.p.hp_pots += 1;
-                    self.floater(px, py, "HEALING POTION".into(), rgb(0xff6060));
-                }
-                Drop::Mana => {
-                    self.p.mp_pots += 1;
-                    self.floater(px, py, "MANA POTION".into(), rgb(0x6090ff));
+                Drop::Health | Drop::Mana => {
+                    let healing = matches!(k, Drop::Health);
+                    let (name, col) = if healing { ("HEALING POTION", rgb(0xff6060)) } else { ("MANA POTION", rgb(0x6090ff)) };
+                    if self.p.hp_pots + self.p.mp_pots < self.belt_cap() {
+                        if healing {
+                            self.p.hp_pots += 1;
+                        } else {
+                            self.p.mp_pots += 1;
+                        }
+                        self.floater(px, py, name.into(), col);
+                    } else {
+                        let _ = self.p.gear.add(crate::items::potion_item(healing));
+                        self.floater(px, py, format!("{name} (BELT FULL: IN YOUR BAG)"), col);
+                    }
                 }
                 Drop::Gold(n) => {
                     let n = (n as f32 * (1.0 + self.p.bonus.frac(crate::items::Stat::Gold, 300) + self.ember_fortune() as f32 / 100.0) * self.pact_gold()).round() as i32;
@@ -4466,7 +4545,7 @@ mod tests {
             let mut fails = vec![];
             for b in 0..crate::items::BASES.len() {
                 let mut it = crate::items::roll_base(b, 40, crate::items::Rarity::Magic, &mut g.rng);
-                if it.slot() == crate::items::Slot::Gem {
+                if matches!(it.slot(), crate::items::Slot::Gem | crate::items::Slot::Potion) {
                     continue;
                 }
                 it.req = 1;
@@ -4491,10 +4570,13 @@ mod tests {
         g.p.hp_pots = 3;
         g.p.mp_pots = 3;
         assert_eq!(g.belt_cap(), 6);
+        // A full belt and a full bag: it stays on the ground.
+        let n = g.p.gear.bag.len();
+        g.p.gear.bag = vec![Some(crate::items::potion_item(false)); n];
         g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Health, t: 1.0 });
         g.update(&Input::default());
-        assert_eq!((g.p.hp_pots, g.pickups.len()), (3, 1), "full belt: it stays on the ground");
-        assert!(g.message.as_ref().map_or(false, |m| m.0.contains("BELT IS FULL")));
+        assert_eq!((g.p.hp_pots, g.pickups.len()), (3, 1), "full belt and bag: it stays on the ground");
+        assert!(g.message.as_ref().map_or(false, |m| m.0.contains("ARE FULL")));
         // A side quest with a belt on top (Gerta's caravan).
         let q = crate::side::SIDES.iter().position(|s| s.upgrade == Some(crate::side::Upgrade::Belt)).unwrap();
         g.quest.side[q] = crate::side::S_DONE;
@@ -4506,6 +4588,30 @@ mod tests {
         g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Health, t: 1.0 });
         g.update(&Input::default());
         assert_eq!(g.p.hp_pots, 4);
+    }
+
+    #[test]
+    fn a_full_belt_spills_potions_into_the_bag_and_they_go_back_with_enter() {
+        let mut g = quiet_game();
+        g.p.gear.bag = vec![None; g.p.gear.bag.len()];
+        (g.p.hp_pots, g.p.mp_pots) = (3, 3);
+        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Health, t: 1.0 });
+        g.update(&Input::default());
+        assert!(g.pickups.is_empty(), "picked up");
+        assert_eq!(g.p.hp_pots, 3);
+        let i = g.p.gear.bag.iter().position(|b| b.as_ref().map_or(false, |it| it.slot() == crate::items::Slot::Potion)).expect("a spare potion in the bag");
+        // Room in the belt again: ENTER on it moves it there.
+        g.p.hp_pots = 2;
+        g.open_inventory();
+        g.inv.as_mut().unwrap().sel = crate::inventory::Cell::Bag(i);
+        g.update(&Input { confirm: true, ..Input::default() });
+        assert_eq!(g.p.hp_pots, 3);
+        assert!(g.p.gear.bag[i].is_none());
+        // With the belt full, it's drunk instead.
+        g.p.gear.bag[i] = Some(crate::items::potion_item(true));
+        g.p.hp = 10.0;
+        g.update(&Input { confirm: true, ..Input::default() });
+        assert!(g.p.hp > 10.0 && g.p.gear.bag[i].is_none());
     }
 
     #[test]
@@ -4523,6 +4629,27 @@ mod tests {
         assert!(g.p.food < 31.0, "she doesn't drink by herself");
         g.update(&Input { eat: true, ..Input::default() });
         assert!(g.p.food > 69.0 && g.p.vial < g.vial_cap(), "a long drink");
+    }
+
+    #[test]
+    fn a_new_hero_is_offered_the_guide_and_h_opens_it() {
+        let mut g = quiet_game();
+        g.offer_guide = true;
+        g.update(&Input::default());
+        assert_eq!(g.dialog.as_ref().map(|d| d.name), Some("WELCOME"));
+        let d = g.dialog.as_mut().unwrap();
+        d.sel = d.options.iter().position(|o| o.1 == Act::Guide).expect("show me");
+        g.update(&Input { confirm: true, ..Input::default() });
+        let d = g.dialog.as_ref().expect("the guide");
+        assert_eq!(d.name, "HOW TO PLAY");
+        assert!(d.pages.len() >= 9 && d.pages.iter().any(|p| p.contains("QUEST LOG")));
+        assert!(!g.offer_guide, "only offered once");
+        g.dialog = None;
+        g.update(&Input { help: true, ..Input::default() });
+        assert_eq!(g.dialog.as_ref().map(|d| d.name), Some("HOW TO PLAY"));
+        // On a handheld it names the pad's buttons.
+        assert!(crate::story::guide(true).iter().any(|p| p.contains("HOLDING SELECT")));
+        assert!(crate::story::guide(false).iter().any(|p| p.contains("PRESS H")));
     }
 
     #[test]

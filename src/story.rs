@@ -372,6 +372,8 @@ pub enum Act {
     /// Save and go back to the character select screen; save and close the game.
     QuitToHeroes,
     QuitGame,
+    /// The how-to-play guide.
+    Guide,
     /// The jeweler joins every three alike gems in your bag.
     Combine,
     /// The jeweler's bench: opens the inventory to add sockets or take gems out.
@@ -1063,4 +1065,61 @@ mod tests {
         q.seals = [true; 3];
         assert_eq!(talk(Role::Elder, &q).advance_to, Some(2));
     }
+}
+
+/// The how-to-play guide (H, the quit menu, or offered to a new hero): the controls of the device you're on, then
+/// how to play and how to find your goals. Each entry is one page of a conversation.
+pub fn guide(handheld: bool) -> Vec<String> {
+    let k = |pad: &str, keys: &str| if handheld { pad.to_string() } else { keys.to_string() };
+    let mut v = vec![
+        format!(
+            "WELCOME TO ASHEN SANCTUM. THIS GUIDE SHOWS THE CONTROLS, AND HOW TO FIND YOUR WAY. READ IT AGAIN ANY TIME: {}.",
+            k("SELECT + START, THEN HOW TO PLAY", "PRESS H (OR ESC, THEN HOW TO PLAY)")
+        ),
+        format!(
+            "MOVING AND FIGHTING. {} MOVES YOU. {} USES YOUR MAIN SKILL ON THE NEAREST FOE, {} YOUR SECOND SKILL. {} SWITCHES BETWEEN RUNNING AND WALKING: RUNNING USES UP THE STAMINA BAR.",
+            k("THE LEFT STICK OR THE D-PAD", "WASD, THE ARROW KEYS OR HOLDING THE LEFT MOUSE BUTTON ON THE FLOOR"),
+            k("A (OR PUSHING THE RIGHT STICK)", "F OR LEFT-CLICKING A MONSTER"),
+            k("X", "SPACE OR RIGHT-CLICK"),
+            k("B", "R")
+        ),
+        format!(
+            "SKILLS. EVERY LEVEL GIVES A SKILL POINT: SPEND IT IN THE SKILL TREE ({}). {} PICKS WHICH SKILL SITS ON YOUR SECOND BUTTON.",
+            k("L2, OR CLICK A STICK", "K"),
+            k("R1", "1-4")
+        ),
+        format!(
+            "STAYING ALIVE. {} DRINKS A HEALING POTION, {} A MANA POTION. POTIONS LIVE IN YOUR BELT; SPARES GO IN YOUR BAG. FOOD GOES IN YOUR FOOD BAG: {} EATS WHEN THE FOOD BAR RUNS LOW. YOU DON'T GET HUNGRY IN TOWN.",
+            k("L1", "Q"),
+            k("Y", "E"),
+            k("HOLDING SELECT", "G")
+        ),
+        format!(
+            "GEAR. WALK OVER LOOT TO PICK IT UP. {} OPENS YOUR BAG: {} WEARS THE CHOSEN ITEM, {} DROPS IT (OR SELLS IT, IN TOWN). AN ITEM TINTED RED NEEDS A HIGHER LEVEL.",
+            k("START", "I"),
+            k("A", "ENTER"),
+            k("X", "SPACE OR RIGHT-CLICK")
+        ),
+        "YOUR GOAL. WHAT TO DO NEXT IS ALWAYS WRITTEN AT THE TOP LEFT, UNDER THE AREA'S NAME: THE QUEST LOG. IN EACH ACT, TALK TO THE STORYTELLER IN TOWN (A MARKER HANGS OVER THEM WHEN THEY HAVE NEWS), SLAY THE ACT'S THREE HERALDS IN THEIR DUNGEONS AND TAKE THEIR RELICS, THEN FACE THE ACT'S LAST BOSS.".to_string(),
+        format!(
+            "FINDING THE WAY. {} SHOWS THE MAP: WHERE YOU'VE BEEN, AND THE ROADS ON. TOUCH A WAYPOINT AND YOU CAN TRAVEL BACK TO IT LATER FROM ANY OTHER. DUNGEON DOORS LEAD DOWN, FLOOR BY FLOOR; THE BOSS WAITS ON THE LAST, AND ITS DEATH OPENS A WAY HOME.",
+            k("TAPPING SELECT", "TAB OR M")
+        ),
+        format!(
+            "PEOPLE. WALK UP TO SOMEONE AND {} TO TALK: MERCHANTS SELL POTIONS, FOOD AND GEAR, THE HEALER MENDS YOU, THE JEWELER WORKS YOUR GEMS, AND MANY HAVE SIDE QUESTS WITH GOOD REWARDS. THE STASH CHEST IN TOWN KEEPS WHAT YOUR BAG CAN'T.",
+            k("PRESS A", "PRESS F OR SPACE, OR CLICK THEM")
+        ),
+        format!(
+            "IF YOU FALL, {} AND YOU WAKE IN TOWN. {} ASKS WHETHER TO QUIT; YOUR HERO IS SAVED EITHER WAY. GOOD LUCK.",
+            k("PRESS START", "PRESS ENTER"),
+            k("SELECT + START", "ESC")
+        ),
+    ];
+    if !handheld {
+        v.insert(
+            v.len() - 1,
+            "WITH A GAMEPAD: LEFT STICK MOVES, A AND X ARE YOUR SKILLS, R1 SWITCHES THE SECOND, L2 OPENS THE SKILL TREE, L1 AND Y ARE POTIONS, HOLD SELECT TO EAT, START OPENS THE BAG, TAP SELECT FOR THE MAP, B RUNS OR WALKS.".to_string(),
+        );
+    }
+    v
 }
