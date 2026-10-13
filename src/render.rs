@@ -1524,17 +1524,18 @@ impl Game {
         // An event's banner: what's happening, and what to do.
         if let Some((title, hint, t)) = &self.notice {
             let a = (t.min(0.5) / 0.5).clamp(0.0, 1.0);
-            let lines = story::wrap(hint, 62);
+            let nsc = if crate::binds::large_text() { 2 } else { 1 };
+            let lines = story::wrap(hint, if nsc == 2 { 48 } else { 62 });
             let w = scr.w;
-            let bw = (lines.iter().map(|l| crate::gfx::text_width(l, 1)).max().unwrap_or(0).max(crate::gfx::text_width(title, 2)) + 20).min(w - 16);
-            let bh = 24 + lines.len() as i32 * 10;
+            let bw = (lines.iter().map(|l| crate::gfx::text_width(l, nsc)).max().unwrap_or(0).max(crate::gfx::text_width(title, 2)) + 20).min(w - 16);
+            let bh = 24 + lines.len() as i32 * 10 * nsc;
             let (bx, by) = (w / 2 - bw / 2, 62);
             scr.blend(bx, by, bw, bh, BLACK, 0.72 * a);
             scr.fill(bx, by, bw, 1, mix(BLACK, rgb(0xd8a050), a));
             scr.fill(bx, by + bh - 1, bw, 1, mix(BLACK, rgb(0xd8a050), a));
             scr.text(title, w / 2, by + 5, mix(BLACK, rgb(0xffc060), a), Align::Center, 2);
             for (k, l) in lines.iter().enumerate() {
-                scr.text(l, w / 2, by + 23 + k as i32 * 10, mix(BLACK, rgb(0xe8dcc0), a), Align::Center, 1);
+                scr.text(l, w / 2, by + 23 + k as i32 * 10 * nsc, mix(BLACK, rgb(0xe8dcc0), a), Align::Center, nsc);
             }
         }
         self.dlg_rects.clear();
@@ -2132,6 +2133,16 @@ impl Game {
         };
         let shadow = if m.boss { 20 } else if crow { 6 } else { 10 };
         blend_ellipse(scr, sx, sy, shadow, shadow * 2 / 5, BLACK, if lift > 0 { 0.3 } else { 0.45 });
+        // A boss winding up a blow: a red ring closing in at its feet, and a "!" over its head (the user: bosses
+        // hit harder now, so give them clear tells).
+        if let (true, MobState::Attack(t)) = (m.boss, m.state) {
+            let k = (1.0 - t / m.windup.max(0.01)).clamp(0.0, 1.0);
+            let r = 34 - (k * 14.0) as i32;
+            ring(scr, sx, sy, r, r * 2 / 5, mix(rgb(0x601010), rgb(0xff3020), k));
+            blend_ellipse(scr, sx, sy, r, r * 2 / 5, rgb(0xff2010), 0.12 + 0.2 * k);
+            let bob = ((self.tick as f32 * 0.5).sin() * 2.0) as i32;
+            scr.text("!", sx, sy - 84 - lift + bob, if (self.tick / 4) % 2 == 0 { rgb(0xff4030) } else { rgb(0xffd060) }, Align::Center, 3);
+        }
         let (speed, amp) = if crow { (0.25, 3.0) } else { (0.08, 4.0) };
         let sy = if lift > 0 { sy - lift - ((self.tick as f32 * speed + i as f32 * 1.3).sin() * amp) as i32 } else { sy };
         if m.flash > 0.0 {
@@ -2546,6 +2557,15 @@ impl Game {
             scr.fill(w / 2 - bw / 2 - 2, 26, bw + 4, 14, rgb(0x5a4a38));
             scr.fill(w / 2 - bw / 2, 28, bw, 10, BLACK);
             scr.fill(w / 2 - bw / 2, 28, f, 10, if m.enraged { rgb(0xc02010) } else { rgb(0x901010) });
+            // Where it changes: a tick at each phase (it enrages at half), brighter once passed.
+            for &p in crate::mobs::phase_marks(m.kind) {
+                let x = w / 2 - bw / 2 + (p * bw as f32) as i32;
+                let passed = m.hp / m.max_hp < p;
+                scr.fill(x, 26, 1, 14, if passed { rgb(0x6a5a48) } else { rgb(0xffe0a0) });
+            }
+            if m.enraged {
+                scr.text("ENRAGED", w / 2 + bw / 2 + 6, 30, rgb(0xff6040), Align::Left, 1);
+            }
             scr.text(m.name.as_deref().unwrap_or(def(m.kind).label), w / 2, 16, rgb(0xffd0a0), Align::Center, 1);
         } else if let Some(i) = self.hover.or(self.focus) {
             let m = &self.mobs[i];
@@ -2565,7 +2585,17 @@ impl Game {
         }
         if let Some((text, t)) = &self.message {
             let c = if *t < 0.5 { mix(BLACK, rgb(0xe8d0a0), *t * 2.0) } else { rgb(0xe8d0a0) };
-            scr.text(text, w / 2, top - 70, c, Align::Center, 1);
+            if crate::binds::large_text() {
+                let lines = story::wrap(text, ((w - 20) / 12) as usize);
+                for (k, l) in lines.iter().enumerate() {
+                    let ly = top - 74 - (lines.len() - 1 - k) as i32 * 17;
+                    let tw = crate::gfx::text_width(l, 2);
+                    scr.blend(w / 2 - tw / 2 - 4, ly - 2, tw + 8, 17, BLACK, 0.6);
+                    scr.text(l, w / 2, ly, c, Align::Center, 2);
+                }
+            } else {
+                scr.text(text, w / 2, top - 70, c, Align::Center, 1);
+            }
         }
         if self.level_up_t > 0.0 {
             let a = self.level_up_t.min(1.0);
@@ -2592,11 +2622,19 @@ impl Game {
     fn draw_dialog(&mut self, scr: &mut Screen) {
         let Some(d) = self.dialog.as_ref() else { return };
         let top = self.view_h - HUD_H;
-        let (bw, x) = (440, scr.w / 2 - 220);
+        // Large text (Options / Help): double size, a wider box.
+        let sc = if crate::binds::large_text() { 2 } else { 1 };
+        let bw = if sc == 2 { (scr.w - 16).min(620) } else { 440 };
+        let x = scr.w / 2 - bw / 2;
+        let (lh, oh) = if sc == 2 { (19, 19) } else { (11, 12) };
         let text = &d.pages[d.page.min(d.pages.len() - 1)];
-        let lines = story::wrap(text, 70);
-        let bh = 28 + lines.len() as i32 * 11 + d.options.len() as i32 * 12 + 8;
-        let y = top - bh - 8;
+        let lines = story::wrap(text, ((bw - 20) / (6 * sc)) as usize);
+        // A long list of options scrolls: as many as fit, around the selection.
+        let room = ((top - 16 - (28 + lines.len() as i32 * lh + 8)) / oh).max(3) as usize;
+        let shown = d.options.len().min(room);
+        let first = if d.options.len() > shown { d.sel.saturating_sub(shown / 2).min(d.options.len() - shown) } else { 0 };
+        let bh = 28 + lines.len() as i32 * lh + shown as i32 * oh + 8 + if d.options.len() > shown { 10 } else { 0 };
+        let y = (top - bh - 8).max(4);
         scr.blend(x, y, bw, bh, rgb(0x0c0a08), 0.88);
         scr.fill(x, y, bw, 1, rgb(0x8a7050));
         scr.fill(x, y + bh - 1, bw, 1, rgb(0x8a7050));
@@ -2604,20 +2642,25 @@ impl Game {
         scr.fill(x + bw - 1, y, 1, bh, rgb(0x8a7050));
         scr.text(d.name, x + 10, y + 8, rgb(0xffd080), Align::Left, 1);
         for (i, l) in lines.iter().enumerate() {
-            scr.text(l, x + 10, y + 22 + i as i32 * 11, rgb(0xe0d8c8), Align::Left, 1);
+            scr.text(l, x + 10, y + 22 + i as i32 * lh, rgb(0xe0d8c8), Align::Left, sc);
         }
-        let oy = y + 26 + lines.len() as i32 * 11;
+        let oy = y + 26 + lines.len() as i32 * lh;
         let mut rects = vec![];
-        for (i, (label, _)) in d.options.iter().enumerate() {
-            let ry = oy + i as i32 * 12;
-            let sel = i == d.sel;
+        for (k, (label, _)) in d.options.iter().enumerate().skip(first).take(shown) {
+            let ry = oy + (k - first) as i32 * oh;
+            let sel = k == d.sel;
             if sel {
-                scr.blend(x + 6, ry - 2, bw - 12, 11, rgb(0x5a3a10), 0.8);
+                scr.blend(x + 6, ry - 2, bw - 12, oh - 1, rgb(0x5a3a10), 0.8);
             }
             let c = if sel { rgb(0xffe0a0) } else { rgb(0xa09080) };
-            scr.text(&format!("{} {}", if sel { ">" } else { " " }, label), x + 10, ry, c, Align::Left, 1);
-            rects.push((x + 6, ry - 2, bw - 12, 11));
+            scr.text(&format!("{} {}", if sel { ">" } else { " " }, label), x + 10, ry, c, Align::Left, sc);
+            rects.push((x + 6, ry - 2, bw - 12, oh - 1));
         }
+        if d.options.len() > shown {
+            let more = format!("{}{}  ({} OF {})", if first > 0 { "^ MORE ABOVE  " } else { "" }, if first + shown < d.options.len() { "v MORE BELOW" } else { "" }, d.sel + 1, d.options.len());
+            scr.text(&more, x + 10, oy + shown as i32 * oh + 1, rgb(0x7a6a5a), Align::Left, 1);
+        }
+        self.dlg_first = first;
         scr.text(&format!("GOLD {}", self.p.gold), x + bw - 10, y + 8, rgb(0xe8c050), Align::Right, 1);
         self.dlg_rects = rects;
     }

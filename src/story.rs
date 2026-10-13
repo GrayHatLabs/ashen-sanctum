@@ -382,6 +382,7 @@ pub enum Act {
     ToggleNotices,
     ToggleMinimap,
     ToggleRumble,
+    ToggleLarge,
     Help(u8),
     Binds,
     BindPick(u8),

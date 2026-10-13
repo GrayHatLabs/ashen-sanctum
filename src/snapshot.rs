@@ -2336,6 +2336,16 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         save(&mut g, scr, "help_topic");
         g.open_binds(0);
         save(&mut g, scr, "help_binds");
+        // Large text (Options / Help): the help menu scrolls, a topic page, and a notice.
+        crate::binds::set_large_text(true);
+        g.open_help();
+        if let Some(d) = g.dialog.as_mut() {
+            d.sel = 8;
+        }
+        save(&mut g, scr, "help_large");
+        g.open_topic(5);
+        save(&mut g, scr, "help_large_topic");
+        crate::binds::set_large_text(false);
         g.dialog = None;
         g.inv = None;
         // The stash, in town.

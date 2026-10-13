@@ -795,6 +795,8 @@ pub struct Game {
     pub dialog: Option<Dialog>,
     /// Clickable dialog option rectangles from the last draw (x, y, w, h).
     pub(crate) dlg_rects: Vec<(i32, i32, i32, i32)>,
+    /// The first option shown (a long list scrolls with the selection).
+    pub(crate) dlg_first: usize,
     pub(crate) message: Option<(String, f32)>,
     /// An event's banner (the user: an ambush, the dark... it was confusing what was going on): what's happening,
     /// what to do, seconds left. How often each kind has shown its hint this session.
@@ -943,6 +945,7 @@ impl Game {
             quest: Quest::default(),
             dialog: None,
             dlg_rects: vec![],
+            dlg_first: 0,
             message: None,
             state: State::Playing,
             kills: 0,
@@ -2354,7 +2357,7 @@ impl Game {
             }
             let mut hovered = None;
             if let Some((mx, my)) = inp.mouse {
-                hovered = self.dlg_rects.iter().position(|&(x, y, w, h)| mx >= x && mx < x + w && my >= y && my < y + h);
+                hovered = self.dlg_rects.iter().position(|&(x, y, w, h)| mx >= x && mx < x + w && my >= y && my < y + h).map(|i| i + self.dlg_first);
                 if let Some(i) = hovered {
                     if inp.mouse != self.prev.mouse {
                         d.sel = i;
@@ -2385,6 +2388,14 @@ impl Game {
             Some(Act::Buy(w)) => self.buy(w),
             Some(Act::Travel(id)) => self.travel(id),
             Some(Act::Guide) => self.open_help(),
+            Some(Act::ToggleLarge) => {
+                crate::binds::set_large_text(!crate::binds::large_text());
+                let n = self.dialog.as_ref().map_or(0, |d| d.sel);
+                self.open_help();
+                if let Some(d) = self.dialog.as_mut() {
+                    d.sel = n;
+                }
+            }
             Some(Act::ToggleRumble) => {
                 crate::binds::set_rumble(!crate::binds::rumble());
                 let n = self.dialog.as_ref().map_or(0, |d| d.sel);
@@ -2783,6 +2794,8 @@ impl Game {
         d.last_options.push((mini.into(), Act::ToggleMinimap));
         let rumble = if crate::binds::rumble() { "PAD RUMBLE: ON" } else { "PAD RUMBLE: OFF" };
         d.last_options.push((rumble.into(), Act::ToggleRumble));
+        let large = if crate::binds::large_text() { "LARGE TEXT: ON" } else { "LARGE TEXT: OFF" };
+        d.last_options.push((large.into(), Act::ToggleLarge));
         d.last_options.push(("CLOSE".into(), Act::Close));
         d.refresh_options();
         self.dialog = Some(d);

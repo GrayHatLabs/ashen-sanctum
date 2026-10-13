@@ -2393,3 +2393,16 @@ fn boss_specials(
         _ => {}
     }
 }
+
+/// Where a boss changes as its life runs down (fractions of its life), for the ticks on its bar: every boss
+/// enrages at half; some change form or tactics besides.
+pub fn phase_marks(k: Kind) -> &'static [f32] {
+    match k {
+        Kind::Vardak => &[0.5, 0.33],
+        Kind::Clockmaker => &[0.5, 0.25],
+        Kind::Tempest | Kind::Solanthos | Kind::Leviathan => &[0.66, 0.5, 0.33],
+        Kind::Grumbleguts => &[0.667, 0.5, 0.333],
+        Kind::Ylgrath => &[0.5, 0.2],
+        _ => &[0.5],
+    }
+}

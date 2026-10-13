@@ -110,7 +110,7 @@ impl Menu {
             Stage::Heroes => self.heroes.len() + 3,
             Stage::Create => CLASSES.len(),
             Stage::Name => 3,
-            Stage::Options => 4,
+            Stage::Options => 5,
             Stage::Delete(_) => 2,
         }
     }
@@ -356,6 +356,10 @@ impl Menu {
                         crate::binds::set_minimap(!crate::binds::minimap());
                         return None;
                     }
+                    if self.sel == 3 {
+                        crate::binds::set_large_text(!crate::binds::large_text());
+                        return None;
+                    }
                     self.go(Stage::Title);
                     self.sel = 1;
                 }
@@ -585,7 +589,9 @@ impl Menu {
         self.button(scr, notices, w / 2, 106, 200, 1, true);
         let mini = if crate::binds::minimap() { "MINIMAP: ON" } else { "MINIMAP: OFF" };
         self.button(scr, mini, w / 2, 132, 200, 2, true);
-        self.button(scr, "BACK", w / 2, 158, 200, 3, true);
+        let large = if crate::binds::large_text() { "LARGE TEXT: ON" } else { "LARGE TEXT: OFF" };
+        self.button(scr, large, w / 2, 158, 200, 3, true);
+        self.button(scr, "BACK", w / 2, 184, 200, 4, true);
         let lines = [
             "CONTROLS (ALL OF THEM: H IN GAME, OR SELECT + START, THEN HELP)",
             "MOVE: LEFT CLICK OR WASD / LEFT STICK      RUN / WALK: R / L3",
@@ -595,7 +601,7 @@ impl Menu {
         ];
         for (k, l) in lines.iter().enumerate() {
             let col = if k == 0 { rgb(0xd8b878) } else { rgb(0xa09080) };
-            scr.text(l, w / 2, 192 + k as i32 * 14, col, Align::Center, 1);
+            scr.text(l, w / 2, 218 + k as i32 * 14, col, Align::Center, 1);
         }
     }
 }

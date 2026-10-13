@@ -102,6 +102,18 @@ pub fn set_rumble(on: bool) {
     save();
 }
 
+/// Large text: conversations, help, notices and messages at double size (small handheld screens).
+static LARGE: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+pub fn large_text() -> bool {
+    LARGE.load(std::sync::atomic::Ordering::Relaxed)
+}
+
+pub fn set_large_text(on: bool) {
+    LARGE.store(on, std::sync::atomic::Ordering::Relaxed);
+    save();
+}
+
 /// The minimap in the corner (render.rs `draw_minimap`): on, or off.
 static MINIMAP: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(true);
 
@@ -158,6 +170,10 @@ pub fn load() {
             NOTICES.store(a.trim() != "off", std::sync::atomic::Ordering::Relaxed);
             continue;
         }
+        if b.trim() == "large_text" {
+            LARGE.store(a.trim() == "on", std::sync::atomic::Ordering::Relaxed);
+            continue;
+        }
         if b.trim() == "rumble" {
             RUMBLE.store(a.trim() != "off", std::sync::atomic::Ordering::Relaxed);
             continue;
@@ -184,6 +200,7 @@ fn save() {
     text += &format!("notices={}\n", if notices() { "on" } else { "off" });
     text += &format!("minimap={}\n", if minimap() { "on" } else { "off" });
     text += &format!("rumble={}\n", if rumble() { "on" } else { "off" });
+    text += &format!("large_text={}\n", if large_text() { "on" } else { "off" });
     let _ = std::fs::create_dir_all(crate::save::dir());
     let _ = std::fs::write(path(), text);
 }
