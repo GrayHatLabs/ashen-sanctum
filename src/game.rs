@@ -1810,8 +1810,14 @@ impl Game {
     /// Which music loop fits where you are.
     pub fn music_track(&self) -> crate::music::Track {
         use crate::music::Track;
-        if self.mobs.iter().any(|m| m.boss && m.alive() && m.state != MobState::Idle) {
-            Track::Boss
+        if let Some(m) = self.mobs.iter().find(|m| m.boss && m.alive() && m.state != MobState::Idle) {
+            // An act's last boss gets its own theme; its heralds theirs; the rest (side bosses, echoes) the old one.
+            let slot = world::DUNGEONS.iter().position(|d| d.boss == m.kind).map(|k| (k, world::DUNGEONS.iter().position(|d| d.act == world::DUNGEONS[k].act).unwrap_or(0)));
+            match slot {
+                Some((k, _)) if world::FINALS.contains(&k) && m.name.is_none() => Track::FinalBoss,
+                Some((k, first)) if k - first < 3 && m.name.is_none() => Track::Herald,
+                _ => Track::Boss,
+            }
         } else if self.in_safe(self.p.x, self.p.y) || matches!(self.state, State::Victory(_)) {
             // Each town has its own tune.
             [Track::Town, Track::Hearth, Track::Vigil, Track::Refuge, Track::Brine, Track::Harbor, Track::Stillhold][self.level.act().min(6)]

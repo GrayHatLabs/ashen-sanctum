@@ -50,9 +50,13 @@ pub enum Track {
     Rift,
     /// Stillhold: singing bowls over a breath-slow drone.
     Stillhold,
+    /// An act's last boss, in its hall: slow and huge, an organ and a choir over timpani.
+    FinalBoss,
+    /// A herald (the act's three keyholders): fast and driving.
+    Herald,
 }
 
-pub const TRACKS: [Track; 23] = [
+pub const TRACKS: [Track; 25] = [
     Track::Town,
     Track::Wilds,
     Track::Dungeon,
@@ -76,6 +80,8 @@ pub const TRACKS: [Track; 23] = [
     Track::ChurnShift,
     Track::Rift,
     Track::Stillhold,
+    Track::FinalBoss,
+    Track::Herald,
 ];
 
 fn hz(midi: f32) -> f32 {
@@ -303,6 +309,8 @@ pub fn render(track: Track) -> Vec<f32> {
         Track::Churn | Track::ChurnShift => 163,
         Track::Rift => 167,
         Track::Stillhold => 173,
+        Track::FinalBoss => 179,
+        Track::Herald => 181,
     });
     match track {
         Track::Town => town(&mut rng),
@@ -328,7 +336,77 @@ pub fn render(track: Track) -> Vec<f32> {
         Track::ChurnShift => churn(&mut rng, 5.0),
         Track::Rift => rift(&mut rng),
         Track::Stillhold => stillhold(&mut rng),
+        Track::FinalBoss => final_boss(&mut rng),
+        Track::Herald => herald(&mut rng),
     }
+}
+
+/// An act's last boss: D minor at 92 bpm, i - VI - III - VII over an eighth-note bass, a pipe-organ pad, a high
+/// choir on the long notes, timpani on the beats, a bell tolling each bar; the last four bars climb a half step.
+fn final_boss(rng: &mut Rng) -> Vec<f32> {
+    let bpm = 92.0;
+    let beat = 60.0 / bpm;
+    let bars = 16;
+    let mut b = Buf::new(bars as f32 * 4.0 * beat);
+    b.drone(26.0, 0.05);
+    // (root, third, fifth) of D minor, B flat, F, C.
+    let chords = [(38.0, 41.0, 45.0), (34.0, 38.0, 41.0), (41.0, 45.0, 48.0), (36.0, 40.0, 43.0)];
+    for bar in 0..bars {
+        let t0 = bar as f32 * 4.0 * beat;
+        let up = if bar >= 12 { 1.0 } else { 0.0 };
+        let (r, th, f) = chords[bar % 4];
+        let (r, th, f) = (r + up, th + up, f + up);
+        // The bass: eighths on the root, an octave jump on the off-beats.
+        for k in 0..8 {
+            let m = if k % 2 == 1 { r + 12.0 } else { r };
+            b.pluck(t0 + k as f32 * beat * 0.5, m - 12.0, 0.4, 0.4, 0.994, rng);
+        }
+        // The organ, and the choir an octave and a half up.
+        b.pad(t0, 4.0 * beat, &[r, th + 12.0, f + 12.0, r + 24.0], 0.12, 900.0);
+        b.pad(t0, 4.0 * beat, &[th + 24.0, f + 24.0], 0.05, 2200.0);
+        // Timpani: a hit on one and three, a roll into every fourth bar.
+        b.drum(t0, 0.6, 46.0 + up, rng);
+        b.drum(t0 + 2.0 * beat, 0.45, 46.0 + up, rng);
+        if bar % 4 == 3 {
+            for k in 0..6 {
+                b.drum(t0 + 3.0 * beat + k as f32 * beat / 6.0, 0.18 + 0.05 * k as f32, 48.0 + up, rng);
+            }
+        }
+        b.bell(t0, 74.0 + up, 0.06);
+        // A falling melody line over the second half.
+        if bar >= 8 {
+            let mel = [f + 24.0, th + 24.0, r + 24.0, th + 24.0];
+            for (k, m) in mel.iter().enumerate() {
+                b.pluck(t0 + k as f32 * beat, *m, 0.18, 0.7, 0.996, rng);
+            }
+        }
+    }
+    b.finish(0.45, 0.78)
+}
+
+/// A herald: E phrygian at 128 bpm, a driving sixteenth-note riff with the half-step bite, toms on every beat.
+fn herald(rng: &mut Rng) -> Vec<f32> {
+    let bpm = 128.0;
+    let beat = 60.0 / bpm;
+    let bars = 16;
+    let mut b = Buf::new(bars as f32 * 4.0 * beat);
+    let riff = [40.0, 40.0, 41.0, 40.0, 40.0, 43.0, 40.0, 41.0];
+    for bar in 0..bars {
+        let t0 = bar as f32 * 4.0 * beat;
+        let shift = [0.0, 0.0, 5.0, 3.0][(bar / 2) % 4];
+        for rep in 0..2 {
+            for (k, m) in riff.iter().enumerate() {
+                let t = t0 + (rep * 8 + k) as f32 * beat * 0.25;
+                b.pluck(t, m + shift, 0.32, 0.6, 0.99, rng);
+            }
+        }
+        for k in 0..4 {
+            b.drum(t0 + k as f32 * beat, if k % 2 == 0 { 0.5 } else { 0.38 }, if k % 2 == 0 { 58.0 } else { 74.0 }, rng);
+            b.drum(t0 + k as f32 * beat + beat * 0.75, 0.15, 90.0, rng);
+        }
+        b.pad(t0, 4.0 * beat, &[52.0 + shift, 53.0 + shift, 59.0 + shift], 0.06, 900.0);
+    }
+    b.finish(0.3, 0.75)
 }
 
 /// The Churn: augmented chords drifting a whole tone at a time (they never land), whole-tone bells at odd
