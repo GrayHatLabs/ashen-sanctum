@@ -499,7 +499,7 @@ impl Game {
         let (ux, uy) = (dx / l, dy / l);
         // The chain stops at the first wall.
         let mut reach = 0.5;
-        while reach < full && self.d.walkable((px + ux * reach).floor() as i32, (py + uy * reach).floor() as i32) {
+        while reach < full && self.d.see_through((px + ux * reach).floor() as i32, (py + uy * reach).floor() as i32) {
             reach += 0.25;
         }
         let reach = reach.min(full);
@@ -648,7 +648,7 @@ impl Game {
         let (ux, uy) = (dx / l, dy / l);
         // The lash stops at the first wall.
         let mut reach = 0.5;
-        while reach < LASH_REACH && self.d.walkable((px + ux * reach).floor() as i32, (py + uy * reach).floor() as i32) {
+        while reach < LASH_REACH && self.d.see_through((px + ux * reach).floor() as i32, (py + uy * reach).floor() as i32) {
             reach += 0.25;
         }
         self.links.push(ChainLinkFx { whip: true, wind: 0.05, lash: 0.16, side: 1.0, lift: 0.0, x0: px, y0: py, x1: px + ux * reach, y1: py + uy * reach, t: 0.0, max: 0.36 });

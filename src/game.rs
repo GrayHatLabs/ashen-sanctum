@@ -3802,7 +3802,7 @@ impl Game {
                 }
                 b.x += b.vx * DT / steps as f32;
                 b.y += b.vy * DT / steps as f32;
-                if !self.d.walkable(b.x.floor() as i32, b.y.floor() as i32) {
+                if !self.d.see_through(b.x.floor() as i32, b.y.floor() as i32) {
                     hit = true;
                     b.x -= b.vx * DT / steps as f32;
                     b.y -= b.vy * DT / steps as f32;

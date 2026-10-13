@@ -990,7 +990,13 @@ pub fn build(id: LevelId, seed: u64) -> Level {
 /// and fresh layouts for the generated levels.
 pub fn build_at(id: LevelId, seed: u64, difficulty: u8) -> Level {
     let seed = seed.wrapping_add(difficulty as u64 * 7919);
-    let mut lv = crate::levels::load(id, seed).unwrap_or_else(|| generate(id, seed));
+    let loaded = crate::levels::load(id, seed);
+    let made = loaded.is_none();
+    let mut lv = loaded.unwrap_or_else(|| generate(id, seed));
+    // Water and lava pools in the generated maps (the hand-made ones are as drawn).
+    if made {
+        crate::liquid::place(&mut lv, seed);
+    }
     add_elites(&mut lv, seed);
     // Shrines, super uniques and lore pages (side.rs).
     crate::side::place(&mut lv, seed);

@@ -456,6 +456,12 @@ Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`;
   Caravan, the Pale Huntsman and Ghosts of the Sovereign (the belt); the Lost Patrol, Tally's Count and Bram's
   Lost Cargo (the bag, or the vial).
 
+## Water and lava
+
+The wild places have pools: ponds in the Ashlands, murky water in the Mistwood and the crypts, lava in the
+Ashen Sanctum, the catacombs and the foundries, and both in the Churn. You can't wade in, but arrows, spells
+and thrown weapons fly straight across (and so do the monsters' shots). Lava lights the dark around it.
+
 ## Getting around and loot
 
 - A road off an area ends in a glowing **gate** named for where it leads: walk into it (anywhere past it toward

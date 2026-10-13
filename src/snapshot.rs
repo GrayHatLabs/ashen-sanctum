@@ -1324,6 +1324,34 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             idle(&mut g, 20);
             save(&mut g, scr, "area_exit");
         }
+        // Water and lava (liquid.rs): stand by the first pool found.
+        for (id, name) in [
+            (LevelId::Area(0, 1), "liquid_water"),
+            (LevelId::Area(2, 1), "liquid_murky"),
+            (LevelId::Dungeon(crate::world::SANCTUM, 0), "liquid_lava"),
+            (LevelId::Area(6, 1), "liquid_churn"),
+        ] {
+            g.debug_goto(id);
+            let (w, h) = (g.d.w, g.d.h);
+            let wet = |x: i32, y: i32| (-2..=2).flat_map(|dy| (-2..=2).map(move |dx| (dx, dy))).filter(|&(dx, dy)| g.d.liquid_at(x + dx, y + dy) != 0).count();
+            let spot = (0..h).flat_map(|y| (0..w).map(move |x| (x, y))).filter(|&(x, y)| g.d.liquid_at(x, y) != 0).max_by_key(|&(x, y)| wet(x, y));
+            let Some((lx, ly)) = spot else {
+                println!("{name}: no pool on this map");
+                continue;
+            };
+            let stand = (3..9).flat_map(|r| [(lx + r, ly + r), (lx, ly + r + 1), (lx + r, ly), (lx - r, ly + r), (lx + r, ly - r)]).find(|&(x, y)| !g.d.blocked(x as f32 + 0.5, y as f32 + 0.5, 0.4));
+            if let Some((x, y)) = stand {
+                (g.p.x, g.p.y) = (x as f32 + 0.5, y as f32 + 0.5);
+            }
+            g.mobs.retain(|m| (m.x - g.p.x).powi(2) + (m.y - g.p.y).powi(2) > 144.0);
+            g.banner_t = 0.0;
+            g.event_cd = 9999.0;
+            g.message = None;
+            g.notice = None;
+            g.light_ready = false;
+            idle(&mut g, 30);
+            save(&mut g, scr, name);
+        }
     }
     // The Ember Wyrm's lair (dragon.rs): asleep on its hoard, then awake; and some random errands (errands.rs).
     {

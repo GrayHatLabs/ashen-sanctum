@@ -1455,7 +1455,7 @@ impl Game {
             for _ in 0..3 {
                 s.x += s.vx * DT / 3.0;
                 s.y += s.vy * DT / 3.0;
-                if !self.d.walkable(s.x.floor() as i32, s.y.floor() as i32) {
+                if !self.d.see_through(s.x.floor() as i32, s.y.floor() as i32) {
                     s.life = 0.0;
                     break;
                 }

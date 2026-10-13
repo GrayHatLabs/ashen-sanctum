@@ -679,7 +679,7 @@ impl Game {
                 }
             }
             let (nx, ny) = (j.x + j.ux * step, j.y + j.uy * step);
-            if !j.back && (!self.d.walkable(nx.floor() as i32, ny.floor() as i32) || j.gone >= JAVELIN_RANGE) {
+            if !j.back && (!self.d.see_through(nx.floor() as i32, ny.floor() as i32) || j.gone >= JAVELIN_RANGE) {
                 j.back = true;
                 j.hit.clear();
                 continue;

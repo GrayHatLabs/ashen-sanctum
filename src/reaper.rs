@@ -586,7 +586,7 @@ impl Game {
                 }
             }
             let (nx, ny) = (f.x + f.vx * DT, f.y + f.vy * DT);
-            if !self.d.walkable(nx.floor() as i32, ny.floor() as i32) {
+            if !self.d.see_through(nx.floor() as i32, ny.floor() as i32) {
                 f.life = 0.0;
             }
             f.x = nx;

@@ -74,6 +74,18 @@ impl Game {
                 let ground = self.d.ground_at(tx, ty);
                 let f = self.art.floor(theme, ground, v);
                 scr.blit(f, sx, sy, Fx::default());
+                let lq = self.d.liquid_at(tx, ty);
+                if lq != 0 {
+                    let dry = |x: i32, y: i32| self.d.liquid_at(x, y) == 0;
+                    let shore = [dry(tx + 1, ty), dry(tx - 1, ty), dry(tx, ty + 1), dry(tx, ty - 1)];
+                    let murky = matches!(theme, crate::world::Theme::Mistwood | crate::world::Theme::Barrow | crate::world::Theme::Crypt | crate::world::Theme::Warrens);
+                    crate::liquid::draw_tile(scr, lq, murky, sx, sy, tx, ty, shore, self.tick as u32, view_h - crate::game::HUD_H);
+                    // Lava lights the dark round it.
+                    if lq == crate::dungeon::LAVA && (tx + ty) % 2 == 0 {
+                        scr.add_light(sx, sy, 64.0, 0.8);
+                    }
+                    continue;
+                }
                 // The tide over the flats: dark water rising, rippling with the swell.
                 if ground == 1 && self.tide > 0.0 && crate::tides::tidal(self.level) {
                     let ripple = ((self.tick as f32 * 0.08 + tx as f32 * 0.7 + ty as f32 * 0.4).sin() * 0.5 + 0.5) * 0.12;
@@ -1674,6 +1686,8 @@ impl Game {
                     Tile::Wall => rgb(0xa89070),
                     Tile::Floor if self.d.ground_at(tx, ty) == 2 => rgb(0x8a7050),
                     Tile::Floor => rgb(0x3a3024),
+                    Tile::Prop if self.d.liquid_at(tx, ty) == crate::dungeon::LAVA => rgb(0xe05010),
+                    Tile::Prop if self.d.liquid_at(tx, ty) != 0 => rgb(0x2a6a90),
                     _ => continue,
                 };
                 let j = (sy * scr.w + sx) as usize;
@@ -1732,6 +1746,8 @@ impl Game {
                 }
                 match self.d.get(tx, ty) {
                     Tile::Wall => scr.fill(sx, sy, k, 2, wall),
+                    Tile::Prop if self.d.liquid_at(tx, ty) == crate::dungeon::LAVA => scr.fill(sx, sy, 2, 1, rgb(0xe05010)),
+                    Tile::Prop if self.d.liquid_at(tx, ty) != 0 => scr.fill(sx, sy, 2, 1, rgb(0x2a6a90)),
                     Tile::Prop => scr.fill(sx, sy, 2, 1, tree),
                     Tile::Floor => {
                         let road = self.d.ground_at(tx, ty) == 2;

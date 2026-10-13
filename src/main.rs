@@ -13,6 +13,7 @@ mod inventor;
 mod iso;
 mod items;
 mod levels;
+mod liquid;
 mod menu;
 mod mobs;
 mod music;

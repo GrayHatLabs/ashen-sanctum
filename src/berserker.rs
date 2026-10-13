@@ -673,7 +673,7 @@ impl Game {
                 }
             }
             let (nx, ny) = (a.x + a.ux * step, a.y + a.uy * step);
-            if !a.back && (!self.d.walkable(nx.floor() as i32, ny.floor() as i32) || a.gone >= AXE_RANGE) {
+            if !a.back && (!self.d.see_through(nx.floor() as i32, ny.floor() as i32) || a.gone >= AXE_RANGE) {
                 a.back = true;
                 a.hit.clear();
                 continue;

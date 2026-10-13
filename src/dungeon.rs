@@ -2,6 +2,9 @@
 //! every floor tile, plus A* pathfinding and line-of-sight on the grid.
 use crate::rng::Rng;
 
+pub const WATER: u8 = 1;
+pub const LAVA: u8 = 2;
+
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Tile {
     Void,
@@ -36,6 +39,8 @@ pub struct Dungeon {
     pub var: Vec<u8>,
     /// Ground type per tile on the overworld: 0 grass, 1 dirt, 2 road (always 0 in dungeons).
     pub ground: Vec<u8>,
+    /// Water or lava per tile (liquid.rs; 0 none). Only counts on a `Tile::Prop`: you can't wade in.
+    pub liquid: Vec<u8>,
     pub rooms: Vec<Room>,
 }
 
@@ -120,7 +125,7 @@ impl Dungeon {
     /// An empty map filled with one tile type (the overworld starts all floor).
     pub fn blank(w: i32, h: i32, fill: Tile) -> Self {
         let n = (w * h) as usize;
-        Dungeon { w, h, tiles: vec![fill; n], var: vec![0; n], ground: vec![0; n], rooms: vec![] }
+        Dungeon { w, h, tiles: vec![fill; n], var: vec![0; n], ground: vec![0; n], liquid: vec![0; n], rooms: vec![] }
     }
 
     pub fn set_ground(&mut self, x: i32, y: i32, g: u8) {
@@ -177,6 +182,34 @@ impl Dungeon {
         self.get(x, y) == Tile::Floor
     }
 
+    /// Water or lava here (0 none).
+    pub fn liquid_at(&self, x: i32, y: i32) -> u8 {
+        if self.get(x, y) == Tile::Prop {
+            self.liquid[(y * self.w + x) as usize]
+        } else {
+            0
+        }
+    }
+
+    pub fn set_liquid(&mut self, x: i32, y: i32, kind: u8) {
+        if x >= 0 && y >= 0 && x < self.w && y < self.h {
+            self.set(x, y, Tile::Prop);
+            self.liquid[(y * self.w + x) as usize] = kind;
+        }
+    }
+
+    pub fn clear_liquid(&mut self, x: i32, y: i32) {
+        if x >= 0 && y >= 0 && x < self.w && y < self.h {
+            self.set(x, y, Tile::Floor);
+            self.liquid[(y * self.w + x) as usize] = 0;
+        }
+    }
+
+    /// Sight and missiles pass over open floor and over water and lava.
+    pub fn see_through(&self, x: i32, y: i32) -> bool {
+        self.walkable(x, y) || self.liquid_at(x, y) != 0
+    }
+
     /// Does a circle of radius `r` at (x, y) overlap any blocking tile?
     pub fn blocked(&self, x: f32, y: f32, r: f32) -> bool {
         for ty in (y - r).floor() as i32..=(y + r).floor() as i32 {
@@ -200,7 +233,7 @@ impl Dungeon {
         let n = (d * 3.0).ceil() as i32;
         (0..=n).all(|i| {
             let t = i as f32 / n.max(1) as f32;
-            self.walkable((x0 + (x1 - x0) * t).floor() as i32, (y0 + (y1 - y0) * t).floor() as i32)
+            self.see_through((x0 + (x1 - x0) * t).floor() as i32, (y0 + (y1 - y0) * t).floor() as i32)
         })
     }
 
