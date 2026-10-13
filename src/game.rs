@@ -104,6 +104,9 @@ pub struct Input {
     pub quit_ask: bool,
     /// H / F1: the help menu.
     pub help: bool,
+    /// T: read a town portal scroll; Alt held: every item on the ground is labelled.
+    pub scroll: bool,
+    pub show_loot: bool,
     /// B on a pad (by default): close the bag, the map, a conversation or the skill tree.
     pub back: bool,
 }
@@ -660,6 +663,8 @@ pub enum Travel {
     Go(LevelId, Option<LevelId>),
     Town(usize),
     Waypoint(LevelId),
+    /// Back through the town's portal to where you opened it.
+    Back(LevelId, f32, f32),
 }
 
 pub struct Game {
@@ -813,6 +818,8 @@ pub struct Game {
     /// A way in or out only works once you've stepped clear of the one you arrived by (no bouncing back and
     /// forth between areas).
     pub(crate) portal_armed: bool,
+    /// Where the last town portal was taken from (level, x, y): the town's portal leads back there.
+    pub(crate) tp_return: Option<(LevelId, f32, f32)>,
     /// The inquisitor's sprite frame as last drawn, and where (render.rs): her chain starts from her hand in it.
     pub(crate) hero_frame: std::cell::RefCell<Option<(i32, i32, crate::gfx::Sprite)>>,
     /// Where her hand held the censer in that frame (screen pixels), while she lashes.
@@ -952,6 +959,7 @@ impl Game {
             light_ready: false,
             portal_cd: 0.0,
             portal_armed: true,
+            tp_return: None,
             hero_frame: std::cell::RefCell::new(None),
             hero_hold: std::cell::RefCell::new(None),
             defer_travel: false,
@@ -1366,7 +1374,7 @@ impl Game {
     /// Where a trip is headed (for the loading card).
     pub fn travel_label(&self) -> Option<String> {
         self.pending_travel.as_ref().map(|t| match *t {
-            Travel::Go(id, _) | Travel::Waypoint(id) => Game::waypoint_name(id),
+            Travel::Go(id, _) | Travel::Waypoint(id) | Travel::Back(id, ..) => Game::waypoint_name(id),
             Travel::Town(act) => Game::waypoint_name(LevelId::land(act)),
         })
     }
@@ -1466,6 +1474,7 @@ impl Game {
         self.churnfolk_enter();
         self.stillpoint_enter();
         self.churnside_enter();
+        self.town_portal_enter();
         self.gears_enter();
         self.reef_enter();
         self.isles_enter();
@@ -1864,6 +1873,7 @@ impl Game {
                     self.travel(id);
                     self.defer_travel = true;
                 }
+                Travel::Back(id, x, y) => self.go_back(id, x, y),
             }
             if msg.is_some() {
                 self.message = msg;
@@ -2224,7 +2234,20 @@ impl Game {
                     self.go_soon(LevelId::Dungeon(k, f + 1), Some(here));
                 }
             }
+            // In town, the portal leads back to where it was opened.
+            PortalKind::TownPortal if here.town() => {
+                let Some((id, x, y)) = self.tp_return else { return };
+                if self.defer_travel {
+                    self.pending_travel = Some(Travel::Back(id, x, y));
+                } else {
+                    self.go_back(id, x, y);
+                }
+            }
             PortalKind::TownPortal => {
+                // Remember the way back: the town gets a portal here.
+                if let Some(p) = self.portals.iter().find(|p| p.kind == PortalKind::TownPortal && (p.x - self.p.x).powi(2) + (p.y - self.p.y).powi(2) < 1.0) {
+                    self.tp_return = Some((here, p.x, p.y));
+                }
                 // A boss's token left lying here comes with you (stepping in too soon used to strand it).
                 let (px, py) = (self.p.x, self.p.y);
                 let mut any = false;
@@ -2362,6 +2385,22 @@ impl Game {
             Some(Act::Buy(w)) => self.buy(w),
             Some(Act::Travel(id)) => self.travel(id),
             Some(Act::Guide) => self.open_help(),
+            Some(Act::ToggleRumble) => {
+                crate::binds::set_rumble(!crate::binds::rumble());
+                let n = self.dialog.as_ref().map_or(0, |d| d.sel);
+                self.open_help();
+                if let Some(d) = self.dialog.as_mut() {
+                    d.sel = n;
+                }
+            }
+            Some(Act::ToggleMinimap) => {
+                crate::binds::set_minimap(!crate::binds::minimap());
+                let n = self.dialog.as_ref().map_or(0, |d| d.sel);
+                self.open_help();
+                if let Some(d) = self.dialog.as_mut() {
+                    d.sel = n;
+                }
+            }
             Some(Act::ToggleNotices) => {
                 crate::binds::set_notices(!crate::binds::notices());
                 let n = self.dialog.as_ref().map_or(0, |d| d.sel);
@@ -2586,6 +2625,17 @@ impl Game {
             self.say("YOU THIRST FOR BLOOD, NOT BREAD".into());
             return;
         }
+        if w == Ware::Scroll {
+            if self.p.gear.free() == 0 {
+                self.say("YOUR BAG IS FULL".into());
+                return;
+            }
+            self.p.gold -= price;
+            self.sfx.push(Sfx::Pickup);
+            let _ = self.p.gear.add(crate::items::scroll_item());
+            self.say("BOUGHT A TOWN PORTAL SCROLL (IN YOUR BAG; T OR ENTER / A THERE TO READ IT)".into());
+            return;
+        }
         let potion = matches!(w, Ware::HealthPotion | Ware::ManaPotion);
         let belt_full = self.p.hp_pots + self.p.mp_pots >= self.belt_cap();
         if potion && belt_full && self.p.gear.free() == 0 {
@@ -2692,6 +2742,11 @@ impl Game {
     /// ENTER / A on a spare potion in the bag: into the belt if it has room, otherwise drunk on the spot.
     pub(crate) fn use_bag_potion(&mut self, i: usize) {
         let Some(it) = self.p.gear.bag[i].as_ref() else { return };
+        if it.base().key == "scroll_tp" {
+            self.inv = None;
+            self.read_portal_scroll();
+            return;
+        }
         let healing = it.base().key == "potion_hp";
         if self.p.hp_pots + self.p.mp_pots < self.belt_cap() {
             self.p.gear.bag[i] = None;
@@ -2724,6 +2779,10 @@ impl Game {
         d.last_options.push(("GAMEPAD BUTTONS".into(), Act::Binds));
         let notices = if crate::binds::notices() { "EVENT NOTICES: ON" } else { "EVENT NOTICES: OFF" };
         d.last_options.push((notices.into(), Act::ToggleNotices));
+        let mini = if crate::binds::minimap() { "MINIMAP: ON" } else { "MINIMAP: OFF" };
+        d.last_options.push((mini.into(), Act::ToggleMinimap));
+        let rumble = if crate::binds::rumble() { "PAD RUMBLE: ON" } else { "PAD RUMBLE: OFF" };
+        d.last_options.push((rumble.into(), Act::ToggleRumble));
         d.last_options.push(("CLOSE".into(), Act::Close));
         d.refresh_options();
         self.dialog = Some(d);
@@ -2764,6 +2823,80 @@ impl Game {
         d.refresh_options();
         d.sel = get(btn).and_then(|a| PAD_ACTS.iter().position(|x| *x == a)).unwrap_or(PAD_ACTS.len());
         self.dialog = Some(d);
+    }
+
+    /// T, or ENTER / A on the scroll in the bag: a portal to town opens beside you.
+    pub(crate) fn read_portal_scroll(&mut self) {
+        let Some(i) = self.p.gear.bag.iter().position(|b| b.as_ref().map_or(false, |it| it.base().key == "scroll_tp")) else {
+            self.say("NO TOWN PORTAL SCROLL. MERCHANTS SELL THEM".into());
+            return;
+        };
+        if self.level.town() {
+            self.say("YOU'RE ALREADY IN TOWN".into());
+            return;
+        }
+        if self.in_rift() {
+            self.say("THE RIFT WON'T LET A PORTAL OPEN".into());
+            return;
+        }
+        self.p.gear.bag[i] = None;
+        // Beside you, in the direction you face, on open ground.
+        let (px, py) = (self.p.x, self.p.y);
+        let mut spot = (px, py + 1.2);
+        for k in 0..12 {
+            let a = k as f32 / 12.0 * std::f32::consts::TAU;
+            let (x, y) = (px + a.cos() * 1.6, py + a.sin() * 1.6);
+            if !self.d.blocked(x, y, 0.4) {
+                spot = (x, y);
+                break;
+            }
+        }
+        self.portals.push(Portal { x: spot.0, y: spot.1, kind: PortalKind::TownPortal });
+        self.portal_armed = false;
+        self.sfx.push(Sfx::Descend);
+        for _ in 0..20 {
+            self.spray_at(spot.0, spot.1, PKind::Magic, 14.0);
+        }
+        self.say("A PORTAL TO TOWN OPENS".into());
+    }
+
+    /// Back through the town's portal: to the level and spot it was opened from, beside its portal there.
+    fn go_back(&mut self, id: LevelId, x: f32, y: f32) {
+        self.go_to(id, None);
+        let mut spot = (x, y + 1.6);
+        for k in 0..12 {
+            let a = k as f32 / 12.0 * std::f32::consts::TAU;
+            let (sx, sy) = (x + a.cos() * 1.8, y + a.sin() * 1.8);
+            if !self.d.blocked(sx, sy, 0.4) {
+                spot = (sx, sy);
+                break;
+            }
+        }
+        (self.p.x, self.p.y) = spot;
+        self.p.path.clear();
+        self.portal_armed = false;
+        // The portal there is spent; the one in town goes too.
+        self.portals.retain(|p| !(p.kind == PortalKind::TownPortal && (p.x - x).powi(2) + (p.y - y).powi(2) < 0.5));
+        self.tp_return = None;
+    }
+
+    /// Arriving in town with a way back open: its portal stands near the town's start.
+    pub(crate) fn town_portal_enter(&mut self) {
+        let Some((id, ..)) = self.tp_return else { return };
+        if !self.level.town() || self.level.act() != id.act() || self.portals.iter().any(|p| p.kind == PortalKind::TownPortal) {
+            return;
+        }
+        let (sx, sy) = self.town_start;
+        let mut spot = (sx + 2.0, sy);
+        for k in 0..12 {
+            let a = k as f32 / 12.0 * std::f32::consts::TAU;
+            let (x, y) = (sx + a.cos() * 2.5, sy + a.sin() * 2.5);
+            if !self.d.blocked(x, y, 0.4) {
+                spot = (x, y);
+                break;
+            }
+        }
+        self.portals.push(Portal { x: spot.0, y: spot.1, kind: PortalKind::TownPortal });
     }
 
     /// Esc (or SELECT + START): keep playing, back to the heroes, or quit the game. The game is saved either way.
@@ -2861,6 +2994,9 @@ impl Game {
 
         if inp.eat {
             self.eat_from_bag();
+        }
+        if inp.scroll {
+            self.read_portal_scroll();
         }
         if inp.potion_hp && self.p.hp_pots > 0 && self.p.hp < self.p.max_hp {
             self.p.hp_pots -= 1;
@@ -3115,7 +3251,9 @@ impl Game {
         self.pickups.retain(|k| {
             // Food goes in the food bag; with the bag full you eat it there and then, unless you're full too.
             let food_but_full = matches!(k.kind, Drop::Food(_)) && (vampire || (full && pack_free <= 0)) || matches!(k.kind, Drop::TideChest) && wet && d.ground_at(k.x as i32, k.y as i32) == 1;
-            let near = (k.x - px).powi(2) + (k.y - py).powi(2) < 0.5 && k.t > 0.3;
+            // Gold is scooped up from a couple of steps away; everything else, where you stand.
+            let reach = if matches!(k.kind, Drop::Gold(_)) { 2.0 * 2.0 } else { 0.5 };
+            let near = (k.x - px).powi(2) + (k.y - py).powi(2) < reach && k.t > 0.3;
             let no_room = matches!(k.kind, Drop::Item(_)) && bag_free == 0;
             // A full belt: spare potions go in the bag, while it has room.
             let no_belt = matches!(k.kind, Drop::Health | Drop::Mana) && belt_free <= 0 && bag_free == 0;
@@ -4826,6 +4964,81 @@ mod tests {
         assert!(g.notice.is_none());
         assert_eq!(g.message.as_ref().map(|m| m.0.as_str()), Some("A GOLD-THIEF!"));
         crate::binds::set_notices(true);
+    }
+
+    #[test]
+    fn the_bag_says_what_wearing_an_item_would_change() {
+        use crate::items::{Rarity, Stat};
+        let mut g = quiet_game();
+        g.p.gear.bag = vec![None; g.p.gear.bag.len()];
+        let ring = |life: i32| {
+            let b = crate::items::base_by_key("ring").unwrap();
+            crate::items::Item { base: b, rarity: Rarity::Magic, ilvl: 5, name: "TEST RING".into(), stats: vec![(Stat::Life, life)], req: 1, sockets: 0, gems: vec![] }
+        };
+        g.p.gear.worn = Default::default();
+        let r = crate::items::WORN.iter().position(|s| *s == crate::items::Slot::Ring).unwrap();
+        g.p.gear.worn[r] = Some(ring(10));
+        g.p.gear.worn[r + 1] = Some(ring(10));
+        g.p.gear.bag[0] = Some(ring(25));
+        let d = g.compare(crate::inventory::Cell::Bag(0));
+        assert_eq!(d, vec![("+15 LIFE".to_string(), true)]);
+        g.p.gear.bag[1] = Some(ring(4));
+        let d = g.compare(crate::inventory::Cell::Bag(1));
+        assert_eq!(d, vec![("-6 LIFE".to_string(), false)]);
+        g.p.gear.bag[2] = Some(crate::items::potion_item(true));
+        assert!(g.compare(crate::inventory::Cell::Bag(2)).is_empty(), "nothing to compare");
+    }
+
+    #[test]
+    fn a_town_portal_scroll_takes_you_home_and_back() {
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        g.p.gear.bag = vec![None; g.p.gear.bag.len()];
+        g.p.gold = 500;
+        assert!(g.debug_talk(Role::Merchant));
+        g.dialog = None;
+        g.buy(Ware::Scroll);
+        assert!(g.p.gear.bag.iter().flatten().any(|it| it.base().key == "scroll_tp"), "bought into the bag");
+        g.debug_goto(LevelId::Dungeon(0, 0));
+        let (x0, y0) = (g.p.x, g.p.y);
+        g.update(&Input { scroll: true, ..Input::default() });
+        let tp = g.portals.iter().find(|p| p.kind == PortalKind::TownPortal).map(|p| (p.x, p.y)).expect("a portal opens");
+        assert!((tp.0 - x0).powi(2) + (tp.1 - y0).powi(2) < 9.0, "beside you");
+        assert!(!g.p.gear.bag.iter().flatten().any(|it| it.base().key == "scroll_tp"), "the scroll is used up");
+        (g.p.x, g.p.y) = tp;
+        g.portal_cd = 0.0;
+        g.portal_armed = true;
+        g.update(&Input::default());
+        assert!(g.level.town(), "home");
+        let back = g.portals.iter().find(|p| p.kind == PortalKind::TownPortal).map(|p| (p.x, p.y)).expect("a portal back, in town");
+        (g.p.x, g.p.y) = back;
+        g.portal_cd = 0.0;
+        g.portal_armed = true;
+        g.update(&Input::default());
+        assert_eq!(g.level, LevelId::Dungeon(0, 0), "back where you were");
+        assert!((g.p.x - tp.0).powi(2) + (g.p.y - tp.1).powi(2) < 9.0, "beside its portal");
+        assert!(g.tp_return.is_none());
+    }
+
+    #[test]
+    fn the_bag_sorts_and_gold_comes_to_you() {
+        let mut g = quiet_game();
+        let n = g.p.gear.bag.len();
+        g.p.gear.bag = vec![None; n];
+        g.p.gear.bag[7] = Some(crate::items::potion_item(true));
+        g.p.gear.bag[3] = Some(crate::items::roll(5, crate::items::Rarity::Magic, &mut g.rng));
+        g.p.gear.bag[12] = Some(crate::items::scroll_item());
+        g.p.gear.sort_bag();
+        assert!(g.p.gear.bag[0].as_ref().map_or(false, |it| it.slot() != crate::items::Slot::Potion), "gear first");
+        assert!(g.p.gear.bag[1..3].iter().all(|b| b.as_ref().map_or(false, |it| it.slot() == crate::items::Slot::Potion)), "then potions and scrolls");
+        assert!(g.p.gear.bag[3..].iter().all(Option::is_none), "gaps at the end");
+        // Gold two steps away is scooped up; an item there isn't.
+        g.pickups.clear();
+        g.pickups.push(Pickup { x: g.p.x + 1.5, y: g.p.y, kind: Drop::Gold(10), t: 1.0 });
+        g.pickups.push(Pickup { x: g.p.x - 1.5, y: g.p.y, kind: Drop::Health, t: 1.0 });
+        let gold = g.p.gold;
+        g.collect_pickups();
+        assert_eq!(g.p.gold, gold + 10);
+        assert_eq!(g.pickups.len(), 1);
     }
 
     #[test]

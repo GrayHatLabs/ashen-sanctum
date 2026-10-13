@@ -344,6 +344,8 @@ pub enum Ware {
     ManaPotion,
     Bread,
     Roast,
+    /// A town portal scroll (into the bag).
+    Scroll,
 }
 
 impl Ware {
@@ -352,6 +354,7 @@ impl Ware {
             Ware::HealthPotion | Ware::ManaPotion => 30,
             Ware::Bread => 12,
             Ware::Roast => 30,
+            Ware::Scroll => 40,
         }
     }
 }
@@ -375,8 +378,10 @@ pub enum Act {
     /// The help menu (its list of topics), one topic, the gamepad buttons screen, picking a button's action,
     /// setting it (255: nothing), and the default layout.
     Guide,
-    /// Event notices on / off (the help menu).
+    /// Event notices on / off, the minimap on / off (the help menu).
     ToggleNotices,
+    ToggleMinimap,
+    ToggleRumble,
     Help(u8),
     Binds,
     BindPick(u8),
@@ -497,6 +502,7 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
             d.options = vec![
                 (format!("HEALING POTION  {} GOLD", Ware::HealthPotion.price()), Act::Buy(Ware::HealthPotion)),
                 (format!("MANA POTION  {} GOLD", Ware::ManaPotion.price()), Act::Buy(Ware::ManaPotion)),
+                (format!("TOWN PORTAL SCROLL  {} GOLD", Ware::Scroll.price()), Act::Buy(Ware::Scroll)),
                 (format!("LOAF OF BREAD  {} GOLD", Ware::Bread.price()), Act::Buy(Ware::Bread)),
                 (format!("ROAST  {} GOLD", Ware::Roast.price()), Act::Buy(Ware::Roast)),
                 ("SHOW ME YOUR GEAR (AND BUY MINE)".into(), Act::Shop),
@@ -727,6 +733,7 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
             d.options = vec![
                 (format!("HEALING POTION  {} GOLD", Ware::HealthPotion.price()), Act::Buy(Ware::HealthPotion)),
                 (format!("MANA POTION  {} GOLD", Ware::ManaPotion.price()), Act::Buy(Ware::ManaPotion)),
+                (format!("TOWN PORTAL SCROLL  {} GOLD", Ware::Scroll.price()), Act::Buy(Ware::Scroll)),
                 (format!("LOAF OF BREAD  {} GOLD", Ware::Bread.price()), Act::Buy(Ware::Bread)),
                 (format!("ROAST  {} GOLD", Ware::Roast.price()), Act::Buy(Ware::Roast)),
                 ("SHOW ME YOUR GEAR (AND BUY MINE)".into(), Act::Shop),
@@ -799,6 +806,7 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
             d.options = vec![
                 (format!("HEALING POTION  {} GOLD", Ware::HealthPotion.price()), Act::Buy(Ware::HealthPotion)),
                 (format!("MANA POTION  {} GOLD", Ware::ManaPotion.price()), Act::Buy(Ware::ManaPotion)),
+                (format!("TOWN PORTAL SCROLL  {} GOLD", Ware::Scroll.price()), Act::Buy(Ware::Scroll)),
                 (format!("LOAF OF BREAD  {} GOLD", Ware::Bread.price()), Act::Buy(Ware::Bread)),
                 (format!("ROAST  {} GOLD", Ware::Roast.price()), Act::Buy(Ware::Roast)),
                 ("SHOW ME YOUR GEAR (AND BUY MINE)".into(), Act::Shop),
@@ -837,6 +845,7 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
             d.options = vec![
                 (format!("HEALING POTION  {} GOLD", Ware::HealthPotion.price()), Act::Buy(Ware::HealthPotion)),
                 (format!("MANA POTION  {} GOLD", Ware::ManaPotion.price()), Act::Buy(Ware::ManaPotion)),
+                (format!("TOWN PORTAL SCROLL  {} GOLD", Ware::Scroll.price()), Act::Buy(Ware::Scroll)),
                 (format!("LOAF OF BREAD  {} GOLD", Ware::Bread.price()), Act::Buy(Ware::Bread)),
                 (format!("ROAST  {} GOLD", Ware::Roast.price()), Act::Buy(Ware::Roast)),
                 ("SHOW ME YOUR GEAR (AND BUY MINE)".into(), Act::Shop),
@@ -862,6 +871,7 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
             d.options = vec![
                 (format!("HEALING POTION  {} GOLD", Ware::HealthPotion.price()), Act::Buy(Ware::HealthPotion)),
                 (format!("MANA POTION  {} GOLD", Ware::ManaPotion.price()), Act::Buy(Ware::ManaPotion)),
+                (format!("TOWN PORTAL SCROLL  {} GOLD", Ware::Scroll.price()), Act::Buy(Ware::Scroll)),
                 (format!("LOAF OF BREAD  {} GOLD", Ware::Bread.price()), Act::Buy(Ware::Bread)),
                 (format!("ROAST  {} GOLD", Ware::Roast.price()), Act::Buy(Ware::Roast)),
                 ("SHOW ME YOUR GEAR (AND BUY MINE)".into(), Act::Shop),
@@ -887,6 +897,7 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
             d.options = vec![
                 (format!("HEALING POTION  {} GOLD", Ware::HealthPotion.price()), Act::Buy(Ware::HealthPotion)),
                 (format!("MANA POTION  {} GOLD", Ware::ManaPotion.price()), Act::Buy(Ware::ManaPotion)),
+                (format!("TOWN PORTAL SCROLL  {} GOLD", Ware::Scroll.price()), Act::Buy(Ware::Scroll)),
                 (format!("LOAF OF BREAD  {} GOLD", Ware::Bread.price()), Act::Buy(Ware::Bread)),
                 (format!("ROAST  {} GOLD", Ware::Roast.price()), Act::Buy(Ware::Roast)),
                 ("SHOW ME YOUR GEAR (AND BUY MINE)".into(), Act::Shop),
@@ -930,6 +941,7 @@ pub fn talk(role: Role, q: &Quest) -> Dialog {
             d.options = vec![
                 (format!("HEALING POTION  {} GOLD", Ware::HealthPotion.price()), Act::Buy(Ware::HealthPotion)),
                 (format!("MANA POTION  {} GOLD", Ware::ManaPotion.price()), Act::Buy(Ware::ManaPotion)),
+                (format!("TOWN PORTAL SCROLL  {} GOLD", Ware::Scroll.price()), Act::Buy(Ware::Scroll)),
                 (format!("LOAF OF BREAD  {} GOLD", Ware::Bread.price()), Act::Buy(Ware::Bread)),
                 (format!("ROAST  {} GOLD", Ware::Roast.price()), Act::Buy(Ware::Roast)),
                 ("SHOW ME YOUR GEAR (AND BUY MINE)".into(), Act::Shop),

@@ -23,6 +23,8 @@ pub enum InvAct {
     Toss,
     /// Bag <-> stash.
     Store,
+    /// Sort the bag (R1, or the button).
+    Sort,
     Close,
 }
 
@@ -53,6 +55,56 @@ impl Game {
         };
         self.inv = Some(InvUi { sel, rects: vec![], centres: vec![], shop: false, jewel: false, holding: None });
         self.dialog = None;
+    }
+
+    /// What wearing the item in this cell (bag or shop) would change: each stat's net difference, with your set
+    /// bonuses counted, as (text, better). Empty when it can't be worn (gems, potions) or changes nothing.
+    pub(crate) fn compare(&self, c: Cell) -> Vec<(String, bool)> {
+        let it = match self.sel_item(c) {
+            Some(it) if !matches!(it.slot(), Slot::Gem | Slot::Potion) && matches!(c, Cell::Bag(_) | Cell::Shop(_)) => it.clone(),
+            _ => return vec![],
+        };
+        let before = self.p.gear.bonus();
+        let mut g = self.p.gear.clone();
+        let i = match c {
+            Cell::Bag(i) => i,
+            _ => match g.bag.iter().position(Option::is_none) {
+                Some(i) => {
+                    g.bag[i] = Some(it);
+                    i
+                }
+                None => {
+                    g.bag[0] = Some(it);
+                    0
+                }
+            },
+        };
+        if g.equip(i, u32::MAX).is_err() {
+            return vec![];
+        }
+        let after = g.bonus();
+        let mut out = vec![];
+        for s in items::STATS {
+            let d = after.get(s) - before.get(s);
+            if d == 0 {
+                continue;
+            }
+            if s == items::Stat::Power {
+                let (gain, lose) = (after.get(s) & !before.get(s), before.get(s) & !after.get(s));
+                for (bits, better) in [(gain, true), (lose, false)] {
+                    for k in 0..items::POWERS.len() {
+                        if bits & (1 << k) != 0 {
+                            out.push((format!("{} ANCIENT POWER: {}", if better { "GAIN" } else { "LOSE" }, items::POWERS[k].0), better));
+                        }
+                    }
+                }
+                continue;
+            }
+            let name = compare_name(s);
+            let gap = if name.starts_with('%') { "" } else { " " };
+            out.push((format!("{d:+}{gap}{name}"), d > 0));
+        }
+        out
     }
 
     fn sel_item(&self, c: Cell) -> Option<&Item> {
@@ -257,6 +309,9 @@ impl Game {
         if inp.potion_mp && stash_open {
             act = Some(InvAct::Store);
         }
+        if inp.cycle {
+            act = Some(InvAct::Sort);
+        }
         if inp.inv || inp.cancel || inp.back || inp.skills {
             act = Some(InvAct::Close);
         }
@@ -316,6 +371,10 @@ impl Game {
             Some(InvAct::Toss) => self.toss(sel),
             Some(InvAct::Store) => self.store(sel),
             Some(InvAct::Close) => self.inv = None,
+            Some(InvAct::Sort) => {
+                self.p.gear.sort_bag();
+                self.sfx.push(Sfx::Pickup);
+            }
             None => {}
         }
     }
@@ -461,6 +520,22 @@ impl Game {
                     scr.text(&format!("COSTS {} GOLD", it.cost()), tx, ty, col, Align::Left, 1);
                     ty += 10;
                 }
+                // What wearing it would change, stat by stat (green better, red worse; set bonuses count too).
+                let diff = self.compare(sel);
+                if !diff.is_empty() {
+                    ty += 6;
+                    scr.text("IF YOU WEAR IT:", tx, ty, rgb(0xd8b878), Align::Left, 1);
+                    ty += 11;
+                    for (k, (line, better)) in diff.iter().enumerate() {
+                        if k == 6 {
+                            scr.text(&format!("...AND {} MORE", diff.len() - 6), tx, ty, rgb(0x7a6a5a), Align::Left, 1);
+                            ty += 10;
+                            break;
+                        }
+                        scr.text(line, tx, ty, if *better { rgb(0x60e060) } else { rgb(0xe05050) }, Align::Left, 1);
+                        ty += 10;
+                    }
+                }
                 if let Cell::Bag(_) | Cell::Shop(_) = sel {
                     if let Some(w) = gear.target(it).and_then(|t| gear.worn[t].as_ref()) {
                         ty += 6;
@@ -542,11 +617,13 @@ impl Game {
             "BLUE: MAGIC  YELLOW: RARE  GREEN: SET  GOLD: UNIQUE",
             if in_town { "X / RIGHT CLICK SELLS IT." } else { "X / RIGHT CLICK DROPS. SELL IN TOWN." },
         ];
-        for h in hints {
+        // Wrapped to the bag's width (they ran into the item panel on the right).
+        let wrap = (BAG_COLS as i32 * CELL / 6) as usize;
+        for h in hints.iter().flat_map(|h| crate::story::wrap(h, wrap)) {
             if hy > y0 + ph {
                 break;
             }
-            scr.text(h, bx0, hy, rgb(0x6a5a4a), Align::Left, 1);
+            scr.text(&h, bx0, hy, rgb(0x6a5a4a), Align::Left, 1);
             hy += 10;
         }
 
@@ -559,6 +636,7 @@ impl Game {
             Cell::Bag(_) | Cell::Worn(_) if holding.is_some() => "SET GEM HERE (ENTER/A)",
             Cell::Bag(_) | Cell::Worn(_) if jewel => "JEWELER (ENTER/A)",
             Cell::Bag(_) if is_gem => "SET IN GEAR (ENTER/A)",
+            Cell::Bag(_) if self.sel_item(sel).map_or(false, |it| it.base().key == "scroll_tp") => "READ IT (ENTER/A)",
             Cell::Bag(_) if self.sel_item(sel).map_or(false, |it| it.slot() == Slot::Potion) => "TO YOUR BELT (ENTER/A)",
             Cell::Worn(_) => "TAKE OFF (ENTER/A)",
             Cell::Bag(_) => "WEAR (ENTER/A)",
@@ -570,6 +648,7 @@ impl Game {
         if in_town && !shop && !jewel && !matches!(sel, Cell::Stash(_)) {
             buttons.push(("STASH (Y/E)", InvAct::Store, has));
         }
+        buttons.push(("SORT (R1)", InvAct::Sort, true));
         buttons.push(("CLOSE (I/START)", InvAct::Close, true));
         for (label, a, on) in buttons {
             let w = crate::gfx::text_width(label, 1) + 12;
@@ -638,6 +717,15 @@ pub fn draw_icon(scr: &mut Screen, art: &Art, it: &Item, cx: i32, cy: i32, scale
     let fx = Fx { tint: tint.unwrap_or(BLACK), tint_a: if tint.is_some() { 0.12 } else { 0.0 }, ..Fx::default() };
     // One icon per gem kind: better grades draw bigger.
     let scale = it.gem().map_or(scale, |g| scale * (0.55 + g.grade as f32 * 0.1));
+    if it.base().key == "scroll_tp" {
+        // A town portal scroll: a rolled parchment with a blue seal.
+        let k = |v: i32| (v as f32 * scale).round().max(1.0) as i32;
+        scr.fill(cx - k(7), cy - k(3), k(14), k(7), rgb(0xd8c8a0));
+        scr.fill(cx - k(8), cy - k(4), k(2), k(9), rgb(0xb0a078));
+        scr.fill(cx + k(6), cy - k(4), k(2), k(9), rgb(0xb0a078));
+        scr.disc(cx, cy, k(2), rgb(0x3060d0));
+        return;
+    }
     if it.slot() == Slot::Potion {
         // A spare potion: a round flask, red or blue.
         let col = if it.base().key == "potion_hp" { rgb(0xc02020) } else { rgb(0x2040c0) };
@@ -754,5 +842,28 @@ fn fallback_icon(scr: &mut Screen, slot: Slot, cx: i32, cy: i32, scale: f32, rar
             scr.disc(cx, cy + k(2), k(4), rgb(0xa08050));
             scr.disc(cx, cy + k(2), k(2).max(1), gem);
         }
+    }
+}
+
+/// A stat's short name for the comparison ("+12 LIFE", "-3% FASTER CAST RATE").
+fn compare_name(s: items::Stat) -> &'static str {
+    use items::Stat::*;
+    match s {
+        Life => "LIFE",
+        Mana => "MANA",
+        Fire => "% DAMAGE",
+        Armor => "ARMOR",
+        LifeRegen => "LIFE PER SECOND",
+        ManaRegen => "% MANA REGENERATION",
+        Cast => "% FASTER CAST RATE",
+        Move => "% FASTER RUN/WALK",
+        Stamina => "% SLOWER STAMINA DRAIN",
+        Hunger => "% SLOWER HUNGER",
+        Skills => "TO ALL SKILLS",
+        Gold => "% EXTRA GOLD",
+        Magic => "% MAGIC FIND",
+        LifeOnKill => "LIFE PER KILL",
+        ManaOnKill => "MANA PER KILL",
+        Power => "ANCIENT POWER",
     }
 }

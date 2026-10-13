@@ -286,7 +286,15 @@ pub static BASES: &[Base] = &[
     // Spare potions, carried in the bag when the belt is full (never dropped as gear).
     Base { key: "potion_hp", name: "HEALING POTION", slot: Slot::Potion, icon: "icon_potion_hp", lvl: 99, implicit: None, unique_only: true },
     Base { key: "potion_mp", name: "MANA POTION", slot: Slot::Potion, icon: "icon_potion_mp", lvl: 99, implicit: None, unique_only: true },
+    // A town portal scroll (game.rs `read_portal_scroll`): carried in the bag like a spare potion.
+    Base { key: "scroll_tp", name: "TOWN PORTAL SCROLL", slot: Slot::Potion, icon: "icon_scroll_tp", lvl: 99, implicit: None, unique_only: true },
 ];
+
+/// A town portal scroll for the bag.
+pub fn scroll_item() -> Item {
+    let base = base_by_key("scroll_tp").expect("scroll base");
+    Item { base, rarity: Rarity::Normal, ilvl: 1, name: BASES[base].name.to_string(), stats: vec![], req: 1, sockets: 0, gems: vec![] }
+}
 
 /// A spare potion for the bag: healing (true) or mana.
 pub fn potion_item(healing: bool) -> Item {
@@ -695,6 +703,11 @@ impl Item {
     /// Tooltip lines (after the name).
     pub fn lines(&self) -> Vec<String> {
         let mut v = vec![];
+        if self.base().key == "scroll_tp" {
+            v.push("OPENS A PORTAL TO TOWN WHERE YOU STAND. STEP BACK THROUGH THE ONE IN TOWN TO RETURN.".into());
+            v.push("ENTER / A (OR T): READ IT.".into());
+            return v;
+        }
         if self.slot() == Slot::Potion {
             v.push("A SPARE POTION, FOR WHEN YOUR BELT HAS ROOM.".into());
             v.push("ENTER / A: PUT IT IN YOUR BELT (OR DRINK IT, IF THE BELT IS FULL).".into());
@@ -1157,6 +1170,23 @@ impl Gear {
                 Ok(i)
             }
             None => Err(it),
+        }
+    }
+
+    /// Sorts the bag: gear by slot (weapons first), best first; then gems, potions and scrolls; gaps at the end.
+    pub fn sort_bag(&mut self) {
+        let order = |s: Slot| [Slot::Weapon, Slot::Helm, Slot::Armor, Slot::Gloves, Slot::Boots, Slot::Belt, Slot::Ring, Slot::Amulet, Slot::Gem, Slot::Potion].iter().position(|x| *x == s).unwrap_or(99);
+        let mut items: Vec<Item> = self.bag.iter_mut().filter_map(Option::take).collect();
+        items.sort_by(|a, b| {
+            order(a.slot())
+                .cmp(&order(b.slot()))
+                .then(a.base().key.cmp(b.base().key))
+                .then((b.rarity as u8).cmp(&(a.rarity as u8)))
+                .then(b.ilvl.cmp(&a.ilvl))
+                .then(a.name.cmp(&b.name))
+        });
+        for (i, it) in items.into_iter().enumerate() {
+            self.bag[i] = Some(it);
         }
     }
 

@@ -90,6 +90,30 @@ pub fn set_notices(on: bool) {
     save();
 }
 
+/// The pad rumbles when you're hit and on big blows (main.rs).
+static RUMBLE: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(true);
+
+pub fn rumble() -> bool {
+    RUMBLE.load(std::sync::atomic::Ordering::Relaxed)
+}
+
+pub fn set_rumble(on: bool) {
+    RUMBLE.store(on, std::sync::atomic::Ordering::Relaxed);
+    save();
+}
+
+/// The minimap in the corner (render.rs `draw_minimap`): on, or off.
+static MINIMAP: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(true);
+
+pub fn minimap() -> bool {
+    MINIMAP.load(std::sync::atomic::Ordering::Relaxed)
+}
+
+pub fn set_minimap(on: bool) {
+    MINIMAP.store(on, std::sync::atomic::Ordering::Relaxed);
+    save();
+}
+
 /// What this button does now.
 pub fn get(b: PadBtn) -> Option<PadAct> {
     BINDS.lock().map(|m| m[b as usize]).unwrap_or(DEFAULTS[b as usize])
@@ -134,6 +158,14 @@ pub fn load() {
             NOTICES.store(a.trim() != "off", std::sync::atomic::Ordering::Relaxed);
             continue;
         }
+        if b.trim() == "rumble" {
+            RUMBLE.store(a.trim() != "off", std::sync::atomic::Ordering::Relaxed);
+            continue;
+        }
+        if b.trim() == "minimap" {
+            MINIMAP.store(a.trim() != "off", std::sync::atomic::Ordering::Relaxed);
+            continue;
+        }
         let Some(b) = PAD_BTNS.iter().find(|x| x.key() == b.trim()) else { continue };
         m[*b as usize] = PAD_ACTS.iter().find(|x| x.key() == a.trim()).copied();
     }
@@ -150,6 +182,8 @@ fn save() {
     let Ok(m) = BINDS.lock() else { return };
     let mut text: String = PAD_BTNS.iter().map(|b| format!("{}={}\n", b.key(), m[*b as usize].map_or("none", |a| a.key()))).collect();
     text += &format!("notices={}\n", if notices() { "on" } else { "off" });
+    text += &format!("minimap={}\n", if minimap() { "on" } else { "off" });
+    text += &format!("rumble={}\n", if rumble() { "on" } else { "off" });
     let _ = std::fs::create_dir_all(crate::save::dir());
     let _ = std::fs::write(path(), text);
 }

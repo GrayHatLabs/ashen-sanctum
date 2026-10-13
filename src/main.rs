@@ -69,6 +69,7 @@ struct Keys {
     cast: bool,
     cast2: bool,
     shift: bool,
+    alt: bool,
 }
 
 #[derive(Default)]
@@ -363,6 +364,7 @@ fn main() -> Result<(), String> {
     let (mut skills_key, mut cycle, mut slot): (bool, bool, Option<u8>) = (false, false, None);
     let mut inv_key = false;
     let (mut eat_key, mut quit_ask, mut help_key, mut back_key) = (false, false, false, false);
+    let mut scroll_key = false;
     binds::load();
     let mut r2_held = false;
     game::HANDHELD.store(handheld, std::sync::atomic::Ordering::Relaxed);
@@ -386,6 +388,8 @@ fn main() -> Result<(), String> {
                         K if !repeat => skills_key = true,
                         G if !repeat => eat_key = true,
                         H | F1 if !repeat => help_key = true,
+                        T if !repeat => scroll_key = true,
+                        LAlt | RAlt => keys.alt = true,
                         I | C if !repeat => inv_key = true,
                         N if !repeat => {
                             if let Some(a) = audio.as_mut() {
@@ -425,6 +429,7 @@ fn main() -> Result<(), String> {
                         F => keys.cast = false,
                         Space => keys.cast2 = false,
                         LShift | RShift => keys.shift = false,
+                        LAlt | RAlt => keys.alt = false,
                         _ => {}
                     }
                 }
@@ -550,6 +555,7 @@ fn main() -> Result<(), String> {
         inp.cast = keys.cast || pad.cast || pad.rt || aim_cast;
         inp.cast2 = keys.cast2 || pad.cast2;
         inp.stand = keys.shift;
+        inp.show_loot = keys.alt;
 
         let now = Instant::now();
         acc += (now - last).min(Duration::from_millis(100));
@@ -565,6 +571,7 @@ fn main() -> Result<(), String> {
             inp.quit_ask = quit_ask;
             inp.help = help_key;
             inp.back = back_key;
+            inp.scroll = scroll_key;
             inp.skills = skills_key;
             inp.inv = inv_key;
             inp.typed = std::mem::take(&mut typed);
@@ -589,6 +596,7 @@ fn main() -> Result<(), String> {
             quit_ask = false;
             help_key = false;
             back_key = false;
+            scroll_key = false;
             pot_hp = false;
             pot_mp = false;
             map = false;
@@ -600,6 +608,23 @@ fn main() -> Result<(), String> {
             cheat_loot = false;
             cycle = false;
             slot = None;
+            // The pad rumbles with the big moments: hurt (short and light), a boom (strong), a level gained.
+            if binds::rumble() && !pads.is_empty() {
+                let r = if game.sfx.contains(&game::Sfx::Boom) {
+                    Some((0xC000, 0x8000, 260))
+                } else if game.sfx.contains(&game::Sfx::Hurt) {
+                    Some((0x6000, 0x3000, 110))
+                } else if game.level_up_t > 2.45 {
+                    Some((0x4000, 0x9000, 300))
+                } else {
+                    None
+                };
+                if let Some((lo, hi, ms)) = r {
+                    for p in pads.iter_mut() {
+                        let _ = p.set_rumble(lo, hi, ms);
+                    }
+                }
+            }
             for s in game.sfx.drain(..) {
                 if let Some(a) = audio.as_mut() {
                     a.play(s);

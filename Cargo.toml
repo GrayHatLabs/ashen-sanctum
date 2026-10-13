@@ -1,6 +1,6 @@
 [package]
 name = "ashensanctum"
-version = "1.5.4"
+version = "1.5.5"
 edition = "2021"
 description = "ASHEN SANCTUM - an isometric Diablo 2-style action RPG with a fire mage"
 

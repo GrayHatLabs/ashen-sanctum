@@ -454,6 +454,16 @@ Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`;
   Caravan, the Pale Huntsman and Ghosts of the Sovereign (the belt); the Lost Patrol, Tally's Count and Bram's
   Lost Cargo (the bag, or the vial).
 
+## Getting around and loot
+
+- A road off an area ends in a glowing **gate** named for where it leads: walk into it (anywhere past it toward
+  the edge works too). A **minimap** sits at the top right (Options or Help to turn it off).
+- **Town portal scrolls** (40 gold at any merchant) open a portal to town where you stand; the portal in town
+  takes you back to the same spot. Any town portal, a boss's too, leaves one in town to return through.
+- Pick an item in the bag and it shows **what wearing it would change**, stat by stat (set bonuses counted).
+- Gold is scooped up from a couple of steps away. The pad **rumbles** on hits and big blows (Options / Help).
+- **Event notices**: an ambush, the dark, a surge... a banner says what's happening and what to do.
+
 ## Controls
 
 | Action | Mouse + keyboard | Gamepad / handheld |
@@ -472,6 +482,9 @@ Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`;
 | Map | Tab or M | SELECT |
 | Mana potion | E or 2 | Y |
 | Eat from the food bag (the Vampire: drink from the blood vial) | G | Hold SELECT |
+| Read a town portal scroll | T, or Enter on it in the bag | A on it in the bag |
+| Show every item on the ground | Hold Alt | |
+| Sort the bag (with the bag open) | the SORT button | R1 |
 | Help (topics, and the gamepad buttons) | H or F1 | SELECT + START, then HELP |
 | Music on / off | N | |
 | Continue after death / the ending | Enter | START |

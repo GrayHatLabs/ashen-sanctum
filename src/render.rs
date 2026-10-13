@@ -1434,6 +1434,7 @@ impl Game {
                 || (n.role == Role::Tally && self.quest.tally_has_news())
                 || (n.role == Role::Ysolde && self.quest.ysolde_has_news())
                 || (n.role == Role::Seraphine && self.quest.seraphine_has_news())
+                || (n.role == Role::Abbot && self.quest.abbot_has_news())
             {
                 let bob = (((self.tick as f32) * 0.12).sin() * 2.0) as i32;
                 scr.text("!", sx - 2, sy - 66 + bob, rgb(0xffd040), Align::Center, 2);
@@ -1444,7 +1445,7 @@ impl Game {
         for k in &self.pickups {
             if let Drop::Item(it) = &k.kind {
                 let d2 = (k.x - self.p.x).powi(2) + (k.y - self.p.y).powi(2);
-                if d2 < 49.0 || (it.rarity >= crate::items::Rarity::Rare && d2 < 200.0) {
+                if d2 < 49.0 || (it.rarity >= crate::items::Rarity::Rare && d2 < 200.0) || (self.prev.show_loot && d2 < 900.0) {
                     let (sx, sy) = to_scr(k.x, k.y);
                     labels.push((sx, sy, it));
                 }
@@ -1516,6 +1517,8 @@ impl Game {
 
         if self.show_map {
             self.draw_map(scr);
+        } else if crate::binds::minimap() {
+            self.draw_minimap(scr);
         }
         (self.hud_skill_rects, self.hud_bag) = self.draw_hud(scr);
         // An event's banner: what's happening, and what to do.
@@ -1556,6 +1559,72 @@ impl Game {
     }
 
     /// D2-style automap overlay: explored walls projected isometrically, centred on the player.
+    /// The minimap: a small window on the map around you, top right (explored ground, roads, walls, the ways in and
+    /// out, the waypoint, people, bosses, you).
+    fn draw_minimap(&self, scr: &mut Screen) {
+        let (bw, bh) = (104, 68);
+        let (bx, by) = (scr.w - bw - 6, 40);
+        scr.blend(bx, by, bw, bh, BLACK, 0.55);
+        let (cx, cy) = (bx + bw / 2, by + bh / 2);
+        let (px, py) = (self.p.x, self.p.y);
+        let k = 2;
+        let proj = |x: f32, y: f32| -> (i32, i32) { (cx + ((x - px) - (y - py)) as i32 * k / 2, cy + ((x - px) + (y - py)) as i32 * k / 4) };
+        let inside = |sx: i32, sy: i32| sx > bx && sx < bx + bw - 1 && sy > by && sy < by + bh - 1;
+        let r = 52;
+        let (x0, y0) = ((px as i32 - r).max(0), (py as i32 - r).max(0));
+        let (x1, y1) = ((px as i32 + r).min(self.d.w - 1), (py as i32 + r).min(self.d.h - 1));
+        for ty in y0..=y1 {
+            for tx in x0..=x1 {
+                let i = (ty * self.d.w + tx) as usize;
+                if !self.explored[i] {
+                    continue;
+                }
+                let (sx, sy) = proj(tx as f32, ty as f32);
+                if !inside(sx, sy) {
+                    continue;
+                }
+                let col = match self.d.get(tx, ty) {
+                    Tile::Wall => rgb(0xa89070),
+                    Tile::Floor if self.d.ground_at(tx, ty) == 2 => rgb(0x8a7050),
+                    Tile::Floor => rgb(0x3a3024),
+                    _ => continue,
+                };
+                let j = (sy * scr.w + sx) as usize;
+                scr.px[j] = mix(scr.px[j], col, 0.85);
+            }
+        }
+        for p in &self.portals {
+            let (sx, sy) = proj(p.x, p.y);
+            if inside(sx, sy) {
+                let col = if p.kind == PortalKind::TownPortal { rgb(0x6080ff) } else { rgb(0xffd040) };
+                scr.fill(sx - 1, sy - 1, 3, 3, col);
+            }
+        }
+        let (sx, sy) = proj(self.waypoint.0, self.waypoint.1);
+        if inside(sx, sy) {
+            let col = if self.waypoints.contains(&self.level) { rgb(0x80a0ff) } else { rgb(0x707080) };
+            scr.fill(sx - 1, sy, 3, 1, col);
+            scr.fill(sx, sy - 1, 1, 3, col);
+        }
+        for n in &self.npcs {
+            let (sx, sy) = proj(n.x, n.y);
+            if inside(sx, sy) {
+                scr.fill(sx, sy, 2, 2, rgb(0x60d060));
+            }
+        }
+        for m in self.mobs.iter().filter(|m| m.alive() && m.boss) {
+            let (sx, sy) = proj(m.x, m.y);
+            if inside(sx, sy) {
+                scr.fill(sx - 1, sy - 1, 3, 3, rgb(0xe02020));
+            }
+        }
+        scr.fill(cx - 1, cy - 1, 3, 3, WHITE);
+        scr.fill(bx, by, bw, 1, rgb(0x6a5a40));
+        scr.fill(bx, by + bh - 1, bw, 1, rgb(0x6a5a40));
+        scr.fill(bx, by, 1, bh, rgb(0x6a5a40));
+        scr.fill(bx + bw - 1, by, 1, bh, rgb(0x6a5a40));
+    }
+
     fn draw_map(&self, scr: &mut Screen) {
         let (cx, cy) = (scr.w / 2, (self.view_h - HUD_H) / 2);
         let (px, py) = (self.p.x, self.p.y);
