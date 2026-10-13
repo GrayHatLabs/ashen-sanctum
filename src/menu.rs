@@ -64,8 +64,10 @@ pub struct Menu {
     rects: Vec<(i32, i32, i32, i32, usize)>,
     /// The hero last highlighted in the list (what the DELETE HERO button acts on).
     hero_sel: usize,
-    /// QUIT was picked once on the title screen: once more to really quit.
+    /// The "quit the game?" box is up (B / Esc on the title, QUIT, or SELECT + START anywhere in the menus);
+    /// its YES and NO buttons, for the mouse.
     quit_armed: bool,
+    quit_rects: [(i32, i32, i32, i32); 2],
     /// First hero row shown (the list scrolls when it doesn't fit).
     scroll: usize,
     /// Rows that fit on screen (from the last draw).
@@ -88,6 +90,7 @@ impl Menu {
             rects: vec![],
             hero_sel: 0,
             quit_armed: false,
+            quit_rects: [(0, 0, 0, 0); 2],
             scroll: 0,
             rows_fit: 7,
             seed: 1,
@@ -154,6 +157,22 @@ impl Menu {
         let (up, down, left, right) = if typing && typed_now { (false, false, false, false) } else { (up, down, left, right) };
         let mut confirm = inp.confirm || (inp.cast && !prev.cast && !(typing && typed_now));
         let back = inp.cancel || (inp.back && !typing);
+        // The quit box: A / Enter quits, B / Esc goes back (it used to quit straight away, and that looked like a
+        // crash).
+        if inp.quit_ask {
+            self.quit_armed = true;
+            return None;
+        }
+        if self.quit_armed {
+            let click = |r: (i32, i32, i32, i32)| inp.lmb && !prev.lmb && inp.mouse.map_or(false, |(mx, my)| mx >= r.0 && mx < r.0 + r.2 && my >= r.1 && my < r.1 + r.3);
+            if inp.confirm || (inp.cast && !prev.cast) || click(self.quit_rects[0]) {
+                return Some(MenuOut::Quit);
+            }
+            if back || click(self.quit_rects[1]) {
+                self.quit_armed = false;
+            }
+            return None;
+        }
         let n = self.items().max(1);
         let horizontal = self.stage == Stage::Create;
         let (left, right) = if horizontal { (left || inp.wheel > 0, right || inp.wheel < 0) } else { (left, right) };
@@ -176,12 +195,9 @@ impl Menu {
         }
         match self.stage {
             Stage::Title => {
-                // Back goes to QUIT; QUIT asks once more before it closes the game.
+                // Back, or QUIT: the "quit the game?" box.
                 if back {
-                    self.sel = 2;
-                }
-                if self.sel != 2 {
-                    self.quit_armed = false;
+                    self.quit_armed = true;
                 }
                 if confirm {
                     match self.sel {
@@ -190,11 +206,7 @@ impl Menu {
                             self.go(s);
                         }
                         1 => self.go(Stage::Options),
-                        _ if self.quit_armed => return Some(MenuOut::Quit),
-                        _ => {
-                            self.quit_armed = true;
-                            self.say("ARE YOU SURE? PRESS AGAIN TO QUIT");
-                        }
+                        _ => self.quit_armed = true,
                     }
                 }
             }
@@ -379,6 +391,25 @@ impl Menu {
             let c = mix(BLACK, rgb(0xffd080), t.min(1.0));
             scr.text(m, w / 2, h - 34, c, Align::Center, 1);
         }
+        if self.quit_armed {
+            // The quit box, over everything.
+            scr.blend(0, 0, w, h, BLACK, 0.6);
+            let (bw, bh) = (300, 92);
+            let (bx, by) = (w / 2 - bw / 2, h / 2 - bh / 2);
+            scr.fill(bx - 2, by - 2, bw + 4, bh + 4, rgb(0x6a4a20));
+            scr.fill(bx, by, bw, bh, rgb(0x140e0a));
+            scr.text("QUIT ASHEN SANCTUM?", w / 2, by + 12, rgb(0xffd080), Align::Center, 2);
+            scr.text("YOUR HEROES ARE SAVED.", w / 2, by + 36, rgb(0xb0a090), Align::Center, 1);
+            let labels = ["YES, QUIT (A / ENTER)", "NO (B / ESC)"];
+            for (k, label) in labels.iter().enumerate() {
+                let tw = crate::gfx::text_width(label, 1) + 16;
+                let x = if k == 0 { w / 2 - tw - 6 } else { w / 2 + 6 };
+                let y = by + bh - 28;
+                scr.fill(x, y, tw, 16, if k == 0 { rgb(0x5a3a10) } else { rgb(0x2a2018) });
+                scr.text(label, x + 8, y + 5, rgb(0xffe0a0), Align::Left, 1);
+                self.quit_rects[k] = (x, y, tw, 16);
+            }
+        }
     }
 
     /// The painted logo (tools/oai_title.py), centred with its top at `y`; false if there is no art.
@@ -434,8 +465,7 @@ impl Menu {
         }
         scr.blend(w / 2 - 110, h / 2 + if tall { 40 } else { 10 }, 220, 92, BLACK, 0.5);
         let y0 = h / 2 + if tall { 50 } else { 20 };
-        let quit = if self.quit_armed { "QUIT? SURE?" } else { "QUIT" };
-        for (k, label) in ["PLAY", "OPTIONS", quit].iter().enumerate() {
+        for (k, label) in ["PLAY", "OPTIONS", "QUIT"].iter().enumerate() {
             self.button(scr, label, w / 2, y0 + k as i32 * 26, 150, k, true);
         }
         scr.text("UP / DOWN + ENTER (PAD: A)", w / 2, h - 14, rgb(0x7a6a5a), Align::Center, 1);
@@ -694,11 +724,13 @@ mod tests {
         press(&mut m, |i| i.confirm = true);
         assert_eq!(m.stage, Stage::Heroes);
         assert_eq!(press(&mut m, |i| i.confirm = true), Some(MenuOut::Load("carmilla".into())));
-        // Esc from the title goes to QUIT, and QUIT asks once more.
+        // Esc from the title asks first: Esc again goes back, ENTER quits.
         let mut m = Menu::new(vec![]);
         assert_eq!(press(&mut m, |i| i.cancel = true), None);
-        assert_eq!(m.sel, 2);
-        assert_eq!(press(&mut m, |i| i.confirm = true), None, "are you sure?");
+        assert!(m.quit_armed, "the quit box");
+        assert_eq!(press(&mut m, |i| i.cancel = true), None);
+        assert!(!m.quit_armed, "no: back to the title");
+        assert_eq!(press(&mut m, |i| i.quit_ask = true), None, "SELECT + START asks too");
         assert_eq!(press(&mut m, |i| i.confirm = true), Some(MenuOut::Quit));
     }
 
