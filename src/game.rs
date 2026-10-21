@@ -2429,6 +2429,14 @@ impl Game {
             Some(Act::Buy(w)) => self.buy(w),
             Some(Act::Travel(id)) => self.travel(id),
             Some(Act::Guide) => self.open_help(),
+            Some(Act::CyclePlayers) => {
+                crate::binds::cycle_players();
+                let n = self.dialog.as_ref().map_or(0, |d| d.sel);
+                self.open_help();
+                if let Some(d) = self.dialog.as_mut() {
+                    d.sel = n;
+                }
+            }
             Some(Act::ToggleLarge) => {
                 crate::binds::set_large_text(!crate::binds::large_text());
                 let n = self.dialog.as_ref().map_or(0, |d| d.sel);
@@ -2837,6 +2845,7 @@ impl Game {
         d.last_options.push((rumble.into(), Act::ToggleRumble));
         let large = if crate::binds::large_text() { "LARGE TEXT: ON" } else { "LARGE TEXT: OFF" };
         d.last_options.push((large.into(), Act::ToggleLarge));
+        d.last_options.push((format!("PLAYERS: {} (MONSTERS FROM THE NEXT AREA)", crate::binds::players()), Act::CyclePlayers));
         d.last_options.push(("CLOSE".into(), Act::Close));
         d.refresh_options();
         self.dialog = Some(d);
@@ -4236,7 +4245,7 @@ impl Game {
         } else if r < 0.32 {
             Some(Drop::Food(if self.rng.chance(0.6) { 0 } else { 1 }))
         } else if r < 0.65 {
-            Some(Drop::Gold((self.rng.range(3, 12) as f32 * self.tier) as i32))
+            Some(Drop::Gold((self.rng.range(3, 12) as f32 * self.tier * crate::binds::players_scale(crate::binds::players()).2) as i32))
         } else {
             None
         };
@@ -4338,8 +4347,9 @@ impl Game {
                 Rank::Champion => (1, 0.4, true),
                 Rank::Elite => (2, 0.7, true),
             };
+            let more = crate::binds::players_scale(crate::binds::players()).2;
             for _ in 0..n {
-                if self.rng.chance(chance) {
+                if self.rng.chance((chance * more).min(1.0)) {
                     drops.push(items::drop(ilvl + boost as u8, mf, boost, &mut self.rng));
                 }
             }
@@ -4354,7 +4364,7 @@ impl Game {
                 Rank::Elite => 0.12,
             }
         };
-        if self.rng.chance(gem_chance) {
+        if self.rng.chance((gem_chance * crate::binds::players_scale(crate::binds::players()).2).min(1.0)) {
             drops.push(items::gem_item(items::roll_gem(ilvl, &mut self.rng)));
         }
         // Half of all set drops are from your own hero's set.

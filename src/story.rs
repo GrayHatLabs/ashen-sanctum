@@ -383,6 +383,7 @@ pub enum Act {
     ToggleMinimap,
     ToggleRumble,
     ToggleLarge,
+    CyclePlayers,
     Help(u8),
     Binds,
     BindPick(u8),

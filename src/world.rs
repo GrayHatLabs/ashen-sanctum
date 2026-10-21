@@ -989,6 +989,11 @@ pub fn build(id: LevelId, seed: u64) -> Level {
 /// A level at a difficulty (0 normal, 1 nightmare, 2 hell): tougher monsters, richer drops,
 /// and fresh layouts for the generated levels.
 pub fn build_at(id: LevelId, seed: u64, difficulty: u8) -> Level {
+    build_for(id, seed, difficulty, crate::binds::players())
+}
+
+/// The same, for a number of players (1-8; binds.rs `players_scale`).
+pub fn build_for(id: LevelId, seed: u64, difficulty: u8, players: u8) -> Level {
     let seed = seed.wrapping_add(difficulty as u64 * 7919);
     let loaded = crate::levels::load(id, seed);
     let made = loaded.is_none();
@@ -1004,6 +1009,30 @@ pub fn build_at(id: LevelId, seed: u64, difficulty: u8) -> Level {
     crate::dragon::place(&mut lv, seed, difficulty);
     // Lady Elspeth's keepsakes (mist.rs).
     crate::mist::place(&mut lv, seed);
+    // Players 1-8 (binds.rs): extra pack members first, so they're scaled with the rest.
+    let (p_hp, p_xp, _, p_more) = crate::binds::players_scale(players);
+    if p_more > 0.0 {
+        let mut rng = Rng::new(seed ^ 0x9a7e_75);
+        let mut more = vec![];
+        for m in lv.mobs.iter() {
+            if m.boss || m.name.is_some() || m.rank != crate::mobs::Rank::Normal
+                || matches!(m.kind, Kind::Riftmaw | Kind::ScrapPile | Kind::StarMetal | Kind::KrakenArm | Kind::IceBlock)
+                || !rng.chance(p_more) {
+                continue;
+            }
+            let a = rng.range(0, 628) as f32 * 0.01;
+            let (x, y) = (m.x + a.cos() * 1.2, m.y + a.sin() * 1.2);
+            if !lv.d.blocked(x, y, 0.4) {
+                more.push(Mob::new(m.kind, x, y, m.tier, &mut rng));
+            }
+        }
+        lv.mobs.extend(more);
+    }
+    for m in lv.mobs.iter_mut() {
+        m.max_hp *= p_hp;
+        m.hp = m.max_hp;
+        m.xp *= p_xp;
+    }
     let (hp, dmg, xp, tier) = match difficulty {
         0 => (1.0, 1.0, 1.0, 1.0),
         1 => (3.5, 2.0, 2.8, 2.0),
@@ -2615,6 +2644,16 @@ pub fn dungeon_floor(k: usize, floor: usize, seed: u64) -> Level {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn more_players_mean_more_and_tougher_monsters() {
+        let one = build_for(LevelId::Area(0, 1), 7, 0, 1);
+        let eight = build_for(LevelId::Area(0, 1), 7, 0, 8);
+        assert!(eight.mobs.len() as f32 > one.mobs.len() as f32 * 1.4, "{} vs {}", eight.mobs.len(), one.mobs.len());
+        let life = |lv: &Level| lv.mobs.iter().filter(|m| !m.boss).map(|m| m.max_hp).sum::<f32>() / lv.mobs.len() as f32;
+        assert!(life(&eight) > life(&one) * 3.5, "{} vs {}", life(&eight), life(&one));
+        assert_eq!(crate::binds::players_scale(1), (1.0, 1.0, 1.0, 0.0));
+    }
+
     use super::*;
 
     #[test]

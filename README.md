@@ -456,6 +456,13 @@ Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`;
   Caravan, the Pale Huntsman and Ghosts of the Sovereign (the belt); the Lost Patrol, Tally's Count and Bram's
   Lost Cargo (the bag, or the vial).
 
+## Players 1-8
+
+Like Diablo II's `/players 8`: **Options** (or the in-game help menu) sets how many heroes the game acts as if it
+has. Each one past the first gives monsters **+50% life**, adds **more monsters to each pack**, and gives
+**+35% experience**, **+12% drop chance** and more gold. It applies from the next area you enter. The bot survey
+takes it too: `PLAYERS=8 bash scripts/balance-runs.sh`.
+
 ## Water and lava
 
 The wild places have pools: ponds in the Ashlands, murky water in the Mistwood and the crypts, lava in the

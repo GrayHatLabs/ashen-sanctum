@@ -114,7 +114,7 @@ impl Menu {
             Stage::Heroes => self.heroes.len() + 3,
             Stage::Create => CLASSES.len(),
             Stage::Name => 4,
-            Stage::Options => 5,
+            Stage::Options => 6,
             Stage::Delete(_) => 2,
         }
     }
@@ -369,6 +369,10 @@ impl Menu {
                         crate::binds::set_large_text(!crate::binds::large_text());
                         return None;
                     }
+                    if self.sel == 4 {
+                        crate::binds::cycle_players();
+                        return None;
+                    }
                     self.go(Stage::Title);
                     self.sel = 1;
                 }
@@ -604,17 +608,20 @@ impl Menu {
         self.button(scr, mini, w / 2, 132, 200, 2, true);
         let large = if crate::binds::large_text() { "LARGE TEXT: ON" } else { "LARGE TEXT: OFF" };
         self.button(scr, large, w / 2, 158, 200, 3, true);
-        self.button(scr, "BACK", w / 2, 184, 200, 4, true);
+        let players = format!("PLAYERS: {}", crate::binds::players());
+        self.button(scr, &players, w / 2, 184, 200, 4, true);
+        self.button(scr, "BACK", w / 2, 210, 200, 5, true);
         let lines = [
             "CONTROLS (ALL OF THEM: H IN GAME, OR SELECT + START, THEN HELP)",
             "MOVE: LEFT CLICK OR WASD / LEFT STICK      RUN / WALK: R / L3",
             "SKILLS: LEFT / RIGHT CLICK, F / SPACE / A / X      SKILL TREE: K / L2",
             "BAG: I / START      MAP: TAB / SELECT      POTIONS: Q / E / L1 / Y      EAT: G / HOLD SELECT",
             "EVENT NOTICES: A BANNER WHEN SOMETHING HAPPENS (AN AMBUSH, THE DARK), SAYING WHAT TO DO",
+            "PLAYERS 1-8: PLAY AS IF MORE HEROES JOINED. MONSTERS GET TOUGHER AND MORE NUMEROUS; MORE XP AND LOOT",
         ];
         for (k, l) in lines.iter().enumerate() {
             let col = if k == 0 { rgb(0xd8b878) } else { rgb(0xa09080) };
-            scr.text(l, w / 2, 218 + k as i32 * 14, col, Align::Center, 1);
+            scr.text(l, w / 2, 240 + k as i32 * 13, col, Align::Center, 1);
         }
     }
 }

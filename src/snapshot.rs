@@ -347,6 +347,10 @@ fn trial(g: &mut Game, kind: &str) {
 
 pub fn run(dir: Option<&str>, tall: bool) -> i32 {
     let h = if tall { SH_TALL } else { SH_WIDE };
+    // ASHEN_PLAYERS=8: the bot plays as if eight heroes were in the game (before the first level is built).
+    if let Some(n) = std::env::var("ASHEN_PLAYERS").ok().and_then(|n| n.parse::<u8>().ok()) {
+        crate::binds::set_players_quiet(n);
+    }
     let mut g = Game::new(7, h);
     // ASHEN_CLASS=druid / ASHEN_ACT=4: let the bot play any hero, from any act (crash hunting).
     if let Ok(c) = std::env::var("ASHEN_CLASS") {

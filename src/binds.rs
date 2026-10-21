@@ -105,6 +105,36 @@ pub fn set_rumble(on: bool) {
 /// Large text: conversations, help, notices and messages at double size (small handheld screens).
 static LARGE: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 
+/// Players 1-8, like Diablo II's /players: the game acts as if that many heroes were in it. Each one past
+/// the first: monsters +50% life, more of them in a pack, +35% experience, more drops and gold.
+/// (Online play will set it from the real count.)
+static PLAYERS: std::sync::atomic::AtomicU8 = std::sync::atomic::AtomicU8::new(1);
+
+pub fn players() -> u8 {
+    PLAYERS.load(std::sync::atomic::Ordering::Relaxed).clamp(1, 8)
+}
+
+pub fn set_players(n: u8) {
+    PLAYERS.store(n.clamp(1, 8), std::sync::atomic::Ordering::Relaxed);
+    save();
+}
+
+/// For the test bot (ASHEN_PLAYERS): set, but don't save over the player's settings.
+pub fn set_players_quiet(n: u8) {
+    PLAYERS.store(n.clamp(1, 8), std::sync::atomic::Ordering::Relaxed);
+}
+
+/// The next setting round (1, 2, ... 8, 1).
+pub fn cycle_players() {
+    set_players(players() % 8 + 1);
+}
+
+/// What the extra players do: (monster life, experience, drop chance, extra monster chance per pack member).
+pub fn players_scale(n: u8) -> (f32, f32, f32, f32) {
+    let k = (n.clamp(1, 8) - 1) as f32;
+    (1.0 + 0.5 * k, 1.0 + 0.35 * k, 1.0 + 0.12 * k, 0.15 * k)
+}
+
 pub fn large_text() -> bool {
     LARGE.load(std::sync::atomic::Ordering::Relaxed)
 }
@@ -170,6 +200,10 @@ pub fn load() {
             NOTICES.store(a.trim() != "off", std::sync::atomic::Ordering::Relaxed);
             continue;
         }
+        if b.trim() == "players" {
+            PLAYERS.store(a.trim().parse::<u8>().unwrap_or(1).clamp(1, 8), std::sync::atomic::Ordering::Relaxed);
+            continue;
+        }
         if b.trim() == "large_text" {
             LARGE.store(a.trim() == "on", std::sync::atomic::Ordering::Relaxed);
             continue;
@@ -201,6 +235,7 @@ fn save() {
     text += &format!("minimap={}\n", if minimap() { "on" } else { "off" });
     text += &format!("rumble={}\n", if rumble() { "on" } else { "off" });
     text += &format!("large_text={}\n", if large_text() { "on" } else { "off" });
+    text += &format!("players={}\n", players());
     let _ = std::fs::create_dir_all(crate::save::dir());
     let _ = std::fs::write(path(), text);
 }
