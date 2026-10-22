@@ -126,7 +126,7 @@ pub struct Input {
 /// Running on a handheld (main.rs sets it): the guide shows the pad's buttons, not the keyboard's.
 pub static HANDHELD: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 
-#[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(Clone, Copy, PartialEq, Debug, serde::Serialize, serde::Deserialize)]
 pub enum Sfx {
     Cast,
     Boom,
@@ -183,6 +183,7 @@ pub struct Particle {
     pub kind: PKind,
 }
 
+#[derive(Clone, serde::Serialize, serde::Deserialize)]
 pub struct Floater {
     pub x: f32,
     pub y: f32,

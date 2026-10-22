@@ -42,6 +42,8 @@ pub struct Hosting {
     pub host: Host,
     /// The connection behind each ally (same order as `Game::allies`), its name and its bad inputs.
     peers: Vec<(u32, String, u32)>,
+    /// Sounds and floating numbers since each joiner's last snapshot.
+    events: Vec<(Vec<crate::game::Sfx>, Vec<crate::game::Floater>)>,
     sent_level: Option<crate::world::LevelId>,
     /// The Players setting before anyone joined (put back when hosting ends).
     players_before: u8,
@@ -50,7 +52,7 @@ pub struct Hosting {
 impl Hosting {
     pub fn start(port: u16, password: String) -> std::io::Result<Hosting> {
         let host = Host::start(port, password, &crate::save::dir())?;
-        Ok(Hosting { host, peers: vec![], sent_level: None, players_before: crate::binds::players() })
+        Ok(Hosting { host, peers: vec![], events: vec![], sent_level: None, players_before: crate::binds::players() })
     }
 
     fn slot_of(&self, peer: u32) -> Option<usize> {
@@ -79,6 +81,7 @@ impl Hosting {
                     Ok(k) => {
                         debug_assert_eq!(k, self.peers.len());
                         self.peers.push((peer, name.clone(), 0));
+                        self.events.push((vec![], vec![]));
                         self.host.send(peer, &ToClient::Welcome { you: k as u8 + 1, host_name: g.hero_name.clone() });
                         if let Some(lv) = g.net_level() {
                             self.host.send(peer, &ToClient::Level(lv));
@@ -114,6 +117,7 @@ impl Hosting {
                 Event::Gone { peer, why } => {
                     let Some(k) = self.slot_of(peer) else { continue };
                     let (_, name, _) = self.peers.remove(k);
+                    self.events.remove(k);
                     g.remove_ally(k);
                     // The others' numbers shift down past the one who left.
                     for (j, p) in self.peers.iter().enumerate().skip(k) {
@@ -138,9 +142,20 @@ impl Hosting {
                 self.tell_all(&ToClient::Level(lv), None);
             }
         }
+        // This tick's sounds and new floating numbers, for everyone's next snapshot.
+        let fresh: Vec<crate::game::Floater> = g.floaters.iter().filter(|f| f.t <= crate::game::DT * 1.5).cloned().collect();
+        for (sfx, fl) in self.events.iter_mut() {
+            if sfx.len() < 32 {
+                sfx.extend(g.sfx.iter().copied());
+            }
+            if fl.len() < 64 {
+                fl.extend(fresh.iter().cloned());
+            }
+        }
         if g.tick % SNAP_EVERY == 0 {
             for (k, p) in self.peers.iter().enumerate() {
-                if let Some(s) = g.net_snapshot(k as u8 + 1) {
+                let (sfx, fl) = std::mem::take(&mut self.events[k]);
+                if let Some(s) = g.net_snapshot(k as u8 + 1, &sfx, &fl) {
                     self.host.send(p.0, &ToClient::Snap(s));
                 }
             }
@@ -168,12 +183,15 @@ pub struct Joined {
     has_level: bool,
     /// The latest copy of your hero the host sent back (merged into your save when you leave).
     pub hero: Option<String>,
+    /// Where things are heading (the latest snapshot); they glide there between snapshots.
+    mob_goals: std::collections::HashMap<u32, (f32, f32)>,
+    hero_goals: Vec<(f32, f32)>,
 }
 
 impl Joined {
     pub fn new(link: Link) -> Joined {
         let me = link.you;
-        Joined { link, me, seq: 0, has_level: false, hero: None }
+        Joined { link, me, seq: 0, has_level: false, hero: None, mob_goals: Default::default(), hero_goals: vec![] }
     }
 
     /// One frame: take in what the host sent, show it, and send your controls. Returns why it ended, if it did.
@@ -187,8 +205,36 @@ impl Joined {
                     self.has_level = true;
                 }
                 ToClient::Snap(b) => {
-                    if self.has_level && !g.apply_snapshot(&b, self.me) {
+                    if !self.has_level {
+                        continue;
+                    }
+                    // Where everything is drawn now, so it can glide to where the host says it is.
+                    let was: std::collections::HashMap<u32, (f32, f32)> = g.mobs.iter().map(|m| (m.uid, (m.x, m.y))).collect();
+                    let heroes_was: Vec<(f32, f32)> = std::iter::once((g.p.x, g.p.y)).chain(g.allies.iter().map(|a| (a.st.p.x, a.st.p.y))).collect();
+                    if !g.apply_snapshot(&b, self.me) {
                         return Some("THE HOST SENT BAD DATA".into());
+                    }
+                    self.mob_goals.clear();
+                    for m in g.mobs.iter_mut() {
+                        if let Some(&(x, y)) = was.get(&m.uid) {
+                            if (x - m.x).powi(2) + (y - m.y).powi(2) < 9.0 {
+                                self.mob_goals.insert(m.uid, (m.x, m.y));
+                                (m.x, m.y) = (x, y);
+                            }
+                        }
+                    }
+                    let now: Vec<(f32, f32)> = std::iter::once((g.p.x, g.p.y)).chain(g.allies.iter().map(|a| (a.st.p.x, a.st.p.y))).collect();
+                    self.hero_goals = now.clone();
+                    if heroes_was.len() == now.len() {
+                        for (k, (&(x, y), &(nx, ny))) in heroes_was.iter().zip(now.iter()).enumerate() {
+                            if (x - nx).powi(2) + (y - ny).powi(2) < 9.0 {
+                                if k == 0 {
+                                    (g.p.x, g.p.y) = (x, y);
+                                } else {
+                                    (g.allies[k - 1].st.p.x, g.allies[k - 1].st.p.y) = (x, y);
+                                }
+                            }
+                        }
                     }
                     if !hero_ok(&g.p) || g.allies.iter().any(|a| !hero_ok(&a.st.p)) || g.pickups.iter().any(|k| matches!(&k.kind, crate::game::Drop::Item(it) if !item_ok(it))) {
                         return Some("THE HOST SENT BAD DATA".into());
@@ -215,6 +261,21 @@ impl Joined {
         self.seq = self.seq.wrapping_add(1);
         let target = inp.mouse.map(|m| g.mouse_world(m));
         let _ = self.link.send(&ToHost::Input(NetInput::from_input(self.seq, inp, target)));
+        // Glide toward the latest snapshot (it comes 20 times a second; frames come 60).
+        const GLIDE: f32 = 0.4;
+        for m in g.mobs.iter_mut() {
+            if let Some(&(x, y)) = self.mob_goals.get(&m.uid) {
+                m.x += (x - m.x) * GLIDE;
+                m.y += (y - m.y) * GLIDE;
+            }
+        }
+        for (k, &(x, y)) in self.hero_goals.iter().enumerate() {
+            let p = if k == 0 { Some(&mut g.p) } else { g.allies.get_mut(k - 1).map(|a| &mut a.st.p) };
+            if let Some(p) = p {
+                p.x += (x - p.x) * GLIDE;
+                p.y += (y - p.y) * GLIDE;
+            }
+        }
         // The world doesn't run here, but sparks fly and words fade.
         g.tick = g.tick.wrapping_add(1);
         g.client_frame();
@@ -348,7 +409,7 @@ mod tests {
         host.set_class(crate::skills::Class::Sorceress);
         host.debug_goto(crate::world::LevelId::Area(0, 1));
         let h = crate::net::host::Host::start(0, String::new(), &dir).unwrap();
-        let mut hosting = Hosting { host: h, peers: vec![], sent_level: None, players_before: 1 };
+        let mut hosting = Hosting { host: h, peers: vec![], events: vec![], sent_level: None, players_before: 1 };
         let addr = format!("127.0.0.1:{}", hosting.host.port);
         crate::net::tls::trust(&dir, &addr, &hosting.host.fingerprint).unwrap();
         // The joiner's hero, as its save.

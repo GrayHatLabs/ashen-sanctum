@@ -7,7 +7,7 @@
 //! as the host's and draws them with the same code.
 #![forbid(unsafe_code)]
 
-use crate::game::{Game, Pickup};
+use crate::game::{Floater, Game, Pickup, Sfx};
 use crate::mobs::{Hazard, Mob, Shot};
 use crate::party::{Ally, HeroState};
 use crate::story::{Npc, Quest};
@@ -73,6 +73,8 @@ struct SnapOut<'a> {
     portals: &'a [Portal],
     npcs: Vec<NpcAt>,
     quest: &'a Quest,
+    sfx: &'a [Sfx],
+    floaters: &'a [Floater],
 }
 
 #[derive(Deserialize)]
@@ -86,6 +88,8 @@ struct SnapIn {
     portals: Vec<Portal>,
     npcs: Vec<NpcAt>,
     quest: Quest,
+    sfx: Vec<Sfx>,
+    floaters: Vec<Floater>,
 }
 
 fn pack<T: Serialize>(m: &T) -> Option<Vec<u8>> {
@@ -119,8 +123,9 @@ impl Game {
         })
     }
 
-    /// What hero `hero` (party numbering: 0 the host) can see, packed.
-    pub fn net_snapshot(&mut self, hero: u8) -> Option<Vec<u8>> {
+    /// What hero `hero` (party numbering: 0 the host) can see, packed, with the sounds and floating
+    /// numbers since its last one.
+    pub fn net_snapshot(&mut self, hero: u8, sfx: &[Sfx], floaters: &[Floater]) -> Option<Vec<u8>> {
         // The host's own hero, as a HeroState like the others (put back straight after).
         let mut lead = HeroState::new();
         self.swap_with(&mut lead);
@@ -141,6 +146,8 @@ impl Game {
             portals: &self.portals,
             npcs: self.npcs.iter().map(|n| NpcAt { x: n.x, y: n.y, dir: n.dir, moving: n.moving, anim_t: n.anim_t }).collect(),
             quest: &self.quest,
+            sfx,
+            floaters,
         };
         let packed = pack(&out);
         drop(out);
@@ -219,6 +226,15 @@ impl Game {
             }
         }
         self.quest = s.quest;
+        // The host's sounds and numbers (a handful: more than that is noise, or mischief).
+        self.sfx.extend(s.sfx.into_iter().take(24));
+        for mut f in s.floaters.into_iter().take(48) {
+            if finite(f.x, f.y) {
+                f.text = crate::net::proto::clean_chat(&f.text).unwrap_or_default();
+                f.t = 0.0;
+                self.floaters.push(f);
+            }
+        }
         // Seen from here, you're the one in the active slot.
         self.cur_hero = 0;
         true
@@ -241,7 +257,7 @@ mod tests {
             host.update(&Default::default());
         }
         let level = host.net_level().expect("packs");
-        let snap = host.net_snapshot(k as u8 + 1).expect("packs");
+        let snap = host.net_snapshot(k as u8 + 1, &[], &[]).expect("packs");
         println!("level {} bytes, snapshot {} bytes, {} monsters", level.len(), snap.len(), host.mobs.len());
         assert!(snap.len() < 64 * 1024, "a snapshot is small enough to send 20 times a second");
         let mut joiner = Game::new(99, crate::gfx::SH_WIDE);
@@ -280,7 +296,7 @@ mod tests {
         assert!(!g.apply_level(&bytes), "short tiles refused");
         // A snapshot that doesn't include you.
         let mut h = Game::new(7, crate::gfx::SH_WIDE);
-        let s = h.net_snapshot(0).unwrap();
+        let s = h.net_snapshot(0, &[], &[]).unwrap();
         assert!(!g.apply_snapshot(&s, 3));
         assert!(g.apply_snapshot(&s, 0));
     }
