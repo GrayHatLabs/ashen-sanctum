@@ -25,3 +25,14 @@ jobs:
         run: |
           cargo build --release
           ./target/release/ashensanctum --selftest
+
+  # Online play's dependencies (docs/ONLINE_PLAN.md, security): known vulnerabilities in anything we use.
+  audit:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: cargo audit
+        run: |
+          cargo install cargo-audit --locked
+          cargo audit
