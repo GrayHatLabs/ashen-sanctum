@@ -99,7 +99,7 @@ impl Game {
         for k in 0..3 {
             if words[k] == n && self.feats.words & (1 << k) == 0 {
                 if let Some((x, y)) = self.churn_spot(16.0, 0.8) {
-                    self.pickups.push(Pickup { x, y, kind: Drop::Word(k as u8), t: 1.0 });
+                    self.pickups.push(Pickup { x, y, kind: Drop::Word(k as u8), t: 1.0, owner: crate::game::ANY });
                 }
             }
         }
@@ -159,16 +159,16 @@ impl Game {
         } else if r < 0.62 {
             for k in 0..4 {
                 let a = k as f32 * 1.57 + 0.3;
-                self.pickups.push(Pickup { x: x + a.cos() * 0.7, y: y + a.sin() * 0.7, kind: Drop::Gold((20.0 + 14.0 * self.tier) as i32), t: 0.0 });
+                self.pickups.push(Pickup { x: x + a.cos() * 0.7, y: y + a.sin() * 0.7, kind: Drop::Gold((20.0 + 14.0 * self.tier) as i32), t: 0.0, owner: crate::game::ANY });
             }
             self.floater(x, y, "GOLD!".into(), rgb(0xffd060));
         } else if r < 0.96 {
             let it = crate::items::roll(ilvl, crate::items::Rarity::Rare, &mut self.rng);
-            self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(it)), t: 0.0 });
+            self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(it)), t: 0.0, owner: crate::game::ANY });
             self.floater(x, y, "A FAIR ROLL".into(), rgb(0xffe080));
         } else {
             let it = crate::items::drop(ilvl, 600, true, &mut self.rng);
-            self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(it)), t: 0.0 });
+            self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(it)), t: 0.0, owner: crate::game::ANY });
             self.floater(x, y, "JACKPOT!".into(), rgb(0xc080ff));
             self.sfx.push(Sfx::Descend);
         }
@@ -311,10 +311,10 @@ impl Game {
         } else {
             let ilvl = crate::items::ilvl_for(self.tier) + 4;
             let it = crate::items::roll(ilvl, crate::items::Rarity::Rare, &mut self.rng);
-            self.pickups.push(Pickup { x: self.p.x, y: self.p.y + 0.5, kind: Drop::Item(Box::new(it)), t: 0.0 });
+            self.pickups.push(Pickup { x: self.p.x, y: self.p.y + 0.5, kind: Drop::Item(Box::new(it)), t: 0.0, owner: crate::game::ANY });
             for k in 0..5 {
                 let a = k as f32 * 1.26;
-                self.pickups.push(Pickup { x: self.p.x + a.cos(), y: self.p.y + a.sin(), kind: Drop::Gold((40.0 + 25.0 * self.tier) as i32), t: 0.0 });
+                self.pickups.push(Pickup { x: self.p.x + a.cos(), y: self.p.y + a.sin(), kind: Drop::Gold((40.0 + 25.0 * self.tier) as i32), t: 0.0, owner: crate::game::ANY });
             }
             self.floater(x, y, "JACKPOT!".into(), rgb(0xffe060));
             self.shake = 0.5;
@@ -358,15 +358,15 @@ impl Game {
         self.save_due = true;
         let ilvl = crate::items::ilvl_for(self.tier) + 4;
         if let Some(u) = crate::items::boss_unique("wander") {
-            self.pickups.push(Pickup { x, y: y + 0.8, kind: Drop::Item(Box::new(u)), t: 0.0 });
+            self.pickups.push(Pickup { x, y: y + 0.8, kind: Drop::Item(Box::new(u)), t: 0.0, owner: crate::game::ANY });
         }
         for dx in [-1.0f32, 1.0] {
             let it = crate::items::roll(ilvl, crate::items::Rarity::Rare, &mut self.rng);
-            self.pickups.push(Pickup { x: x + dx, y, kind: Drop::Item(Box::new(it)), t: 0.0 });
+            self.pickups.push(Pickup { x: x + dx, y, kind: Drop::Item(Box::new(it)), t: 0.0, owner: crate::game::ANY });
         }
         for k in 0..6 {
             let a = k as f32 * 1.05;
-            self.pickups.push(Pickup { x: x + a.cos() * 1.5, y: y + a.sin() * 1.5, kind: Drop::Gold((40.0 + 20.0 * self.tier) as i32), t: 0.0 });
+            self.pickups.push(Pickup { x: x + a.cos() * 1.5, y: y + a.sin() * 1.5, kind: Drop::Gold((40.0 + 20.0 * self.tier) as i32), t: 0.0, owner: crate::game::ANY });
         }
         for _ in 0..24 {
             self.spray_at(x, y, PKind::Magic, 14.0);
@@ -442,7 +442,7 @@ impl Game {
                 if let Some(a) = self.feats.anchors.iter_mut().find(|a| !a.ore && a.level == here && (a.x - px).powi(2) + (a.y - py).powi(2) < 2.5 * 2.5) {
                     a.ore = true;
                     let (ax, ay) = (a.x, a.y);
-                    self.pickups.push(Pickup { x: ax + 0.8, y: ay + 0.4, kind: Drop::Ore, t: 0.0 });
+                    self.pickups.push(Pickup { x: ax + 0.8, y: ay + 0.4, kind: Drop::Ore, t: 0.0, owner: crate::game::ANY });
                     self.floater(ax, ay, "A LUMP OF CHAOS ORE FLAKES OFF THE ANCHOR".into(), rgb(0xc090ff));
                 }
             }

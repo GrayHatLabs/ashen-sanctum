@@ -64,7 +64,7 @@ pub fn place(lv: &mut Level, seed: u64, difficulty: u8) {
             continue;
         }
         let gold = (rng.rf(90.0, 210.0) * scale) as i32;
-        lv.pickups.push(Pickup { x, y, kind: Drop::Hoard(gold), t: 1.0 });
+        lv.pickups.push(Pickup { x, y, kind: Drop::Hoard(gold), t: 1.0, owner: crate::game::ANY });
         placed += 1;
     }
 }
@@ -124,7 +124,7 @@ impl Game {
         if matches!(self.state, crate::game::State::Dead(_)) {
             if self.p.sack > 0 {
                 let (x, y) = (self.mobs[i].x + 1.5, self.mobs[i].y + 1.0);
-                self.pickups.push(Pickup { x, y, kind: Drop::Hoard(self.p.sack), t: 1.0 });
+                self.pickups.push(Pickup { x, y, kind: Drop::Hoard(self.p.sack), t: 1.0, owner: crate::game::ANY });
                 self.p.sack = 0;
             }
             return;
@@ -186,7 +186,7 @@ impl Game {
         if self.rng.chance(0.12) {
             let ilvl = crate::items::ilvl_for(self.tier) + 4;
             let gem = crate::items::gem_item(crate::items::roll_gem(ilvl, &mut self.rng));
-            self.pickups.push(Pickup { x: x + 0.4, y: y + 0.3, kind: Drop::Item(Box::new(gem)), t: 0.0 });
+            self.pickups.push(Pickup { x: x + 0.4, y: y + 0.3, kind: Drop::Item(Box::new(gem)), t: 0.0, owner: crate::game::ANY });
         }
     }
 }

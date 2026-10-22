@@ -623,6 +623,8 @@ pub struct Mob {
     pub mods: u8,
     /// Elite leaders have their own names.
     pub name: Option<String>,
+    /// Co-op (party.rs): which hero it's after (0 the leader, 1.. the allies).
+    pub target: u8,
     /// Mesmerized or raised by the vampire: fights for you while this lasts.
     pub charm: f32,
     /// A raised thrall crumbles when its charm runs out.
@@ -720,6 +722,7 @@ impl Mob {
             rank: Rank::Normal,
             mods: 0,
             name: None,
+            target: 0,
             charm: 0.0,
             thrall: false,
             frost: 0.0,
@@ -878,13 +881,13 @@ pub struct Hazard {
 impl Game {
     pub(crate) fn update_mobs(&mut self) {
         let (px, py) = (self.p.x, self.p.y);
-        let player_alive = !matches!(self.state, State::Dead(_));
-        let player_safe = self.in_safe(px, py);
+        // Co-op: each monster hunts one hero (party.rs); alone, that's always you.
+        let heroes: Vec<(f32, f32, bool, bool)> = self.hero_spots().into_iter().map(|(x, y, alive)| (x, y, alive, self.in_safe(x, y))).collect();
         let safe = self.safe;
         let in_safe = |x: f32, y: f32, pad: f32| safe.map_or(false, |(x0, y0, x1, y1)| x > x0 - pad && x < x1 + pad && y > y0 - pad && y < y1 + pad);
         let overworld = self.level.overland();
         let n = self.mobs.len();
-        let mut hits: Vec<(f32, usize)> = vec![];
+        let mut hits: Vec<(f32, usize, usize)> = vec![];
         let mut aggro_at: Vec<(f32, f32)> = vec![];
         let mut spawns: Vec<(Kind, f32, f32, f32)> = vec![];
         let mut shots: Vec<(f32, f32, f32, f32, f32, ShotKind)> = vec![];
@@ -1011,6 +1014,17 @@ impl Game {
                 }
                 continue;
             }
+            // Pick a hero: the nearest one up and out of town, looked at again every half second.
+            if heroes.len() > 1 && (tick + i as u32) % 30 == 0 || m.target as usize >= heroes.len() || !heroes[m.target as usize].2 {
+                let near = heroes
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, h)| h.2 && !h.3)
+                    .min_by(|a, b| ((a.1 .0 - m.x).powi(2) + (a.1 .1 - m.y).powi(2)).total_cmp(&((b.1 .0 - m.x).powi(2) + (b.1 .1 - m.y).powi(2))));
+                m.target = near.map_or(0, |(k, _)| k as u8);
+            }
+            let target = m.target as usize;
+            let (px, py, player_alive, player_safe) = heroes[target];
             let (dx, dy) = (px - m.x, py - m.y);
             let dist = (dx * dx + dy * dy).sqrt();
             m.moving = false;
@@ -1308,7 +1322,7 @@ impl Game {
                             _ => shots.push((m.x, m.y, ux * 9.0, uy * 9.0, dmg, ShotKind::Arrow)),
                         }
                     } else if player_alive && dist < m.reach + 0.4 {
-                        hits.push((dmg, i));
+                        hits.push((dmg, i, target));
                     } else {
                         self.sfx.push(Sfx::Swing);
                     }
@@ -1363,7 +1377,18 @@ impl Game {
                 }
             }
         }
-        for (dmg, i) in hits {
+        for (dmg, i, target) in hits {
+            if target == 0 {
+                self.mob_hit(dmg, i);
+            } else {
+                self.as_hero(target - 1, |g| g.mob_hit(dmg, i));
+            }
+        }
+    }
+
+    /// A monster's blow landing on the active hero.
+    fn mob_hit(&mut self, dmg: f32, i: usize) {
+        {
             let before = self.p.hp;
             let src = self.mobs[i].kind;
             self.hurt_by(dmg, Some(src));
@@ -1448,7 +1473,7 @@ impl Game {
 
     /// Enemy arrows and bolts.
     pub(crate) fn update_shots(&mut self) {
-        let (px, py) = (self.p.x, self.p.y);
+        let heroes = self.hero_spots();
         let mut hits = vec![];
         for s in self.shots.iter_mut() {
             s.life -= DT;
@@ -1460,15 +1485,27 @@ impl Game {
                     break;
                 }
                 let size = if matches!(s.kind, ShotKind::Boulder | ShotKind::Cannon) { 0.4 } else { 0.12 };
-                if (s.x - px).powi(2) + (s.y - py).powi(2) < (PLAYER_R + size).powi(2) {
-                    hits.push((s.dmg, s.kind));
+                if let Some(k) = heroes.iter().position(|&(px, py, alive)| alive && (s.x - px).powi(2) + (s.y - py).powi(2) < (PLAYER_R + size).powi(2)) {
+                    hits.push((s.dmg, s.kind, k));
                     s.life = 0.0;
                     break;
                 }
             }
         }
         self.shots.retain(|s| s.life > 0.0);
-        for (d, kind) in hits {
+        for (d, kind, k) in hits {
+            if k == 0 {
+                self.shot_hit(d, kind);
+            } else {
+                self.as_hero(k - 1, |g| g.shot_hit(d, kind));
+            }
+        }
+    }
+
+    /// A monster's missile landing on the active hero.
+    fn shot_hit(&mut self, d: f32, kind: ShotKind) {
+        let (px, py) = (self.p.x, self.p.y);
+        {
             // Necromantic and hex bolts come from cursed hands.
             self.hurt_cursed = matches!(kind, ShotKind::Necro | ShotKind::Hex);
             self.hurt_player(d);
@@ -1491,31 +1528,23 @@ impl Game {
 
     /// Poison pools and ash novas.
     pub(crate) fn update_hazards(&mut self) {
-        let (px, py) = (self.p.x, self.p.y);
-        let mut dmg = 0.0;
-        let mut burst = 0.0;
-        let mut frozen = false;
         let mut quakes = vec![];
+        // Bursts going off this tick: (x, y, r, damage).
+        let mut bursting: Vec<(f32, f32, f32, f32)> = vec![];
         for h in self.hazards.iter_mut() {
             h.t += DT;
-            let inside = (h.x - px).powi(2) + (h.y - py).powi(2) < h.r * h.r;
-            if h.kind == HazardKind::Frost && inside && h.t >= h.warn && h.t < h.warn + h.live {
-                frozen = true;
-            }
             if matches!(h.kind, HazardKind::Icicle | HazardKind::Quake) && h.t >= h.warn && !h.fired {
                 quakes.push((h.x, h.y, h.kind));
             }
-            if h.t >= h.warn {
-                if h.burst > 0.0 && !h.fired {
-                    h.fired = true;
-                    if inside {
-                        burst += h.burst;
-                    }
-                }
-                if h.dps > 0.0 && h.t < h.warn + h.live && inside {
-                    dmg += h.dps * DT;
-                }
+            if h.t >= h.warn && h.burst > 0.0 && !h.fired {
+                h.fired = true;
+                bursting.push((h.x, h.y, h.r, h.burst));
             }
+        }
+        // Every hero standing in them takes it.
+        self.hazard_hits(&bursting);
+        for k in 0..self.allies.len() {
+            self.as_hero(k, |g| g.hazard_hits(&bursting));
         }
         let novas: Vec<(f32, f32)> = self.hazards.iter().filter(|h| h.kind == HazardKind::Nova && h.fired && h.t - DT < h.warn).map(|h| (h.x, h.y)).collect();
         for (x, y) in novas {
@@ -1532,10 +1561,31 @@ impl Game {
                 self.spray_at(x, y, PKind::Frost, 3.0);
             }
         }
+        self.hazards.retain(|h| h.t < h.warn + h.live.max(0.3));
+    }
+
+    /// What the hazards do to the active hero this tick.
+    fn hazard_hits(&mut self, bursting: &[(f32, f32, f32, f32)]) {
+        if self.state != State::Playing {
+            return;
+        }
+        let (px, py) = (self.p.x, self.p.y);
+        let inside = |x: f32, y: f32, r: f32| (x - px).powi(2) + (y - py).powi(2) < r * r;
+        let mut dmg = 0.0;
+        let mut frozen = false;
+        for h in self.hazards.iter() {
+            let live = h.t >= h.warn && h.t < h.warn + h.live && inside(h.x, h.y, h.r);
+            if h.kind == HazardKind::Frost && live {
+                frozen = true;
+            }
+            if h.dps > 0.0 && live {
+                dmg += h.dps * DT;
+            }
+        }
+        let burst: f32 = bursting.iter().filter(|b| inside(b.0, b.1, b.2)).map(|b| b.3).sum();
         if frozen {
             self.chill(0.5);
         }
-        self.hazards.retain(|h| h.t < h.warn + h.live.max(0.3));
         if burst > 0.0 {
             // Ground hazards are a boss's (or its curse's) doing.
             self.hurt_cursed = true;

@@ -372,7 +372,7 @@ impl Game {
         let horn = if self.d.blocked(horn.0, horn.1, 0.3) { (hx as f32 - 0.8, hy as f32 + 0.6) } else { horn };
         self.feats.horn_spot = horn;
         if let Some(u) = crate::items::boss_unique("jarl") {
-            self.pickups.push(Pickup { x: horn.0, y: horn.1, kind: Drop::Item(Box::new(u)), t: 1.0 });
+            self.pickups.push(Pickup { x: horn.0, y: horn.1, kind: Drop::Item(Box::new(u)), t: 1.0, owner: crate::game::ANY });
         }
         self.say("A RAIDERS' LONGHALL. THEY EYE YOU, BUT NOBODY DRAWS A BLADE. YET".into());
     }
@@ -561,7 +561,7 @@ impl Game {
             self.floater(x, y, format!("{name}: SAVED!"), rgb(0x80ff80));
             self.sfx.push(Sfx::Pickup);
             let gold = (20.0 + 10.0 * self.tier) as i32;
-            self.pickups.push(Pickup { x, y, kind: Drop::Gold(gold), t: 0.0 });
+            self.pickups.push(Pickup { x, y, kind: Drop::Gold(gold), t: 0.0, owner: crate::game::ANY });
             self.gain_xp(30.0 * self.tier);
         }
         let left = self.npcs.iter().filter(|n| matches!(n.role, Role::Rescue(_))).count();
@@ -576,7 +576,7 @@ impl Game {
             let n = self.feats.barn_saved;
             if n == 3 {
                 let ilvl = crate::items::ilvl_for(self.tier) + 3;
-                self.pickups.push(Pickup { x: px, y: py + 0.5, kind: Drop::Item(Box::new(crate::items::roll(ilvl, crate::items::Rarity::Rare, &mut self.rng))), t: 0.0 });
+                self.pickups.push(Pickup { x: px, y: py + 0.5, kind: Drop::Item(Box::new(crate::items::roll(ilvl, crate::items::Rarity::Rare, &mut self.rng))), t: 0.0, owner: crate::game::ANY });
                 self.say("THE ROOF FALLS IN, BUT EVERYONE GOT OUT. THE FARMER PRESSES A GIFT ON YOU".into());
             } else {
                 self.say(format!("THE ROOF FALLS IN. YOU SAVED {n} OF 3"));
@@ -731,7 +731,7 @@ impl Game {
                     self.floater(dx, dy, "THE CUB IS HOME".into(), rgb(0xe0f0ff));
                     self.say("A HUGE YETI SNIFFS YOU AND GRUNTS. THE YETIS HERE WILL LEAVE YOU BE".into());
                     self.gain_xp(80.0 * self.tier);
-                    self.pickups.push(Pickup { x: px, y: py + 0.5, kind: Drop::Gold((40.0 + 20.0 * self.tier) as i32), t: 0.0 });
+                    self.pickups.push(Pickup { x: px, y: py + 0.5, kind: Drop::Gold((40.0 + 20.0 * self.tier) as i32), t: 0.0, owner: crate::game::ANY });
                     self.save_due = true;
                 }
             }

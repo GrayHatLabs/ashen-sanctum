@@ -1133,7 +1133,7 @@ pub fn area(def: &AreaDef, seed: u64) -> Level {
         }
         let (x, y) = (rng.range(5, w - 5) as f32 + 0.5, rng.range(5, h - 5) as f32 + 0.5);
         if !b.d.blocked(x, y, 0.3) {
-            lv.pickups.push(Pickup { x, y, kind: Drop::Food(if rng.chance(0.75) { 0 } else { 1 }), t: 1.0 });
+            lv.pickups.push(Pickup { x, y, kind: Drop::Food(if rng.chance(0.75) { 0 } else { 1 }), t: 1.0, owner: crate::game::ANY });
             food += 1;
         }
     }
@@ -1248,7 +1248,7 @@ pub fn hollowmere(seed: u64) -> Level {
         let (x, y) = (rng.range(5, w - 5) as f32 + 0.5, rng.range(5, h - 5) as f32 + 0.5);
         let far = ((x - 56.5).powi(2) + (y - 61.5).powi(2)).sqrt();
         if far > 16.0 && !b.d.blocked(x, y, 0.3) {
-            lv.pickups.push(Pickup { x, y, kind: Drop::Food(0), t: 1.0 });
+            lv.pickups.push(Pickup { x, y, kind: Drop::Food(0), t: 1.0, owner: crate::game::ANY });
             food += 1;
         }
     }

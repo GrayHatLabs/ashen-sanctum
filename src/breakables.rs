@@ -215,7 +215,7 @@ impl Game {
                 Drop::Item(Box::new(it))
             }
         };
-        self.pickups.push(Pickup { x, y, kind, t: 0.0 });
+        self.pickups.push(Pickup { x, y, kind, t: 0.0, owner: crate::game::ANY });
     }
 
     /// The code-drawn stand-in for a breakable (generated art is used instead once it exists).

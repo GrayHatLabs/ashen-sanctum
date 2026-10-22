@@ -68,7 +68,7 @@ pub fn place(lv: &mut Level, seed: u64) {
     }
     for (k, &r) in picked.iter().take(3).enumerate() {
         let (x, y) = rooms[r].center();
-        lv.pickups.push(Pickup { x: x as f32 + 0.5, y: y as f32 + 0.5, kind: Drop::Keepsake(k as u8), t: 1.0 });
+        lv.pickups.push(Pickup { x: x as f32 + 0.5, y: y as f32 + 0.5, kind: Drop::Keepsake(k as u8), t: 1.0, owner: crate::game::ANY });
     }
 }
 
@@ -322,7 +322,7 @@ impl Game {
             self.save_due = true;
             self.say("THE SHADE SINKS INTO ITS GRAVE WITH A SIGH. IT IS AT REST".into());
             if let Some(u) = crate::items::boss_unique("shade") {
-                self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(u)), t: 0.0 });
+                self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(u)), t: 0.0, owner: crate::game::ANY });
             }
             self.p.skills.points += 1;
             self.floater(x, y, "+1 SKILL POINT".into(), rgb(0xffe080));
@@ -401,7 +401,7 @@ impl Game {
         let n = self.feats.brides.count_ones();
         if n >= 3 && self.quest.stage3 < 3 {
             if let Some(u) = crate::items::boss_unique("vardakring") {
-                self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(u)), t: 0.0 });
+                self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(u)), t: 0.0, owner: crate::game::ANY });
             }
             self.say("THE LAST OF VARDAK'S BRIDES. HER HAND STILL WEARS HIS WEDDING BAND".into());
         } else if n < 3 {
@@ -471,7 +471,7 @@ impl Game {
     pub(crate) fn moon_kill(&mut self, kind: Kind, x: f32, y: f32) {
         if self.feats.moon > 0.0 && kind == Kind::Werewolf {
             let g = (12.0 + 8.0 * self.tier) as i32 * 2;
-            self.pickups.push(Pickup { x, y: y + 0.3, kind: Drop::Gold(g), t: 0.0 });
+            self.pickups.push(Pickup { x, y: y + 0.3, kind: Drop::Gold(g), t: 0.0, owner: crate::game::ANY });
         }
     }
 }

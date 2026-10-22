@@ -372,14 +372,14 @@ impl Game {
                         break;
                     }
                     if let Some(s) = self.errand_spot(12.0) {
-                        self.pickups.push(Pickup { x: s.0, y: s.1, kind: Drop::Herb, t: 1.0 });
+                        self.pickups.push(Pickup { x: s.0, y: s.1, kind: Drop::Herb, t: 1.0, owner: crate::game::ANY });
                         n += 1;
                     }
                 }
             }
             ErrandKind::Heirloom => {
                 self.decals.push(Decal { x: spot.0, y: spot.1, r: 0.6, col: rgb(0x301810), a: 0.6 });
-                self.pickups.push(Pickup { x: spot.0, y: spot.1, kind: Drop::Heirloom, t: 1.0 });
+                self.pickups.push(Pickup { x: spot.0, y: spot.1, kind: Drop::Heirloom, t: 1.0, owner: crate::game::ANY });
                 let k = pick_kind(self);
                 self.spawn_tagged(k, (spot.0 + 2.0, spot.1 + 1.0), 4, TAG_GUARD, true);
             }
@@ -396,7 +396,7 @@ impl Game {
                 // The map lies near the road in; the X is far off.
                 let near = self.errand_spot(5.0).filter(|s| ((s.0 - self.p.x).powi(2) + (s.1 - self.p.y).powi(2)).sqrt() < 20.0).or_else(|| self.errand_spot(4.0));
                 if let Some(m) = near {
-                    self.pickups.push(Pickup { x: m.0, y: m.1, kind: Drop::Clue, t: 1.0 });
+                    self.pickups.push(Pickup { x: m.0, y: m.1, kind: Drop::Clue, t: 1.0, owner: crate::game::ANY });
                 }
             }
         }
@@ -574,7 +574,7 @@ impl Game {
         let loot = [Drop::Gold(gold), Drop::Item(Box::new(item)), if self.rng.chance(0.5) { Drop::Health } else { Drop::Mana }];
         for (k, d) in loot.into_iter().enumerate() {
             let a = k as f32 * 2.1;
-            self.pickups.push(Pickup { x: x + a.cos() * 0.8, y: y + a.sin() * 0.8, kind: d, t: 0.0 });
+            self.pickups.push(Pickup { x: x + a.cos() * 0.8, y: y + a.sin() * 0.8, kind: d, t: 0.0, owner: crate::game::ANY });
         }
         self.gain_xp(60.0 * tier * (1.0 + self.quest.difficulty as f32));
         self.sfx.push(Sfx::Descend);

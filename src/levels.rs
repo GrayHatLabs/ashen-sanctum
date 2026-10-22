@@ -710,7 +710,7 @@ pub fn from_file(f: &LevelFile, seed: u64) -> Result<Level, String> {
     }
     for it in &f.items {
         match item_kind(&it.kind) {
-            Some(kind) => lv.pickups.push(Pickup { x: it.x, y: it.y, kind, t: 1.0 }),
+            Some(kind) => lv.pickups.push(Pickup { x: it.x, y: it.y, kind, t: 1.0, owner: crate::game::ANY }),
             None => warn.push(format!("item {:?}", it.kind)),
         }
     }

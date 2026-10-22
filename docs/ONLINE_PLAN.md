@@ -33,6 +33,32 @@ The biggest job. Today the game has exactly one hero: `Game.p`, used in about 3,
 - **Testing without a network:** a second hero driven by the existing bot, in the same process. The bot
   survey and the map check keep working.
 
+### Phase 1 progress (2026-10-22): the core is in (src/party.rs)
+
+Done:
+- `HeroState` holds everything one hero owns: the hero, bag, skills, timers, and every missile, summon and
+  class effect in flight. `swap_hero(k)` trades an ally into the active slot and back, so the game's code works
+  unchanged for any hero. The leader is hero 0; allies are 1–7.
+- Each tick runs the leader, then the shared world, then each ally (their own input, skills and missiles).
+- Monsters target the nearest living hero outside town (re-checked twice a second). Blows, missiles and ground
+  hazards land on whichever hero they reach.
+- Allies are drawn with their name and a life bar. Everyone's missiles and effects are drawn.
+- The leader leads: allies come along through every portal. A fallen ally gets up beside the leader after 6 s.
+- Experience: every hero within 25 tiles of a kill gets it. Loot: every hero there gets their **own** roll
+  (their own magic find and class set); only they see it or can take it. Gold, potions, food and quest items
+  are shared. The Players setting's extra drop chance only counts pretend players, not real ones.
+- Tests: `an_ally_shares_the_kill_and_gets_loot_of_its_own`. The bot runs with allies
+  (`ASHEN_ALLIES=sorceress,reaper,vampire`): five heroes through Acts 1, 3 and 5 with no deaths or crashes.
+  Solo play is unchanged (the survey numbers match).
+
+Still to do in phase 1 (or early phase 2):
+- World triggers that watch "the player" (shrines, set pieces, errands, tides, the darkness) answer only the
+  leader so far.
+- Opening the skill tree or the bag pauses the world, which can't happen online.
+- Allies' summons follow the leader; monsters don't push off allies; the Druid's wolf follows only the leader.
+- Per-hero menus, dialogs and shops (today allies can't talk to people).
+- Hardcore allies (hardcore games).
+
 ## Phase 2: host and join over TCP
 
 - **Menu:** Play → *Host online game* / *Join online game* (enter an address, or pick from a LAN list found by

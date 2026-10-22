@@ -404,7 +404,7 @@ impl Game {
             if self.d.blocked(x, y, 0.2) {
                 (x, y) = (self.p.x - dx, self.p.y - dy);
             }
-            self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(it)), t: 0.0 });
+            self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(it)), t: 0.0, owner: crate::game::ANY });
         }
         self.save_due = true;
     }

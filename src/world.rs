@@ -1490,7 +1490,7 @@ pub fn frostmarch(seed: u64) -> Level {
         let x = rng.range(6, w - 6) as f32 + 0.5;
         let y = rng.range(6, h - 6) as f32 + 0.5;
         if ((x - cx).powi(2) + (y - cy).powi(2)).sqrt() > 16.0 && !d.blocked(x, y, 0.3) {
-            lv.pickups.push(Pickup { x, y, kind: Drop::Food(if rng.chance(0.6) { 1 } else { 2 }), t: 1.0 });
+            lv.pickups.push(Pickup { x, y, kind: Drop::Food(if rng.chance(0.6) { 1 } else { 2 }), t: 1.0, owner: crate::game::ANY });
             food += 1;
         }
     }
@@ -1691,7 +1691,7 @@ pub fn mistwood(seed: u64) -> Level {
         let x = rng.range(6, w - 6) as f32 + 0.5;
         let y = rng.range(6, h - 6) as f32 + 0.5;
         if ((x - cx).powi(2) + (y - cy).powi(2)).sqrt() > 16.0 && !d.blocked(x, y, 0.3) {
-            lv.pickups.push(Pickup { x, y, kind: Drop::Food(if rng.chance(0.5) { 1 } else { 2 }), t: 1.0 });
+            lv.pickups.push(Pickup { x, y, kind: Drop::Food(if rng.chance(0.5) { 1 } else { 2 }), t: 1.0, owner: crate::game::ANY });
             food += 1;
         }
     }
@@ -1943,7 +1943,7 @@ pub fn dominion(seed: u64) -> Level {
         let x = rng.range(6, w - 6) as f32 + 0.5;
         let y = rng.range(6, h - 6) as f32 + 0.5;
         if ((x - cx).powi(2) + (y - cy).powi(2)).sqrt() > 16.0 && !d.blocked(x, y, 0.3) {
-            lv.pickups.push(Pickup { x, y, kind: Drop::Food(if rng.chance(0.5) { 1 } else { 2 }), t: 1.0 });
+            lv.pickups.push(Pickup { x, y, kind: Drop::Food(if rng.chance(0.5) { 1 } else { 2 }), t: 1.0, owner: crate::game::ANY });
             food += 1;
         }
     }
@@ -2194,7 +2194,7 @@ pub fn heavens(seed: u64) -> Level {
         let x = rng.range(4, w - 4) as f32 + 0.5;
         let y = rng.range(4, h - 4) as f32 + 0.5;
         if ((x - cx).powi(2) + (y - cy).powi(2)).sqrt() > 16.0 && !d.blocked(x, y, 0.3) {
-            lv.pickups.push(Pickup { x, y, kind: Drop::Food(if rng.chance(0.5) { 1 } else { 2 }), t: 1.0 });
+            lv.pickups.push(Pickup { x, y, kind: Drop::Food(if rng.chance(0.5) { 1 } else { 2 }), t: 1.0, owner: crate::game::ANY });
             food += 1;
         }
     }
@@ -2434,7 +2434,7 @@ pub fn deep(seed: u64) -> Level {
         let x = rng.range(6, w - 6) as f32 + 0.5;
         let y = rng.range(6, h - 6) as f32 + 0.5;
         if ((x - cx).powi(2) + (y - cy).powi(2)).sqrt() > 16.0 && !d.blocked(x, y, 0.3) {
-            lv.pickups.push(Pickup { x, y, kind: Drop::Food(if rng.chance(0.5) { 1 } else { 2 }), t: 1.0 });
+            lv.pickups.push(Pickup { x, y, kind: Drop::Food(if rng.chance(0.5) { 1 } else { 2 }), t: 1.0, owner: crate::game::ANY });
             food += 1;
         }
     }
@@ -2635,7 +2635,7 @@ pub fn dungeon_floor(k: usize, floor: usize, seed: u64) -> Level {
             }
             let roll = rng.f();
             let kind = if roll < 0.5 { 0 } else if roll < 0.85 { 1 } else { 2 };
-            lv.pickups.push(Pickup { x, y, kind: Drop::Food(kind), t: 1.0 });
+            lv.pickups.push(Pickup { x, y, kind: Drop::Food(kind), t: 1.0, owner: crate::game::ANY });
             break;
         }
     }

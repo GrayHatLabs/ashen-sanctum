@@ -319,16 +319,16 @@ impl Game {
         let (tier, time) = (r.tier, r.time);
         let fragile = r.mods.contains(&RiftMod::Fragile);
         let gold = (400 + 150 * tier as i32) * if fragile { 3 } else { 2 } / 2;
-        self.pickups.push(Pickup { x, y: y + 0.8, kind: Drop::Gold(gold), t: 0.0 });
+        self.pickups.push(Pickup { x, y: y + 0.8, kind: Drop::Gold(gold), t: 0.0, owner: crate::game::ANY });
         let ilvl = 50;
         let mf = self.p.bonus.get(crate::items::Stat::Magic) + self.ember_fortune();
         for k in 0..(2 + tier as usize / 4).min(6) {
             let it = crate::items::drop(ilvl, mf, true, &mut self.rng);
-            self.pickups.push(Pickup { x: x + k as f32 * 0.5 - 1.0, y: y - 0.5, kind: Drop::Item(Box::new(it)), t: 0.0 });
+            self.pickups.push(Pickup { x: x + k as f32 * 0.5 - 1.0, y: y - 0.5, kind: Drop::Item(Box::new(it)), t: 0.0, owner: crate::game::ANY });
         }
         if self.rng.chance(ancient_chance(tier)) {
             if let Some(it) = crate::items::roll_ancient(self.p.skills.class, &mut self.rng) {
-                self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(it)), t: 0.0 });
+                self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(it)), t: 0.0, owner: crate::game::ANY });
                 self.say("AN ANCIENT! IT GLOWS LIKE A COAL IN THE ASH".into());
             }
         }

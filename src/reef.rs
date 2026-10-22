@@ -61,7 +61,7 @@ impl Game {
         let stage = self.feats.bottle as usize;
         if stage < 3 && trail[stage] == n {
             if let Some((x, y)) = self.reef_spot(14.0, 0.6, false) {
-                self.pickups.push(Pickup { x, y, kind: Drop::Bottle(stage as u8), t: 1.0 });
+                self.pickups.push(Pickup { x, y, kind: Drop::Bottle(stage as u8), t: 1.0, owner: crate::game::ANY });
             }
         }
         if stage == 3 && trail[3] == n {
@@ -94,7 +94,7 @@ impl Game {
     fn place_tide_chests(&mut self) {
         for _ in 0..2 {
             if let Some((x, y)) = self.reef_spot(12.0, 0.6, true) {
-                self.pickups.push(Pickup { x, y, kind: Drop::TideChest, t: 1.0 });
+                self.pickups.push(Pickup { x, y, kind: Drop::TideChest, t: 1.0, owner: crate::game::ANY });
             }
         }
     }
@@ -165,7 +165,7 @@ impl Game {
                 self.save_due = true;
                 let (x, y) = (self.p.x, self.p.y);
                 if let Some(u) = crate::items::boss_unique("choir") {
-                    self.pickups.push(Pickup { x, y: y + 0.6, kind: Drop::Item(Box::new(u)), t: 0.0 });
+                    self.pickups.push(Pickup { x, y: y + 0.6, kind: Drop::Item(Box::new(u)), t: 0.0, owner: crate::game::ANY });
                 }
                 self.say("THE CHOIR FALLS SILENT. THEIR GREAT PEARL ROLLS TO YOUR FEET".into());
             }
@@ -209,9 +209,9 @@ impl Game {
         self.feats.kraken_done = true;
         self.save_due = true;
         if let Some(u) = crate::items::boss_unique("kraken") {
-            self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(u)), t: 0.0 });
+            self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(u)), t: 0.0, owner: crate::game::ANY });
         }
-        self.pickups.push(Pickup { x: x + 0.6, y, kind: Drop::Gold((80.0 + 40.0 * self.tier) as i32), t: 0.0 });
+        self.pickups.push(Pickup { x: x + 0.6, y, kind: Drop::Gold((80.0 + 40.0 * self.tier) as i32), t: 0.0, owner: crate::game::ANY });
         self.shake = 1.0;
         self.sfx.push(Sfx::Boom);
         self.say("THE ARM IS SEVERED! SOMETHING HUGE SHUDDERS DOWN IN THE TRENCH".into());
@@ -221,18 +221,18 @@ impl Game {
     pub(crate) fn open_tide_chest(&mut self) {
         let (x, y) = (self.p.x, self.p.y);
         let ilvl = crate::items::ilvl_for(self.tier) + 2;
-        self.pickups.push(Pickup { x, y: y + 0.4, kind: Drop::Gold((40.0 + 25.0 * self.tier) as i32), t: 0.0 });
+        self.pickups.push(Pickup { x, y: y + 0.4, kind: Drop::Gold((40.0 + 25.0 * self.tier) as i32), t: 0.0, owner: crate::game::ANY });
         if self.rng.chance(0.6) {
             let r = if self.rng.chance(0.35) { crate::items::Rarity::Rare } else { crate::items::Rarity::Magic };
-            self.pickups.push(Pickup { x: x + 0.5, y, kind: Drop::Item(Box::new(crate::items::roll(ilvl, r, &mut self.rng))), t: 0.0 });
+            self.pickups.push(Pickup { x: x + 0.5, y, kind: Drop::Item(Box::new(crate::items::roll(ilvl, r, &mut self.rng))), t: 0.0, owner: crate::game::ANY });
         }
         if self.rng.chance(0.3) {
-            self.pickups.push(Pickup { x: x - 0.5, y, kind: Drop::Item(Box::new(crate::items::gem_item(crate::items::roll_gem(ilvl, &mut self.rng)))), t: 0.0 });
+            self.pickups.push(Pickup { x: x - 0.5, y, kind: Drop::Item(Box::new(crate::items::gem_item(crate::items::roll_gem(ilvl, &mut self.rng)))), t: 0.0, owner: crate::game::ANY });
         }
         if self.level.act() == 5 {
             // Island hopping's prize (isles.rs): a sky-pirate's strongbox always holds something good.
             let it = crate::items::roll(ilvl + 2, crate::items::Rarity::Rare, &mut self.rng);
-            self.pickups.push(Pickup { x, y: y - 0.5, kind: Drop::Item(Box::new(it)), t: 0.0 });
+            self.pickups.push(Pickup { x, y: y - 0.5, kind: Drop::Item(Box::new(it)), t: 0.0, owner: crate::game::ANY });
             self.floater(x, y, "A SKY-PIRATE'S STRONGBOX!".into(), rgb(0xe0c080));
         } else {
             self.floater(x, y, "A WRECKED CHEST, DRAGGED OUT OF THE SAND".into(), rgb(0xe0c080));
@@ -264,11 +264,11 @@ impl Game {
         let ilvl = crate::items::ilvl_for(self.tier) + 4;
         for k in 0..6 {
             let a = k as f32;
-            self.pickups.push(Pickup { x: x + a.cos(), y: y + a.sin(), kind: Drop::Gold((60.0 + 30.0 * self.tier) as i32), t: 0.0 });
+            self.pickups.push(Pickup { x: x + a.cos(), y: y + a.sin(), kind: Drop::Gold((60.0 + 30.0 * self.tier) as i32), t: 0.0, owner: crate::game::ANY });
         }
         for dx in [-0.8f32, 0.8] {
             let it = crate::items::roll(ilvl, crate::items::Rarity::Rare, &mut self.rng);
-            self.pickups.push(Pickup { x: x + dx, y: y + 0.8, kind: Drop::Item(Box::new(it)), t: 0.0 });
+            self.pickups.push(Pickup { x: x + dx, y: y + 0.8, kind: Drop::Item(Box::new(it)), t: 0.0, owner: crate::game::ANY });
         }
         for _ in 0..16 {
             self.spray_at(x, y, PKind::Smoke, 8.0);

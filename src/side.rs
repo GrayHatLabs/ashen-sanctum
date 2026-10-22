@@ -959,7 +959,7 @@ pub fn place(lv: &mut Level, seed: u64) {
     if let LevelId::Dungeon(k, 0) = lv.id {
         if let Some(page) = OPTIONAL.iter().find(|o| o.0 == k).map(|o| o.1) {
             if let Some((x, y)) = far_spot(lv, &mut rng, 12.0) {
-                lv.pickups.push(Pickup { x: x as f32 + 0.5, y: y as f32 + 0.5, kind: Drop::Page(page), t: 1.0 });
+                lv.pickups.push(Pickup { x: x as f32 + 0.5, y: y as f32 + 0.5, kind: Drop::Page(page), t: 1.0, owner: crate::game::ANY });
             }
         }
     }
@@ -1111,7 +1111,7 @@ impl Game {
             Blessing::Gem => {
                 let ilvl = crate::items::ilvl_for(self.tier);
                 let gem = crate::items::gem_item(crate::items::roll_gem(ilvl.saturating_add(4), &mut self.rng));
-                self.pickups.push(Pickup { x: self.p.x, y: self.p.y + 0.3, kind: Drop::Item(Box::new(gem)), t: 0.0 });
+                self.pickups.push(Pickup { x: self.p.x, y: self.p.y + 0.3, kind: Drop::Item(Box::new(gem)), t: 0.0, owner: crate::game::ANY });
             }
             _ => {
                 let was = self.p.blessing;
@@ -1214,7 +1214,7 @@ impl Game {
         let n = loot.len();
         for (k, kind) in loot.into_iter().enumerate() {
             let a = k as f32 / n as f32 * std::f32::consts::TAU;
-            self.pickups.push(Pickup { x: x + a.cos() * 0.5, y: y + a.sin() * 0.5, kind, t: 0.0 });
+            self.pickups.push(Pickup { x: x + a.cos() * 0.5, y: y + a.sin() * 0.5, kind, t: 0.0, owner: crate::game::ANY });
         }
         self.notice("fallen", "A FALLEN ADVENTURER", "THEIR PACK LIES NEARBY, STILL FULL. WALK OVER IT TO TAKE WHAT'S LEFT.");
         true
@@ -1235,12 +1235,12 @@ impl Game {
             for k in 0..7 {
                 let a = k as f32 / 7.0 * std::f32::consts::TAU;
                 let g = (8.0 + 6.0 * self.tier) as i32;
-                self.pickups.push(Pickup { x: x + a.cos() * 0.9, y: y + a.sin() * 0.9, kind: Drop::Gold(g), t: 0.0 });
+                self.pickups.push(Pickup { x: x + a.cos() * 0.9, y: y + a.sin() * 0.9, kind: Drop::Gold(g), t: 0.0, owner: crate::game::ANY });
             }
             let ilvl = crate::items::ilvl_for(self.tier);
-            self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(crate::items::gem_item(crate::items::roll_gem(ilvl + 3, &mut self.rng)))), t: 0.0 });
+            self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(crate::items::gem_item(crate::items::roll_gem(ilvl + 3, &mut self.rng)))), t: 0.0, owner: crate::game::ANY });
             if self.rng.chance(0.35) {
-                self.pickups.push(Pickup { x, y: y + 0.4, kind: Drop::Item(Box::new(crate::items::roll(ilvl + 2, crate::items::Rarity::Rare, &mut self.rng))), t: 0.0 });
+                self.pickups.push(Pickup { x, y: y + 0.4, kind: Drop::Item(Box::new(crate::items::roll(ilvl + 2, crate::items::Rarity::Rare, &mut self.rng))), t: 0.0, owner: crate::game::ANY });
             }
             self.say("THE GOLD-THIEF'S HOARD SPILLS OUT!".into());
             return;
@@ -1264,7 +1264,7 @@ impl Game {
             let n = drops.len();
             for (k, kind) in drops.into_iter().enumerate() {
                 let a = k as f32 / n as f32 * std::f32::consts::TAU + 0.3;
-                self.pickups.push(Pickup { x: x + a.cos() * 0.8, y: y + a.sin() * 0.8, kind, t: 0.0 });
+                self.pickups.push(Pickup { x: x + a.cos() * 0.8, y: y + a.sin() * 0.8, kind, t: 0.0, owner: crate::game::ANY });
             }
             self.floater(x, y, format!("{} IS SLAIN", s.name), rgb(0xffd080));
             self.side_progress(Goal::Super(superu as usize - 1));
@@ -1378,14 +1378,14 @@ impl Game {
                 let it = crate::items::roll(ilvl, crate::items::Rarity::Rare, &mut self.rng);
                 // A full bag: it lands at your feet.
                 if let Err(it) = self.p.gear.add(it) {
-                    self.pickups.push(Pickup { x: self.p.x, y: self.p.y + 0.4, kind: Drop::Item(Box::new(it)), t: 0.0 });
+                    self.pickups.push(Pickup { x: self.p.x, y: self.p.y + 0.4, kind: Drop::Item(Box::new(it)), t: 0.0, owner: crate::game::ANY });
                 }
             }
             Reward::Ward => self.p.ward = (self.p.ward + 1).min(6),
             Reward::Unique(k) => {
                 if let Some(u) = crate::items::boss_unique(k) {
                     if let Err(u) = self.p.gear.add(u) {
-                        self.pickups.push(Pickup { x: self.p.x, y: self.p.y + 0.4, kind: Drop::Item(Box::new(u)), t: 0.0 });
+                        self.pickups.push(Pickup { x: self.p.x, y: self.p.y + 0.4, kind: Drop::Item(Box::new(u)), t: 0.0, owner: crate::game::ANY });
                     }
                 }
             }

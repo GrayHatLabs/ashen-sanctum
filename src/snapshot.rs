@@ -44,6 +44,40 @@ struct Bot {
     whiff: (u32, u32, u32),
 }
 
+/// A co-op test ally (party.rs): keeps up with the leader, fights what's near, drinks and eats.
+fn ally_act(bot: &mut Bot, g: &Game, t: u32, leader: (f32, f32)) -> Input {
+    let mut inp = Input::default();
+    if g.state != State::Playing {
+        return inp;
+    }
+    inp.potion_hp = g.p.hp / g.p.max_hp < 0.4 && t % 30 == 0;
+    inp.potion_mp = g.p.mana < 6.0 && t % 30 == 0;
+    if g.p.food < 45.0 && t % 30 == 0 && (g.bag_meals() > 0 || g.p.vial >= 1.0) {
+        inp.eat = true;
+        return inp;
+    }
+    let far = ((leader.0 - g.p.x).powi(2) + (leader.1 - g.p.y).powi(2)).sqrt();
+    if far > 7.0 {
+        bot.steer(g, t, leader, &mut inp);
+        return inp;
+    }
+    if let Some((_, _, dist, visible)) = g.bot_target() {
+        if visible && dist < 9.0 && !g.in_safe(g.p.x, g.p.y) {
+            if t % 3 == 0 {
+                inp.cast2 = true;
+            } else {
+                inp.cast = true;
+            }
+            inp.cycle = t % 150 == 0;
+            return inp;
+        }
+    }
+    if far > 2.5 {
+        bot.steer(g, t, leader, &mut inp);
+    }
+    inp
+}
+
 impl Bot {
     fn steer(&mut self, g: &Game, t: u32, goal: (f32, f32), inp: &mut Input) {
         let moved = (goal.0 - self.goal.0).abs() + (goal.1 - self.goal.1).abs() > 1.5;
@@ -368,6 +402,25 @@ pub fn run(dir: Option<&str>, tall: bool) -> i32 {
         g.p.skills = skills;
         g.p.skills.points = points;
     }
+    // ASHEN_ALLIES=valkyrie,druid: co-op test allies (party.rs) beside the bot, ready for the same act.
+    let mut ally_bots = vec![];
+    if let Ok(list) = std::env::var("ASHEN_ALLIES") {
+        let act = std::env::var("ASHEN_ACT").ok().and_then(|a| a.parse::<usize>().ok()).unwrap_or(1);
+        for (n, key) in list.split(',').filter(|k| !k.is_empty()).take(7).enumerate() {
+            let class = crate::skills::ALL_CLASSES.iter().copied().find(|k| k.key() == key).unwrap_or(crate::skills::Class::Sorceress);
+            let k = g.add_ally(class, &format!("ALLY {}", n + 1));
+            g.as_hero(k, |g| {
+                if act > 1 {
+                    g.act_gear(act - 1);
+                }
+                for s in class.tree() {
+                    g.p.skills.rank[*s as usize] = 3;
+                }
+            });
+            ally_bots.push(Bot { path: vec![], goal: (0.0, 0.0), repath: 0, reach_cache: ((i32::MIN, 0), false, 0), whiff: (0, 0, 0) });
+        }
+        crate::binds::set_players_quiet(1 + ally_bots.len() as u8);
+    }
     // ASHEN_TRIAL=rival|arena (scripts/trials.sh): the bot fights a rival duel or runs the act's arena.
     if let Ok(kind) = std::env::var("ASHEN_TRIAL") {
         trial(&mut g, &kind);
@@ -398,6 +451,13 @@ pub fn run(dir: Option<&str>, tall: bool) -> i32 {
     let mut last_dialog = None;
     for t in 0..total {
         let inp = bot.act(&g, t);
+        for (k, ab) in ally_bots.iter_mut().enumerate() {
+            let leader = (g.p.x, g.p.y);
+            g.swap_hero(k);
+            let ai = ally_act(ab, &g, t, leader);
+            g.swap_hero(k);
+            g.allies[k].inp = ai;
+        }
         g.update(&inp);
         g.sfx.clear();
         // Ylgrath fled: the bot can't cross acts for the Stillpoint, so it's handed over (tests cover the fetch).
@@ -506,6 +566,9 @@ pub fn run(dir: Option<&str>, tall: bool) -> i32 {
         }
         assert!(g.p.x.is_finite() && g.p.y.is_finite(), "player position went non-finite");
         assert!(g.d.walkable(g.p.x.floor() as i32, g.p.y.floor() as i32), "player inside a wall at {:.2},{:.2} in {}", g.p.x, g.p.y, g.level_name);
+    }
+    for a in &g.allies {
+        println!("ally {} {:<10} clvl={} deaths={} casts={} dealt={} hits={} taken={:.0} skills={:?}", a.st.hero_name, a.st.p.skills.class.key(), a.st.p.clvl, a.st.stats.deaths, a.st.stats.casts, a.st.stats.dealt, a.st.stats.hits, a.st.stats.damage_taken, (a.st.p.skills.primary, a.st.p.skills.secondary));
     }
     println!(
         "selftest ok: {} ticks in {:.2?}, avg draw {:.2?}, kills={} clvl={} seals={} quest={:?} acts2-5={}/{}/{}/{} tokens={}/{}/{}/{} levels visited={} stats={:?}",
@@ -1328,6 +1391,18 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             idle(&mut g, 20);
             save(&mut g, scr, "area_exit");
         }
+        // Co-op (party.rs): three allies beside you in the wilds, monsters coming.
+        g.debug_goto(LevelId::Area(0, 1));
+        for (n, c) in [crate::skills::Class::Valkyrie, crate::skills::Class::Druid, crate::skills::Class::Inventor].into_iter().enumerate() {
+            g.add_ally(c, ["BRYNJA", "ROWAN", "ADA"][n]);
+        }
+        g.party_level = g.level;
+        g.banner_t = 0.0;
+        g.message = None;
+        g.notice = None;
+        idle(&mut g, 40);
+        save(&mut g, scr, "coop_party");
+        g.allies.clear();
         // Water and lava (liquid.rs): stand by the first pool found.
         for (id, name) in [
             (LevelId::Area(0, 1), "liquid_water"),
@@ -2297,7 +2372,7 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
             let a = k as f32 * 1.25;
             let (x, y) = (px + a.cos() * 1.6, py + a.sin() * 1.6);
             if !g.d.blocked(x, y, 0.2) {
-                g.pickups.push(crate::game::Pickup { x, y, kind: crate::game::Drop::Item(Box::new(it)), t: 1.0 });
+                g.pickups.push(crate::game::Pickup { x, y, kind: crate::game::Drop::Item(Box::new(it)), t: 1.0, owner: crate::game::ANY });
             }
         }
         g.banner_t = 0.0;

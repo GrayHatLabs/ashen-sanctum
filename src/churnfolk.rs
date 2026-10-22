@@ -517,12 +517,12 @@ impl Game {
         }
         let ilvl = crate::items::ilvl_for(self.tier) + 2;
         let it = crate::items::roll(ilvl, crate::items::Rarity::Rare, &mut self.rng);
-        self.pickups.push(Pickup { x: x + 0.7, y, kind: Drop::Item(Box::new(it)), t: 0.0 });
+        self.pickups.push(Pickup { x: x + 0.7, y, kind: Drop::Item(Box::new(it)), t: 0.0, owner: crate::game::ANY });
         for k in 0..3 {
-            self.pickups.push(Pickup { x: x + k as f32 * 0.5 - 0.5, y: y + 0.6, kind: Drop::Gold((40.0 + 12.0 * self.tier) as i32), t: 0.0 });
+            self.pickups.push(Pickup { x: x + k as f32 * 0.5 - 0.5, y: y + 0.6, kind: Drop::Gold((40.0 + 12.0 * self.tier) as i32), t: 0.0, owner: crate::game::ANY });
         }
         if let Some(page) = crate::side::LORE.iter().position(|l| l.1 == "A PAGE OF THE CLOCKMAKER'S NOTEBOOK") {
-            self.pickups.push(Pickup { x: x - 0.7, y, kind: Drop::Page(page as u8), t: 0.0 });
+            self.pickups.push(Pickup { x: x - 0.7, y, kind: Drop::Page(page as u8), t: 0.0, owner: crate::game::ANY });
         }
         // A way home where he stood.
         let spot = crate::world::nearest_open_on(&self.d, x, y).map_or((self.p.x, self.p.y), |(tx, ty)| (tx as f32 + 0.5, ty as f32 + 0.5));
@@ -558,7 +558,7 @@ impl Game {
         }
         let Some((x, y)) = crate::world::farthest_walk(&self.d, (self.p.x as i32, self.p.y as i32)) else { return };
         let (x, y) = (x as f32 + 0.5, y as f32 + 0.5);
-        self.pickups.push(Pickup { x, y, kind: Drop::Stillpoint, t: 1.0 });
+        self.pickups.push(Pickup { x, y, kind: Drop::Stillpoint, t: 1.0, owner: crate::game::ANY });
         // As tough as the Churn's own (the Heart's tier is about two thirds of the throne's).
         let tier = self.tier * 1.5;
         for k in 0..4 {

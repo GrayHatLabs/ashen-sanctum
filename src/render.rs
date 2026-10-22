@@ -19,6 +19,17 @@ impl Game {
             draw_loading(scr, &name);
             return;
         }
+        // Co-op: the allies' missiles and effects are drawn with yours (party.rs).
+        if self.allies.is_empty() {
+            self.draw_scene(scr);
+        } else {
+            let lens = self.merge_ally_fx();
+            self.draw_scene(scr);
+            self.split_ally_fx(lens);
+        }
+    }
+
+    fn draw_scene(&mut self, scr: &mut Screen) {
         let (ox, oy) = self.cam_origin();
         if !self.light_ready {
             let (radius, ambient) = self.theme.light();
@@ -283,7 +294,7 @@ impl Game {
                 }
             }
         }
-        for k in &self.pickups {
+        for k in self.pickups.iter().filter(|k| k.for_hero(self.cur_hero)) {
             let (sx, sy) = to_scr(k.x, k.y);
             draw_pickup(scr, k, sx, sy, self.tick, &self.art);
         }
@@ -295,6 +306,7 @@ impl Game {
             Mob(usize),
             Npc(usize),
             Player,
+            Ally(usize),
             Ball(usize),
             Shot(usize),
             Clock(usize),
@@ -324,6 +336,11 @@ impl Game {
             }
         }
         list.push((px + py, D::Player));
+        for (k, a) in self.allies.iter().enumerate() {
+            if in_view(a.st.p.x, a.st.p.y) {
+                list.push((a.st.p.x + a.st.p.y, D::Ally(k)));
+            }
+        }
         for (i, c) in self.clocks.iter().enumerate() {
             if in_view(c.x, c.y) {
                 list.push((c.x + c.y, D::Clock(i)));
@@ -397,6 +414,19 @@ impl Game {
                 D::Mob(i) => self.draw_mob(scr, i, to_scr(self.mobs[i].x, self.mobs[i].y)),
                 D::Npc(i) => self.draw_npc(scr, i, to_scr(self.npcs[i].x, self.npcs[i].y)),
                 D::Player => self.draw_player(scr, (psx, psy)),
+                D::Ally(k) => {
+                    // Drawn as you are, in their own state; your held-weapon frame is kept for your effects.
+                    let keep = (self.hero_frame.take(), self.hero_hold.take());
+                    self.swap_hero(k);
+                    let (sx, sy) = to_scr(self.p.x, self.p.y);
+                    self.draw_player(scr, (sx, sy));
+                    let (name, f) = (self.hero_name.clone(), (self.p.hp / self.p.max_hp.max(1.0)).clamp(0.0, 1.0));
+                    self.swap_hero(k);
+                    (*self.hero_frame.borrow_mut(), *self.hero_hold.borrow_mut()) = keep;
+                    scr.text(&name, sx, sy - 66 - (k as i32 % 2) * 9, rgb(0x90d0ff), Align::Center, 1);
+                    scr.fill(sx - 12, sy - 57, 24, 3, BLACK);
+                    scr.fill(sx - 11, sy - 56, (22.0 * f).ceil() as i32, 1, rgb(0x40c040));
+                }
                 D::Clock(i) => {
                     let (sx, sy) = to_scr(self.clocks[i].x, self.clocks[i].y);
                     self.draw_clock(scr, i, sx, sy);
@@ -1540,7 +1570,7 @@ impl Game {
         }
         // Item names on the floor (D2 labels) for gear near you, stacked so they don't overlap.
         let mut labels: Vec<(i32, i32, &crate::items::Item)> = vec![];
-        for k in &self.pickups {
+        for k in self.pickups.iter().filter(|k| k.for_hero(self.cur_hero)) {
             if let Drop::Item(it) = &k.kind {
                 let d2 = (k.x - self.p.x).powi(2) + (k.y - self.p.y).powi(2);
                 if d2 < 49.0 || (it.rarity >= crate::items::Rarity::Rare && d2 < 200.0) || (self.prev.show_loot && d2 < 900.0) {

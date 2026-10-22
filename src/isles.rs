@@ -84,7 +84,7 @@ impl Game {
         if here == STORMFIELDS && self.feats.relic == 0 {
             if let Some((x, y)) = self.reef_spot_pub(14.0, 1.0) {
                 self.feats.relic_spot = (x, y);
-                self.pickups.push(Pickup { x, y, kind: Drop::StormRelic, t: 1.0 });
+                self.pickups.push(Pickup { x, y, kind: Drop::StormRelic, t: 1.0, owner: crate::game::ANY });
             }
         }
         let (star, singers, cargo) = rolls(self.world_seed, self.quest.difficulty);
@@ -94,12 +94,12 @@ impl Game {
         for k in 0..3 {
             if singers[k] == n && self.feats.singers & (1 << k) == 0 {
                 if let Some((x, y)) = self.reef_spot_pub(16.0, 0.8) {
-                    self.pickups.push(Pickup { x, y, kind: Drop::Singer(k as u8), t: 1.0 });
+                    self.pickups.push(Pickup { x, y, kind: Drop::Singer(k as u8), t: 1.0, owner: crate::game::ANY });
                 }
             }
             if cargo[k] == n && self.feats.cargo & (1 << k) == 0 {
                 if let Some((x, y)) = self.reef_spot_pub(12.0, 0.6) {
-                    self.pickups.push(Pickup { x, y, kind: Drop::Cargo(k as u8), t: 1.0 });
+                    self.pickups.push(Pickup { x, y, kind: Drop::Cargo(k as u8), t: 1.0, owner: crate::game::ANY });
                 }
             }
         }
@@ -160,7 +160,7 @@ impl Game {
                 }
             }
             let (cx, cy) = ((x + dx * 12) as f32 + 0.5, (y + dy * 12) as f32 + 0.5);
-            self.pickups.push(Pickup { x: cx, y: cy, kind: Drop::TideChest, t: 1.0 });
+            self.pickups.push(Pickup { x: cx, y: cy, kind: Drop::TideChest, t: 1.0, owner: crate::game::ANY });
             return true;
         }
         false
@@ -331,9 +331,9 @@ impl Game {
                     self.feats.relic = 3;
                     self.save_due = true;
                     if let Some(u) = crate::items::boss_unique("stormheart") {
-                        self.pickups.push(Pickup { x: rx, y: ry + 0.8, kind: Drop::Item(Box::new(u)), t: 0.0 });
+                        self.pickups.push(Pickup { x: rx, y: ry + 0.8, kind: Drop::Item(Box::new(u)), t: 0.0, owner: crate::game::ANY });
                     }
-                    self.pickups.push(Pickup { x: rx + 0.8, y: ry, kind: Drop::Gold((80.0 + 40.0 * self.tier) as i32), t: 0.0 });
+                    self.pickups.push(Pickup { x: rx + 0.8, y: ry, kind: Drop::Gold((80.0 + 40.0 * self.tier) as i32), t: 0.0, owner: crate::game::ANY });
                     for _ in 0..16 {
                         self.spray_at(rx, ry, PKind::Magic, 10.0);
                     }
@@ -375,8 +375,8 @@ impl Game {
     pub(crate) fn star_metal(&mut self, x: f32, y: f32) {
         let ilvl = crate::items::ilvl_for(self.tier) + 3;
         let rar = if self.rng.chance(0.5) { crate::items::Rarity::Rare } else { crate::items::Rarity::Magic };
-        self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(crate::items::roll(ilvl, rar, &mut self.rng))), t: 0.0 });
-        self.pickups.push(Pickup { x: x + 0.6, y, kind: Drop::Gold((30.0 + 20.0 * self.tier) as i32), t: 0.0 });
+        self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(crate::items::roll(ilvl, rar, &mut self.rng))), t: 0.0, owner: crate::game::ANY });
+        self.pickups.push(Pickup { x: x + 0.6, y, kind: Drop::Gold((30.0 + 20.0 * self.tier) as i32), t: 0.0, owner: crate::game::ANY });
         for _ in 0..12 {
             self.spray_at(x, y, PKind::Magic, 10.0);
         }
@@ -386,7 +386,7 @@ impl Game {
             self.feats.star_done = true;
             self.save_due = true;
             if let Some(u) = crate::items::boss_unique("starfall") {
-                self.pickups.push(Pickup { x, y: y + 0.8, kind: Drop::Item(Box::new(u)), t: 0.0 });
+                self.pickups.push(Pickup { x, y: y + 0.8, kind: Drop::Item(Box::new(u)), t: 0.0, owner: crate::game::ANY });
             }
             self.say("THE HEART OF THE FALLEN STAR LIES BARE".into());
         }
@@ -419,15 +419,15 @@ impl Game {
         let (x, y) = self.feats.sanctum_spot;
         let ilvl = crate::items::ilvl_for(self.tier) + 4;
         if let Some(u) = crate::items::boss_unique("hymn") {
-            self.pickups.push(Pickup { x, y: y + 0.8, kind: Drop::Item(Box::new(u)), t: 0.0 });
+            self.pickups.push(Pickup { x, y: y + 0.8, kind: Drop::Item(Box::new(u)), t: 0.0, owner: crate::game::ANY });
         }
         for dx in [-1.0f32, 1.0] {
             let it = crate::items::roll(ilvl, crate::items::Rarity::Rare, &mut self.rng);
-            self.pickups.push(Pickup { x: x + dx, y, kind: Drop::Item(Box::new(it)), t: 0.0 });
+            self.pickups.push(Pickup { x: x + dx, y, kind: Drop::Item(Box::new(it)), t: 0.0, owner: crate::game::ANY });
         }
         for k in 0..5 {
             let a = k as f32 * 1.3;
-            self.pickups.push(Pickup { x: x + a.cos() * 1.4, y: y + a.sin() * 1.4, kind: Drop::Gold((50.0 + 25.0 * self.tier) as i32), t: 0.0 });
+            self.pickups.push(Pickup { x: x + a.cos() * 1.4, y: y + a.sin() * 1.4, kind: Drop::Gold((50.0 + 25.0 * self.tier) as i32), t: 0.0, owner: crate::game::ANY });
         }
         for _ in 0..20 {
             self.spray_at(x, y, PKind::Magic, 12.0);

@@ -100,7 +100,7 @@ impl Game {
 
     fn place_gear(&mut self, k: usize) {
         let Some((x, y)) = self.gear_spot(16.0, 0.8) else { return };
-        self.pickups.push(Pickup { x, y, kind: Drop::Gear(k as u8), t: 1.0 });
+        self.pickups.push(Pickup { x, y, kind: Drop::Gear(k as u8), t: 1.0, owner: crate::game::ANY });
         // A few scarabs nest on it.
         for j in 0..3 {
             let a = j as f32 * 2.1;
@@ -185,12 +185,12 @@ impl Game {
         // The treasure, and two wardens that never left.
         for (k, (dx, dy)) in [(-2.0, -2.0), (2.0, -2.0), (0.0, -2.5), (-2.5, 0.0), (2.5, 0.0)].into_iter().enumerate() {
             let g = ((60.0 + 40.0 * self.tier) * if k == 2 { 3.0 } else { 1.0 }) as i32;
-            self.pickups.push(Pickup { x: cx as f32 + 0.5 + dx, y: cy as f32 + 0.5 + dy, kind: Drop::Gold(g), t: 1.0 });
+            self.pickups.push(Pickup { x: cx as f32 + 0.5 + dx, y: cy as f32 + 0.5 + dy, kind: Drop::Gold(g), t: 1.0, owner: crate::game::ANY });
         }
         let ilvl = crate::items::ilvl_for(self.tier) + 4;
         for dx in [-1.5f32, 1.5] {
             let it = crate::items::roll(ilvl, crate::items::Rarity::Rare, &mut self.rng);
-            self.pickups.push(Pickup { x: cx as f32 + 0.5 + dx, y: cy as f32 - 0.5, kind: Drop::Item(Box::new(it)), t: 1.0 });
+            self.pickups.push(Pickup { x: cx as f32 + 0.5 + dx, y: cy as f32 - 0.5, kind: Drop::Item(Box::new(it)), t: 1.0, owner: crate::game::ANY });
         }
         for dx in [-2.0f32, 2.0] {
             let mut m = Mob::new(Kind::Marshal, cx as f32 + 0.5 + dx, cy as f32 + 1.0, self.tier * 1.2, &mut self.rng);
@@ -390,13 +390,13 @@ impl Game {
         } else if r < 0.2 {
             self.floater(x, y, "JUST RUST".into(), rgb(0x8a6a50));
         } else if r < 0.6 {
-            self.pickups.push(Pickup { x, y, kind: Drop::Gold((15.0 + 12.0 * self.tier) as i32), t: 0.0 });
+            self.pickups.push(Pickup { x, y, kind: Drop::Gold((15.0 + 12.0 * self.tier) as i32), t: 0.0, owner: crate::game::ANY });
         } else if r < 0.8 {
             let gem = crate::items::gem_item(crate::items::roll_gem(ilvl, &mut self.rng));
-            self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(gem)), t: 0.0 });
+            self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(gem)), t: 0.0, owner: crate::game::ANY });
         } else {
             let rar = if self.rng.chance(0.35) { crate::items::Rarity::Rare } else { crate::items::Rarity::Magic };
-            self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(crate::items::roll(ilvl, rar, &mut self.rng))), t: 0.0 });
+            self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(crate::items::roll(ilvl, rar, &mut self.rng))), t: 0.0, owner: crate::game::ANY });
         }
         for _ in 0..10 {
             self.spray_at(x, y, PKind::Smoke, 12.0);

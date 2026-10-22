@@ -14,6 +14,7 @@ mod iso;
 mod items;
 mod levels;
 mod liquid;
+mod party;
 mod menu;
 mod mobs;
 mod music;

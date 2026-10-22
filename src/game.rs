@@ -243,6 +243,19 @@ pub struct Pickup {
     pub y: f32,
     pub kind: Drop,
     pub t: f32,
+    /// Co-op: whose it is (a hero's number, party.rs: 0 the leader, 1.. allies), or `ANY`. Gear and gems are
+    /// rolled for each hero apart and only that hero sees or takes them; gold, potions and quest things are anyone's.
+    pub owner: u8,
+}
+
+/// A pickup anyone can take.
+pub const ANY: u8 = 255;
+
+impl Pickup {
+    /// Can this hero (party.rs numbering) see and take it?
+    pub fn for_hero(&self, hero: usize) -> bool {
+        self.owner == ANY || self.owner as usize == hero
+    }
 }
 
 pub struct Decal {
@@ -395,7 +408,7 @@ pub struct Player {
 }
 
 impl Player {
-    fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Player {
             rekindles: [0; 7],
             rift_best: 0,
@@ -844,7 +857,12 @@ pub struct Game {
     pub defer_travel: bool,
     pub(crate) pending_travel: Option<Travel>,
     /// Where you stood over the last three seconds (the Clockmaker's rewind).
-    trail: std::collections::VecDeque<(f32, f32)>,
+    pub(crate) trail: std::collections::VecDeque<(f32, f32)>,
+    /// Co-op (party.rs): the other heroes in this world, which of them is in the active slot now (0 = the
+    /// leader), and the level the party was last brought to.
+    pub allies: Vec<crate::party::Ally>,
+    pub(crate) cur_hero: usize,
+    pub(crate) party_level: LevelId,
     pub(crate) prev: Input,
     pub show_map: bool,
     pub quit: bool,
@@ -985,6 +1003,9 @@ impl Game {
             defer_travel: false,
             pending_travel: None,
             trail: Default::default(),
+            allies: vec![],
+            cur_hero: 0,
+            party_level: LevelId::Overworld,
             prev: Input::default(),
             show_map: false,
             quit: false,
@@ -1269,6 +1290,13 @@ impl Game {
     /// `--act2` / `--act3` / `--act4`: a ready character standing in that act's town, as if the
     /// earlier acts were done (level 18 / 26 / 34, their relics' power, gear and gold to match).
     pub fn act_start(&mut self, act: usize) {
+        let act = act.clamp(1, 6);
+        self.act_gear(act);
+        self.act_world(act);
+    }
+
+    /// The hero half of `act_start`: level, life, skill points, gold and gear for that act.
+    pub fn act_gear(&mut self, act: usize) {
         use crate::items::{self, Rarity, WORN};
         let act = act.clamp(1, 6);
         let clvl = [1, 18, 26, 34, 42, 50, 56][act];
@@ -1303,6 +1331,10 @@ impl Game {
         p.recalc();
         p.hp = p.max_hp;
         p.mana = p.max_mana;
+    }
+
+    /// The world half of `act_start`: the quests done up to that act, and off to its town.
+    fn act_world(&mut self, act: usize) {
         let done = |n: usize| act > n;
         self.quest = Quest {
             stage: 3,
@@ -1737,7 +1769,7 @@ impl Game {
     pub fn debug_food_nearby(&mut self) {
         for i in 0..3 {
             let (x, y) = (self.p.x + 0.8 + i as f32 * 0.7, self.p.y - 0.6);
-            self.pickups.push(Pickup { x, y, kind: Drop::Food(i), t: 1.0 });
+            self.pickups.push(Pickup { x, y, kind: Drop::Food(i), t: 1.0, owner: crate::game::ANY });
         }
     }
 
@@ -2053,6 +2085,20 @@ impl Game {
         self.update_rift();
         self.second_wind_t = (self.second_wind_t - DT).max(0.0);
         self.update_clockwork();
+        self.update_hero_fx();
+        self.update_world();
+        self.prev = inp.clone();
+        if !self.allies.is_empty() {
+            if self.party_level != self.level {
+                self.party_level = self.level;
+                self.bring_allies();
+            }
+            self.update_allies();
+        }
+    }
+
+    /// The active hero's missiles, summons and class effects (party.rs runs it for each hero in turn).
+    pub(crate) fn update_hero_fx(&mut self) {
         self.update_balls();
         self.update_novas();
         self.update_fire_ground();
@@ -2064,8 +2110,6 @@ impl Game {
         self.update_reaper();
         self.update_druid();
         self.update_inquisitor();
-        self.update_world();
-        self.prev = inp.clone();
     }
 
     /// Mouse position in world coordinates.
@@ -2997,7 +3041,7 @@ impl Game {
 
     // ------------------------------------------------------------------ player
 
-    fn update_player(&mut self, inp: &Input, p_cast: bool, p_lmb: bool) {
+    pub(crate) fn update_player(&mut self, inp: &Input, p_cast: bool, p_lmb: bool) {
         // Haste and Mana shrines (side.rs).
         let (bspeed, bmana) = (self.bless_speed(), self.bless_mana());
         let p = &mut self.p;
@@ -3319,7 +3363,11 @@ impl Game {
         // A chest on the flats can't be reached under the tide (reef.rs).
         let wet = self.tide > 0.5 && crate::tides::tidal(self.level);
         let d = &self.d;
+        let me = self.cur_hero;
         self.pickups.retain(|k| {
+            if !k.for_hero(me) {
+                return true;
+            }
             // Food goes in the food bag; with the bag full you eat it there and then, unless you're full too.
             let food_but_full = matches!(k.kind, Drop::Food(_)) && (vampire || (full && pack_free <= 0)) || matches!(k.kind, Drop::TideChest) && wet && d.ground_at(k.x as i32, k.y as i32) == 1;
             // Gold is scooped up from a couple of steps away; everything else, where you stand.
@@ -4011,6 +4059,15 @@ impl Game {
         }
         let (rank, mods) = (self.mobs[i].rank, self.mobs[i].mods);
         self.drop_gear(x, y, boss, kind, rank);
+        if !self.allies.is_empty() {
+            let shared = xp * bx;
+            self.for_other_heroes(|g| {
+                if g.state == State::Playing && (g.p.x - x).powi(2) + (g.p.y - y).powi(2) < crate::party::SHARE_R * crate::party::SHARE_R {
+                    g.gain_xp(shared);
+                    g.drop_gear(x, y, boss, kind, rank);
+                }
+            });
+        }
         // Super uniques, gold-thieves and side quests (side.rs), and random errands (errands.rs).
         self.side_kill(i);
         let tag = self.mobs[i].errand;
@@ -4143,57 +4200,57 @@ impl Game {
             let story = !self.boss_story_done(kind) && !self.in_rift();
             if story {
             match kind {
-                Kind::BoneWarden => self.pickups.push(Pickup { x, y, kind: Drop::Seal(0), t: 0.0 }),
-                Kind::PlagueWarden => self.pickups.push(Pickup { x, y, kind: Drop::Seal(1), t: 0.0 }),
-                Kind::HexWarden => self.pickups.push(Pickup { x, y, kind: Drop::Seal(2), t: 0.0 }),
+                Kind::BoneWarden => self.pickups.push(Pickup { x, y, kind: Drop::Seal(0), t: 0.0, owner: crate::game::ANY }),
+                Kind::PlagueWarden => self.pickups.push(Pickup { x, y, kind: Drop::Seal(1), t: 0.0, owner: crate::game::ANY }),
+                Kind::HexWarden => self.pickups.push(Pickup { x, y, kind: Drop::Seal(2), t: 0.0, owner: crate::game::ANY }),
                 Kind::AshKing => {
                     self.quest.stage = 3;
                     self.state = State::Victory(0.0);
                     self.dialog = None;
                 }
-                Kind::FrostGiant => self.pickups.push(Pickup { x, y, kind: Drop::Rune(0), t: 0.0 }),
-                Kind::YetiMatriarch => self.pickups.push(Pickup { x, y, kind: Drop::Rune(1), t: 0.0 }),
-                Kind::RimeWitch => self.pickups.push(Pickup { x, y, kind: Drop::Rune(2), t: 0.0 }),
+                Kind::FrostGiant => self.pickups.push(Pickup { x, y, kind: Drop::Rune(0), t: 0.0, owner: crate::game::ANY }),
+                Kind::YetiMatriarch => self.pickups.push(Pickup { x, y, kind: Drop::Rune(1), t: 0.0, owner: crate::game::ANY }),
+                Kind::RimeWitch => self.pickups.push(Pickup { x, y, kind: Drop::Rune(2), t: 0.0, owner: crate::game::ANY }),
                 Kind::WhiteDragon => {
                     self.quest.stage2 = 3;
                     self.state = State::Victory(0.0);
                     self.dialog = None;
                 }
-                Kind::Ossric => self.pickups.push(Pickup { x, y, kind: Drop::Sigil(0), t: 0.0 }),
-                Kind::Grimhilde => self.pickups.push(Pickup { x, y, kind: Drop::Sigil(1), t: 0.0 }),
-                Kind::Malgrave => self.pickups.push(Pickup { x, y, kind: Drop::Sigil(2), t: 0.0 }),
+                Kind::Ossric => self.pickups.push(Pickup { x, y, kind: Drop::Sigil(0), t: 0.0, owner: crate::game::ANY }),
+                Kind::Grimhilde => self.pickups.push(Pickup { x, y, kind: Drop::Sigil(1), t: 0.0, owner: crate::game::ANY }),
+                Kind::Malgrave => self.pickups.push(Pickup { x, y, kind: Drop::Sigil(2), t: 0.0, owner: crate::game::ANY }),
                 Kind::Vardak => {
                     self.quest.stage3 = 3;
                     self.state = State::Victory(0.0);
                     self.dialog = None;
                 }
-                Kind::Forgemother => self.pickups.push(Pickup { x, y, kind: Drop::Key(0), t: 0.0 }),
-                Kind::Cantor => self.pickups.push(Pickup { x, y, kind: Drop::Key(1), t: 0.0 }),
-                Kind::Archivist => self.pickups.push(Pickup { x, y, kind: Drop::Key(2), t: 0.0 }),
+                Kind::Forgemother => self.pickups.push(Pickup { x, y, kind: Drop::Key(0), t: 0.0, owner: crate::game::ANY }),
+                Kind::Cantor => self.pickups.push(Pickup { x, y, kind: Drop::Key(1), t: 0.0, owner: crate::game::ANY }),
+                Kind::Archivist => self.pickups.push(Pickup { x, y, kind: Drop::Key(2), t: 0.0, owner: crate::game::ANY }),
                 Kind::Clockmaker => {
                     self.quest.stage4 = 3;
                     self.state = State::Victory(0.0);
                     self.dialog = None;
                 }
-                Kind::Dregmoor => self.pickups.push(Pickup { x, y, kind: Drop::Pearl(0), t: 0.0 }),
-                Kind::Nacre => self.pickups.push(Pickup { x, y, kind: Drop::Pearl(1), t: 0.0 }),
-                Kind::Angler => self.pickups.push(Pickup { x, y, kind: Drop::Pearl(2), t: 0.0 }),
+                Kind::Dregmoor => self.pickups.push(Pickup { x, y, kind: Drop::Pearl(0), t: 0.0, owner: crate::game::ANY }),
+                Kind::Nacre => self.pickups.push(Pickup { x, y, kind: Drop::Pearl(1), t: 0.0, owner: crate::game::ANY }),
+                Kind::Angler => self.pickups.push(Pickup { x, y, kind: Drop::Pearl(2), t: 0.0, owner: crate::game::ANY }),
                 Kind::Leviathan => {
                     self.quest.stage5 = 3;
                     self.state = State::Victory(0.0);
                     self.dialog = None;
                 }
-                Kind::Vael => self.pickups.push(Pickup { x, y, kind: Drop::Shard(0), t: 0.0 }),
-                Kind::Tempest => self.pickups.push(Pickup { x, y, kind: Drop::Shard(1), t: 0.0 }),
-                Kind::OphanPrime => self.pickups.push(Pickup { x, y, kind: Drop::Shard(2), t: 0.0 }),
+                Kind::Vael => self.pickups.push(Pickup { x, y, kind: Drop::Shard(0), t: 0.0, owner: crate::game::ANY }),
+                Kind::Tempest => self.pickups.push(Pickup { x, y, kind: Drop::Shard(1), t: 0.0, owner: crate::game::ANY }),
+                Kind::OphanPrime => self.pickups.push(Pickup { x, y, kind: Drop::Shard(2), t: 0.0, owner: crate::game::ANY }),
                 Kind::Solanthos => {
                     self.quest.stage6 = 3;
                     self.state = State::Victory(0.0);
                     self.dialog = None;
                 }
-                Kind::Architect => self.pickups.push(Pickup { x, y, kind: Drop::AKey(0), t: 0.0 }),
-                Kind::Grumbleguts => self.pickups.push(Pickup { x, y, kind: Drop::AKey(1), t: 0.0 }),
-                Kind::MirrorAbbot => self.pickups.push(Pickup { x, y, kind: Drop::AKey(2), t: 0.0 }),
+                Kind::Architect => self.pickups.push(Pickup { x, y, kind: Drop::AKey(0), t: 0.0, owner: crate::game::ANY }),
+                Kind::Grumbleguts => self.pickups.push(Pickup { x, y, kind: Drop::AKey(1), t: 0.0, owner: crate::game::ANY }),
+                Kind::MirrorAbbot => self.pickups.push(Pickup { x, y, kind: Drop::AKey(2), t: 0.0, owner: crate::game::ANY }),
                 Kind::Ylgrath => {
                     self.quest.stage7 = 3;
                     self.state = State::Victory(0.0);
@@ -4203,9 +4260,9 @@ impl Game {
             }
             }
             for k in 0..3 {
-                self.pickups.push(Pickup { x: x + k as f32 * 0.5 - 0.5, y: y + 0.6, kind: Drop::Gold(self.rng.range(40, 90)), t: 0.0 });
+                self.pickups.push(Pickup { x: x + k as f32 * 0.5 - 0.5, y: y + 0.6, kind: Drop::Gold(self.rng.range(40, 90)), t: 0.0, owner: crate::game::ANY });
             }
-            self.pickups.push(Pickup { x: x - 0.6, y: y - 0.4, kind: Drop::Health, t: 0.0 });
+            self.pickups.push(Pickup { x: x - 0.6, y: y - 0.4, kind: Drop::Health, t: 0.0, owner: crate::game::ANY });
             // A way home: beyond the boss as seen from you, so walking over to its token (and loot)
             // never steps you into the portal first.
             let (ax, ay) = (x - self.p.x, y - self.p.y);
@@ -4250,7 +4307,7 @@ impl Game {
             None
         };
         if let Some(k) = drop {
-            self.pickups.push(Pickup { x, y, kind: k, t: 0.0 });
+            self.pickups.push(Pickup { x, y, kind: k, t: 0.0, owner: crate::game::ANY });
         }
     }
 
@@ -4270,7 +4327,7 @@ impl Game {
             if self.d.blocked(x, y, 0.2) {
                 (x, y) = (self.p.x, self.p.y);
             }
-            self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(it)), t: 0.0 });
+            self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(it)), t: 0.0, owner: crate::game::ANY });
         }
     }
 
@@ -4347,7 +4404,7 @@ impl Game {
                 Rank::Champion => (1, 0.4, true),
                 Rank::Elite => (2, 0.7, true),
             };
-            let more = crate::binds::players_scale(crate::binds::players()).2;
+            let more = crate::binds::players_scale(self.pretend_players()).2;
             for _ in 0..n {
                 if self.rng.chance((chance * more).min(1.0)) {
                     drops.push(items::drop(ilvl + boost as u8, mf, boost, &mut self.rng));
@@ -4364,7 +4421,7 @@ impl Game {
                 Rank::Elite => 0.12,
             }
         };
-        if self.rng.chance((gem_chance * crate::binds::players_scale(crate::binds::players()).2).min(1.0)) {
+        if self.rng.chance((gem_chance * crate::binds::players_scale(self.pretend_players()).2).min(1.0)) {
             drops.push(items::gem_item(items::roll_gem(ilvl, &mut self.rng)));
         }
         // Half of all set drops are from your own hero's set.
@@ -4384,7 +4441,7 @@ impl Game {
             if self.d.blocked(ix, iy, 0.2) {
                 (ix, iy) = (x, y);
             }
-            self.pickups.push(Pickup { x: ix, y: iy, kind: Drop::Item(Box::new(it)), t: 0.0 });
+            self.pickups.push(Pickup { x: ix, y: iy, kind: Drop::Item(Box::new(it)), t: 0.0, owner: self.cur_hero as u8 });
         }
     }
 
@@ -4517,6 +4574,55 @@ pub(crate) fn move_circle(d: &Dungeon, x: &mut f32, y: &mut f32, dx: f32, dy: f3
 mod tests {
     use super::*;
 
+    #[test]
+    fn an_ally_shares_the_kill_and_gets_loot_of_its_own() {
+        let mut g = Game::new(7, crate::gfx::SH_WIDE);
+        g.set_class(crate::skills::Class::Sorceress);
+        // Out in the wilds (monsters leave you be in town).
+        g.debug_goto(LevelId::Area(0, 1));
+        g.mobs.clear();
+        g.pickups.clear();
+        let k = g.add_ally(crate::skills::Class::Valkyrie, "ALLY");
+        g.party_level = g.level;
+        assert_eq!(g.cur_hero, 0, "the leader is back in the active slot");
+        // A monster between them dies to the leader: the ally shares the experience.
+        let (x, y) = (g.p.x + 1.0, g.p.y);
+        let mut rng = Rng::new(3);
+        g.mobs.push(Mob::new(Kind::Zombie, x, y, 1.0, &mut rng));
+        let before = (g.p.xp, g.allies[k].st.p.xp);
+        g.kill(0);
+        assert!(g.p.xp > before.0 && g.allies[k].st.p.xp > before.1, "both gain: {before:?} -> {} {}", g.p.xp, g.allies[k].st.p.xp);
+        // A boss's drops, rolled for each of them: each sees and takes only their own.
+        g.pickups.clear();
+        g.drop_gear(x, y, true, Kind::BoneWarden, crate::mobs::Rank::Normal);
+        g.as_hero(k, |g| g.drop_gear(x, y, true, Kind::BoneWarden, crate::mobs::Rank::Normal));
+        let mine = g.pickups.iter().filter(|p| p.owner == 0).count();
+        let theirs = g.pickups.iter().filter(|p| p.owner == 1).count();
+        assert!(mine > 0 && theirs > 0, "{mine} / {theirs}");
+        for p in g.pickups.iter_mut() {
+            (p.x, p.y, p.t) = (g.p.x, g.p.y, 1.0);
+        }
+        g.collect_pickups();
+        assert!(g.pickups.iter().all(|p| p.owner == 1) && g.pickups.len() == theirs, "the ally's are still there");
+        let (ax, ay) = (g.allies[k].st.p.x, g.allies[k].st.p.y);
+        for p in g.pickups.iter_mut() {
+            (p.x, p.y) = (ax, ay);
+        }
+        g.as_hero(k, |g| g.collect_pickups());
+        assert!(g.pickups.is_empty(), "and the ally takes them");
+        // Monsters go for whoever is nearest: put one next to the ally.
+        g.mobs.push(Mob::new(Kind::Zombie, ax + 0.8, ay, 1.0, &mut rng));
+        let m = g.mobs.len() - 1;
+        g.mobs[m].state = MobState::Chase;
+        g.mobs[m].target = 0;
+        for _ in 0..40 {
+            g.update(&Input::default());
+        }
+        if g.mobs[m].alive() {
+            assert_eq!(g.mobs[m].target, 1, "it turned on the ally beside it");
+        }
+    }
+
     /// A game standing at the stairs of the Bone Crypt's first floor, with no monsters.
     fn quiet_game() -> Game {
         let mut g = Game::new(7, crate::gfx::SH_WIDE);
@@ -4583,7 +4689,7 @@ mod tests {
         }
         assert!(g.p.hp < hp - 1.0, "starving hurts");
         // Food goes in the bag; eating it is up to you (G / hold SELECT).
-        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Food(2), t: 1.0 });
+        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Food(2), t: 1.0, owner: crate::game::ANY });
         g.update(&Input::default());
         assert!(g.pickups.is_empty() && g.p.food_bag == [0, 0, 1] && g.p.food < 5.0, "bagged, not eaten");
         g.update(&Input { eat: true, ..Input::default() });
@@ -4592,7 +4698,7 @@ mod tests {
         // A full bag and a full belly: it stays where it lies. A full bag but hungry: eaten on the spot.
         g.p.food = MAX_FOOD;
         g.p.food_bag = [3, 0, 0];
-        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Food(0), t: 1.0 });
+        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Food(0), t: 1.0, owner: crate::game::ANY });
         g.update(&Input::default());
         assert_eq!(g.pickups.len(), 1);
         g.p.food = 20.0;
@@ -4915,7 +5021,7 @@ mod tests {
         // A full belt and a full bag: it stays on the ground.
         let n = g.p.gear.bag.len();
         g.p.gear.bag = vec![Some(crate::items::potion_item(false)); n];
-        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Health, t: 1.0 });
+        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Health, t: 1.0, owner: crate::game::ANY });
         g.update(&Input::default());
         assert_eq!((g.p.hp_pots, g.pickups.len()), (3, 1), "full belt and bag: it stays on the ground");
         assert!(g.message.as_ref().map_or(false, |m| m.0.contains("ARE FULL")));
@@ -4927,7 +5033,7 @@ mod tests {
         assert_eq!(g.belt_cap(), 9, "a bigger belt");
         g.dialog = None;
         g.pickups.clear();
-        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Health, t: 1.0 });
+        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Health, t: 1.0, owner: crate::game::ANY });
         g.update(&Input::default());
         assert_eq!(g.p.hp_pots, 4);
     }
@@ -4937,7 +5043,7 @@ mod tests {
         let mut g = quiet_game();
         g.p.gear.bag = vec![None; g.p.gear.bag.len()];
         (g.p.hp_pots, g.p.mp_pots) = (3, 3);
-        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Health, t: 1.0 });
+        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Health, t: 1.0, owner: crate::game::ANY });
         g.update(&Input::default());
         assert!(g.pickups.is_empty(), "picked up");
         assert_eq!(g.p.hp_pots, 3);
@@ -5105,8 +5211,8 @@ mod tests {
         assert!(g.p.gear.bag[3..].iter().all(Option::is_none), "gaps at the end");
         // Gold two steps away is scooped up; an item there isn't.
         g.pickups.clear();
-        g.pickups.push(Pickup { x: g.p.x + 1.5, y: g.p.y, kind: Drop::Gold(10), t: 1.0 });
-        g.pickups.push(Pickup { x: g.p.x - 1.5, y: g.p.y, kind: Drop::Health, t: 1.0 });
+        g.pickups.push(Pickup { x: g.p.x + 1.5, y: g.p.y, kind: Drop::Gold(10), t: 1.0, owner: crate::game::ANY });
+        g.pickups.push(Pickup { x: g.p.x - 1.5, y: g.p.y, kind: Drop::Health, t: 1.0, owner: crate::game::ANY });
         let gold = g.p.gold;
         g.collect_pickups();
         assert_eq!(g.p.gold, gold + 10);
@@ -5805,7 +5911,7 @@ mod tests {
         let mut g = vampire_game();
         g.p.food = 20.0;
         // Bread on the floor stays there.
-        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Food(1), t: 1.0 });
+        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Food(1), t: 1.0, owner: crate::game::ANY });
         g.collect_pickups();
         assert_eq!(g.p.food, 20.0);
         assert_eq!(g.pickups.len(), 1);
@@ -6680,7 +6786,7 @@ mod tests {
         let pts = g.p.skills.points;
         g.gain_xp(xp_to_next(1) + 1.0);
         assert_eq!(g.p.skills.points, pts + 1);
-        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Seal(0), t: 1.0 });
+        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Seal(0), t: 1.0, owner: crate::game::ANY });
         g.update(&Input::default());
         assert_eq!(g.p.skills.points, pts + 2);
     }
@@ -6892,7 +6998,7 @@ mod tests {
         // Walking over gear picks it up; a full bag leaves it on the floor.
         g.pickups.clear();
         g.state = State::Playing;
-        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Item(Box::new(items::unique(0))), t: 1.0 });
+        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Item(Box::new(items::unique(0))), t: 1.0, owner: crate::game::ANY });
         g.collect_pickups();
         assert_eq!(g.p.gear.bag[0].as_ref().map(|i| i.name.as_str()), Some("MARROWGRIP"));
         // Wear it from the inventory screen.
@@ -6912,7 +7018,7 @@ mod tests {
         for i in 0..items::BAG {
             g.p.gear.bag[i] = Some(items::unique(1));
         }
-        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Item(Box::new(items::unique(2))), t: 1.0 });
+        g.pickups.push(Pickup { x: g.p.x, y: g.p.y, kind: Drop::Item(Box::new(items::unique(2))), t: 1.0, owner: crate::game::ANY });
         g.collect_pickups();
         assert_eq!(g.pickups.len(), 1, "no room: it stays on the floor");
     }

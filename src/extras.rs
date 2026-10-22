@@ -496,13 +496,13 @@ impl Game {
         if self.ex.rivals_paid & (1 << k) == 0 {
             self.ex.rivals_paid |= 1 << k;
             if let Some(u) = crate::items::boss_unique(&format!("rival{k}")) {
-                self.pickups.push(Pickup { x, y: y + 0.6, kind: Drop::Item(Box::new(u)), t: 0.0 });
+                self.pickups.push(Pickup { x, y: y + 0.6, kind: Drop::Item(Box::new(u)), t: 0.0, owner: crate::game::ANY });
             }
             let it = crate::items::roll(ilvl, crate::items::Rarity::Rare, &mut self.rng);
-            self.pickups.push(Pickup { x: x + 0.7, y, kind: Drop::Item(Box::new(it)), t: 0.0 });
+            self.pickups.push(Pickup { x: x + 0.7, y, kind: Drop::Item(Box::new(it)), t: 0.0, owner: crate::game::ANY });
             self.say(format!("{name} YIELDS: \"FINE! YOU'RE BETTER. TAKE THIS, AND TELL NO ONE.\""));
         } else {
-            self.pickups.push(Pickup { x, y, kind: Drop::Gold((20.0 + 10.0 * self.tier) as i32), t: 0.0 });
+            self.pickups.push(Pickup { x, y, kind: Drop::Gold((20.0 + 10.0 * self.tier) as i32), t: 0.0, owner: crate::game::ANY });
             self.say(format!("{name} YIELDS, AND LEAVES WITHOUT A WORD"));
         }
         self.ex.rival_state = 0;
@@ -718,10 +718,10 @@ impl Game {
         if first {
             let ilvl = crate::items::ilvl_for(self.tier) + 3;
             let it = crate::items::roll(ilvl, crate::items::Rarity::Rare, &mut self.rng);
-            self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(it)), t: 0.0 });
-            self.pickups.push(Pickup { x: x + 0.8, y, kind: Drop::Gold(150 * (a as i32 + 1) * (self.quest.difficulty as i32 + 1)), t: 0.0 });
+            self.pickups.push(Pickup { x, y, kind: Drop::Item(Box::new(it)), t: 0.0, owner: crate::game::ANY });
+            self.pickups.push(Pickup { x: x + 0.8, y, kind: Drop::Gold(150 * (a as i32 + 1) * (self.quest.difficulty as i32 + 1)), t: 0.0, owner: crate::game::ANY });
         } else if pb {
-            self.pickups.push(Pickup { x, y, kind: Drop::Gold(40 * (a as i32 + 1)), t: 0.0 });
+            self.pickups.push(Pickup { x, y, kind: Drop::Gold(40 * (a as i32 + 1)), t: 0.0, owner: crate::game::ANY });
         }
         for _ in 0..16 {
             self.spray_at(x, y, PKind::Magic, 10.0);
