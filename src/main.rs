@@ -15,6 +15,7 @@ mod items;
 mod levels;
 mod liquid;
 mod party;
+mod net;
 mod menu;
 mod mobs;
 mod music;
