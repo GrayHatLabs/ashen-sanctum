@@ -32,6 +32,8 @@ pub enum Event {
     Hello { peer: u32, name: String, hero: String },
     Input { peer: u32, input: proto::NetInput },
     Chat { peer: u32, text: String },
+    /// A bag or skill-tree action (checked by the game: online.rs).
+    Act { peer: u32, act: ToHost },
     /// Gone, and why (shown to the others).
     Gone { peer: u32, why: String },
 }
@@ -276,6 +278,7 @@ fn serve(
                     }
                     true
                 }
+                a @ (ToHost::Bag { .. } | ToHost::Gem { .. } | ToHost::Skill { .. }) => tx.send(Event::Act { peer, act: a }).is_ok(),
                 ToHost::Bye => {
                     bye_seen.store(true, Ordering::Relaxed);
                     false

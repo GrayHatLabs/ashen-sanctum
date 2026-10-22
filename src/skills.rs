@@ -1707,8 +1707,38 @@ impl Game {
             act = Some(TreeAct::Close);
         }
         let s = tree[self.tree.as_ref().unwrap().sel];
+        if self.remote.is_some() {
+            use crate::net::proto::{ToHost, SKILL_LEARN, SKILL_PRIMARY, SKILL_SECONDARY};
+            let op = match act {
+                Some(TreeAct::Learn) => SKILL_LEARN,
+                Some(TreeAct::Primary) => SKILL_PRIMARY,
+                Some(TreeAct::Secondary) => SKILL_SECONDARY,
+                Some(TreeAct::Select(i)) => {
+                    self.tree.as_mut().unwrap().sel = i;
+                    return;
+                }
+                Some(TreeAct::Close) => {
+                    self.tree = None;
+                    return;
+                }
+                None => return,
+            };
+            if let (Some(k), Some(q)) = (ALL.iter().position(|x| *x == s), self.remote.as_mut()) {
+                q.push(ToHost::Skill { op, skill: k as u16 });
+            }
+            return;
+        }
+        self.tree_apply(act, s);
+    }
+
+    /// What a skill-tree action does to skill `s` (the host runs this for joiners too).
+    pub(crate) fn tree_apply(&mut self, act: Option<TreeAct>, s: Skill) {
         match act {
-            Some(TreeAct::Select(i)) => self.tree.as_mut().unwrap().sel = i,
+            Some(TreeAct::Select(i)) => {
+                if let Some(t) = self.tree.as_mut() {
+                    t.sel = i;
+                }
+            }
             Some(TreeAct::Learn) => {
                 if self.p.skills.learn(s, self.p.clvl) {
                     self.sfx.push(Sfx::Pickup);

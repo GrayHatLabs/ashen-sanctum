@@ -27,6 +27,45 @@ pub enum ToHost {
     Input(NetInput),
     Chat(String),
     Bye,
+    /// In the bag: use / toss / store / sort (`BAG_*`) the item in a cell (`CELL_*`, index).
+    Bag { op: u8, cell: (u8, u16) },
+    /// Set the gem in bag cell `from` into the item in `to`.
+    Gem { from: u16, to: (u8, u16) },
+    /// In the skill tree: learn / make primary / make secondary (`SKILL_*`) a skill (its number in skills::ALL).
+    Skill { op: u8, skill: u16 },
+}
+
+pub const BAG_USE: u8 = 0;
+pub const BAG_TOSS: u8 = 1;
+pub const BAG_STORE: u8 = 2;
+pub const BAG_SORT: u8 = 3;
+pub const CELL_WORN: u8 = 0;
+pub const CELL_BAG: u8 = 1;
+pub const CELL_STASH: u8 = 2;
+pub const SKILL_LEARN: u8 = 0;
+pub const SKILL_PRIMARY: u8 = 1;
+pub const SKILL_SECONDARY: u8 = 2;
+
+/// A bag cell from the wire, if it's a real one (the shop isn't: that needs the trader).
+pub fn cell_in(c: (u8, u16)) -> Option<crate::inventory::Cell> {
+    use crate::inventory::Cell;
+    let i = c.1 as usize;
+    match c.0 {
+        CELL_WORN if i < crate::items::WORN.len() => Some(Cell::Worn(i)),
+        CELL_BAG if i < crate::items::BAG => Some(Cell::Bag(i)),
+        CELL_STASH if i < crate::items::STASH => Some(Cell::Stash(i)),
+        _ => None,
+    }
+}
+
+pub fn cell_out(c: crate::inventory::Cell) -> Option<(u8, u16)> {
+    use crate::inventory::Cell;
+    match c {
+        Cell::Worn(i) => Some((CELL_WORN, i as u16)),
+        Cell::Bag(i) => Some((CELL_BAG, i as u16)),
+        Cell::Stash(i) => Some((CELL_STASH, i as u16)),
+        Cell::Shop(_) => None,
+    }
 }
 
 /// Host → joiner.

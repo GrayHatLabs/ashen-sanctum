@@ -871,6 +871,8 @@ pub struct Game {
     /// Co-op (party.rs): the other heroes in this world, which of them is in the active slot now (0 = the
     /// leader), and the level the party was last brought to.
     pub allies: Vec<crate::party::Ally>,
+    /// Joined to someone's game (online.rs): what the bag and skill tree ask for goes here, for the host.
+    pub(crate) remote: Option<Vec<crate::net::proto::ToHost>>,
     pub(crate) cur_hero: usize,
     pub(crate) party_level: LevelId,
     pub(crate) prev: Input,
@@ -1014,6 +1016,7 @@ impl Game {
             pending_travel: None,
             trail: Default::default(),
             allies: vec![],
+            remote: None,
             cur_hero: 0,
             party_level: LevelId::Overworld,
             prev: Input::default(),

@@ -108,6 +108,15 @@ impl Hosting {
                         }
                     }
                 }
+                Event::Act { peer, act } => {
+                    let Some(k) = self.slot_of(peer) else { continue };
+                    if !g.as_hero(k, |g| g.remote_act(&act)) {
+                        self.peers[k].2 += 1;
+                        if self.peers[k].2 > MAX_STRIKES {
+                            self.host.kick(peer, "BAD INPUT");
+                        }
+                    }
+                }
                 Event::Chat { peer, text } => {
                     let Some(k) = self.slot_of(peer) else { continue };
                     let from = self.peers[k].1.clone();
@@ -257,7 +266,29 @@ impl Joined {
         if let Some(why) = self.link.ended() {
             return Some(why);
         }
-        // Your controls (the world point under the mouse, not the screen point).
+        // The bag and the skill tree open here; what they change is sent to the host.
+        if g.remote.is_none() {
+            g.remote = Some(vec![]);
+        }
+        let pressed = |now: bool, before: bool| now && !before;
+        if g.inv.is_some() {
+            let (pc, pl) = (pressed(inp.confirm, g.prev.confirm) || pressed(inp.cast, g.prev.cast), pressed(inp.lmb, g.prev.lmb));
+            g.update_inventory(inp, pc, pl);
+        } else if g.tree.is_some() {
+            let (pc, pl) = (pressed(inp.confirm, g.prev.confirm) || pressed(inp.cast, g.prev.cast), pressed(inp.lmb, g.prev.lmb));
+            g.update_tree(inp, pc, pl);
+        } else if inp.inv && !g.prev.inv {
+            g.open_inventory();
+        } else if inp.skills && !g.prev.skills {
+            g.open_tree();
+        }
+        let busy = g.inv.is_some() || g.tree.is_some();
+        for m in g.remote.as_mut().map(std::mem::take).unwrap_or_default() {
+            let _ = self.link.send(&m);
+        }
+        g.prev = inp.clone();
+        // Your controls (the world point under the mouse, not the screen point); none while in the bag or tree.
+        let inp = &if busy { Input { mouse: inp.mouse, ..Default::default() } } else { inp.clone() };
         self.seq = self.seq.wrapping_add(1);
         let target = inp.mouse.map(|m| g.mouse_world(m));
         let _ = self.link.send(&ToHost::Input(NetInput::from_input(self.seq, inp, target)));
@@ -308,6 +339,61 @@ pub fn merge_hero(own: &str, from_host: &str) -> Option<String> {
 }
 
 impl Game {
+    /// A joiner's bag or skill-tree action, for the active hero (as_hero): checked, then done just as the
+    /// hero's own screen would. False if it was malformed (counted against the joiner).
+    pub fn remote_act(&mut self, m: &ToHost) -> bool {
+        use crate::inventory::{Cell, InvAct, InvUi};
+        use crate::net::proto::*;
+        // The host's own open bag is set aside while the joiner's action runs on a bag screen of its own.
+        let keep_inv = self.inv.take();
+        let keep_tree = self.tree.take();
+        let in_town = self.safe.map_or(false, |(x0, y0, x1, y1)| self.p.x >= x0 && self.p.x <= x1 && self.p.y >= y0 && self.p.y <= y1);
+        let ok = match *m {
+            ToHost::Bag { op, cell } => match (cell_in(cell), op) {
+                (Some(c), BAG_USE | BAG_TOSS | BAG_STORE | BAG_SORT) => {
+                    // The stash is only there in town.
+                    if (op == BAG_STORE || matches!(c, Cell::Stash(_))) && !in_town {
+                        true
+                    } else {
+                        let act = match op {
+                            BAG_USE => InvAct::Use,
+                            BAG_TOSS => InvAct::Toss,
+                            BAG_STORE => InvAct::Store,
+                            _ => InvAct::Sort,
+                        };
+                        self.inv = Some(InvUi::at(c));
+                        self.inv_apply(Some(act), c, false, None);
+                        true
+                    }
+                }
+                _ => false,
+            },
+            ToHost::Gem { from, to } => match cell_in(to) {
+                Some(c) if (from as usize) < crate::items::BAG && matches!(c, Cell::Bag(_) | Cell::Worn(_)) => {
+                    self.inv = Some(InvUi::at(c));
+                    self.inv_apply(Some(InvAct::Select(c)), c, false, Some(from as usize));
+                    true
+                }
+                _ => false,
+            },
+            ToHost::Skill { op, skill } => {
+                let s = crate::skills::ALL.get(skill as usize).copied();
+                match s {
+                    Some(s) if self.p.skills.class.tree().contains(&s) && op <= SKILL_SECONDARY => {
+                        let act = [crate::skills::TreeAct::Learn, crate::skills::TreeAct::Primary, crate::skills::TreeAct::Secondary][op as usize];
+                        self.tree_apply(Some(act), s);
+                        true
+                    }
+                    _ => false,
+                }
+            }
+            _ => false,
+        };
+        self.inv = keep_inv;
+        self.tree = keep_tree;
+        ok
+    }
+
     /// A joiner's hero (from its save) joins the party. Refused if it can't be read, isn't sane, or doesn't
     /// match the game (hardcore heroes only in hardcore games, and the other way round).
     pub fn add_ally_from_save(&mut self, text: &str, name: &str) -> Result<usize, &'static str> {
@@ -388,6 +474,48 @@ impl Game {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_joiners_bag_and_skill_actions_are_checked_then_done() {
+        use crate::net::proto::*;
+        let mut g = Game::new(7, crate::gfx::SH_WIDE);
+        g.set_class(crate::skills::Class::Sorceress);
+        g.open_inventory();
+        let k = g.add_ally(crate::skills::Class::Valkyrie, "BRYNJA");
+        // An item in the joiner's bag: using it wears it (the bag cell empties or swaps).
+        let mut rng = crate::rng::Rng::new(5);
+        let it = crate::items::roll(1, crate::items::Rarity::Normal, &mut rng);
+        let name = it.name.clone();
+        g.allies[k].st.p.gear.bag = vec![None; crate::items::BAG];
+        g.allies[k].st.p.gear.bag[4] = Some(it);
+        assert!(g.as_hero(k, |g| g.remote_act(&ToHost::Bag { op: BAG_USE, cell: (CELL_BAG, 4) })));
+        assert!(g.allies[k].st.p.gear.worn.iter().flatten().any(|w| w.name == name), "worn now");
+        assert!(g.inv.is_some(), "the host's own bag is still open");
+        // Learning a skill of the joiner's class.
+        let s = crate::skills::Class::Valkyrie.tree()[0];
+        let idx = crate::skills::ALL.iter().position(|x| *x == s).unwrap() as u16;
+        g.allies[k].st.p.skills.points = 3;
+        let before = g.allies[k].st.p.skills.rank(s);
+        assert!(g.as_hero(k, |g| g.remote_act(&ToHost::Skill { op: SKILL_LEARN, skill: idx })));
+        assert!(g.allies[k].st.p.skills.rank(s) > before || g.allies[k].st.p.skills.points < 3, "learned (or refused by the game's own rules)");
+        // Nonsense is refused: other classes' skills, cells that don't exist, unknown actions, the shop.
+        let other = crate::skills::ALL.iter().position(|x| *x == crate::skills::Class::Sorceress.tree()[0]).unwrap() as u16;
+        for m in [
+            ToHost::Skill { op: SKILL_LEARN, skill: other },
+            ToHost::Skill { op: SKILL_LEARN, skill: 9999 },
+            ToHost::Skill { op: 7, skill: idx },
+            ToHost::Bag { op: BAG_USE, cell: (CELL_BAG, 999) },
+            ToHost::Bag { op: 9, cell: (CELL_BAG, 0) },
+            ToHost::Bag { op: BAG_USE, cell: (7, 0) },
+            ToHost::Gem { from: 999, to: (CELL_BAG, 0) },
+            ToHost::Chat("x".into()),
+        ] {
+            assert!(!g.as_hero(k, |g| g.remote_act(&m)), "{m:?} refused");
+        }
+        // The stash is only there in town.
+        g.allies[k].st.p.x = -500.0;
+        assert!(g.as_hero(k, |g| g.remote_act(&ToHost::Bag { op: BAG_STORE, cell: (CELL_BAG, 0) })), "well-formed, but nothing happens out of town");
+    }
 
     #[test]
     fn your_save_takes_only_your_hero_from_the_host() {
