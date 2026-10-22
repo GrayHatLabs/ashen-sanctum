@@ -994,9 +994,15 @@ impl Game {
                     let db = (b.1 - m.x).powi(2) + (b.2 - m.y).powi(2);
                     da.partial_cmp(&db).unwrap()
                 });
+                let (hx, hy) = heroes
+                    .iter()
+                    .filter(|h| h.2)
+                    .map(|h| (h.0, h.1))
+                    .min_by(|a, b| ((a.0 - m.x).powi(2) + (a.1 - m.y).powi(2)).total_cmp(&((b.0 - m.x).powi(2) + (b.1 - m.y).powi(2))))
+                    .unwrap_or((px, py));
                 let (tx, ty, reach) = match target {
                     Some(&(_, fx, fy, fr)) if (fx - m.x).powi(2) + (fy - m.y).powi(2) < 100.0 => (fx, fy, m.reach + fr),
-                    _ => (px, py, 2.0),
+                    _ => (hx, hy, 2.0),
                 };
                 let (dx, dy) = (tx - m.x, ty - m.y);
                 let dist = (dx * dx + dy * dy).sqrt().max(0.01);
@@ -1420,7 +1426,7 @@ impl Game {
 
     /// Pushes overlapping monsters apart and off the player.
     fn separate(&mut self) {
-        let (px, py) = (self.p.x, self.p.y);
+        let heroes = self.hero_spots();
         let n = self.mobs.len();
         for i in 0..n {
             if !self.mobs[i].alive() {
@@ -1457,16 +1463,21 @@ impl Game {
                     }
                 }
             }
-            let (dx, dy) = (self.mobs[i].x - px, self.mobs[i].y - py);
-            let d2 = dx * dx + dy * dy;
-            let min = self.mobs[i].r + PLAYER_R;
-            if d2 < min * min && d2 > 1e-6 {
-                let d = d2.sqrt();
-                let r = self.mobs[i].r;
-                let (mut x, mut y) = (self.mobs[i].x, self.mobs[i].y);
-                move_circle(&self.d, &mut x, &mut y, dx / d * (min - d), dy / d * (min - d), r);
-                self.mobs[i].x = x;
-                self.mobs[i].y = y;
+            for &(px, py, alive) in &heroes {
+                if !alive {
+                    continue;
+                }
+                let (dx, dy) = (self.mobs[i].x - px, self.mobs[i].y - py);
+                let d2 = dx * dx + dy * dy;
+                let min = self.mobs[i].r + PLAYER_R;
+                if d2 < min * min && d2 > 1e-6 {
+                    let d = d2.sqrt();
+                    let r = self.mobs[i].r;
+                    let (mut x, mut y) = (self.mobs[i].x, self.mobs[i].y);
+                    move_circle(&self.d, &mut x, &mut y, dx / d * (min - d), dy / d * (min - d), r);
+                    self.mobs[i].x = x;
+                    self.mobs[i].y = y;
+                }
             }
         }
     }

@@ -1990,38 +1990,46 @@ impl Game {
             }
             State::Playing => {}
         }
+        // Alone, the world waits while you're in the bag or the skill tree; with others in it, it can't.
+        let shared = !self.allies.is_empty();
+        let mut busy = false;
         if self.tree.is_some() {
-            // The world waits while you plan your skills.
             self.update_tree(inp, p_cast || p_confirm, p_lmb);
-            self.prev = inp.clone();
-            return;
+            if !shared {
+                self.prev = inp.clone();
+                return;
+            }
+            busy = true;
         }
         if let Some(sel) = self.choose {
             self.update_choose(inp, sel, p_cast || p_confirm, p_lmb);
             self.prev = inp.clone();
             return;
         }
-        if self.inv.is_some() {
+        if self.inv.is_some() && !busy {
             // A (the attack button) wears / takes off / buys, as the screen says: on a handheld START closes the
             // bag, so ENTER alone left nothing to press.
             self.update_inventory(inp, p_confirm || p_cast, p_lmb);
-            self.prev = inp.clone();
-            return;
+            if !shared {
+                self.prev = inp.clone();
+                return;
+            }
+            busy = true;
         }
-        if inp.skills && self.dialog.is_none() && self.state == State::Playing {
+        if !busy && (inp.skills && self.dialog.is_none() && self.state == State::Playing) {
             self.open_tree();
             self.prev = inp.clone();
             return;
         }
-        if self.state == State::Playing && (inp.cheat_level || inp.cheat_loot) {
+        if !busy && (self.state == State::Playing && (inp.cheat_level || inp.cheat_loot)) {
             self.cheat(inp.cheat_level);
         }
-        if inp.inv && self.dialog.is_none() && self.state == State::Playing {
+        if !busy && (inp.inv && self.dialog.is_none() && self.state == State::Playing) {
             self.open_inventory();
             self.prev = inp.clone();
             return;
         }
-        if inp.cancel {
+        if !busy && (inp.cancel) {
             if self.dialog.is_some() {
                 self.dialog = None;
             } else if self.show_map {
@@ -2030,26 +2038,28 @@ impl Game {
                 self.ask_quit();
             }
         }
-        if inp.quit_ask && self.dialog.is_none() {
+        if !busy && (inp.quit_ask && self.dialog.is_none()) {
             self.ask_quit();
         }
-        if inp.help && self.dialog.is_none() {
+        if !busy && (inp.help && self.dialog.is_none()) {
             self.open_help();
         }
-        if inp.back && self.dialog.is_none() && self.show_map {
+        if !busy && (inp.back && self.dialog.is_none() && self.show_map) {
             self.show_map = false;
         }
-        if self.offer_guide && self.dialog.is_none() && self.state == State::Playing && self.pending_travel.is_none() {
+        if !busy && self.offer_guide && self.dialog.is_none() && self.state == State::Playing && self.pending_travel.is_none() {
             self.offer_guide = false;
             let mut d = Dialog::new("WELCOME", &["NEW TO ASHEN SANCTUM? A SHORT GUIDE SHOWS THE CONTROLS, AND HOW TO FIND YOUR GOALS."]);
             d.last_options = vec![("SHOW ME HOW TO PLAY".into(), Act::Help(0)), ("NO THANKS".into(), Act::Close)];
             d.refresh_options();
             self.dialog = Some(d);
         }
-        if inp.map {
+        if !busy && (inp.map) {
             self.show_map = !self.show_map;
         }
-        if self.dialog.is_some() {
+        if busy {
+            // In the bag or the tree with others playing: you stand still, the world goes on.
+        } else if self.dialog.is_some() {
             self.update_dialog(inp, p_cast || p_confirm, p_lmb);
         } else if self.state == State::Playing {
             self.update_player(inp, p_cast, p_lmb);
