@@ -267,10 +267,14 @@ impl Screen {
     }
 
     pub fn disc(&mut self, cx: i32, cy: i32, r: i32, c: u32) {
-        for y in -r..=r {
-            for x in -r..=r {
-                if x * x + y * y <= r * r + r {
-                    self.pset(cx + x, cy + y, c);
+        // Only the part on screen is visited: a huge radius (from a bad host, say) costs no more than the screen.
+        let r = r.clamp(0, 4096) as i64;
+        let (cx, cy) = (cx as i64, cy as i64);
+        for y in (cy - r).max(-1)..=(cy + r).min(self.h as i64) {
+            for x in (cx - r).max(-1)..=(cx + r).min(self.w as i64) {
+                let (dx, dy) = (x - cx, y - cy);
+                if dx * dx + dy * dy <= r * r + r {
+                    self.pset(x as i32, y as i32, c);
                 }
             }
         }

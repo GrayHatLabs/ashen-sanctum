@@ -17,7 +17,7 @@ use serde::{Deserialize, Serialize};
 /// How far around a joiner's hero the world is sent (tiles; the screen is about 20 across).
 pub const VIEW: f32 = 28.0;
 /// The most a level or a snapshot may inflate to.
-const MAX_LEVEL: usize = 32 * 1024 * 1024;
+const MAX_LEVEL: usize = 8 * 1024 * 1024;
 const MAX_SNAP: usize = 4 * 1024 * 1024;
 /// The biggest map side accepted (the largest the game makes is well under this).
 const MAX_SIDE: i32 = 1024;
@@ -97,9 +97,26 @@ fn pack<T: Serialize>(m: &T) -> Option<Vec<u8>> {
     Some(miniz_oxide::deflate::compress_to_vec(&raw, 3))
 }
 
+/// Compresses raw (already encoded) bytes the way `pack` does (the fuzz test mangles them in between).
+#[cfg(test)]
+fn deflate(raw: &[u8]) -> Vec<u8> {
+    miniz_oxide::deflate::compress_to_vec(raw, 3)
+}
+
 fn unpack<T: for<'de> Deserialize<'de>>(bytes: &[u8], max: usize) -> Option<T> {
     let raw = miniz_oxide::inflate::decompress_to_vec_with_limit(bytes, max).ok()?;
     super::proto::decode::<T>(&raw)
+}
+
+/// A pickup the game can show: the quest things and meals name one of three, items are real ones.
+fn drop_ok(d: &crate::game::Drop) -> bool {
+    use crate::game::Drop::*;
+    match d {
+        Food(i) | Seal(i) | Rune(i) | Sigil(i) | Key(i) | Pearl(i) | Shard(i) | AKey(i) => *i < 3,
+        Word(i) => (*i as usize) < crate::churnside::WORDS.len(),
+        Item(it) => crate::online::item_ok(it),
+        _ => true,
+    }
 }
 
 fn finite(x: f32, y: f32) -> bool {
@@ -126,6 +143,11 @@ impl Game {
     /// What hero `hero` (party numbering: 0 the host) can see, packed, with the sounds and floating
     /// numbers since its last one.
     pub fn net_snapshot(&mut self, hero: u8, sfx: &[Sfx], floaters: &[Floater]) -> Option<Vec<u8>> {
+        self.snapshot_bytes(hero, sfx, floaters, true)
+    }
+
+    /// The snapshot, compressed (to send) or raw (the fuzz test).
+    fn snapshot_bytes(&mut self, hero: u8, sfx: &[Sfx], floaters: &[Floater], compress: bool) -> Option<Vec<u8>> {
         // The host's own hero, as a HeroState like the others (put back straight after).
         let mut lead = HeroState::new();
         self.swap_with(&mut lead);
@@ -134,6 +156,21 @@ impl Game {
             k => self.allies.get(k as usize - 1).map_or((lead.p.x, lead.p.y), |a| (a.st.p.x, a.st.p.y)),
         };
         let near = |x: f32, y: f32| (x - hx).powi(2) + (y - hy).powi(2) < VIEW * VIEW;
+        // Everyone else sees a public view of each hero: no bag, stash, waypoints or records (review 2026-10-22).
+        let mut hidden: Vec<(u8, Vec<Option<crate::items::Item>>, Vec<Option<crate::items::Item>>, Vec<crate::world::LevelId>, crate::extras::Extras)> = vec![];
+        {
+            let mut hide = |k: u8, st: &mut HeroState| {
+                if k != hero {
+                    let bag = std::mem::replace(&mut st.p.gear.bag, vec![None; crate::items::BAG]);
+                    let stash = std::mem::replace(&mut st.p.gear.stash, vec![None; crate::items::STASH]);
+                    hidden.push((k, bag, stash, std::mem::take(&mut st.waypoints), std::mem::take(&mut st.ex)));
+                }
+            };
+            hide(0, &mut lead);
+            for (k, a) in self.allies.iter_mut().enumerate() {
+                hide(k as u8 + 1, &mut a.st);
+            }
+        }
         let mut heroes = vec![(0u8, &lead)];
         heroes.extend(self.allies.iter().enumerate().map(|(k, a)| (k as u8 + 1, &a.st)));
         let out = SnapOut {
@@ -149,8 +186,12 @@ impl Game {
             sfx,
             floaters,
         };
-        let packed = pack(&out);
+        let packed = if compress { pack(&out) } else { postcard::to_stdvec(&out).ok() };
         drop(out);
+        for (k, bag, stash, wps, ex) in hidden {
+            let st = if k == 0 { &mut lead } else { &mut self.allies[k as usize - 1].st };
+            (st.p.gear.bag, st.p.gear.stash, st.waypoints, st.ex) = (bag, stash, wps, ex);
+        }
         self.swap_with(&mut lead);
         packed
     }
@@ -161,7 +202,7 @@ impl Game {
         let d = &lv.d;
         let n = (d.w as i64 * d.h as i64).max(0) as usize;
         let shaped = d.w > 0 && d.h > 0 && d.w <= MAX_SIDE && d.h <= MAX_SIDE && d.tiles.len() == n && d.var.len() == n && d.ground.len() == n && d.liquid.len() == n;
-        if !shaped || !lv.tier.is_finite() || !finite(lv.start.0, lv.start.1) || !finite(lv.waypoint.0, lv.waypoint.1) {
+        if !shaped || !crate::world::level_ok(lv.id) || !lv.tier.is_finite() || !finite(lv.start.0, lv.start.1) || !finite(lv.waypoint.0, lv.waypoint.1) {
             return false;
         }
         if lv.props.iter().any(|p| !finite(p.x, p.y) || !p.depth.is_finite()) || lv.npcs.iter().any(|p| !finite(p.x, p.y)) {
@@ -200,11 +241,18 @@ impl Game {
             return false;
         }
         // Things somewhere impossible are dropped rather than drawn.
-        s.mobs.retain(|m| finite(m.x, m.y) && m.hp.is_finite() && m.max_hp.is_finite());
-        s.pickups.retain(|k| finite(k.x, k.y));
+        s.mobs.retain(|m| finite(m.x, m.y) && m.hp.is_finite() && m.max_hp.is_finite() && (m.superu as usize) <= crate::side::SUPERS.len());
+        s.pickups.retain(|k| finite(k.x, k.y) && drop_ok(&k.kind));
         s.shots.retain(|k| finite(k.x, k.y));
         s.hazards.retain(|k| finite(k.x, k.y) && k.r.is_finite());
-        s.portals.retain(|k| finite(k.x, k.y));
+        let here = self.level;
+        s.portals.retain(|k| finite(k.x, k.y) && crate::world::portal_ok(here, k.kind));
+        for (_, h) in s.heroes.iter_mut() {
+            h.waypoints.retain(|w| crate::world::level_ok(*w));
+            if h.tp_return.map_or(false, |(l, x, y)| !crate::world::level_ok(l) || !finite(x, y)) {
+                h.tp_return = None;
+            }
+        }
         let _ = s.tick;
         self.allies.clear();
         for (k, st) in s.heroes {
@@ -280,6 +328,79 @@ mod tests {
         // It draws.
         let mut scr = crate::gfx::Screen::new(crate::gfx::SH_WIDE);
         joiner.draw(&mut scr);
+    }
+
+    #[test]
+    fn mangled_snapshots_never_crash_a_joiner() {
+        // A host where every class is fighting, so a snapshot carries every kind of missile, summon and effect.
+        let mut host = Game::new(7, crate::gfx::SH_WIDE);
+        host.set_class(crate::skills::Class::Sorceress);
+        host.debug_goto(LevelId::Area(0, 1));
+        for c in crate::skills::ALL_CLASSES.iter().copied().skip(1) {
+            let k = host.add_ally(c, "ALLY");
+            host.as_hero(k, |g| {
+                g.act_gear(3);
+                for s in c.tree() {
+                    g.p.skills.rank[*s as usize] = 3;
+                }
+            });
+        }
+        host.party_level = host.level;
+        for t in 0..240u32 {
+            for a in host.allies.iter_mut() {
+                a.inp = crate::game::Input { cast: t % 3 != 0, cast2: t % 3 == 0, cycle: t % 40 == 0, ..Default::default() };
+            }
+            let inp = crate::game::Input { cast: t % 2 == 0, cast2: t % 2 == 1, ..Default::default() };
+            host.update(&inp);
+        }
+        let level = host.net_level().unwrap();
+        let raw = host.snapshot_bytes(1, &[], &[], false).unwrap();
+        let mut rng = crate::rng::Rng::new(std::env::var("FUZZ_SEED").ok().and_then(|v| v.parse().ok()).unwrap_or(1234));
+        let mut panics: Vec<String> = vec![];
+        let mut applied = 0;
+        let mut scr = crate::gfx::Screen::new(crate::gfx::SH_WIDE);
+        let mut joiner = Game::new(99, crate::gfx::SH_WIDE);
+        assert!(joiner.apply_level(&level));
+        let hook = std::panic::take_hook();
+        static WHERE: std::sync::Mutex<Vec<String>> = std::sync::Mutex::new(Vec::new());
+        std::panic::set_hook(Box::new(|info| {
+            if let Some(l) = info.location() {
+                WHERE.lock().unwrap_or_else(|e| e.into_inner()).push(format!("{}:{}", l.file(), l.line()));
+            }
+        }));
+        for _ in 0..3000 {
+            let mut b = raw.clone();
+            for _ in 0..rng.range(1, 9) {
+                let i = rng.range(0, b.len() as i32) as usize;
+                b[i] = if rng.chance(0.3) { 0xff } else { rng.range(0, 256) as u8 };
+            }
+            let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                if joiner.apply_snapshot(&super::deflate(&b), 1) {
+                    joiner.draw(&mut scr);
+                    true
+                } else {
+                    false
+                }
+            }));
+            match r {
+                Ok(true) => applied += 1,
+                Ok(false) => {}
+                Err(e) => {
+                    let m = e.downcast_ref::<String>().cloned().or_else(|| e.downcast_ref::<&str>().map(|s| s.to_string())).unwrap_or_default();
+                    let at = WHERE.lock().unwrap_or_else(|e| e.into_inner()).pop().unwrap_or_default();
+                    let m = format!("{m} at {at}");
+                    if !panics.contains(&m) {
+                        panics.push(m);
+                    }
+                    joiner = Game::new(99, crate::gfx::SH_WIDE);
+                    assert!(joiner.apply_level(&level));
+                }
+            }
+        }
+        std::panic::set_hook(hook);
+        println!("{applied} mangled snapshots applied and drawn; panics: {panics:#?}");
+        assert!(applied > 300, "enough of them decode to test the drawing");
+        assert!(panics.is_empty(), "a joiner must not crash on what a host sends: {panics:#?}");
     }
 
     #[test]

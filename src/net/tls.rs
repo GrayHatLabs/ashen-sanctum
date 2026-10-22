@@ -149,6 +149,39 @@ pub fn client_config(pin: Option<[u8; 32]>) -> Result<(Arc<rustls::ClientConfig>
     Ok((Arc::new(cfg), seen))
 }
 
+/// Finishes a TLS handshake by `deadline` (the socket has a short read timeout, so a peer that trickles bytes
+/// can't hold it open: review 2026-10-22). `stop` aborts it early.
+pub fn handshake<C, D>(s: &mut rustls::StreamOwned<C, std::net::TcpStream>, deadline: std::time::Instant, stop: &std::sync::atomic::AtomicBool) -> io::Result<()>
+where
+    C: std::ops::Deref<Target = rustls::ConnectionCommon<D>> + std::ops::DerefMut,
+    D: rustls::SideData,
+{
+    s.sock.set_read_timeout(Some(std::time::Duration::from_millis(250)))?;
+    while s.conn.is_handshaking() {
+        if std::time::Instant::now() > deadline || stop.load(std::sync::atomic::Ordering::Relaxed) {
+            return Err(io::Error::new(io::ErrorKind::TimedOut, "handshake too slow"));
+        }
+        match s.conn.complete_io(&mut s.sock) {
+            Ok(_) => {}
+            Err(e) if matches!(e.kind(), io::ErrorKind::WouldBlock | io::ErrorKind::TimedOut | io::ErrorKind::Interrupted) => {}
+            Err(e) => return Err(e),
+        }
+    }
+    Ok(())
+}
+
+/// The address as known_hosts.txt keys it: as typed (lower case, with the port), so a host whose name moves
+/// to another IP is still the same host, and one IP serving two names isn't confused.
+pub fn host_key(addr: &str) -> String {
+    let a = addr.trim().to_ascii_lowercase();
+    let has_port = a.rsplit_once(':').map_or(false, |(h, p)| !h.is_empty() && !h.ends_with(':') && p.parse::<u16>().is_ok()) && !(a.matches(':').count() > 1 && !a.starts_with('['));
+    if has_port {
+        a
+    } else {
+        format!("{a}:{}", super::proto::DEFAULT_PORT)
+    }
+}
+
 pub fn server_name() -> ServerName<'static> {
     ServerName::try_from(HOST_NAME).expect("a valid name")
 }

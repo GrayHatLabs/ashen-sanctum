@@ -304,7 +304,7 @@ impl Game {
         let prey = hits.iter().copied().min_by(|&a, &b| {
             let da = (self.mobs[a].x - tx).powi(2) + (self.mobs[a].y - ty).powi(2);
             let db = (self.mobs[b].x - tx).powi(2) + (self.mobs[b].y - ty).powi(2);
-            da.partial_cmp(&db).unwrap()
+            da.total_cmp(&db)
         });
         for i in hits {
             let dmg = self.rng.rf(lo, hi) * power * mult;
@@ -360,7 +360,7 @@ impl Game {
         let target = self.foes_where(|_| true).into_iter().min_by(|&a, &b| {
             let da = (self.mobs[a].x - tx).powi(2) + (self.mobs[a].y - ty).powi(2);
             let db = (self.mobs[b].x - tx).powi(2) + (self.mobs[b].y - ty).powi(2);
-            da.partial_cmp(&db).unwrap()
+            da.total_cmp(&db)
         });
         let Some(i) = target.filter(|&i| (self.mobs[i].x - tx).powi(2) + (self.mobs[i].y - ty).powi(2) < 9.0) else {
             self.say("NO NAME TO WRITE THERE".into());
@@ -577,7 +577,7 @@ impl Game {
                 .enumerate()
                 .filter(|(_, m)| m.alive() && m.charm <= 0.0)
                 .map(|(i, m)| (i, (m.x - f.x).powi(2) + (m.y - f.y).powi(2), m.r))
-                .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
+                .min_by(|a, b| a.1.total_cmp(&b.1));
             if let Some((i, d2, mr)) = near {
                 let l = d2.sqrt().max(0.01);
                 if l < 8.0 {

@@ -682,6 +682,27 @@ pub enum PortalKind {
     Exit(u8),
 }
 
+/// Is this a place the game has? (Places arrive over the network: online.rs.)
+pub fn level_ok(id: LevelId) -> bool {
+    match id {
+        LevelId::Dungeon(k, f) => k < DUNGEONS.len() && f < DUNGEONS[k].floors,
+        LevelId::Area(a, n) => crate::areas::AREAS.iter().any(|d| d.act == a && d.n == n),
+        LevelId::Arena(a) => a < 7,
+        _ => true,
+    }
+}
+
+/// Does this portal lead somewhere real from `here`?
+pub fn portal_ok(here: LevelId, k: PortalKind) -> bool {
+    match k {
+        PortalKind::Entrance(d) => d < DUNGEONS.len(),
+        PortalKind::Pass(a) => a < 7,
+        PortalKind::Exit(0) => true,
+        PortalKind::Exit(n) => crate::areas::AREAS.iter().any(|d| d.act as usize == here.act() && d.n == n),
+        _ => true,
+    }
+}
+
 #[derive(serde::Serialize, serde::Deserialize)]
 pub struct Portal {
     pub x: f32,

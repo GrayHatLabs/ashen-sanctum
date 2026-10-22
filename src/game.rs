@@ -1577,7 +1577,7 @@ impl Game {
         // Which edge it leads off: the nearest.
         let (w, h) = (self.d.w as f32, self.d.h as f32);
         let edges = [(p.y, 0), (h - p.y, 1), (p.x, 2), (w - p.x, 3)];
-        let side = edges.iter().min_by(|a, b| a.0.partial_cmp(&b.0).unwrap()).map_or(0, |e| e.1);
+        let side = edges.iter().min_by(|a, b| a.0.total_cmp(&b.0)).map_or(0, |e| e.1);
         let (beyond, across) = match side {
             0 => (p.y - y, (x - p.x).abs()),
             1 => (y - p.y, (x - p.x).abs()),
@@ -1636,7 +1636,7 @@ impl Game {
             // Not your own allies (wolves, thralls, rats...), nor crates and barrels.
             .filter(|m| m.alive() && m.charm <= 0.0 && m.neutral == 0 && !crate::breakables::is_prop(m.kind))
             .map(|m| (m.x, m.y, ((m.x - self.p.x).powi(2) + (m.y - self.p.y).powi(2)).sqrt()))
-            .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap())
+            .min_by(|a, b| a.2.total_cmp(&b.2))
             .map(|(x, y, d)| (x, y, d, self.d.los(self.p.x, self.p.y, x, y)))
     }
 
@@ -1646,7 +1646,7 @@ impl Game {
             .iter()
             .filter(|k| matches!(k.kind, Drop::Food(_) | Drop::Seal(_) | Drop::Rune(_) | Drop::Sigil(_) | Drop::Key(_) | Drop::Pearl(_) | Drop::Shard(_) | Drop::AKey(_)))
             .map(|k| (k.x, k.y, (k.x - self.p.x).powi(2) + (k.y - self.p.y).powi(2)))
-            .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap())
+            .min_by(|a, b| a.2.total_cmp(&b.2))
             .map(|(x, y, _)| (x, y))
     }
 
@@ -3052,7 +3052,7 @@ impl Game {
             .enumerate()
             .map(|(i, n)| (i, (n.x - self.p.x).powi(2) + (n.y - self.p.y).powi(2)))
             .filter(|&(_, d2)| d2 < range * range)
-            .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
+            .min_by(|a, b| a.1.total_cmp(&b.1))
             .map(|v| v.0)
     }
 
@@ -3723,7 +3723,7 @@ impl Game {
             .filter(|(_, m)| m.alive() && m.charm <= 0.0 && m.neutral == 0)
             .map(|(i, m)| (i, (m.x - self.p.x).powi(2) + (m.y - self.p.y).powi(2)))
             .filter(|&(i, d2)| d2 < range * range && self.d.los(self.p.x, self.p.y, self.mobs[i].x, self.mobs[i].y))
-            .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
+            .min_by(|a, b| a.1.total_cmp(&b.1))
             .map(|v| v.0)
     }
 
@@ -3946,7 +3946,7 @@ impl Game {
             .filter(|(_, m)| m.alive() && m.charm <= 0.0 && m.invuln <= 0.0)
             .map(|(i, m)| (i, (m.x - x).powi(2) + (m.y - y).powi(2), m.r))
             .filter(|&(_, d2, r)| d2 < (r + 0.3).powi(2))
-            .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
+            .min_by(|a, b| a.1.total_cmp(&b.1))
             .map(|v| v.0);
         let Some(i) = target else { return };
         self.stats.hits += 1;
@@ -5272,7 +5272,7 @@ mod tests {
         assert!(g.in_gate(&p, p.x + 1.0, p.y + 0.5, 0.0));
         // Well past it, out toward the edge, a little to one side.
         let (w, h) = (g.d.w as f32, g.d.h as f32);
-        let out: (f32, f32) = [((0.0f32, -1.0f32), p.y), ((0.0, 1.0), h - p.y), ((-1.0, 0.0), p.x), ((1.0, 0.0), w - p.x)].iter().min_by(|a, b| a.1.partial_cmp(&b.1).unwrap()).unwrap().0;
+        let out: (f32, f32) = [((0.0f32, -1.0f32), p.y), ((0.0, 1.0), h - p.y), ((-1.0, 0.0), p.x), ((1.0, 0.0), w - p.x)].iter().min_by(|a, b| a.1.total_cmp(&b.1)).unwrap().0;
         assert!(g.in_gate(&p, p.x + out.0 * 1.8 + out.1.abs() * 2.0, p.y + out.1 * 1.8 + out.0.abs() * 2.0, 0.0), "past it toward the edge");
         // Far inward: no.
         assert!(!g.in_gate(&p, p.x - out.0 * 4.0, p.y - out.1 * 4.0, 0.0));

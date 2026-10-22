@@ -141,9 +141,25 @@ impl Wire for std::collections::VecDeque<u8> {
 /// Runs a connection until it ends. Each whole frame goes to `on_frame`, which returns false to end it
 /// (a message it mustn't send). Frames queued in `outbound` are written. The stream should have a short
 /// read timeout (the loop's tick) and a write timeout (a peer that stops reading is dropped).
-pub fn pump<S: Wire>(s: &mut S, lim: Limits, outbound: &Receiver<Vec<u8>>, stop: &AtomicBool, mut on_frame: impl FnMut(Vec<u8>) -> bool) -> Ended {
-    let mut reader = FrameReader::new(lim.max_frame);
+pub fn pump<S: Wire>(s: &mut S, lim: Limits, outbound: &Receiver<Vec<u8>>, stop: &AtomicBool, on_frame: impl FnMut(Vec<u8>) -> bool) -> Ended {
+    pump_from(s, lim, outbound, stop, FrameReader::new(lim.max_frame), on_frame)
+}
+
+/// The same, carrying on from a reader that already holds bytes (what arrived along with a reply waited for).
+pub fn pump_from<S: Wire>(s: &mut S, lim: Limits, outbound: &Receiver<Vec<u8>>, stop: &AtomicBool, mut reader: FrameReader, mut on_frame: impl FnMut(Vec<u8>) -> bool) -> Ended {
     let mut tmp = vec![0u8; 16 * 1024];
+    // Whole frames already waiting.
+    loop {
+        match reader.next() {
+            Ok(Some(f)) => {
+                if !on_frame(f) {
+                    return Ended::Misbehaved("a message it mustn't send");
+                }
+            }
+            Ok(None) => break,
+            Err(_) => return Ended::Misbehaved("a bad frame"),
+        }
+    }
     let mut heard = Instant::now();
     let (mut window, mut frames, mut bytes) = (Instant::now(), 0u32, 0usize);
     let mut first = true;

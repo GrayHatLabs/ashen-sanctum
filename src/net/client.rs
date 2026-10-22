@@ -52,15 +52,17 @@ pub fn resolve(addr: &str) -> Option<SocketAddr> {
 /// Looks a host up before joining: None if its key is already trusted, or the new key to ask about.
 pub fn probe(addr: &str, dir: &Path) -> Result<Option<[u8; 32]>, JoinError> {
     let sa = resolve(addr).ok_or_else(|| JoinError::Unreachable("NO SUCH ADDRESS".into()))?;
-    let pin = tls::known(dir, &sa.to_string());
+    let pin = tls::known(dir, &tls::host_key(addr));
+    let deadline = Instant::now() + Duration::from_secs(10);
     let (cfg, seen) = tls::client_config(pin).map_err(|e| JoinError::Unreachable(e.to_string()))?;
     let tcp = TcpStream::connect_timeout(&sa, Duration::from_secs(5)).map_err(|_| JoinError::Unreachable("NO ANSWER".into()))?;
     let _ = tcp.set_read_timeout(Some(Duration::from_secs(5)));
     let _ = tcp.set_write_timeout(Some(Duration::from_secs(5)));
     let conn = rustls::ClientConnection::new(cfg, tls::server_name()).map_err(|e| JoinError::Unreachable(e.to_string()))?;
     let mut s = rustls::StreamOwned::new(conn, tcp);
-    while s.conn.is_handshaking() {
-        if s.conn.complete_io(&mut s.sock).is_err() {
+    let never = AtomicBool::new(false);
+    {
+        if tls::handshake(&mut s, deadline, &never).is_err() {
             let shown = seen.lock().ok().and_then(|g| *g);
             return match (pin, shown) {
                 (None, Some(h)) => Ok(Some(h)),
@@ -74,16 +76,21 @@ pub fn probe(addr: &str, dir: &Path) -> Result<Option<[u8; 32]>, JoinError> {
     Ok(None)
 }
 
+/// What a joiner will accept from the host before the game thread gets to it; beyond that, the host is
+/// sending more than any game needs (review 2026-10-22).
+const INBOX: usize = 512;
+
 /// The address as it's written in known_hosts.txt.
 pub fn key_for(addr: &str) -> Option<String> {
-    resolve(addr).map(|a| a.to_string())
+    resolve(addr).map(|_| tls::host_key(addr))
 }
 
 /// Joins the game at `addr` with this hero (its save text). `dir` holds known_hosts.txt.
 pub fn join(addr: &str, dir: &Path, name: &str, hero: &str, password: &str) -> Result<Link, JoinError> {
     let sa = resolve(addr).ok_or_else(|| JoinError::Unreachable("NO SUCH ADDRESS".into()))?;
-    let key = sa.to_string();
-    let pin = tls::known(dir, &key);
+    let pin = tls::known(dir, &tls::host_key(addr));
+    let deadline = Instant::now() + Duration::from_secs(12);
+    let never = AtomicBool::new(false);
     let (cfg, seen) = tls::client_config(pin).map_err(|e| JoinError::Unreachable(e.to_string()))?;
     let tcp = TcpStream::connect_timeout(&sa, Duration::from_secs(5)).map_err(|_| JoinError::Unreachable("NO ANSWER".into()))?;
     let io = |e: std::io::Error| JoinError::Unreachable(e.to_string());
@@ -92,8 +99,8 @@ pub fn join(addr: &str, dir: &Path, name: &str, hero: &str, password: &str) -> R
     tcp.set_write_timeout(Some(Duration::from_secs(5))).map_err(io)?;
     let conn = rustls::ClientConnection::new(cfg, tls::server_name()).map_err(|e| JoinError::Unreachable(e.to_string()))?;
     let mut tls = rustls::StreamOwned::new(conn, tcp);
-    while tls.conn.is_handshaking() {
-        if tls.conn.complete_io(&mut tls.sock).is_err() {
+    {
+        if tls::handshake(&mut tls, deadline, &never).is_err() {
             let shown = seen.lock().ok().and_then(|s| *s);
             return Err(match (pin, shown) {
                 (None, Some(h)) => JoinError::Unknown(h),
@@ -104,14 +111,27 @@ pub fn join(addr: &str, dir: &Path, name: &str, hero: &str, password: &str) -> R
     }
     let hello = ToHost::Hello { protocol: proto::PROTOCOL, version: env!("CARGO_PKG_VERSION").into(), name: name.into(), hero: hero.into(), password: password.into() };
     let bytes = proto::encode(&hello).ok_or_else(|| JoinError::Unreachable("BAD HERO".into()))?;
-    super::frame::write_frame(&mut tls, &bytes).map_err(io)?;
-    // The answer: welcome, or why not.
-    let deadline = Instant::now() + Duration::from_secs(10);
+    conn::Wire::send(&mut tls, &bytes).map_err(io)?;
+    // The answer: welcome, or why not, by the deadline however slowly it comes.
+    let mut reader = conn::FrameReader::new(super::frame::MAX_TO_CLIENT);
+    let mut buf = vec![0u8; 16 * 1024];
     let (you, host_name) = loop {
         if Instant::now() > deadline {
             return Err(JoinError::Unreachable("NO ANSWER".into()));
         }
-        let f = super::frame::read_frame(&mut tls, super::frame::MAX_TO_CLIENT).map_err(|_| JoinError::Unreachable("THE HOST CLOSED THE CONNECTION".into()))?;
+        let f = match reader.next() {
+            Ok(Some(f)) => f,
+            Ok(None) => {
+                match conn::Wire::recv(&mut tls, &mut buf) {
+                    Ok(0) => return Err(JoinError::Unreachable("THE HOST CLOSED THE CONNECTION".into())),
+                    Ok(n) => reader.feed(&buf[..n]),
+                    Err(e) if matches!(e.kind(), std::io::ErrorKind::WouldBlock | std::io::ErrorKind::TimedOut | std::io::ErrorKind::Interrupted) => {}
+                    Err(_) => return Err(JoinError::Unreachable("THE HOST CLOSED THE CONNECTION".into())),
+                }
+                continue;
+            }
+            Err(_) => return Err(JoinError::Unreachable("THE HOST SENT NONSENSE".into())),
+        };
         match proto::decode::<ToClient>(&f) {
             Some(ToClient::Welcome { you, host_name }) if (1..=7).contains(&you) => break (you, proto::clean_name(&host_name).unwrap_or_else(|| "HOST".into())),
             Some(ToClient::Refused(why)) | Some(ToClient::Bye(why)) => return Err(JoinError::Refused(proto::clean_chat(&why).unwrap_or_default())),
@@ -119,7 +139,7 @@ pub fn join(addr: &str, dir: &Path, name: &str, hero: &str, password: &str) -> R
         }
     };
     tls.sock.set_read_timeout(Some(Duration::from_millis(10))).map_err(io)?;
-    let (in_tx, in_rx) = mpsc::channel();
+    let (in_tx, in_rx) = mpsc::sync_channel(INBOX);
     let (out_tx, out_rx) = mpsc::sync_channel::<Vec<u8>>(256);
     let stop = Arc::new(AtomicBool::new(false));
     let ended = Arc::new(Mutex::new(None));
@@ -129,8 +149,9 @@ pub fn join(addr: &str, dir: &Path, name: &str, hero: &str, password: &str) -> R
             .name("join-link".into())
             .spawn(move || {
                 let mut strikes = 0;
-                let why = match conn::pump(&mut tls, conn::FROM_HOST, &out_rx, &stop, |f| match proto::decode::<ToClient>(&f) {
-                    Some(m) => in_tx.send(m).is_ok(),
+                let why = match conn::pump_from(&mut tls, conn::FROM_HOST, &out_rx, &stop, reader, |f| match proto::decode::<ToClient>(&f) {
+                    // Full: the host is sending far more than a game needs. End it.
+                    Some(m) => in_tx.try_send(m).is_ok(),
                     None => {
                         strikes += 1;
                         strikes < 3

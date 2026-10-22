@@ -363,7 +363,7 @@ impl Game {
                 .filter(|&i| self.mobs[i].alive() && self.mobs[i].charm <= 0.0 && !hit.contains(&i))
                 .map(|i| (i, (self.mobs[i].x - from.0).powi(2) + (self.mobs[i].y - from.1).powi(2)))
                 .filter(|&(_, d2)| d2 < reach * reach)
-                .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
+                .min_by(|a, b| a.1.total_cmp(&b.1))
                 .map(|v| v.0);
             let Some(i) = next else { break };
             let (mx, my) = (self.mobs[i].x, self.mobs[i].y);
@@ -469,7 +469,7 @@ impl Game {
                 (along > -0.2 && along < RAPIER_REACH + self.mobs[i].r && side < 0.6 + self.mobs[i].r * 0.5).then_some((along, i))
             })
             .collect();
-        in_line.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
+        in_line.sort_by(|a, b| a.0.total_cmp(&b.0));
         let n = if r >= 3 { 2 } else { 1 };
         let (lo, hi) = rapier_dmg(r);
         let mut tip = (px + ux * RAPIER_REACH, py + uy * RAPIER_REACH);
@@ -518,7 +518,7 @@ impl Game {
                     .filter(|m| m.alive() && m.charm <= 0.0)
                     .map(|m| (m.x, m.y, (m.x - tu.x).powi(2) + (m.y - tu.y).powi(2)))
                     .filter(|t| t.2 < 49.0 && self.d.los(tu.x, tu.y, t.0, t.1))
-                    .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap());
+                    .min_by(|a, b| a.2.total_cmp(&b.2));
                 if let Some((mx, my, _)) = target {
                     tu.shot = 0.55;
                     shots.push((tu.x, tu.y, mx, my, tu.dmg));
@@ -545,7 +545,7 @@ impl Game {
                 .filter(|(_, m)| m.alive() && m.charm <= 0.0)
                 .map(|(i, m)| (i, m.x, m.y, (m.x - sp.x).powi(2) + (m.y - sp.y).powi(2)))
                 .filter(|t| t.3 < 36.0)
-                .min_by(|a, b| a.3.partial_cmp(&b.3).unwrap());
+                .min_by(|a, b| a.3.total_cmp(&b.3));
             let (gx, gy, close) = match target {
                 Some((i, mx, my, d2)) => {
                     if d2 < 0.8 && sp.bite <= 0.0 {

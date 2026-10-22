@@ -223,6 +223,32 @@ pub fn roll_ancient(class: crate::skills::Class, rng: &mut Rng) -> Option<Item> 
     Some(it)
 }
 
+/// Can an item carry this stat at this value? No more than the game's own tables can make: the strongest
+/// affix, a base's built-in roll, or a unique / set piece (an ancient's 50% more). Ancient powers: known bits.
+pub fn stat_ok(s: Stat, v: i32) -> bool {
+    if s == Stat::Power {
+        return v > 0 && (v as i64) < (1i64 << POWERS.len());
+    }
+    let mut cap = 0i32;
+    for a in AFFIXES.iter().filter(|a| a.stat == s) {
+        cap = cap.max(a.cap);
+    }
+    for b in BASES.iter() {
+        if let Some((bs, _, hi)) = b.implicit {
+            if bs == s {
+                cap = cap.max(hi);
+            }
+        }
+    }
+    let fixed = UNIQUES.iter().flat_map(|u| u.stats.iter()).chain(SETS.iter().flat_map(|t| t.pieces.iter().flat_map(|p| p.stats.iter())));
+    for &(fs, fv) in fixed {
+        if fs == s {
+            cap = cap.max(((fv.abs() as f32) * 1.5).ceil() as i32);
+        }
+    }
+    v.unsigned_abs() as i64 <= cap as i64
+}
+
 /// Totals of every stat on your worn gear.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 #[derive(serde::Serialize, serde::Deserialize)]

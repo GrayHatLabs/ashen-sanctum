@@ -468,7 +468,7 @@ impl Game {
         let target = self.foes_where(|_| true).into_iter().min_by(|&a, &b| {
             let da = (self.mobs[a].x - tx).powi(2) + (self.mobs[a].y - ty).powi(2);
             let db = (self.mobs[b].x - tx).powi(2) + (self.mobs[b].y - ty).powi(2);
-            da.partial_cmp(&db).unwrap()
+            da.total_cmp(&db)
         });
         let Some(i) = target.filter(|&i| (self.mobs[i].x - tx).powi(2) + (self.mobs[i].y - ty).powi(2) < 16.0) else {
             self.say("NO FOE FOR THE RAVEN THERE".into());
@@ -641,7 +641,7 @@ impl Game {
                 (0..self.mobs.len()).filter(|&i| self.mobs[i].alive() && self.mobs[i].charm <= 0.0).min_by(|&a, &b| {
                     let da = (self.mobs[a].x - rv.x).powi(2) + (self.mobs[a].y - rv.y).powi(2);
                     let db = (self.mobs[b].x - rv.x).powi(2) + (self.mobs[b].y - rv.y).powi(2);
-                    da.partial_cmp(&db).unwrap()
+                    da.total_cmp(&db)
                 })
             });
             if let Some(i) = tgt {

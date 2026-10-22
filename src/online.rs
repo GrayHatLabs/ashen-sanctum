@@ -17,6 +17,9 @@ const MAX_STRIKES: u32 = 30;
 pub fn item_ok(it: &crate::items::Item) -> bool {
     it.base < crate::items::BASES.len()
         && it.stats.len() <= 16
+        && it.req <= 99
+        // No stat beyond what the game's own tables can roll (review 2026-10-22: edited saves).
+        && it.stats.iter().all(|&(s, v)| crate::items::stat_ok(s, v))
         && it.name.len() <= 48
         && it.sockets <= 6
         && it.gems.len() <= it.sockets as usize
@@ -35,6 +38,12 @@ pub fn hero_ok(p: &crate::game::Player) -> bool {
         && p.gear.bag.len() == crate::items::BAG
         && p.gear.stash.len() == crate::items::STASH
         && p.gear.worn.iter().chain(p.gear.bag.iter()).chain(p.gear.stash.iter()).flatten().all(item_ok)
+        && p.xp >= 0.0
+        && p.xp <= crate::game::xp_to_next(p.clvl) * 1.01
+        && (0..=50_000_000).contains(&p.gold)
+        // Skill points: what the levels and every relic could give, no more.
+        && p.skills.rank.iter().map(|&r| r as u32).sum::<u32>() + p.skills.points <= p.clvl + 40
+        && p.skills.rank.iter().all(|&r| r <= 20)
 }
 
 /// Hosting: who's joined, as which ally.
@@ -42,6 +51,8 @@ pub struct Hosting {
     pub host: Host,
     /// The connection behind each ally (same order as `Game::allies`), its name and its bad inputs.
     peers: Vec<(u32, String, u32)>,
+    /// Chat allowance per joiner (2 lines a second, 5 at once): a flood isn't relayed (review 2026-10-22).
+    chat: Vec<(f32, std::time::Instant)>,
     /// Sounds and floating numbers since each joiner's last snapshot.
     events: Vec<(Vec<crate::game::Sfx>, Vec<crate::game::Floater>)>,
     sent_level: Option<crate::world::LevelId>,
@@ -52,7 +63,7 @@ pub struct Hosting {
 impl Hosting {
     pub fn start(port: u16, password: String) -> std::io::Result<Hosting> {
         let host = Host::start(port, password, &crate::save::dir())?;
-        Ok(Hosting { host, peers: vec![], events: vec![], sent_level: None, players_before: crate::binds::players() })
+        Ok(Hosting { host, peers: vec![], chat: vec![], events: vec![], sent_level: None, players_before: crate::binds::players() })
     }
 
     fn slot_of(&self, peer: u32) -> Option<usize> {
@@ -82,6 +93,7 @@ impl Hosting {
                         debug_assert_eq!(k, self.peers.len());
                         self.peers.push((peer, name.clone(), 0));
                         self.events.push((vec![], vec![]));
+                        self.chat.push((5.0, std::time::Instant::now()));
                         self.host.send(peer, &ToClient::Welcome { you: k as u8 + 1, host_name: g.hero_name.clone() });
                         if let Some(lv) = g.net_level() {
                             self.host.send(peer, &ToClient::Level(lv));
@@ -119,6 +131,13 @@ impl Hosting {
                 }
                 Event::Chat { peer, text } => {
                     let Some(k) = self.slot_of(peer) else { continue };
+                    let (tokens, last) = &mut self.chat[k];
+                    *tokens = (*tokens + last.elapsed().as_secs_f32() * 2.0).min(5.0);
+                    *last = std::time::Instant::now();
+                    if *tokens < 1.0 {
+                        continue;
+                    }
+                    *tokens -= 1.0;
                     let from = self.peers[k].1.clone();
                     self.tell_all(&ToClient::Chat { from: from.clone(), text: text.clone() }, None);
                     g.say(format!("{from}: {text}"));
@@ -127,6 +146,7 @@ impl Hosting {
                     let Some(k) = self.slot_of(peer) else { continue };
                     let (_, name, _) = self.peers.remove(k);
                     self.events.remove(k);
+                    self.chat.remove(k);
                     g.remove_ally(k);
                     // The others' numbers shift down past the one who left.
                     for (j, p) in self.peers.iter().enumerate().skip(k) {
@@ -194,20 +214,36 @@ pub struct Joined {
     pub hero: Option<String>,
     /// Where things are heading (the latest snapshot); they glide there between snapshots.
     mob_goals: std::collections::HashMap<u32, (f32, f32)>,
+    /// When the last few levels arrived: a host can't send them endlessly (review 2026-10-22).
+    levels_at: Vec<std::time::Instant>,
     hero_goals: Vec<(f32, f32)>,
 }
 
 impl Joined {
     pub fn new(link: Link) -> Joined {
         let me = link.you;
-        Joined { link, me, seq: 0, has_level: false, hero: None, mob_goals: Default::default(), hero_goals: vec![] }
+        Joined { link, me, seq: 0, has_level: false, hero: None, mob_goals: Default::default(), hero_goals: vec![], levels_at: vec![] }
     }
 
     /// One frame: take in what the host sent, show it, and send your controls. Returns why it ended, if it did.
     pub fn frame(&mut self, g: &mut Game, inp: &Input) -> Option<String> {
-        for m in self.link.poll() {
+        // Only the newest snapshot matters; older ones waiting behind it are skipped.
+        let mut msgs = self.link.poll();
+        if let Some(last) = msgs.iter().rposition(|m| matches!(m, ToClient::Snap(_))) {
+            let mut i = 0;
+            msgs.retain(|m| {
+                i += 1;
+                !matches!(m, ToClient::Snap(_)) || i - 1 == last
+            });
+        }
+        for m in msgs {
             match m {
                 ToClient::Level(b) => {
+                    self.levels_at.retain(|t| t.elapsed() < std::time::Duration::from_secs(2));
+                    self.levels_at.push(std::time::Instant::now());
+                    if self.levels_at.len() > 4 {
+                        return Some("THE HOST SENT TOO MANY LEVELS".into());
+                    }
                     if !g.apply_level(&b) {
                         return Some("THE HOST SENT A BAD LEVEL".into());
                     }
@@ -326,6 +362,11 @@ pub fn merge_hero(own: &str, from_host: &str) -> Option<String> {
     let hero_key = |k: &str| HERO.contains(&k) || ["worn", "bag", "stash"].iter().any(|p| k.strip_prefix(p).map_or(false, |n| !n.is_empty() && n.chars().all(|c| c.is_ascii_digit())));
     let get = |text: &str, k: &str| text.lines().find_map(|l| l.strip_prefix(k).and_then(|r| r.strip_prefix('='))).map(str::trim).map(str::to_string);
     if from_host.len() > crate::net::proto::MAX_HERO || from_host.lines().count() > 400 || get(own, "class") != get(from_host, "class") {
+        return None;
+    }
+    // A hero only grows in someone else's game: a copy that's lower level than yours isn't taken (review 2026-10-22).
+    let lvl = |t: &str| get(t, "clvl").and_then(|v| v.parse::<u32>().ok()).unwrap_or(0);
+    if lvl(from_host) < lvl(own) {
         return None;
     }
     let mut out: String = own.lines().filter(|l| key(l).map_or(true, |k| !hero_key(&k))).map(|l| format!("{l}\n")).collect();
@@ -518,6 +559,58 @@ mod tests {
     }
 
     #[test]
+    fn every_item_the_game_makes_passes_and_edited_ones_dont() {
+        use crate::items::*;
+        let mut rng = crate::rng::Rng::new(9);
+        let mut made = vec![];
+        for ilvl in [1u8, 10, 30, 60, 90] {
+            for _ in 0..400 {
+                made.push(drop(ilvl, 500, true, &mut rng));
+                made.push(roll(ilvl, Rarity::Rare, &mut rng));
+            }
+        }
+        for i in 0..UNIQUES.len() {
+            made.push(unique(i));
+        }
+        for c in crate::skills::ALL_CLASSES {
+            for _ in 0..50 {
+                made.extend(roll_ancient(c, &mut rng));
+            }
+        }
+        for it in &made {
+            assert!(item_ok(it), "the game's own item refused: {} {:?}", it.name, it.stats);
+        }
+        // An edited one: two billion damage.
+        let mut evil = made[0].clone();
+        evil.stats.push((evil.stats.first().map_or(Stat::Life, |s| s.0), 2_000_000_000));
+        assert!(!item_ok(&evil));
+        // A hero with every skill maxed at level 1.
+        let mut g = Game::new(1, crate::gfx::SH_WIDE);
+        g.set_class(crate::skills::Class::Druid);
+        assert!(hero_ok(&g.p));
+        for r in g.p.skills.rank.iter_mut() {
+            *r = 20;
+        }
+        assert!(!hero_ok(&g.p), "impossible skill points refused");
+    }
+
+    #[test]
+    fn a_lower_level_copy_from_the_host_isnt_taken() {
+        let own = "class=druid
+clvl=30
+gold=5
+";
+        assert_eq!(merge_hero(own, "class=druid
+clvl=1
+gold=0
+"), None);
+        assert!(merge_hero(own, "class=druid
+clvl=31
+gold=9
+").unwrap().contains("clvl=31"));
+    }
+
+    #[test]
     fn your_save_takes_only_your_hero_from_the_host() {
         let own = "name=ROWAN\nseed=5\nclass=druid\nclvl=10\ngold=100\nstage=2\nbag0=a|1|2|3|x|\nwaypoints=overworld\n";
         let host = "name=EVIL\nseed=9\nclass=druid\nclvl=12\ngold=900\nstage=3\nbag0=b|1|2|3|y|\nbag1=c|1|2|3|z|\nwaypoints=everywhere\n";
@@ -537,7 +630,7 @@ mod tests {
         host.set_class(crate::skills::Class::Sorceress);
         host.debug_goto(crate::world::LevelId::Area(0, 1));
         let h = crate::net::host::Host::start(0, String::new(), &dir).unwrap();
-        let mut hosting = Hosting { host: h, peers: vec![], events: vec![], sent_level: None, players_before: 1 };
+        let mut hosting = Hosting { host: h, peers: vec![], chat: vec![], events: vec![], sent_level: None, players_before: 1 };
         let addr = format!("127.0.0.1:{}", hosting.host.port);
         crate::net::tls::trust(&dir, &addr, &hosting.host.fingerprint).unwrap();
         // The joiner's hero, as its save.
@@ -613,13 +706,15 @@ pub struct Ask {
     pub host: Option<u16>,
     pub join: Option<String>,
     pub password: String,
-    pub trust: bool,
+    /// `--trust KEY`: trust a host met for the first time, but only if its key is this one (as the game shows
+    /// it, spaces optional).
+    pub trust: Option<String>,
 }
 
 /// Never prints the password.
 impl std::fmt::Debug for Ask {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("Ask").field("host", &self.host).field("join", &self.join).field("password", &if self.password.is_empty() { "" } else { "(set)" }).field("trust", &self.trust).finish()
+        f.debug_struct("Ask").field("host", &self.host).field("join", &self.join).field("password", &if self.password.is_empty() { "" } else { "(set)" }).field("trust", &self.trust.is_some()).finish()
     }
 }
 
@@ -630,7 +725,7 @@ impl Ask {
             host: args.iter().any(|a| a == "--host").then(|| after("--host").and_then(|p| p.parse().ok()).unwrap_or(crate::net::proto::DEFAULT_PORT)),
             join: after("--join"),
             password: after("--password").unwrap_or_default(),
-            trust: args.iter().any(|a| a == "--trust"),
+            trust: after("--trust").map(|k| k.replace(' ', "").to_ascii_uppercase()),
         }
     }
 
@@ -672,13 +767,12 @@ pub fn start(ask: &mut Ask, game: &mut Game) -> Option<Session> {
                 game.say(format!("JOINED {host}'S GAME"));
                 return Some(Session::Join { joined: Joined::new(link), home: Box::new(home) });
             }
-            Err(crate::net::client::JoinError::Unknown(fp)) if ask.trust && tries == 1 => {
-                if let Some(sa) = crate::net::client::resolve(&addr) {
-                    let _ = crate::net::tls::trust(&dir, &sa.to_string(), &fp);
-                }
+            Err(crate::net::client::JoinError::Unknown(fp)) if tries == 1 && ask.trust.as_deref() == Some(&crate::net::tls::show(&fp).replace(' ', "")) => {
+                let _ = crate::net::tls::trust(&dir, &crate::net::tls::host_key(&addr), &fp);
             }
             Err(crate::net::client::JoinError::Unknown(fp)) => {
-                game.say(format!("NEW HOST, KEY {}. JOIN AGAIN WITH --trust IF THAT'S THEIRS", crate::net::tls::show(&fp)));
+                let key = crate::net::tls::show(&fp);
+                game.say(format!("NEW HOST, KEY {key}. IF THAT'S THEIRS, JOIN WITH --trust {}", key.replace(' ', "")));
                 return None;
             }
             Err(crate::net::client::JoinError::Changed(fp)) => {
@@ -703,8 +797,12 @@ pub fn step(session: &mut Option<Session>, game: &mut Game, inp: &Input) {
             h.after(game);
         }
         Some(Session::Join { joined, .. }) => {
-            // Esc leaves the game.
-            let why = if inp.cancel || inp.quit_ask { Some("LEFT THE GAME".to_string()) } else { joined.frame(game, inp) };
+            // Esc leaves the game. Anything the host sent that the game can't take ends the session, not the game.
+            let why = if inp.cancel || inp.quit_ask {
+                Some("LEFT THE GAME".to_string())
+            } else {
+                std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| joined.frame(game, inp))).unwrap_or_else(|_| Some("THE HOST SENT SOMETHING THE GAME COULDN'T TAKE".into()))
+            };
             if let Some(why) = why {
                 leave(session, game, &why);
             }
@@ -731,8 +829,12 @@ pub fn leave(session: &mut Option<Session>, game: &mut Game, why: &str) {
                     let mut g = Game::new(home.world_seed(), home.view_h);
                     g.defer_travel = true;
                     if crate::save::apply(&mut g, &merged) && hero_ok(&g.p) {
+                        // The last five saves before each online game are kept (save.bak1 newest ... save.bak5).
                         let p = crate::save::path();
-                        let _ = std::fs::copy(&p, p.with_extension("bak"));
+                        for k in (1..5).rev() {
+                            let _ = std::fs::rename(p.with_extension(format!("bak{k}")), p.with_extension(format!("bak{}", k + 1)));
+                        }
+                        let _ = std::fs::copy(&p, p.with_extension("bak1"));
                         let _ = std::fs::write(&p, &merged);
                         home = g;
                     }

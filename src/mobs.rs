@@ -1006,7 +1006,7 @@ impl Game {
                 let target = foes.iter().filter(|f| f.0 != i).min_by(|a, b| {
                     let da = (a.1 - m.x).powi(2) + (a.2 - m.y).powi(2);
                     let db = (b.1 - m.x).powi(2) + (b.2 - m.y).powi(2);
-                    da.partial_cmp(&db).unwrap()
+                    da.total_cmp(&db)
                 });
                 let (hx, hy) = heroes
                     .iter()
@@ -1160,7 +1160,7 @@ impl Game {
                         let near = marshals.iter().min_by(|a, b| {
                             let da = (a.0 - m.x).powi(2) + (a.1 - m.y).powi(2);
                             let db = (b.0 - m.x).powi(2) + (b.1 - m.y).powi(2);
-                            da.partial_cmp(&db).unwrap()
+                            da.total_cmp(&db)
                         });
                         if let Some(&(mx, my, fx, fy)) = near {
                             let (sx, sy) = (mx - fx * m.post.1 - fy * m.post.0, my - fy * m.post.1 + fx * m.post.0);

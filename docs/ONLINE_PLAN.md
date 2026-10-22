@@ -159,6 +159,35 @@ The user asked for best security practice throughout. These are rules for the co
 - As few dependencies as possible, only well-maintained crates (rustls, argon2, postcard).
 - A security review of each phase's changes before it's released.
 
+### Security review of phase 2 (2026-10-22)
+
+An independent review of `src/net/` and `src/online.rs` found 11 issues; all are fixed:
+1. **A host could crash joiners** (an unchecked table index while drawing, and `panic = "abort"` disabled the guard).
+   - Fixed by:
+     - Index checks.
+     - Release builds now unwind, and the joiner's whole frame and draw are guarded.
+     - Every incoming level reference (levels, portals, waypoints, town portal) and pickup index is validated.
+     - Float sorts use `total_cmp`.
+     - Drawing primitives clip to the screen, so a huge radius can't stall a joiner.
+   - **A fuzz test** (`mangled_snapshots_never_crash_a_joiner`): 3,000 corrupted snapshots per seed are applied and drawn; 12 seeds were clean.
+2. **A slow handshake could hold slots forever.** The handshake now has an overall deadline (`tls::handshake`).
+3. **Edited saves could cheat.** Item stats are capped by the game's own roll tables (`items::stat_ok`), and skill points, gold, xp and level are checked.
+4. **A host could hang a joining game.** Join and probe have absolute deadlines; the welcome is read frame by frame.
+5. **A host could flood a joiner.**
+   - The inbound queue is bounded (512).
+   - Only the newest snapshot is used.
+   - At most 4 levels in 2 seconds.
+   - Levels inflate to at most 8 MB.
+6. **A host could damage a joiner's save.** A lower-level copy is never merged, and the last five saves are kept (`.bak1`-`.bak5`).
+7. **Chat floods.** Each joiner gets 2 lines a second (5 at once); the rest isn't relayed.
+8. **Password lockout gaps.** Tries are counted per address (per /64 for IPv6), and expired entries are pruned.
+9. **Trust on first use.**
+   - `--trust` needs the host's key.
+   - known_hosts is keyed by the address as typed.
+   - (On Windows the key sits in %APPDATA%, private to the account by default.)
+10. **Snapshots leaked other heroes' details.** Other players get a public view of each hero: no bag, stash, waypoints or records.
+11. **A failed connection thread leaked its slot.** The slot is now given back.
+
 ## Order of work and size
 
 1. Phase 1: several sessions. It touches most of game.rs and the class files; the tests and bot keep it safe.

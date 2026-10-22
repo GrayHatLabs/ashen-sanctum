@@ -2544,7 +2544,7 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         let Some(i) = (0..g.mobs.len()).min_by(|&a, &b| {
             let da = (g.mobs[a].x - g.start.0).powi(2) + (g.mobs[a].y - g.start.1).powi(2);
             let db = (g.mobs[b].x - g.start.0).powi(2) + (g.mobs[b].y - g.start.1).powi(2);
-            da.partial_cmp(&db).unwrap()
+            da.total_cmp(&db)
         }) else {
             continue;
         };

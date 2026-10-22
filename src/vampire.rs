@@ -295,7 +295,7 @@ impl Game {
             .min_by(|&a, &b| {
                 let da = (self.mobs[a].x - px).powi(2) + (self.mobs[a].y - py).powi(2);
                 let db = (self.mobs[b].x - px).powi(2) + (self.mobs[b].y - py).powi(2);
-                da.partial_cmp(&db).unwrap()
+                da.total_cmp(&db)
             });
         let Some(i) = target else { return };
         let kind = self.mobs[i].kind;
@@ -380,7 +380,7 @@ impl Game {
             .min_by(|&a, &b| {
                 let da = (self.mobs[a].x - tx).powi(2) + (self.mobs[a].y - ty).powi(2);
                 let db = (self.mobs[b].x - tx).powi(2) + (self.mobs[b].y - ty).powi(2);
-                da.partial_cmp(&db).unwrap()
+                da.total_cmp(&db)
             })
             .filter(|&i| (self.mobs[i].x - tx).powi(2) + (self.mobs[i].y - ty).powi(2) < 9.0);
         let Some(i) = target else {
@@ -474,7 +474,7 @@ impl Game {
             .filter(|&i| matches!(self.mobs[i].state, MobState::Dead(_)) && !self.mobs[i].boss && !self.mobs[i].thrall && !crate::breakables::is_prop(self.mobs[i].kind))
             .map(|i| (i, (self.mobs[i].x - px).powi(2) + (self.mobs[i].y - py).powi(2)))
             .filter(|&(_, d2)| d2 < 49.0)
-            .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
+            .min_by(|a, b| a.1.total_cmp(&b.1))
             .map(|v| v.0);
         let Some(i) = corpse else {
             self.say("NO CORPSE NEARBY TO RAISE".into());
@@ -534,7 +534,7 @@ impl Game {
             if let Some(&(i, mx, my, mr)) = mobs.iter().min_by(|a, c| {
                 let da = (a.1 - b.x).powi(2) + (a.2 - b.y).powi(2);
                 let dc = (c.1 - b.x).powi(2) + (c.2 - b.y).powi(2);
-                da.partial_cmp(&dc).unwrap()
+                da.total_cmp(&dc)
             }) {
                 let (dx, dy) = (mx - b.x, my - b.y);
                 let l = (dx * dx + dy * dy).sqrt().max(0.01);

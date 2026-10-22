@@ -93,11 +93,20 @@ impl Host {
                             }
                             let peer = next_id.fetch_add(1, Ordering::Relaxed);
                             let (cfg, tx, links, stop, shared, password) = (cfg.clone(), tx.clone(), links.clone(), stop.clone(), shared.clone(), password.clone());
-                            let _ = std::thread::Builder::new().name(format!("host-peer-{peer}")).spawn(move || {
+                            let shared2 = shared.clone();
+                            let spawned = std::thread::Builder::new().name(format!("host-peer-{peer}")).spawn(move || {
                                 let why = serve(peer, tcp, addr, cfg, &tx, &links, &stop, &shared, &password);
                                 links.lock().unwrap_or_else(|e| e.into_inner()).remove(&peer);
                                 let _ = tx.send(Event::Gone { peer, why });
                             });
+                            if spawned.is_err() {
+                                // No thread to serve it: give its slot back (review 2026-10-22).
+                                let mut s = shared2.lock().unwrap_or_else(|e| e.into_inner());
+                                s.handshaking = s.handshaking.saturating_sub(1);
+                                if let Some(n) = s.per_ip.get_mut(&ip) {
+                                    *n = n.saturating_sub(1);
+                                }
+                            }
                         }
                         Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => std::thread::sleep(Duration::from_millis(50)),
                         Err(_) => std::thread::sleep(Duration::from_millis(200)),
@@ -162,6 +171,8 @@ fn serve(
     password: &str,
 ) -> String {
     let ip = addr.ip();
+    let lock_key = lockout_key(ip);
+    let started = Instant::now();
     let mut joined = false;
     let release = |joined: bool| {
         let mut s = shared.lock().unwrap_or_else(|e| e.into_inner());
@@ -181,13 +192,10 @@ fn serve(
         tcp.set_nonblocking(false)?;
         tcp.set_nodelay(true)?;
         tcp.set_write_timeout(Some(Duration::from_secs(5)))?;
-        // The handshake must finish within the hello deadline.
-        tcp.set_read_timeout(Some(HELLO_WITHIN))?;
         let conn = rustls::ServerConnection::new(cfg).map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e.to_string()))?;
         let mut tls = rustls::StreamOwned::new(conn, tcp);
-        while tls.conn.is_handshaking() {
-            tls.conn.complete_io(&mut tls.sock)?;
-        }
+        // The whole handshake, however it's trickled in, within the hello deadline.
+        tls::handshake(&mut tls, started + HELLO_WITHIN, stop)?;
         tls.sock.set_read_timeout(Some(Duration::from_millis(10)))?;
         Ok(tls)
     };
@@ -201,7 +209,6 @@ fn serve(
     let (out_tx, out_rx) = mpsc::sync_channel::<Vec<u8>>(OUT_QUEUE);
     let kick = Arc::new(AtomicBool::new(false));
     links.lock().unwrap_or_else(|e| e.into_inner()).insert(peer, (out_tx.clone(), kick.clone()));
-    let started = Instant::now();
     let mut said_hello = false;
     let mut strikes = 0u32;
     // Flags the watcher can see: hello received, goodbye received, and "stop now".
@@ -230,7 +237,9 @@ fn serve(
                     // Locked out after too many wrong passwords.
                     {
                         let mut s = shared.lock().unwrap_or_else(|e| e.into_inner());
-                        if let Some(&(n, t)) = s.bad_pw.get(&ip) {
+                        // Old entries go (the map can't grow without end).
+                        s.bad_pw.retain(|_, (_, t)| t.elapsed() < LOCKOUT);
+                        if let Some(&(n, t)) = s.bad_pw.get(&lock_key) {
                             if n >= PASSWORD_TRIES && t.elapsed() < LOCKOUT {
                                 drop(s);
                                 send_now(&out_tx, &ToClient::Refused("TOO MANY TRIES. WAIT A MINUTE".into()));
@@ -238,14 +247,14 @@ fn serve(
                             }
                         }
                         if !same_password(&pw, password) {
-                            let e = s.bad_pw.entry(ip).or_insert((0, Instant::now()));
+                            let e = s.bad_pw.entry(lock_key).or_insert((0, Instant::now()));
                             e.0 = if e.1.elapsed() > LOCKOUT { 1 } else { e.0 + 1 };
                             e.1 = Instant::now();
                             drop(s);
                             send_now(&out_tx, &ToClient::Refused("WRONG PASSWORD".into()));
                             return false;
                         }
-                        s.bad_pw.remove(&ip);
+                        s.bad_pw.remove(&lock_key);
                         if s.joined >= MAX_JOINERS {
                             drop(s);
                             send_now(&out_tx, &ToClient::Refused("THE GAME IS FULL".into()));
@@ -311,6 +320,18 @@ fn serve(
         Ended::Misbehaved(_) => "WAS DISCONNECTED".into(),
         Ended::Io(_) => "LOST CONNECTION".into(),
         Ended::Stopped => "LEFT".into(),
+    }
+}
+
+/// Wrong passwords are counted per address, and per /64 for IPv6 (one home's devices share a /64, and an
+/// attacker could otherwise hop addresses within it).
+fn lockout_key(ip: IpAddr) -> IpAddr {
+    match ip {
+        IpAddr::V6(v6) => {
+            let s = v6.segments();
+            IpAddr::V6(std::net::Ipv6Addr::new(s[0], s[1], s[2], s[3], 0, 0, 0, 0))
+        }
+        v4 => v4,
     }
 }
 

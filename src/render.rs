@@ -122,6 +122,7 @@ impl Game {
         for dc in &self.decals {
             let (sx, sy) = to_scr(dc.x, dc.y);
             let r = dc.r * iso::TW * 0.5;
+            let r = r.clamp(0.0, 512.0);
             for yy in -(r as i32 / 2)..=(r as i32 / 2) {
                 for xx in -(r as i32)..=(r as i32) {
                     let d = (xx as f32 / r).powi(2) + (yy as f32 * 2.0 / r).powi(2);
@@ -352,7 +353,7 @@ impl Game {
         for (i, s) in self.shots.iter().enumerate() {
             list.push((s.x + s.y, D::Shot(i)));
         }
-        list.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
+        list.sort_by(|a, b| a.0.total_cmp(&b.0));
 
         let (psx, psy) = to_scr(px, py);
         let player_depth = px + py;
@@ -1614,7 +1615,7 @@ impl Game {
                     let (w, h) = (self.d.w as f32, self.d.h as f32);
                     let out = [((0.0, -1.0), p.y), ((0.0, 1.0), h - p.y), ((-1.0, 0.0), p.x), ((1.0, 0.0), w - p.x)]
                         .iter()
-                        .min_by(|x, y| x.1.partial_cmp(&y.1).unwrap())
+                        .min_by(|x, y| x.1.total_cmp(&y.1))
                         .map_or((0.0, -1.0), |e| e.0);
                     let (ux, uy) = iso::to_screen(out.0, out.1);
                     let l = (ux * ux + uy * uy).sqrt().max(0.01);
@@ -2315,7 +2316,7 @@ impl Game {
                 fx.tint = rgb(0x4060ff);
                 fx.tint_a = 0.22;
             }
-            crate::mobs::Rank::Elite if m.superu > 0 => {
+            crate::mobs::Rank::Elite if m.superu > 0 && (m.superu as usize) <= crate::side::SUPERS.len() => {
                 let tint = crate::side::SUPERS[m.superu as usize - 1].tint;
                 blend_ellipse(scr, sx, sy, 20, 8, rgb(tint), 0.4);
                 if fx.tint_a == 0.0 {
@@ -2920,7 +2921,7 @@ fn draw_hazard(scr: &mut Screen, kind: HazardKind, sx: i32, sy: i32, r: f32, t: 
 }
 
 pub(crate) fn ring(scr: &mut Screen, cx: i32, cy: i32, rx: i32, ry: i32, c: u32) {
-    let n = (rx * 4).max(12);
+    let n = (rx.clamp(0, 2048) * 4).max(12);
     for i in 0..n {
         let a = i as f32 / n as f32 * std::f32::consts::TAU;
         scr.pset(cx + (a.cos() * rx as f32) as i32, cy + (a.sin() * ry as f32) as i32, c);
@@ -2935,10 +2936,13 @@ fn line(scr: &mut Screen, x0: i32, y0: i32, x1: i32, y1: i32, c: u32) {
 }
 
 pub(crate) fn blend_ellipse(scr: &mut Screen, cx: i32, cy: i32, rx: i32, ry: i32, c: u32, a: f32) {
-    let (cx, cy) = (cx + scr.shake.0, cy + scr.shake.1);
-    let (rx, ry) = (rx.max(1), ry.max(1));
-    for y in -ry..=ry {
-        for x in -rx..=rx {
+    let (cx, cy) = (cx.saturating_add(scr.shake.0), cy.saturating_add(scr.shake.1));
+    let (rx, ry) = (rx.clamp(1, 4096), ry.clamp(1, 4096));
+    // Only the part on screen is visited (a huge ellipse costs no more than the screen).
+    let (y0, y1) = ((-ry).max(-cy.saturating_add(1)), ry.min(scr.h.saturating_sub(cy)));
+    let (x0, x1) = ((-rx).max(-cx.saturating_add(1)), rx.min(scr.w.saturating_sub(cx)));
+    for y in y0..=y1 {
+        for x in x0..=x1 {
             let d = (x as f32 / rx as f32).powi(2) + (y as f32 / ry as f32).powi(2);
             if d <= 1.0 {
                 let (px, py) = (cx + x, cy + y);

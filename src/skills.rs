@@ -1560,7 +1560,7 @@ impl Game {
                 .min_by(|&a, &b| {
                     let da = (self.mobs[a].x - mx).powi(2) + (self.mobs[a].y - my).powi(2);
                     let db = (self.mobs[b].x - mx).powi(2) + (self.mobs[b].y - my).powi(2);
-                    da.partial_cmp(&db).unwrap()
+                    da.total_cmp(&db)
                 })
                 .filter(|&j| (self.mobs[j].x - mx).powi(2) + (self.mobs[j].y - my).powi(2) < 25.0);
             if let Some(j) = other {

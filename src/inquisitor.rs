@@ -463,7 +463,7 @@ impl Game {
             .min_by(|&a, &b| {
                 let da = (self.mobs[a].x - x).powi(2) + (self.mobs[a].y - y).powi(2);
                 let db = (self.mobs[b].x - x).powi(2) + (self.mobs[b].y - y).powi(2);
-                da.partial_cmp(&db).unwrap()
+                da.total_cmp(&db)
             });
         if let Some(j) = next {
             let (nx, ny) = (self.mobs[j].x, self.mobs[j].y);
@@ -609,7 +609,7 @@ impl Game {
             .min_by(|&a, &b| {
                 let da = (self.mobs[a].x - x).powi(2) + (self.mobs[a].y - y).powi(2);
                 let db = (self.mobs[b].x - x).powi(2) + (self.mobs[b].y - y).powi(2);
-                da.partial_cmp(&db).unwrap()
+                da.total_cmp(&db)
             })
     }
 
@@ -676,7 +676,7 @@ impl Game {
             .min_by(|&a, &b| {
                 let da = (self.mobs[a].x - px).powi(2) + (self.mobs[a].y - py).powi(2);
                 let db = (self.mobs[b].x - px).powi(2) + (self.mobs[b].y - py).powi(2);
-                da.partial_cmp(&db).unwrap()
+                da.total_cmp(&db)
             });
         let Some(i) = first else {
             self.say("THE CHAIN FINDS NOTHING".into());

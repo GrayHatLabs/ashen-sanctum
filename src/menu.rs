@@ -288,7 +288,7 @@ impl Menu {
                     if self.net_host {
                         match self.net_addr.parse::<u16>() {
                             Ok(port) if port >= 1024 => {
-                                return Some(MenuOut::Online(crate::online::Ask { host: Some(port), join: None, password: self.net_pw.clone(), trust: false }));
+                                return Some(MenuOut::Online(crate::online::Ask { host: Some(port), join: None, password: self.net_pw.clone(), trust: None }));
                             }
                             _ => self.say("A PORT FROM 1024 TO 65535"),
                         }
@@ -776,7 +776,7 @@ impl Menu {
 
     /// What's been typed for joining (address and password).
     pub fn join_ask(&self) -> crate::online::Ask {
-        crate::online::Ask { host: None, join: Some(self.net_addr.clone()), password: self.net_pw.clone(), trust: false }
+        crate::online::Ask { host: None, join: Some(self.net_addr.clone()), password: self.net_pw.clone(), trust: None }
     }
 
     fn draw_options(&mut self, scr: &mut Screen, w: i32, _h: i32) {
