@@ -456,6 +456,25 @@ Optional content, worth leaving the road for (plan: `docs/SIDE_CONTENT_PLAN.md`;
   Caravan, the Pale Huntsman and Ghosts of the Sovereign (the belt); the Lost Patrol, Tally's Count and Bram's
   Lost Cargo (the bag, or the vial).
 
+## Playing online
+
+**Play Online** on the title screen: one player **hosts**, up to seven friends **join** (eight heroes). Everyone
+plays in the host's world; monsters scale with the party like Players 1-8.
+- **Host:** pick a port (4747) and an optional password, then your hero. Friends need your address and, from
+  outside your home network, the port opened on your router. The screen shows your **host key**.
+- **Join:** type the host's address (`192.168.1.20`, `host.example.com`, or `host:port`) and password, then pick
+  your hero. The first time, the host's key is shown: join only if it matches what your friend's screen says.
+  A host whose key later changes is refused.
+- Your hero keeps the levels, gold, gear and skills it earns in someone else's game; your own quests and
+  waypoints stay yours (your save is backed up to `.bak` before it's updated). **Esc** leaves.
+- Each player gets **their own loot**; experience from kills nearby is shared. No PvP. Hardcore heroes play only
+  in hardcore games.
+- Command line: `--host [port]`, `--join ADDRESS`, `--password WORD`, `--trust` (trust a new host's key).
+
+**Security:** TLS 1.3 only (rustls), the host's key pinned on first use, an optional game password (checked in
+constant time, five wrong tries lock an address out for a minute), connection and rate limits, and the host checks
+every input and action a joiner sends. Details in [docs/ONLINE_PLAN.md](docs/ONLINE_PLAN.md).
+
 ## Players 1-8
 
 Like Diablo II's `/players 8`: **Options** (or the in-game help menu) sets how many heroes the game acts as if it
