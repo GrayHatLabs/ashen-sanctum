@@ -9,6 +9,7 @@ use crate::game::{Fireball, Game, Input, Player, State, Stats, DT};
 use crate::world::LevelId;
 
 /// Everything about one hero that isn't the shared world.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct HeroState {
     pub p: Player,
     pub hero_name: String,
@@ -128,6 +129,8 @@ pub struct Ally {
     pub st: HeroState,
     /// This tick's input (from the network, or from a bot).
     pub inp: Input,
+    /// Where a joiner's mouse points, in world tiles (placed on the screen for its hero as it's run).
+    pub target: Option<(f32, f32)>,
     /// Seconds until a fallen ally gets up again beside the leader.
     pub respawn: f32,
 }
@@ -141,8 +144,15 @@ pub const ALLY_RESPAWN: f32 = 6.0;
 impl Game {
     /// Trades ally `k`'s hero into the active slot (or back out: the same call undoes it).
     pub fn swap_hero(&mut self, k: usize) {
+        let mut st = std::mem::replace(&mut self.allies[k].st, HeroState::new());
+        self.swap_with(&mut st);
+        self.allies[k].st = st;
+        self.cur_hero = if self.cur_hero == 0 { k + 1 } else { 0 };
+    }
+
+    /// Trades the active hero's state with `a` (both ways: calling it again undoes it).
+    pub fn swap_with(&mut self, a: &mut HeroState) {
         use std::mem::swap;
-        let a = &mut self.allies[k].st;
         swap(&mut self.p, &mut a.p);
         swap(&mut self.hero_name, &mut a.hero_name);
         swap(&mut self.waypoints, &mut a.waypoints);
@@ -194,7 +204,6 @@ impl Game {
         swap(&mut self.links, &mut a.links);
         swap(&mut self.whips, &mut a.whips);
         swap(&mut self.binds, &mut a.binds);
-        self.cur_hero = if self.cur_hero == 0 { k + 1 } else { 0 };
     }
 
     /// Runs `f` with ally `k` as the active hero.
@@ -208,7 +217,7 @@ impl Game {
     /// A new ally of this class, standing beside the leader. Returns its index in `allies`.
     pub fn add_ally(&mut self, class: crate::skills::Class, name: &str) -> usize {
         let (lx, ly) = (self.p.x, self.p.y);
-        self.allies.push(Ally { st: HeroState::new(), inp: Input::default(), respawn: 0.0 });
+        self.allies.push(Ally { st: HeroState::new(), inp: Input::default(), target: None, respawn: 0.0 });
         let k = self.allies.len() - 1;
         let spot = self.ally_spot(lx, ly, k);
         self.as_hero(k, |g| {
@@ -269,7 +278,8 @@ impl Game {
     /// words don't cover the leader's screen.
     pub fn update_allies(&mut self) {
         for k in 0..self.allies.len() {
-            let inp = std::mem::take(&mut self.allies[k].inp);
+            let mut inp = std::mem::take(&mut self.allies[k].inp);
+            let target = self.allies[k].target.take();
             let (lx, ly) = (self.p.x, self.p.y);
             let keep = (self.message.take(), self.notice.take(), self.pending_travel.take(), self.dialog.take());
             let spot = self.ally_spot(lx, ly, k);
@@ -292,6 +302,12 @@ impl Game {
                     }
                     _ => {
                         respawn = ALLY_RESPAWN;
+                        // A joiner's mouse: its world point, placed on this hero's screen.
+                        if let Some((tx, ty)) = target {
+                            let (ox, oy) = g.cam_origin();
+                            let (sx, sy) = crate::iso::to_screen(tx - g.p.x, ty - g.p.y);
+                            inp.mouse = Some(((sx + ox).round() as i32, (sy + oy).round() as i32));
+                        }
                         let pressed = |now: bool, before: bool| now && !before;
                         let (p_cast, p_lmb) = (pressed(inp.cast, g.prev.cast), pressed(inp.lmb, g.prev.lmb));
                         g.update_player(&inp, p_cast, p_lmb);

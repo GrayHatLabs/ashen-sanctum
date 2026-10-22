@@ -192,6 +192,7 @@ pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
 }
 
 /// A soul drifting from a corpse into her lantern.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct SoulFx {
     pub x: f32,
     pub y: f32,
@@ -200,6 +201,7 @@ pub struct SoulFx {
 }
 
 /// The lantern's spirit flame, hunting a foe.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct LanternFx {
     pub x: f32,
     pub y: f32,
@@ -210,6 +212,7 @@ pub struct LanternFx {
 }
 
 /// Chains holding an area (drawn while they last).
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct ChainsFx {
     pub x: f32,
     pub y: f32,
@@ -218,6 +221,7 @@ pub struct ChainsFx {
 }
 
 /// A scythe sweep's crescent, drawn as it cuts (`half` = PI for Soul Harvest's full circle).
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct SweepFx {
     pub x: f32,
     pub y: f32,
@@ -230,6 +234,7 @@ pub struct SweepFx {
 pub const ARC_TIME: f32 = 0.28;
 
 /// An hourglass slowing an area.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct GlassFx {
     pub x: f32,
     pub y: f32,

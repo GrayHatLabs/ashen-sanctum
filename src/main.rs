@@ -16,6 +16,7 @@ mod levels;
 mod liquid;
 mod party;
 mod net;
+mod online;
 mod menu;
 mod mobs;
 mod music;

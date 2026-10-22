@@ -5,6 +5,7 @@ use crate::iso;
 use crate::rng::Rng;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub enum Kind {
     Zombie,
     Skeleton,
@@ -530,6 +531,7 @@ pub fn def(k: Kind) -> Def {
 
 /// D2-style elite monsters: blue champion packs, and gold-named elites with minions.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub enum Rank {
     Normal,
     Champion,
@@ -574,6 +576,7 @@ pub fn roll_mods(n: usize, rng: &mut Rng) -> u8 {
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub enum MobState {
     Idle,
     Chase,
@@ -582,6 +585,7 @@ pub enum MobState {
     Dead(f32),
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Mob {
     pub kind: Kind,
     pub x: f32,
@@ -607,6 +611,7 @@ pub struct Mob {
     pub burn: f32,
     /// How long it has been burning without a break (Combust hits harder).
     pub burned: f32,
+    #[serde(skip)]
     pub path: Vec<(f32, f32)>,
     pub repath: f32,
     pub wander: (f32, f32, f32),
@@ -625,6 +630,8 @@ pub struct Mob {
     pub name: Option<String>,
     /// Co-op (party.rs): which hero it's after (0 the leader, 1.. the allies).
     pub target: u8,
+    /// A number of its own, so a joiner can follow it from one snapshot to the next (net/snap.rs).
+    pub uid: u32,
     /// Mesmerized or raised by the vampire: fights for you while this lasts.
     pub charm: f32,
     /// A raised thrall crumbles when its charm runs out.
@@ -678,6 +685,8 @@ pub struct Mob {
     pub neutral: u8,
 }
 
+static NEXT_UID: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(1);
+
 impl Mob {
     pub fn new(kind: Kind, x: f32, y: f32, tier: f32, rng: &mut Rng) -> Self {
         let d = def(kind);
@@ -723,6 +732,7 @@ impl Mob {
             mods: 0,
             name: None,
             target: 0,
+            uid: NEXT_UID.fetch_add(1, std::sync::atomic::Ordering::Relaxed),
             charm: 0.0,
             thrall: false,
             frost: 0.0,
@@ -805,6 +815,7 @@ impl Mob {
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub enum ShotKind {
     Arrow,
     Hex,
@@ -837,6 +848,7 @@ pub enum ShotKind {
     Light,
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Shot {
     pub x: f32,
     pub y: f32,
@@ -848,6 +860,7 @@ pub struct Shot {
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub enum HazardKind {
     /// Plague Warden's lingering poison pool.
     Poison,
@@ -863,6 +876,7 @@ pub enum HazardKind {
     Slag,
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Hazard {
     pub x: f32,
     pub y: f32,

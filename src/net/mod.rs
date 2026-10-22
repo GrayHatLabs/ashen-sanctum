@@ -9,6 +9,8 @@
 pub mod frame;
 pub mod proto;
 pub mod tls;
+pub mod intern;
+pub mod snap;
 pub mod conn;
 pub mod host;
 pub mod client;

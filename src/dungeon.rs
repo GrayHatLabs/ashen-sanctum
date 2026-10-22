@@ -6,6 +6,7 @@ pub const WATER: u8 = 1;
 pub const LAVA: u8 = 2;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub enum Tile {
     Void,
     Floor,
@@ -15,6 +16,7 @@ pub enum Tile {
 }
 
 #[derive(Clone, Copy)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Room {
     pub x: i32,
     pub y: i32,
@@ -31,6 +33,7 @@ impl Room {
     }
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Dungeon {
     pub w: i32,
     pub h: i32,

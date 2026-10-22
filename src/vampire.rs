@@ -235,6 +235,7 @@ pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
 // ------------------------------------------------------------------ effects
 
 /// A bat from Bat Swarm: flies at the nearest foe.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct BatFx {
     pub x: f32,
     pub y: f32,
@@ -245,6 +246,7 @@ pub struct BatFx {
 }
 
 /// Blood Moon's field.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct BloodField {
     pub x: f32,
     pub y: f32,

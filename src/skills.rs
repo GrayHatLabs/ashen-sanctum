@@ -8,6 +8,7 @@ use crate::gfx::{rgb, Align, Fx, Screen, BLACK};
 use crate::mobs::MobState;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub enum Skill {
     Fireball,
     Inferno,
@@ -122,6 +123,7 @@ pub fn class_damage(c: Class) -> f32 {
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub enum Class {
     Sorceress,
     Vampire,
@@ -504,7 +506,9 @@ pub fn def(s: Skill) -> Def {
 
 /// Your skills: ranks, unspent points and what's in the two slots.
 #[derive(Clone, Debug)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Skills {
+    #[serde(with = "crate::net::intern::big_array")]
     pub rank: [u8; ALL.len()],
     pub points: u32,
     /// Left-click / pad A.
@@ -512,6 +516,7 @@ pub struct Skills {
     /// Right-click / pad X (1-4 or R1 to change).
     pub secondary: Skill,
     /// Seconds left before each skill can be cast again (Hydra, Ash Phoenix).
+    #[serde(with = "crate::net::intern::big_array")]
     pub cooldown: [f32; ALL.len()],
     /// + to all fire skills from gear (only skills you have learned).
     pub bonus: u8,
@@ -911,6 +916,7 @@ pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
 }
 
 /// Expanding ring left by Fire Nova (visual only; damage is instant).
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Nova {
     pub x: f32,
     pub y: f32,
@@ -925,6 +931,7 @@ pub struct Nova {
 pub const NOVA_TIME: f32 = 0.4;
 
 /// A line of flames from Fire Wall: tile-centred segments that burn whatever stands on them.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct FireWallFx {
     pub segs: Vec<(f32, f32)>,
     pub t: f32,
@@ -934,6 +941,7 @@ pub struct FireWallFx {
 }
 
 /// A meteor on its way down: the shadow grows until it lands.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct MeteorFx {
     pub x: f32,
     pub y: f32,
@@ -943,6 +951,7 @@ pub struct MeteorFx {
 }
 
 /// A fire hydra: a burning turret that spits fireballs.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct HydraFx {
     pub x: f32,
     pub y: f32,
@@ -952,6 +961,7 @@ pub struct HydraFx {
 }
 
 /// A burning patch of ground left by Blaze.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct FirePatch {
     pub x: f32,
     pub y: f32,

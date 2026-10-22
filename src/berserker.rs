@@ -250,6 +250,7 @@ pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
 }
 
 /// The thrown axe: out through a line of foes, then back to her hand.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct AxeFx {
     pub x: f32,
     pub y: f32,

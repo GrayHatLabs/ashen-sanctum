@@ -182,6 +182,7 @@ pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
 }
 
 /// A cloud of poison (Spore Cloud, a burst mushroom).
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct CloudFx {
     pub x: f32,
     pub y: f32,
@@ -191,6 +192,7 @@ pub struct CloudFx {
 }
 
 /// A mushroom about to burst.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct FungusFx {
     pub x: f32,
     pub y: f32,
@@ -199,6 +201,7 @@ pub struct FungusFx {
 }
 
 /// Thorn Lash's vines, drawn while they last.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct VineFx {
     pub x0: f32,
     pub y0: f32,

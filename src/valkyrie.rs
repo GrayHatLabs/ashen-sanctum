@@ -249,6 +249,7 @@ pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
 // ------------------------------------------------------------------ effects
 
 /// Her raven, diving at a foe.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct RavenFx {
     pub x: f32,
     pub y: f32,
@@ -262,6 +263,7 @@ pub struct RavenFx {
 }
 
 /// A spectral javelin: out through a line of foes, then back to her hand.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct JavelinFx {
     pub x: f32,
     pub y: f32,
@@ -275,6 +277,7 @@ pub struct JavelinFx {
 
 /// The warhorse charge in progress.
 #[derive(Clone)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Charge {
     pub ux: f32,
     pub uy: f32,

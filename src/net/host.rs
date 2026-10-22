@@ -289,13 +289,16 @@ fn serve(
     // Flush whatever's left (a goodbye), briefly.
     let _ = tls.sock.set_write_timeout(Some(Duration::from_millis(300)));
     while let Ok(f) = out_rx.try_recv() {
-        if super::frame::write_frame(&mut tls, &f).is_err() {
+        if conn::Wire::send(&mut tls, &f).is_err() {
             break;
         }
     }
     tls.conn.send_close_notify();
     let _ = tls.conn.complete_io(&mut tls.sock);
     release(joined);
+    if cfg!(test) {
+        eprintln!("host peer {peer} ended: {ended:?}");
+    }
     if bye_seen.load(Ordering::Relaxed) {
         return "LEFT".into();
     }

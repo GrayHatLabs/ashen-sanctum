@@ -44,6 +44,7 @@ pub fn slot_name(s: Slot) -> &'static str {
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug, PartialOrd, Ord)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub enum Rarity {
     Normal,
     Magic,
@@ -68,6 +69,7 @@ pub fn rarity_col(r: Rarity) -> u32 {
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub enum Stat {
     Life,
     Mana,
@@ -223,6 +225,7 @@ pub fn roll_ancient(class: crate::skills::Class, rng: &mut Rng) -> Option<Item> 
 
 /// Totals of every stat on your worn gear.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Bonus([i32; STATS.len()]);
 
 impl Bonus {
@@ -364,6 +367,7 @@ fn rare_noun(s: Slot) -> &'static [&'static str] {
 // ------------------------------------------------------------------ items
 
 #[derive(Clone, Debug, PartialEq)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Item {
     pub base: usize,
     pub rarity: Rarity,
@@ -381,6 +385,7 @@ pub struct Item {
 
 /// A gem: one of seven kinds, graded chipped (1) to perfect (5).
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Gem {
     pub kind: u8,
     pub grade: u8,
@@ -1036,6 +1041,7 @@ pub fn drop(ilvl: u8, mf: i32, boost: bool, rng: &mut Rng) -> Item {
 // ------------------------------------------------------------------ the bag and worn gear
 
 #[derive(Clone, Debug)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Gear {
     pub worn: [Option<Item>; WORN.len()],
     pub bag: Vec<Option<Item>>,

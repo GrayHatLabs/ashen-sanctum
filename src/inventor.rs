@@ -186,6 +186,7 @@ pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
 
 // ------------------------------------------------------------------ effects
 
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct BombFx {
     pub x0: f32,
     pub y0: f32,
@@ -197,11 +198,13 @@ pub struct BombFx {
 pub const BOMB_FLIGHT: f32 = 0.4;
 
 /// A lightning chain (visual): the points it passed through.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct ArcFx {
     pub pts: Vec<(f32, f32)>,
     pub t: f32,
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct TurretFx {
     pub x: f32,
     pub y: f32,
@@ -211,6 +214,7 @@ pub struct TurretFx {
     pub dmg: f32,
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct SpiderFx {
     pub x: f32,
     pub y: f32,
@@ -221,6 +225,7 @@ pub struct SpiderFx {
     pub moving: bool,
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct AirshipFx {
     pub x: f32,
     pub y: f32,

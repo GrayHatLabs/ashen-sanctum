@@ -51,6 +51,7 @@ pub const ARENAS: [&str; 7] = ["THE ASH PIT", "THE FROST RING", "THE BLOOD COURT
 const MERCHANTS: [&str; 4] = ["HESKETH THE TRAVELLER", "MAMA OLUWA", "THE SILK BROTHERS", "PEDDLER QUILL"];
 
 #[derive(Clone, Debug)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct ArenaRun {
     pub act: u8,
     pub wave: u8,
@@ -62,6 +63,7 @@ pub struct ArenaRun {
 
 /// What the all-act systems remember. Per hero, across difficulties (the rival's wait never resets).
 #[derive(Clone, Debug, Default)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Extras {
     /// Bestiary: kills by monster name.
     pub kills: HashMap<String, u32>,
@@ -77,7 +79,8 @@ pub struct Extras {
     /// Caravans: time until the next can come, where the current one is, raiders 0 none / 1 attacking / 2 beaten.
     pub caravan_cd: f32,
     pub caravan_level: Option<LevelId>,
-    pub caravan_name: &'static str,
+    #[serde(with = "crate::net::intern::static_str")]
+    pub caravan_name: crate::net::intern::Text,
     pub caravan_ambush: u8,
     /// The arena: the run in progress, your best times by act (0 none), first clears (bits per difficulty).
     pub arena: Option<ArenaRun>,

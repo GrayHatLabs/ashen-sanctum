@@ -8,6 +8,7 @@ use crate::rng::Rng;
 use crate::story::{Npc, Role};
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub enum LevelId {
     /// Act 1's overland: the Ashlands and Hollowmere.
     Overworld,
@@ -77,6 +78,7 @@ impl LevelId {
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub enum Theme {
     Overworld,
     Crypt,
@@ -663,6 +665,7 @@ pub const EYE: usize = 35;
 pub const VAULT: usize = 36;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub enum PortalKind {
     /// Overworld door into a dungeon's first floor.
     Entrance(usize),
@@ -679,6 +682,7 @@ pub enum PortalKind {
     Exit(u8),
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Portal {
     pub x: f32,
     pub y: f32,
@@ -686,6 +690,7 @@ pub struct Portal {
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub enum PropKind {
     TreeOak,
     TreePine,
@@ -873,6 +878,7 @@ impl PropKind {
     }
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Prop {
     /// World point the sprite's bottom centre sits on.
     pub x: f32,

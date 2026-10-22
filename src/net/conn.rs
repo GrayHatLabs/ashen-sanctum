@@ -2,8 +2,10 @@
 //! timeout) and frames out (from a bounded queue). Works over any stream, TLS or not (the tests use both).
 #![forbid(unsafe_code)]
 
-use super::frame::{write_frame, FrameError};
+use super::frame::FrameError;
 use std::io::{self, Read, Write};
+use std::net::TcpStream;
+use std::ops::{Deref, DerefMut};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{Receiver, TryRecvError};
 use std::time::{Duration, Instant};
@@ -73,10 +75,73 @@ impl FrameReader {
     }
 }
 
+/// A connection frames go over: `send` writes a whole frame (or fails), `recv` reads what's there
+/// (an error of kind WouldBlock or TimedOut just means nothing yet).
+pub trait Wire {
+    fn send(&mut self, frame: &[u8]) -> io::Result<()>;
+    fn recv(&mut self, buf: &mut [u8]) -> io::Result<usize>;
+}
+
+/// TLS, driven by hand: sending only encrypts and writes, receiving only reads and decrypts (rustls's
+/// own stream helper reads while writing, which a short read timeout turns into false errors).
+impl<C, D> Wire for rustls::StreamOwned<C, TcpStream>
+where
+    C: Deref<Target = rustls::ConnectionCommon<D>> + DerefMut,
+    D: rustls::SideData,
+{
+    fn send(&mut self, frame: &[u8]) -> io::Result<()> {
+        let n = u32::try_from(frame.len()).map_err(|_| io::Error::new(io::ErrorKind::InvalidInput, "frame too large"))?;
+        self.conn.writer().write_all(&n.to_le_bytes())?;
+        self.conn.writer().write_all(frame)?;
+        while self.conn.wants_write() {
+            self.conn.write_tls(&mut self.sock)?;
+        }
+        Ok(())
+    }
+
+    fn recv(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+        loop {
+            match self.conn.reader().read(buf) {
+                Ok(n) => return Ok(n),
+                Err(e) if e.kind() == io::ErrorKind::WouldBlock => {}
+                Err(e) => return Err(e),
+            }
+            // Nothing decrypted yet: read from the socket (this is where the short timeout bites).
+            if self.conn.read_tls(&mut self.sock)? == 0 {
+                return Ok(0);
+            }
+            self.conn.process_new_packets().map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e.to_string()))?;
+            while self.conn.wants_write() {
+                self.conn.write_tls(&mut self.sock)?;
+            }
+        }
+    }
+}
+
+/// Plain bytes in memory (the tests).
+impl Wire for std::collections::VecDeque<u8> {
+    fn send(&mut self, frame: &[u8]) -> io::Result<()> {
+        self.extend((frame.len() as u32).to_le_bytes());
+        self.extend(frame.iter().copied());
+        Ok(())
+    }
+
+    fn recv(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+        if self.is_empty() {
+            return Err(io::Error::new(io::ErrorKind::WouldBlock, "nothing yet"));
+        }
+        let n = buf.len().min(self.len());
+        for (i, b) in self.drain(..n).enumerate() {
+            buf[i] = b;
+        }
+        Ok(n)
+    }
+}
+
 /// Runs a connection until it ends. Each whole frame goes to `on_frame`, which returns false to end it
 /// (a message it mustn't send). Frames queued in `outbound` are written. The stream should have a short
 /// read timeout (the loop's tick) and a write timeout (a peer that stops reading is dropped).
-pub fn pump<S: Read + Write>(s: &mut S, lim: Limits, outbound: &Receiver<Vec<u8>>, stop: &AtomicBool, mut on_frame: impl FnMut(Vec<u8>) -> bool) -> Ended {
+pub fn pump<S: Wire>(s: &mut S, lim: Limits, outbound: &Receiver<Vec<u8>>, stop: &AtomicBool, mut on_frame: impl FnMut(Vec<u8>) -> bool) -> Ended {
     let mut reader = FrameReader::new(lim.max_frame);
     let mut tmp = vec![0u8; 16 * 1024];
     let mut heard = Instant::now();
@@ -90,7 +155,7 @@ pub fn pump<S: Read + Write>(s: &mut S, lim: Limits, outbound: &Receiver<Vec<u8>
         loop {
             match outbound.try_recv() {
                 Ok(f) => {
-                    if let Err(e) = write_frame(s, &f) {
+                    if let Err(e) = s.send(&f) {
                         return Ended::Io(e);
                     }
                 }
@@ -99,7 +164,7 @@ pub fn pump<S: Read + Write>(s: &mut S, lim: Limits, outbound: &Receiver<Vec<u8>
             }
         }
         // In.
-        match s.read(&mut tmp) {
+        match s.recv(&mut tmp) {
             Ok(0) => return Ended::Closed,
             Ok(n) => {
                 heard = Instant::now();
@@ -140,6 +205,7 @@ pub fn pump<S: Read + Write>(s: &mut S, lim: Limits, outbound: &Receiver<Vec<u8>
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::net::frame::write_frame;
 
     #[test]
     fn frames_split_anywhere_come_out_whole() {

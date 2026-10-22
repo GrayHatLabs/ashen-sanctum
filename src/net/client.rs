@@ -109,7 +109,12 @@ pub fn join(addr: &str, dir: &Path, name: &str, hero: &str, password: &str) -> R
                     Ended::Closed | Ended::Stopped => "DISCONNECTED",
                     Ended::Idle => "THE HOST STOPPED ANSWERING",
                     Ended::Misbehaved(_) => "THE HOST SENT NONSENSE",
-                    Ended::Io(_) => "LOST CONNECTION",
+                    Ended::Io(e) => {
+                        if cfg!(test) {
+                            eprintln!("join link: {e:?}");
+                        }
+                        "LOST CONNECTION"
+                    }
                 };
                 tls.conn.send_close_notify();
                 let _ = tls.conn.complete_io(&mut tls.sock);

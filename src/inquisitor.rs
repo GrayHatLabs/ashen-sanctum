@@ -307,6 +307,7 @@ pub fn describe(s: Skill, r: u8, power: f32, sk: &Skills) -> Vec<String> {
 }
 
 /// A chain drawn between two points for a moment (lash, hook, censer strike).
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct ChainLinkFx {
     /// A whip: the chain unrolls in a curving lash and cracks at the end (else it's drawn whole at once).
     pub whip: bool,
@@ -325,6 +326,7 @@ pub struct ChainLinkFx {
 }
 
 /// A Censer Strike in flight (her whip): the damage travels out along the chain.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Whip {
     pub x: f32,
     pub y: f32,
@@ -343,6 +345,7 @@ pub struct Whip {
 }
 
 /// Binding chains holding a spot.
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct BindFx {
     pub x: f32,
     pub y: f32,

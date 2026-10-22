@@ -1,6 +1,7 @@
 //! Story: the quest line, the people of Hollowmere and their dialogue.
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub enum Role {
     Elder,
     Merchant,
@@ -88,10 +89,13 @@ pub enum Role {
 pub const JEWELERS: [&str; 7] = ["MASTER ODO", "INGRID STONEHAND", "SILAS GREAVE", "THE LAPIDARY", "THE PEARL-SETTER", "THE GILDER", "THE CUTTER"];
 
 
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Npc {
-    pub name: &'static str,
+    #[serde(with = "crate::net::intern::static_str")]
+    pub name: crate::net::intern::Text,
     pub role: Role,
-    pub art: &'static str,
+    #[serde(with = "crate::net::intern::static_str")]
+    pub art: crate::net::intern::Text,
     pub x: f32,
     pub y: f32,
     pub dir: usize,
@@ -110,6 +114,7 @@ impl Npc {
 
 /// Where the story stands.
 #[derive(Clone, Debug, Default)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Quest {
     /// 0 = haven't met the elder, 1 = hunting the wardens, 2 = Sanctum unsealed, 3 = Ash King slain.
     pub stage: u8,

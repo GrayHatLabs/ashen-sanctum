@@ -66,6 +66,7 @@ const TALK_RANGE: f32 = 1.8;
 
 /// Everything the game reads from the outside world for one tick.
 #[derive(Default, Clone)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Input {
     /// Keyboard / left stick movement in screen space (-1..1).
     pub move_x: f32,
@@ -141,6 +142,7 @@ pub enum Sfx {
     Shot,
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Fireball {
     pub x: f32,
     pub y: f32,
@@ -190,6 +192,7 @@ pub struct Floater {
 }
 
 #[derive(Clone, PartialEq, Debug)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub enum Drop {
     Health,
     Mana,
@@ -238,6 +241,7 @@ pub enum Drop {
     Item(Box<crate::items::Item>),
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Pickup {
     pub x: f32,
     pub y: f32,
@@ -275,6 +279,7 @@ pub struct Light {
     pub max: f32,
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Player {
     /// Endgame (endgame.rs): how often each act has been rekindled, the deepest Ash Rift cleared in time,
     /// rifts opened, and Embers of mastery (four tracks, and points to spend).
@@ -307,7 +312,8 @@ pub struct Player {
     /// The inventor's last cast was a thrown gadget (throw pose, not the pistol).
     pub throwing: bool,
     /// The valkyrie's current attack pose (attack / sweep / whirl / throw / cast).
-    pub pose: &'static str,
+    #[serde(with = "crate::net::intern::static_str")]
+    pub pose: crate::net::intern::Text,
     /// The valkyrie: seconds left "in combat" (Valor doesn't drain).
     pub fight_t: f32,
     /// Her ice wings are spread (Glacier Leap, Fimbulwinter).
@@ -357,6 +363,7 @@ pub struct Player {
     pub winded: bool,
     pub food: f32,
     pub hunger_msg: f32,
+    #[serde(skip)]
     pub path: Vec<(f32, f32)>,
     pub goal: Option<(f32, f32)>,
     pub repath: f32,
@@ -647,6 +654,7 @@ pub fn xp_to_next(clvl: u32) -> f32 {
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub enum State {
     Playing,
     Dead(f32),
@@ -655,6 +663,7 @@ pub enum State {
 }
 
 #[derive(Default, Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Stats {
     pub casts: u32,
     pub hits: u32,
@@ -3606,7 +3615,7 @@ impl Game {
     }
 
     /// Marks tiles around the player (within the light radius, in line of sight) as seen.
-    fn explore(&mut self) {
+    pub(crate) fn explore(&mut self) {
         if self.tick % 6 != 0 {
             return;
         }
@@ -4502,7 +4511,7 @@ impl Game {
         self.floaters.push(Floater { x, y, t: 0.0, text, col });
     }
 
-    fn update_world(&mut self) {
+    pub(crate) fn update_world(&mut self) {
         for p in self.parts.iter_mut() {
             p.life -= DT;
             p.x += p.vx * DT;

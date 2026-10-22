@@ -39,6 +39,12 @@ pub enum ToClient {
     Chat { from: String, text: String },
     /// Closing the connection (the host quit, or kicked you), and why.
     Bye(String),
+    /// The level you're in now (net/snap.rs, compressed).
+    Level(Vec<u8>),
+    /// What's near you this moment (net/snap.rs, compressed).
+    Snap(Vec<u8>),
+    /// Your hero as the host has it (its save text), for your own save.
+    Hero(String),
 }
 
 /// One tick of a joiner's controls.
