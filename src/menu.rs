@@ -19,6 +19,12 @@ pub enum Stage {
     Options,
     /// Asking before deleting this hero (index into `heroes`).
     Delete(usize),
+    /// Play online: host a game, or join one.
+    Online,
+    /// The address (or port) and password, then go.
+    NetSetup,
+    /// A host never met before: its key, and whether to trust it.
+    Trust,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -30,6 +36,12 @@ pub enum MenuOut {
     New(Class, String, bool),
     ToggleMusic,
     Quit,
+    /// Look up a host (its key) before joining.
+    Probe(String),
+    /// Trust this host's key, then join it.
+    Trust(String, [u8; 32]),
+    /// Host or join (once a hero is picked).
+    Online(crate::online::Ask),
 }
 
 /// The classes on the create screen: (name, portrait, two lines, colour, playable, in-game sheet).
@@ -76,6 +88,13 @@ pub struct Menu {
     /// Rows that fit on screen (from the last draw).
     rows_fit: usize,
     seed: u32,
+    /// Online setup: hosting (or joining), the address or port typed, the password, the host key to show,
+    /// and the key of a new host waiting to be trusted.
+    net_host: bool,
+    net_addr: String,
+    net_pw: String,
+    net_key: Option<String>,
+    net_trust: Option<(String, [u8; 32])>,
 }
 
 impl Menu {
@@ -98,6 +117,11 @@ impl Menu {
             scroll: 0,
             rows_fit: 7,
             seed: 1,
+            net_host: false,
+            net_addr: String::new(),
+            net_pw: String::new(),
+            net_key: None,
+            net_trust: None,
         }
     }
 
@@ -110,7 +134,10 @@ impl Menu {
 
     fn items(&self) -> usize {
         match self.stage {
-            Stage::Title => 3,
+            Stage::Title => 4,
+            Stage::Online => 3,
+            Stage::NetSetup => 4,
+            Stage::Trust => 2,
             Stage::Heroes => self.heroes.len() + 3,
             Stage::Create => CLASSES.len(),
             Stage::Name => 4,
@@ -153,7 +180,7 @@ impl Menu {
         }
         let prev = std::mem::replace(&mut self.prev, inp.clone());
         let edge = |now: f32, before: f32, neg: bool| if neg { now < -0.5 && before >= -0.5 } else { now > 0.5 && before <= 0.5 };
-        let typing = self.stage == Stage::Name;
+        let typing = self.stage == Stage::Name || (self.stage == Stage::NetSetup && self.sel <= 1);
         let typed_now = !inp.typed.is_empty();
         let (up, down) = (edge(inp.move_y, prev.move_y, true), edge(inp.move_y, prev.move_y, false));
         let (left, right) = (edge(inp.move_x, prev.move_x, true), edge(inp.move_x, prev.move_x, false));
@@ -209,8 +236,81 @@ impl Menu {
                             let s = if self.heroes.is_empty() { Stage::Create } else { Stage::Heroes };
                             self.go(s);
                         }
-                        1 => self.go(Stage::Options),
+                        1 => self.go(Stage::Online),
+                        2 => self.go(Stage::Options),
                         _ => self.quit_armed = true,
+                    }
+                }
+            }
+            Stage::Online => {
+                if back || (confirm && self.sel == 2) {
+                    self.go(Stage::Title);
+                    self.sel = 1;
+                    return None;
+                }
+                if confirm {
+                    self.net_host = self.sel == 0;
+                    self.net_addr = if self.net_host { crate::net::proto::DEFAULT_PORT.to_string() } else { String::new() };
+                    self.net_pw.clear();
+                    // Hosting: your key, for friends to check against what their screen shows.
+                    self.net_key = if self.net_host { crate::net::tls::identity(&crate::save::dir()).ok().map(|i| crate::net::tls::show(&i.fingerprint)) } else { None };
+                    self.go(Stage::NetSetup);
+                }
+            }
+            Stage::NetSetup => {
+                // Typing goes to the field picked: the address (or port), or the password.
+                if self.sel <= 1 {
+                    let field = if self.sel == 0 { &mut self.net_addr } else { &mut self.net_pw };
+                    for c in inp.typed.chars() {
+                        let ok = if self.sel == 1 {
+                            c.is_ascii_graphic() && field.len() < 32
+                        } else if self.net_host {
+                            c.is_ascii_digit() && field.len() < 5
+                        } else {
+                            (c.is_ascii_alphanumeric() || ".:-[]".contains(c)) && field.len() < 64
+                        };
+                        if ok {
+                            field.push(if self.sel == 0 { c.to_ascii_lowercase() } else { c });
+                        }
+                    }
+                    if inp.backspace {
+                        field.pop();
+                    }
+                }
+                if back || (confirm && self.sel == 3) {
+                    self.go(Stage::Online);
+                    self.sel = if self.net_host { 0 } else { 1 };
+                    return None;
+                }
+                if confirm && self.sel < 2 {
+                    self.sel += 1;
+                } else if confirm && self.sel == 2 {
+                    if self.net_host {
+                        match self.net_addr.parse::<u16>() {
+                            Ok(port) if port >= 1024 => {
+                                return Some(MenuOut::Online(crate::online::Ask { host: Some(port), join: None, password: self.net_pw.clone(), trust: false }));
+                            }
+                            _ => self.say("A PORT FROM 1024 TO 65535"),
+                        }
+                    } else if self.net_addr.is_empty() {
+                        self.say("TYPE THE HOST'S ADDRESS");
+                        self.sel = 0;
+                    } else {
+                        self.say("LOOKING FOR THE HOST...");
+                        return Some(MenuOut::Probe(self.net_addr.clone()));
+                    }
+                }
+            }
+            Stage::Trust => {
+                if back || (confirm && self.sel == 1) {
+                    self.net_trust = None;
+                    self.go(Stage::NetSetup);
+                    self.sel = 2;
+                    return None;
+                }
+                if confirm {
+                    if let Some((addr, fp)) = self.net_trust.take() {
+                        return Some(MenuOut::Trust(addr, fp));
                     }
                 }
             }
@@ -407,6 +507,7 @@ impl Menu {
         }
         match self.stage {
             Stage::Title => self.draw_title(scr, art, w, h),
+            Stage::Online | Stage::NetSetup | Stage::Trust => self.draw_online(scr, w, h),
             Stage::Heroes | Stage::Delete(_) => self.draw_heroes(scr, art, w, h),
             Stage::Create => self.draw_create(scr, art, w, h),
             Stage::Name => self.draw_name(scr, art, w, h),
@@ -488,9 +589,9 @@ impl Menu {
             }
             self.logo(scr, w, h / 4 - 20, 4);
         }
-        scr.blend(w / 2 - 110, h / 2 + if tall { 40 } else { 10 }, 220, 92, BLACK, 0.5);
-        let y0 = h / 2 + if tall { 50 } else { 20 };
-        for (k, label) in ["PLAY", "OPTIONS", "QUIT"].iter().enumerate() {
+        scr.blend(w / 2 - 110, h / 2 + if tall { 40 } else { 4 }, 220, 118, BLACK, 0.5);
+        let y0 = h / 2 + if tall { 50 } else { 14 };
+        for (k, label) in ["PLAY", "PLAY ONLINE", "OPTIONS", "QUIT"].iter().enumerate() {
             self.button(scr, label, w / 2, y0 + k as i32 * 26, 150, k, true);
         }
         scr.text("UP / DOWN + ENTER (PAD: A)", w / 2, h - 14, rgb(0x7a6a5a), Align::Center, 1);
@@ -595,6 +696,87 @@ impl Menu {
         let hc = if self.hardcore { "HARDCORE: ON (ONE LIFE)" } else { "HARDCORE: OFF" };
         self.button(scr, hc, w / 2, y + 26, 200, 3, true);
         scr.text("TYPE A NAME, ENTER TO BEGIN.  PAD: Y RANDOM NAME, A BEGIN", w / 2, h - 14, rgb(0x7a6a5a), Align::Center, 1);
+    }
+
+    /// Online: host or join; then the address and password; then (a new host) its key to trust.
+    fn draw_online(&mut self, scr: &mut Screen, w: i32, h: i32) {
+        self.logo(scr, w, 20, 2);
+        scr.text("PLAY ONLINE", w / 2, 52, rgb(0xffd080), Align::Center, 2);
+        match self.stage {
+            Stage::Online => {
+                self.button(scr, "HOST A GAME", w / 2, 86, 220, 0, true);
+                self.button(scr, "JOIN A GAME", w / 2, 112, 220, 1, true);
+                self.button(scr, "BACK", w / 2, 138, 220, 2, true);
+                let lines = [
+                    "UP TO EIGHT HEROES IN ONE WORLD. THE HOST'S WORLD IS THE ONE YOU PLAY IN.",
+                    "YOUR HERO COMES WITH YOU, AND KEEPS WHAT IT FINDS AND LEARNS THERE.",
+                    "EVERYONE GETS THEIR OWN LOOT. EVERYTHING IS ENCRYPTED.",
+                ];
+                for (k, l) in lines.iter().enumerate() {
+                    scr.text(l, w / 2, 176 + k as i32 * 14, rgb(0xa09080), Align::Center, 1);
+                }
+            }
+            Stage::NetSetup => {
+                let caret = if (self.t * 2.0) as i32 % 2 == 0 { "_" } else { " " };
+                let field = |k: usize| if self.sel == k { caret } else { "" };
+                let first = if self.net_host { format!("PORT: {}{}", self.net_addr, field(0)) } else { format!("ADDRESS: {}{}", self.net_addr.to_uppercase(), field(0)) };
+                let stars = "*".repeat(self.net_pw.chars().count());
+                let pw = if self.net_pw.is_empty() && self.sel != 1 { "PASSWORD: (NONE)".to_string() } else { format!("PASSWORD: {stars}{}", field(1)) };
+                self.button(scr, &first, w / 2, 86, 300, 0, true);
+                self.button(scr, &pw, w / 2, 112, 300, 1, true);
+                self.button(scr, if self.net_host { "HOST, THEN PICK YOUR HERO" } else { "JOIN, THEN PICK YOUR HERO" }, w / 2, 138, 300, 2, true);
+                self.button(scr, "BACK", w / 2, 164, 300, 3, true);
+                let lines: Vec<String> = if self.net_host {
+                    vec![
+                        format!("YOUR HOST KEY: {}", self.net_key.clone().unwrap_or_else(|| "?".into())),
+                        "FRIENDS SEE THIS KEY THE FIRST TIME THEY JOIN: IT SHOULD MATCH.".into(),
+                        "FROM OUTSIDE YOUR HOME, THEY NEED THIS PORT OPENED ON YOUR ROUTER.".into(),
+                    ]
+                } else {
+                    vec!["THE HOST'S ADDRESS, LIKE 192.168.1.20 OR HOST.EXAMPLE.COM (:PORT IF NOT 4747).".into(), "A PASSWORD IF THE HOST SET ONE.".into()]
+                };
+                for (k, l) in lines.iter().enumerate() {
+                    scr.text(l, w / 2, 196 + k as i32 * 14, rgb(0xa09080), Align::Center, 1);
+                }
+            }
+            _ => {
+                let key = self.net_trust.as_ref().map(|(_, fp)| crate::net::tls::show(fp)).unwrap_or_default();
+                scr.text("A HOST YOU HAVEN'T JOINED BEFORE. ITS KEY:", w / 2, 90, rgb(0xd8c090), Align::Center, 1);
+                scr.text(&key, w / 2, 108, rgb(0xffe0a0), Align::Center, 2);
+                scr.text("ASK YOUR FRIEND WHAT THEIR SCREEN SAYS. JOIN ONLY IF IT'S THE SAME.", w / 2, 134, rgb(0xa09080), Align::Center, 1);
+                self.button(scr, "IT MATCHES: TRUST AND JOIN", w / 2, 160, 260, 0, true);
+                self.button(scr, "BACK", w / 2, 186, 260, 1, true);
+            }
+        }
+        if let Some((m, _)) = &self.msg {
+            scr.text(m, w / 2, h - 30, rgb(0xffb070), Align::Center, 1);
+        }
+    }
+
+    /// The host was found and is trusted: pick a hero (main.rs then starts online play).
+    pub fn online_ready(&mut self) {
+        let s = if self.heroes.is_empty() { Stage::Create } else { Stage::Heroes };
+        self.go(s);
+    }
+
+    /// A new host: show its key and ask.
+    pub fn ask_trust(&mut self, addr: String, fp: [u8; 32]) {
+        self.net_trust = Some((addr, fp));
+        self.go(Stage::Trust);
+    }
+
+    /// For the snapshots: the online screens filled in.
+    pub fn debug_net(&mut self, host: bool, addr: &str, pw: &str, key: Option<String>) {
+        (self.net_host, self.net_addr, self.net_pw, self.net_key) = (host, addr.into(), pw.into(), key);
+    }
+
+    pub fn tell(&mut self, s: &str) {
+        self.say(s);
+    }
+
+    /// What's been typed for joining (address and password).
+    pub fn join_ask(&self) -> crate::online::Ask {
+        crate::online::Ask { host: None, join: Some(self.net_addr.clone()), password: self.net_pw.clone(), trust: false }
     }
 
     fn draw_options(&mut self, scr: &mut Screen, w: i32, _h: i32) {

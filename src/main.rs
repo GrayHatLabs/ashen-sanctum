@@ -373,6 +373,9 @@ fn main() -> Result<(), String> {
     let mut r2_held = false;
     game::HANDHELD.store(handheld, std::sync::atomic::Ordering::Relaxed);
     let cheats = args.iter().any(|a| a == "--cheats");
+    // Online play (online.rs): --host [port] / --join ADDRESS, started once a hero is in play.
+    let mut online_ask = online::Ask::from_args(&args);
+    let mut session: Option<online::Session> = None;
     let (mut cheat_level, mut cheat_loot) = (false, false);
     let mut back_down: Option<Instant> = None;
 
@@ -591,7 +594,12 @@ fn main() -> Result<(), String> {
                         menu_out = Some(out);
                     }
                 }
-                None => game.update(&inp),
+                None => {
+                    if session.is_none() && online_ask.wanted() {
+                        session = online::start(&mut online_ask, &mut game);
+                    }
+                    online::step(&mut session, &mut game, &inp);
+                }
             }
             backspace = false;
             wheel = 0;
@@ -669,10 +677,47 @@ fn main() -> Result<(), String> {
                 }
             }
             Some(menu::MenuOut::Quit) => break 'main,
+            Some(menu::MenuOut::Probe(addr)) => {
+                if let Some(m) = menu.as_mut() {
+                    match net::client::probe(&addr, &save::dir()) {
+                        Ok(None) => {
+                            online_ask = m.join_ask();
+                            m.online_ready();
+                        }
+                        Ok(Some(fp)) => m.ask_trust(addr, fp),
+                        Err(net::client::JoinError::Changed(_)) => m.tell("THE HOST'S KEY HAS CHANGED: NOT JOINING"),
+                        Err(net::client::JoinError::Refused(w)) | Err(net::client::JoinError::Unreachable(w)) => m.tell(&format!("COULDN'T REACH IT: {w}")),
+                        Err(net::client::JoinError::Unknown(_)) => m.tell("COULDN'T REACH IT"),
+                    }
+                }
+            }
+            Some(menu::MenuOut::Trust(addr, fp)) => {
+                if let (Some(m), Some(key)) = (menu.as_mut(), net::client::key_for(&addr)) {
+                    if net::tls::trust(&save::dir(), &key, &fp).is_ok() {
+                        online_ask = m.join_ask();
+                        m.online_ready();
+                    } else {
+                        m.tell("COULDN'T SAVE THE HOST'S KEY");
+                    }
+                }
+            }
+            Some(menu::MenuOut::Online(ask)) => {
+                online_ask = ask;
+                if let Some(m) = menu.as_mut() {
+                    m.online_ready();
+                }
+            }
             None => {}
         }
         if let Some(a) = audio.as_mut() {
             a.set_music(if menu.is_some() { music::Track::Town } else { game.music_track() });
+        }
+        if !online::may_save(&session) {
+            // Joined: the world on screen is the host's. Leaving puts yours back.
+            game.save_due = false;
+            if game.exit || game.quit {
+                online::leave(&mut session, &mut game, "LEFT THE GAME");
+            }
         }
         if game.save_due && menu.is_none() {
             game.save_due = false;
@@ -693,6 +738,13 @@ fn main() -> Result<(), String> {
         }
         match menu.as_mut() {
             Some(m) => m.draw(&mut scr, &game.art),
+            None if !online::may_save(&session) => {
+                // Joined: the host's world is drawn. If something it sent can't be drawn, leave rather than crash.
+                let drew = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| game.draw(&mut scr))).is_ok();
+                if !drew {
+                    online::leave(&mut session, &mut game, "THE HOST SENT SOMETHING THAT COULDN'T BE SHOWN. LEFT THE GAME");
+                }
+            }
             None => game.draw(&mut scr),
         }
         if let (Some(m), false) = (inp.mouse, handheld) {
@@ -721,6 +773,10 @@ fn main() -> Result<(), String> {
             std::thread::sleep(Duration::from_millis(1));
         }
     }
+    if !online::may_save(&session) {
+        online::leave(&mut session, &mut game, "LEFT THE GAME");
+    }
+    drop(session);
     if menu.is_none() {
         save::write(&game);
     }

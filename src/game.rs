@@ -2197,6 +2197,10 @@ impl Game {
     }
 
     pub(crate) fn say(&mut self, text: String) {
+        // ASHEN_NETLOG=1: messages to the terminal too (watching online sessions without a screen).
+        if std::env::var_os("ASHEN_NETLOG").is_some() {
+            eprintln!("[{}] {text}", self.hero_name);
+        }
         self.message = Some((text, 4.0));
     }
 

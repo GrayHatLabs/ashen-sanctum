@@ -814,6 +814,22 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         m.stage = Stage::Options;
         m.sel = 0;
         shot(&mut m, scr, "menu_options");
+        // Online (online.rs): host or join, the address and password, a new host's key.
+        m.stage = Stage::Title;
+        m.sel = 1;
+        shot(&mut m, scr, "menu_title_online");
+        m.stage = Stage::Online;
+        m.sel = 1;
+        shot(&mut m, scr, "menu_online");
+        m.stage = Stage::NetSetup;
+        m.sel = 0;
+        m.debug_net(false, "192.168.1.20", "secret", None);
+        shot(&mut m, scr, "menu_online_join");
+        m.debug_net(true, "4747", "", Some("4C39 C0D1 4EB9 C22B C898 9677".into()));
+        m.sel = 1;
+        shot(&mut m, scr, "menu_online_host");
+        m.ask_trust("192.168.1.20".into(), [0x4c; 32]);
+        shot(&mut m, scr, "menu_online_trust");
     }
     // The class select screen, then the vampire at work in the crypt.
     {

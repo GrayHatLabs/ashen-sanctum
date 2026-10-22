@@ -410,3 +410,149 @@ mod tests {
         let _ = std::fs::remove_dir_all(&dir);
     }
 }
+
+/// What's running: hosting, or joined to someone (with your own game set aside until you leave).
+pub enum Session {
+    Host(Hosting),
+    Join { joined: Joined, home: Box<Game> },
+}
+
+/// Online play asked for on the command line: `--host [port]`, `--join ADDRESS`, `--password WORD`,
+/// `--trust` (trust a host met for the first time).
+#[derive(Default, Clone, PartialEq)]
+pub struct Ask {
+    pub host: Option<u16>,
+    pub join: Option<String>,
+    pub password: String,
+    pub trust: bool,
+}
+
+/// Never prints the password.
+impl std::fmt::Debug for Ask {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Ask").field("host", &self.host).field("join", &self.join).field("password", &if self.password.is_empty() { "" } else { "(set)" }).field("trust", &self.trust).finish()
+    }
+}
+
+impl Ask {
+    pub fn from_args(args: &[String]) -> Ask {
+        let after = |flag: &str| args.iter().position(|a| a == flag).and_then(|i| args.get(i + 1)).filter(|v| !v.starts_with("--")).cloned();
+        Ask {
+            host: args.iter().any(|a| a == "--host").then(|| after("--host").and_then(|p| p.parse().ok()).unwrap_or(crate::net::proto::DEFAULT_PORT)),
+            join: after("--join"),
+            password: after("--password").unwrap_or_default(),
+            trust: args.iter().any(|a| a == "--trust"),
+        }
+    }
+
+    pub fn wanted(&self) -> bool {
+        self.host.is_some() || self.join.is_some()
+    }
+}
+
+/// Starts what was asked for, once a hero is in play. Says how it went in the game's message line.
+pub fn start(ask: &mut Ask, game: &mut Game) -> Option<Session> {
+    if let Some(port) = ask.host.take() {
+        return match Hosting::start(port, ask.password.clone()) {
+            Ok(h) => {
+                let fp = crate::net::tls::show(&h.host.fingerprint);
+                game.say(format!("HOSTING ON PORT {}. KEY {fp}", h.host.port));
+                Some(Session::Host(h))
+            }
+            Err(e) => {
+                game.say(format!("COULDN'T HOST: {e}").to_uppercase());
+                None
+            }
+        };
+    }
+    let addr = ask.join.take()?;
+    if game.hardcore && game.fallen {
+        game.say("A FALLEN HERO CAN'T JOIN".into());
+        return None;
+    }
+    let dir = crate::save::dir();
+    let hero = crate::save::to_text(game);
+    let mut tries = 0;
+    loop {
+        tries += 1;
+        match crate::net::client::join(&addr, &dir, &game.hero_name, &hero, &ask.password) {
+            Ok(link) => {
+                let host = link.host_name.clone();
+                let mirror = Game::new(game.world_seed(), game.view_h);
+                let home = std::mem::replace(game, mirror);
+                game.say(format!("JOINED {host}'S GAME"));
+                return Some(Session::Join { joined: Joined::new(link), home: Box::new(home) });
+            }
+            Err(crate::net::client::JoinError::Unknown(fp)) if ask.trust && tries == 1 => {
+                if let Some(sa) = crate::net::client::resolve(&addr) {
+                    let _ = crate::net::tls::trust(&dir, &sa.to_string(), &fp);
+                }
+            }
+            Err(crate::net::client::JoinError::Unknown(fp)) => {
+                game.say(format!("NEW HOST, KEY {}. JOIN AGAIN WITH --trust IF THAT'S THEIRS", crate::net::tls::show(&fp)));
+                return None;
+            }
+            Err(crate::net::client::JoinError::Changed(fp)) => {
+                game.say(format!("THE HOST'S KEY CHANGED ({}). NOT JOINING", crate::net::tls::show(&fp)));
+                return None;
+            }
+            Err(crate::net::client::JoinError::Refused(why)) | Err(crate::net::client::JoinError::Unreachable(why)) => {
+                game.say(format!("COULDN'T JOIN: {why}"));
+                return None;
+            }
+        }
+    }
+}
+
+/// One tick of the game, online or not.
+pub fn step(session: &mut Option<Session>, game: &mut Game, inp: &Input) {
+    match session {
+        None => game.update(inp),
+        Some(Session::Host(h)) => {
+            h.before(game);
+            game.update(inp);
+            h.after(game);
+        }
+        Some(Session::Join { joined, .. }) => {
+            // Esc leaves the game.
+            let why = if inp.cancel || inp.quit_ask { Some("LEFT THE GAME".to_string()) } else { joined.frame(game, inp) };
+            if let Some(why) = why {
+                leave(session, game, &why);
+            }
+        }
+    }
+}
+
+/// Is the game on screen yours to save? (Not while joined: that's the host's world.)
+pub fn may_save(session: &Option<Session>) -> bool {
+    !matches!(session, Some(Session::Join { .. }))
+}
+
+/// Ends the session. Joined: back to your own game, with your hero as the host last had it (your save is
+/// copied to .bak first).
+pub fn leave(session: &mut Option<Session>, game: &mut Game, why: &str) {
+    match session.take() {
+        Some(Session::Join { joined, home }) => {
+            let hero = joined.hero.clone();
+            drop(joined);
+            let mut home = *home;
+            if let Some(h) = hero {
+                let own = crate::save::to_text(&home);
+                if let Some(merged) = merge_hero(&own, &h) {
+                    let mut g = Game::new(home.world_seed(), home.view_h);
+                    g.defer_travel = true;
+                    if crate::save::apply(&mut g, &merged) && hero_ok(&g.p) {
+                        let p = crate::save::path();
+                        let _ = std::fs::copy(&p, p.with_extension("bak"));
+                        let _ = std::fs::write(&p, &merged);
+                        home = g;
+                    }
+                }
+            }
+            *game = home;
+            game.say(why.to_string());
+        }
+        Some(Session::Host(h)) => drop(h),
+        None => {}
+    }
+}

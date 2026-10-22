@@ -49,6 +49,36 @@ pub fn resolve(addr: &str) -> Option<SocketAddr> {
     with_port.to_socket_addrs().ok()?.next()
 }
 
+/// Looks a host up before joining: None if its key is already trusted, or the new key to ask about.
+pub fn probe(addr: &str, dir: &Path) -> Result<Option<[u8; 32]>, JoinError> {
+    let sa = resolve(addr).ok_or_else(|| JoinError::Unreachable("NO SUCH ADDRESS".into()))?;
+    let pin = tls::known(dir, &sa.to_string());
+    let (cfg, seen) = tls::client_config(pin).map_err(|e| JoinError::Unreachable(e.to_string()))?;
+    let tcp = TcpStream::connect_timeout(&sa, Duration::from_secs(5)).map_err(|_| JoinError::Unreachable("NO ANSWER".into()))?;
+    let _ = tcp.set_read_timeout(Some(Duration::from_secs(5)));
+    let _ = tcp.set_write_timeout(Some(Duration::from_secs(5)));
+    let conn = rustls::ClientConnection::new(cfg, tls::server_name()).map_err(|e| JoinError::Unreachable(e.to_string()))?;
+    let mut s = rustls::StreamOwned::new(conn, tcp);
+    while s.conn.is_handshaking() {
+        if s.conn.complete_io(&mut s.sock).is_err() {
+            let shown = seen.lock().ok().and_then(|g| *g);
+            return match (pin, shown) {
+                (None, Some(h)) => Ok(Some(h)),
+                (Some(p), Some(h)) if p != h => Err(JoinError::Changed(h)),
+                _ => Err(JoinError::Unreachable("THE CONNECTION FAILED".into())),
+            };
+        }
+    }
+    s.conn.send_close_notify();
+    let _ = s.conn.complete_io(&mut s.sock);
+    Ok(None)
+}
+
+/// The address as it's written in known_hosts.txt.
+pub fn key_for(addr: &str) -> Option<String> {
+    resolve(addr).map(|a| a.to_string())
+}
+
 /// Joins the game at `addr` with this hero (its save text). `dir` holds known_hosts.txt.
 pub fn join(addr: &str, dir: &Path, name: &str, hero: &str, password: &str) -> Result<Link, JoinError> {
     let sa = resolve(addr).ok_or_else(|| JoinError::Unreachable("NO SUCH ADDRESS".into()))?;
