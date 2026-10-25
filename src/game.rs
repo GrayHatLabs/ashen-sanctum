@@ -877,6 +877,8 @@ pub struct Game {
     pub(crate) chat_log: Vec<(String, f32)>,
     /// The active hero's open trader or jeweler (party.rs `HeroState::shop`).
     pub(crate) hero_shop: Option<(f32, f32, bool)>,
+    /// Joined: the latest of your inputs the host had, as of the last snapshot (online.rs predicts past it).
+    pub(crate) net_ack: u32,
     pub(crate) cur_hero: usize,
     pub(crate) party_level: LevelId,
     pub(crate) prev: Input,
@@ -1023,6 +1025,7 @@ impl Game {
             remote: None,
             chat_log: vec![],
             hero_shop: None,
+            net_ack: 0,
             cur_hero: 0,
             party_level: LevelId::Overworld,
             prev: Input::default(),
@@ -3373,13 +3376,7 @@ impl Game {
             let drain = if run { FOOD_DRAIN_RUN } else { FOOD_DRAIN } * (1.0 - gear.frac(crate::items::Stat::Hunger, 75)) * self.pact_hunger();
             self.p.food = (self.p.food - drain * DT).max(0.0);
         }
-        let base = if run { RUN_SPEED } else { WALK_SPEED };
-        let base = if self.p.phoenix_t > 0.0 || self.p.embrace_t > 0.0 { base * 1.4 } else if self.p.suit_t > 0.0 { base * 1.2 } else { base };
-        let base = base * (1.0 + gear.frac(crate::items::Stat::Move, 50)) * self.ember_speed() * if self.has_power(crate::items::P_ASHWALKER) { 1.2 } else { 1.0 };
-        let base = base * self.bless_speed() * self.sack_slow();
-        let base = if self.p.chill > 0.0 { base * 0.6 } else { base };
-        let base = if self.flooded(self.p.x, self.p.y) { base * crate::tides::WADE } else { base };
-        let speed = if casting { base * 0.25 } else { base };
+        let speed = self.hero_speed(run, casting);
         if self.p.moving {
             if !casting {
                 self.p.dir = iso::dir8(mv.0, mv.1);
@@ -3393,6 +3390,22 @@ impl Game {
             self.p.anim_t = 0.0;
         }
         self.collect_pickups();
+    }
+
+    /// How fast the active hero walks (or runs) right now, in tiles a second (a joiner predicts with it too).
+    pub(crate) fn hero_speed(&self, run: bool, casting: bool) -> f32 {
+        let gear = self.p.bonus;
+        let base = if run { RUN_SPEED } else { WALK_SPEED };
+        let base = if self.p.phoenix_t > 0.0 || self.p.embrace_t > 0.0 { base * 1.4 } else if self.p.suit_t > 0.0 { base * 1.2 } else { base };
+        let base = base * (1.0 + gear.frac(crate::items::Stat::Move, 50)) * self.ember_speed() * if self.has_power(crate::items::P_ASHWALKER) { 1.2 } else { 1.0 };
+        let base = base * self.bless_speed() * self.sack_slow();
+        let base = if self.p.chill > 0.0 { base * 0.6 } else { base };
+        let base = if self.flooded(self.p.x, self.p.y) { base * crate::tides::WADE } else { base };
+        if casting {
+            base * 0.25
+        } else {
+            base
+        }
     }
 
     pub(crate) fn collect_pickups(&mut self) {

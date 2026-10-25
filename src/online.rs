@@ -109,8 +109,21 @@ impl Hosting {
                     let hero = (g.allies[k].st.p.x, g.allies[k].st.p.y);
                     match input.check(hero) {
                         Ok((inp, target)) => {
-                            g.allies[k].inp = inp;
-                            g.allies[k].target = target;
+                            // One-shot buttons not yet used stay pressed until they are.
+                            let a = &mut g.allies[k];
+                            let keep = (a.inp.potion_hp, a.inp.potion_mp, a.inp.eat, a.inp.scroll, a.inp.cycle, a.inp.run_toggle, a.inp.slot);
+                            a.inp = inp;
+                            a.inp.potion_hp |= keep.0;
+                            a.inp.potion_mp |= keep.1;
+                            a.inp.eat |= keep.2;
+                            a.inp.scroll |= keep.3;
+                            a.inp.cycle |= keep.4;
+                            a.inp.run_toggle |= keep.5;
+                            a.inp.slot = a.inp.slot.or(keep.6);
+                            a.target = target;
+                            if input.seq > a.seq || a.seq.wrapping_sub(input.seq) > u32::MAX / 2 {
+                                a.seq = input.seq;
+                            }
                         }
                         Err(_) => {
                             self.peers[k].2 += 1;
@@ -229,13 +242,19 @@ pub struct Joined {
     mob_goals: std::collections::HashMap<u32, (f32, f32)>,
     /// When the last few levels arrived: a host can't send them endlessly (review 2026-10-22).
     levels_at: Vec<std::time::Instant>,
+    /// Your own hero moves on your screen at once (keys or stick); the host confirms. `pred`: each input's
+    /// predicted step not yet confirmed (its number, how far). `own`: where your hero is drawn. `corr`: the
+    /// difference from the host still being worked off.
+    pred: std::collections::VecDeque<(u32, f32, f32)>,
+    own: Option<(f32, f32)>,
+    corr: (f32, f32),
     hero_goals: Vec<(f32, f32)>,
 }
 
 impl Joined {
     pub fn new(link: Link) -> Joined {
         let me = link.you;
-        Joined { link, me, seq: 0, has_level: false, hero: None, mob_goals: Default::default(), hero_goals: vec![], levels_at: vec![] }
+        Joined { link, me, seq: 0, has_level: false, hero: None, mob_goals: Default::default(), hero_goals: vec![], levels_at: vec![], pred: Default::default(), own: None, corr: (0.0, 0.0) }
     }
 
     /// One frame: take in what the host sent, show it, and send your controls. Returns why it ended, if it did.
@@ -260,6 +279,9 @@ impl Joined {
                     if !g.apply_level(&b) {
                         return Some("THE HOST SENT A BAD LEVEL".into());
                     }
+                    // A new place: start over from where the host puts you.
+                    (self.own, self.corr) = (None, (0.0, 0.0));
+                    self.pred.clear();
                     self.has_level = true;
                 }
                 ToClient::Snap(b) => {
@@ -295,14 +317,24 @@ impl Joined {
                     let now: Vec<(f32, f32)> = std::iter::once((g.p.x, g.p.y)).chain(g.allies.iter().map(|a| (a.st.p.x, a.st.p.y))).collect();
                     self.hero_goals = now.clone();
                     if heroes_was.len() == now.len() {
-                        for (k, (&(x, y), &(nx, ny))) in heroes_was.iter().zip(now.iter()).enumerate() {
+                        for (k, (&(x, y), &(nx, ny))) in heroes_was.iter().zip(now.iter()).enumerate().skip(1) {
                             if (x - nx).powi(2) + (y - ny).powi(2) < 9.0 {
-                                if k == 0 {
-                                    (g.p.x, g.p.y) = (x, y);
-                                } else {
-                                    (g.allies[k - 1].st.p.x, g.allies[k - 1].st.p.y) = (x, y);
-                                }
+                                (g.allies[k - 1].st.p.x, g.allies[k - 1].st.p.y) = (x, y);
                             }
+                        }
+                    }
+                    // Your own hero: where the host has it, plus the steps you've taken that it hasn't had yet.
+                    let ack = g.net_ack;
+                    while self.pred.front().map_or(false, |&(s, ..)| s <= ack) {
+                        self.pred.pop_front();
+                    }
+                    let (sx, sy) = self.pred.iter().fold((0.0, 0.0), |a, &(_, dx, dy)| (a.0 + dx, a.1 + dy));
+                    let target = (g.p.x + sx, g.p.y + sy);
+                    match self.own {
+                        Some((ox, oy)) if (target.0 - ox).powi(2) + (target.1 - oy).powi(2) < 6.25 => self.corr = (target.0 - ox, target.1 - oy),
+                        _ => {
+                            self.own = Some(target);
+                            self.corr = (0.0, 0.0);
                         }
                     }
                     if !hero_ok(&g.p) || g.allies.iter().any(|a| !hero_ok(&a.st.p)) || g.pickups.iter().any(|k| matches!(&k.kind, crate::game::Drop::Item(it) if !item_ok(it))) {
@@ -379,6 +411,34 @@ impl Joined {
         self.seq = self.seq.wrapping_add(1);
         let target = inp.mouse.map(|m| g.mouse_world(m));
         let _ = self.link.send(&ToHost::Input(NetInput::from_input(self.seq, inp, target)));
+        // Your own step, taken at once (keys or stick: the host walks the same way). Clicked walks follow the
+        // host's path, so they aren't predicted.
+        if let Some((mut x, mut y)) = self.own {
+            let key = inp.move_x * inp.move_x + inp.move_y * inp.move_y;
+            let free = g.state == State::Playing && g.p.charge.is_none() && g.p.whirl_t <= 0.0;
+            if key > 0.04 && free {
+                let (dx, dy) = crate::iso::screen_dir_to_world(inp.move_x, inp.move_y);
+                let mag = key.sqrt().min(1.0);
+                let run = g.p.running && !g.p.winded;
+                let speed = g.hero_speed(run, false);
+                let (x0, y0) = (x, y);
+                crate::game::move_circle(&g.d, &mut x, &mut y, dx * mag * speed * crate::game::DT, dy * mag * speed * crate::game::DT, crate::game::PLAYER_R);
+                self.pred.push_back((self.seq, x - x0, y - y0));
+                // A long way ahead of the host means it's not hearing us: stop guessing.
+                while self.pred.len() > 90 {
+                    self.pred.pop_front();
+                }
+                g.p.dir = crate::iso::dir8(dx, dy);
+                g.p.moving = true;
+            }
+            // Work off the difference from the host a little each frame.
+            let (cx, cy) = (self.corr.0 * 0.2, self.corr.1 * 0.2);
+            self.corr = (self.corr.0 - cx, self.corr.1 - cy);
+            self.own = Some((x + cx, y + cy));
+            if let Some((ox, oy)) = self.own {
+                (g.p.x, g.p.y) = (ox, oy);
+            }
+        }
         // Glide toward the latest snapshot (it comes 20 times a second; frames come 60).
         const GLIDE: f32 = 0.4;
         for m in g.mobs.iter_mut() {
@@ -387,8 +447,8 @@ impl Joined {
                 m.y += (y - m.y) * GLIDE;
             }
         }
-        for (k, &(x, y)) in self.hero_goals.iter().enumerate() {
-            let p = if k == 0 { Some(&mut g.p) } else { g.allies.get_mut(k - 1).map(|a| &mut a.st.p) };
+        for (k, &(x, y)) in self.hero_goals.iter().enumerate().skip(1) {
+            let p = g.allies.get_mut(k - 1).map(|a| &mut a.st.p);
             if let Some(p) = p {
                 p.x += (x - p.x) * GLIDE;
                 p.y += (y - p.y) * GLIDE;
@@ -861,6 +921,20 @@ gold=9
         let mut client = Game::new(3, crate::gfx::SH_WIDE);
         let start = (host.allies[0].st.p.x, host.allies[0].st.p.y);
         let walk = Input { move_x: 1.0, ..Default::default() };
+        // First the level and a snapshot arrive...
+        for _ in 0..30 {
+            joined.frame(&mut client, &Input::default());
+            hosting.before(&mut host);
+            host.update(&Input::default());
+            hosting.after(&mut host);
+            std::thread::sleep(std::time::Duration::from_millis(17));
+        }
+        // ...then the joiner's own hero moves on its screen at once, before the host has answered at all.
+        let here = (client.p.x, client.p.y);
+        for _ in 0..12 {
+            joined.frame(&mut client, &walk);
+        }
+        assert!((client.p.x - here.0).abs() + (client.p.y - here.1).abs() > 0.3, "predicted: {here:?} -> {:?}", (client.p.x, client.p.y));
         // At the game's own pace (60 a second: faster than that, the host would call it a flood).
         for _ in 0..150 {
             assert_eq!(joined.frame(&mut client, &walk), None);

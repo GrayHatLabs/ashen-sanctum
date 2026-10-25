@@ -188,6 +188,15 @@ An independent review of `src/net/` and `src/online.rs` found 11 issues; all are
 10. **Snapshots leaked other heroes' details.** Other players get a public view of each hero: no bag, stash, waypoints or records.
 11. **A failed connection thread leaked its slot.** The slot is now given back.
 
+### After v1.6.0
+
+- **v1.6.1: chat.** Enter opens a line.
+- **Joiners and people.** Joiners talk, trade, use the jeweler and take side quests:
+  - The host runs only the choices a joiner may make.
+  - Shop and jeweler actions count only near where they were opened.
+  - The host leads all travel.
+- **Movement prediction.** Keys and the stick move a joiner's hero at once. Each snapshot carries the last input the host applied (`ack`), and the joiner replays its unconfirmed steps on top, working off differences (snapping if over 2.5 tiles). The host holds a joiner's last input between packets, and one-shot buttons are used once.
+
 ## Order of work and size
 
 1. Phase 1: several sessions. It touches most of game.rs and the class files; the tests and bot keep it safe.

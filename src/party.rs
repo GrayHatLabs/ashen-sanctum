@@ -143,6 +143,9 @@ pub struct Ally {
     pub respawn: f32,
     /// What this hero was told (its own messages), for its player's screen.
     pub said: Vec<String>,
+    /// The number of the joiner's latest input (each snapshot tells the joiner which it has had, so it can
+    /// replay the rest of its own movement on top: online.rs).
+    pub seq: u32,
 }
 
 /// How near a kill a hero must be to share its experience and get their own drops (tiles).
@@ -229,7 +232,7 @@ impl Game {
     /// A new ally of this class, standing beside the leader. Returns its index in `allies`.
     pub fn add_ally(&mut self, class: crate::skills::Class, name: &str) -> usize {
         let (lx, ly) = (self.p.x, self.p.y);
-        self.allies.push(Ally { st: HeroState::new(), inp: Input::default(), target: None, respawn: 0.0, said: vec![] });
+        self.allies.push(Ally { st: HeroState::new(), inp: Input::default(), target: None, respawn: 0.0, said: vec![], seq: 0 });
         let k = self.allies.len() - 1;
         let spot = self.ally_spot(lx, ly, k);
         self.as_hero(k, |g| {
@@ -290,8 +293,14 @@ impl Game {
     /// words don't cover the leader's screen.
     pub fn update_allies(&mut self) {
         for k in 0..self.allies.len() {
-            let mut inp = std::mem::take(&mut self.allies[k].inp);
-            let target = self.allies[k].target.take();
+            // The last input holds until the next arrives (packets don't come exactly once a tick); buttons that do
+            // something once (a potion, a meal) are used once.
+            let mut inp = self.allies[k].inp.clone();
+            {
+                let held = &mut self.allies[k].inp;
+                (held.potion_hp, held.potion_mp, held.eat, held.scroll, held.cycle, held.run_toggle, held.slot) = (false, false, false, false, false, false, None);
+            }
+            let target = self.allies[k].target;
             let (lx, ly) = (self.p.x, self.p.y);
             // The leader's own words, journey and screens are put aside while an ally runs.
             let keep = (self.message.take(), self.notice.take(), self.pending_travel.take(), self.inv.take(), self.tree.take());

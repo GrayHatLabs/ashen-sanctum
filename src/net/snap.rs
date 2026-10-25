@@ -77,6 +77,8 @@ struct SnapOut<'a> {
     floaters: &'a [Floater],
     /// The trader's shelf, while one is open for you.
     shop: Option<&'a [Option<crate::items::Item>]>,
+    /// Your latest input the host has had.
+    ack: u32,
 }
 
 #[derive(Deserialize)]
@@ -93,6 +95,7 @@ struct SnapIn {
     sfx: Vec<Sfx>,
     floaters: Vec<Floater>,
     shop: Option<Vec<Option<crate::items::Item>>>,
+    ack: u32,
 }
 
 fn pack<T: Serialize>(m: &T) -> Option<Vec<u8>> {
@@ -190,6 +193,7 @@ impl Game {
             sfx,
             floaters,
             shop: if shop_open { Some(&self.shop_stock) } else { None },
+            ack: if hero == 0 { 0 } else { self.allies.get(hero as usize - 1).map_or(0, |a| a.seq) },
         };
         let packed = if compress { pack(&out) } else { postcard::to_stdvec(&out).ok() };
         drop(out);
@@ -265,7 +269,7 @@ impl Game {
                 let mut st = st;
                 self.swap_with(&mut st);
             } else {
-                self.allies.push(Ally { st, inp: Default::default(), target: None, respawn: 0.0, said: vec![] });
+                self.allies.push(Ally { st, inp: Default::default(), target: None, respawn: 0.0, said: vec![], seq: 0 });
             }
         }
         self.mobs = s.mobs;
@@ -305,6 +309,7 @@ impl Game {
         }
         // Seen from here, you're the one in the active slot.
         self.cur_hero = 0;
+        self.net_ack = s.ack;
         true
     }
 }
