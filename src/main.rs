@@ -376,6 +376,8 @@ fn main() -> Result<(), String> {
     // Online play (online.rs): --host [port] / --join ADDRESS, started once a hero is in play.
     let mut online_ask = online::Ask::from_args(&args);
     let mut session: Option<online::Session> = None;
+    // A chat line being typed (online only).
+    let mut chat_line: Option<String> = None;
     let (mut cheat_level, mut cheat_loot) = (false, false);
     let mut back_down: Option<Instant> = None;
 
@@ -598,6 +600,7 @@ fn main() -> Result<(), String> {
                     if session.is_none() && online_ask.wanted() {
                         session = online::start(&mut online_ask, &mut game);
                     }
+                    let inp = online::chat_keys(&mut chat_line, &mut session, &mut game, &inp);
                     online::step(&mut session, &mut game, &inp);
                 }
             }
@@ -746,6 +749,9 @@ fn main() -> Result<(), String> {
                 }
             }
             None => game.draw(&mut scr),
+        }
+        if menu.is_none() {
+            online::draw_chat(&mut scr, &game, &chat_line);
         }
         if let (Some(m), false) = (inp.mouse, handheld) {
             draw_cursor(&mut scr, m.0, m.1);

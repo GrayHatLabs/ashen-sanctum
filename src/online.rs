@@ -140,7 +140,7 @@ impl Hosting {
                     *tokens -= 1.0;
                     let from = self.peers[k].1.clone();
                     self.tell_all(&ToClient::Chat { from: from.clone(), text: text.clone() }, None);
-                    g.say(format!("{from}: {text}"));
+                    g.chat_line(format!("{from}: {text}"));
                 }
                 Event::Gone { peer, why } => {
                     let Some(k) = self.slot_of(peer) else { continue };
@@ -289,7 +289,7 @@ impl Joined {
                 ToClient::Chat { from, text } => {
                     let text = crate::net::proto::clean_chat(&text).unwrap_or_default();
                     let from = crate::net::proto::clean_name(&from);
-                    g.say(match from {
+                    g.chat_line(match from {
                         Some(f) => format!("{f}: {text}"),
                         None => text,
                     });
@@ -611,6 +611,39 @@ gold=9
     }
 
     #[test]
+    fn enter_opens_a_chat_line_and_sends_it_without_moving_you() {
+        let dir = std::env::temp_dir().join(format!("ashen_chat_{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        let h = crate::net::host::Host::start(0, String::new(), &dir).unwrap();
+        let mut session = Some(Session::Host(Hosting { host: h, peers: vec![], chat: vec![], events: vec![], sent_level: None, players_before: 1 }));
+        let mut g = Game::new(7, crate::gfx::SH_WIDE);
+        g.hero_name = "ISOLDE".into();
+        let mut line = None;
+        let out = chat_keys(&mut line, &mut session, &mut g, &Input { confirm: true, ..Default::default() });
+        assert_eq!(line.as_deref(), Some(""), "open");
+        assert!(!out.confirm, "the game doesn't see that Enter");
+        // Typing W A S D doesn't walk.
+        let out = chat_keys(&mut line, &mut session, &mut g, &Input { typed: "wasd hi".into(), move_x: 1.0, ..Default::default() });
+        assert_eq!(out.move_x, 0.0);
+        let _ = chat_keys(&mut line, &mut session, &mut g, &Input { backspace: true, ..Default::default() });
+        let _ = chat_keys(&mut line, &mut session, &mut g, &Input { confirm: true, ..Default::default() });
+        assert_eq!(line, None, "sent");
+        assert_eq!(g.chat_log.last().map(|l| l.0.as_str()), Some("ISOLDE: WASD H"));
+        // Esc cancels without sending.
+        let _ = chat_keys(&mut line, &mut session, &mut g, &Input { confirm: true, ..Default::default() });
+        let _ = chat_keys(&mut line, &mut session, &mut g, &Input { typed: "nope".into(), ..Default::default() });
+        let _ = chat_keys(&mut line, &mut session, &mut g, &Input { cancel: true, ..Default::default() });
+        assert_eq!(line, None);
+        assert_eq!(g.chat_log.len(), 1);
+        // Offline, Enter is the game's as before.
+        let mut none = None;
+        let out = chat_keys(&mut line, &mut none, &mut g, &Input { confirm: true, ..Default::default() });
+        assert!(out.confirm && line.is_none());
+        drop(session);
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
     fn your_save_takes_only_your_hero_from_the_host() {
         let own = "name=ROWAN\nseed=5\nclass=druid\nclvl=10\ngold=100\nstage=2\nbag0=a|1|2|3|x|\nwaypoints=overworld\n";
         let host = "name=EVIL\nseed=9\nclass=druid\nclvl=12\ngold=900\nstage=3\nbag0=b|1|2|3|y|\nbag1=c|1|2|3|z|\nwaypoints=everywhere\n";
@@ -784,6 +817,106 @@ pub fn start(ask: &mut Ask, game: &mut Game) -> Option<Session> {
                 return None;
             }
         }
+    }
+}
+
+impl Hosting {
+    /// The host says something: everyone hears it.
+    pub fn say_all(&self, g: &mut Game, text: &str) {
+        if let Some(text) = crate::net::proto::clean_chat(text) {
+            let from = crate::net::proto::clean_name(&g.hero_name).unwrap_or_else(|| "HOST".into());
+            self.tell_all(&ToClient::Chat { from: from.clone(), text: text.clone() }, None);
+            g.chat_line(format!("{from}: {text}"));
+        }
+    }
+}
+
+/// How long a chat line stays up (seconds), and how many are kept.
+const CHAT_SHOWN: f32 = 12.0;
+const CHAT_LINES: usize = 6;
+
+impl Game {
+    /// A line in the chat log (and the terminal with ASHEN_NETLOG).
+    pub fn chat_line(&mut self, text: String) {
+        if std::env::var_os("ASHEN_NETLOG").is_some() {
+            eprintln!("[{}] chat: {text}", self.hero_name);
+        }
+        self.chat_log.push((text, CHAT_SHOWN));
+        if self.chat_log.len() > CHAT_LINES {
+            self.chat_log.remove(0);
+        }
+    }
+}
+
+/// Typing a chat line, online: Enter opens it (out of menus and conversations), Enter sends, Esc cancels.
+/// While it's open the game gets no keys (so typing doesn't walk or cast). Returns the input for the game.
+pub fn chat_keys(line: &mut Option<String>, session: &mut Option<Session>, game: &mut Game, inp: &Input) -> Input {
+    for (_, t) in game.chat_log.iter_mut() {
+        *t -= crate::game::DT;
+    }
+    game.chat_log.retain(|(_, t)| *t > 0.0);
+    if session.is_none() {
+        *line = None;
+        return inp.clone();
+    }
+    match line {
+        None => {
+            let free = game.dialog.is_none() && game.inv.is_none() && game.tree.is_none() && game.state == State::Playing;
+            if inp.confirm && free {
+                *line = Some(String::new());
+                return Input { mouse: inp.mouse, ..Default::default() };
+            }
+            inp.clone()
+        }
+        Some(text) => {
+            for c in inp.typed.chars() {
+                if text.chars().count() < crate::net::proto::MAX_CHAT && (c.is_ascii_graphic() || c == ' ') {
+                    text.push(c.to_ascii_uppercase());
+                }
+            }
+            if inp.backspace {
+                text.pop();
+            }
+            if inp.confirm {
+                let said = std::mem::take(text);
+                *line = None;
+                match session {
+                    Some(Session::Host(h)) => h.say_all(game, &said),
+                    Some(Session::Join { joined, .. }) => {
+                        if crate::net::proto::clean_chat(&said).is_some() {
+                            let _ = joined.link.send(&ToHost::Chat(said));
+                        }
+                    }
+                    None => {}
+                }
+            } else if inp.cancel || inp.back {
+                *line = None;
+            }
+            Input { mouse: inp.mouse, ..Default::default() }
+        }
+    }
+}
+
+/// The chat log over the bottom bar, and the line being typed.
+pub fn draw_chat(scr: &mut crate::gfx::Screen, game: &Game, line: &Option<String>) {
+    use crate::gfx::{rgb, Align, BLACK};
+    let bottom = game.view_h - crate::game::HUD_H - 22;
+    // Just right of the life globe.
+    let x = 132;
+    let mut y = bottom - if line.is_some() { 14 } else { 0 };
+    for (text, t) in game.chat_log.iter().rev() {
+        y -= 11;
+        let a = (*t / 1.5).min(1.0);
+        let w = crate::gfx::text_width(text, 1);
+        scr.blend(x - 4, y - 2, w + 8, 11, BLACK, 0.5 * a);
+        scr.text(text, x, y, crate::gfx::mix(BLACK, rgb(0xe0e8ff), a), Align::Left, 1);
+    }
+    if let Some(text) = line {
+        let caret = if (game.tick / 20) % 2 == 0 { "_" } else { " " };
+        let shown = format!("SAY: {text}{caret}");
+        let w = crate::gfx::text_width(&shown, 1).max(200);
+        scr.blend(x - 4, bottom - 4, w + 8, 13, BLACK, 0.75);
+        scr.text(&shown, x, bottom - 2, rgb(0xffe0a0), Align::Left, 1);
     }
 }
 

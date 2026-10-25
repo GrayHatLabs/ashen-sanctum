@@ -1418,6 +1418,14 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         g.notice = None;
         idle(&mut g, 40);
         save(&mut g, scr, "coop_party");
+        // Chat (online.rs): the log, and a line being typed.
+        g.chat_line("ROWAN JOINED".into());
+        g.chat_line("BRYNJA: READY WHEN YOU ARE".into());
+        g.chat_line("HERO: TO THE CRYPT, STAY CLOSE".into());
+        g.draw(scr);
+        crate::online::draw_chat(scr, &g, &Some("ON MY WAY".into()));
+        write_bmp(&format!("{d}/coop_chat.bmp"), scr).expect("write snapshot");
+        g.chat_log.clear();
         g.allies.clear();
         // Water and lava (liquid.rs): stand by the first pool found.
         for (id, name) in [

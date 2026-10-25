@@ -873,6 +873,8 @@ pub struct Game {
     pub allies: Vec<crate::party::Ally>,
     /// Joined to someone's game (online.rs): what the bag and skill tree ask for goes here, for the host.
     pub(crate) remote: Option<Vec<crate::net::proto::ToHost>>,
+    /// Online chat: the last few lines, each with how long it stays on screen (online.rs draws them).
+    pub(crate) chat_log: Vec<(String, f32)>,
     pub(crate) cur_hero: usize,
     pub(crate) party_level: LevelId,
     pub(crate) prev: Input,
@@ -1017,6 +1019,7 @@ impl Game {
             trail: Default::default(),
             allies: vec![],
             remote: None,
+            chat_log: vec![],
             cur_hero: 0,
             party_level: LevelId::Overworld,
             prev: Input::default(),
