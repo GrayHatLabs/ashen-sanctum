@@ -75,6 +75,8 @@ struct SnapOut<'a> {
     quest: &'a Quest,
     sfx: &'a [Sfx],
     floaters: &'a [Floater],
+    /// The trader's shelf, while one is open for you.
+    shop: Option<&'a [Option<crate::items::Item>]>,
 }
 
 #[derive(Deserialize)]
@@ -90,6 +92,7 @@ struct SnapIn {
     quest: Quest,
     sfx: Vec<Sfx>,
     floaters: Vec<Floater>,
+    shop: Option<Vec<Option<crate::items::Item>>>,
 }
 
 fn pack<T: Serialize>(m: &T) -> Option<Vec<u8>> {
@@ -157,13 +160,14 @@ impl Game {
         };
         let near = |x: f32, y: f32| (x - hx).powi(2) + (y - hy).powi(2) < VIEW * VIEW;
         // Everyone else sees a public view of each hero: no bag, stash, waypoints or records (review 2026-10-22).
-        let mut hidden: Vec<(u8, Vec<Option<crate::items::Item>>, Vec<Option<crate::items::Item>>, Vec<crate::world::LevelId>, crate::extras::Extras)> = vec![];
+        let mut hidden: Vec<(u8, Vec<Option<crate::items::Item>>, Vec<Option<crate::items::Item>>, Vec<crate::world::LevelId>, crate::extras::Extras, Option<crate::story::Dialog>)> = vec![];
+        let shop_open = if hero == 0 { lead.shop.is_some() } else { self.allies.get(hero as usize - 1).map_or(false, |a| a.st.shop.is_some()) };
         {
             let mut hide = |k: u8, st: &mut HeroState| {
                 if k != hero {
                     let bag = std::mem::replace(&mut st.p.gear.bag, vec![None; crate::items::BAG]);
                     let stash = std::mem::replace(&mut st.p.gear.stash, vec![None; crate::items::STASH]);
-                    hidden.push((k, bag, stash, std::mem::take(&mut st.waypoints), std::mem::take(&mut st.ex)));
+                    hidden.push((k, bag, stash, std::mem::take(&mut st.waypoints), std::mem::take(&mut st.ex), st.dialog.take()));
                 }
             };
             hide(0, &mut lead);
@@ -185,12 +189,13 @@ impl Game {
             quest: &self.quest,
             sfx,
             floaters,
+            shop: if shop_open { Some(&self.shop_stock) } else { None },
         };
         let packed = if compress { pack(&out) } else { postcard::to_stdvec(&out).ok() };
         drop(out);
-        for (k, bag, stash, wps, ex) in hidden {
+        for (k, bag, stash, wps, ex, dialog) in hidden {
             let st = if k == 0 { &mut lead } else { &mut self.allies[k as usize - 1].st };
-            (st.p.gear.bag, st.p.gear.stash, st.waypoints, st.ex) = (bag, stash, wps, ex);
+            (st.p.gear.bag, st.p.gear.stash, st.waypoints, st.ex, st.dialog) = (bag, stash, wps, ex, dialog);
         }
         self.swap_with(&mut lead);
         packed
@@ -260,7 +265,7 @@ impl Game {
                 let mut st = st;
                 self.swap_with(&mut st);
             } else {
-                self.allies.push(Ally { st, inp: Default::default(), target: None, respawn: 0.0 });
+                self.allies.push(Ally { st, inp: Default::default(), target: None, respawn: 0.0, said: vec![] });
             }
         }
         self.mobs = s.mobs;
@@ -274,6 +279,21 @@ impl Game {
             }
         }
         self.quest = s.quest;
+        // The trader's shelf, while it's open for you.
+        if let Some(stock) = s.shop {
+            if stock.len() <= 64 && stock.iter().flatten().all(crate::online::item_ok) {
+                self.shop_stock = stock;
+            }
+        }
+        // A conversation's options name what they do; a host can't make one that's out of range.
+        if let Some(d) = self.dialog.as_mut() {
+            if d.pages.is_empty() || d.pages.len() > 64 || d.options.len() > 64 {
+                self.dialog = None;
+            } else {
+                d.page = d.page.min(d.pages.len() - 1);
+                d.sel = d.sel.min(d.options.len().saturating_sub(1));
+            }
+        }
         // The host's sounds and numbers (a handful: more than that is noise, or mischief).
         self.sfx.extend(s.sfx.into_iter().take(24));
         for mut f in s.floaters.into_iter().take(48) {
@@ -353,6 +373,12 @@ mod tests {
             let inp = crate::game::Input { cast: t % 2 == 0, cast2: t % 2 == 1, ..Default::default() };
             host.update(&inp);
         }
+        // The joiner is mid-conversation (its options and pages get mangled too).
+        let mut d = crate::story::Dialog::new("GERTA", &["FIRST PAGE", "SECOND PAGE"]);
+        d.last_options = vec![("TRADE".into(), crate::story::Act::Shop), ("LEAVE".into(), crate::story::Act::Close)];
+        d.page = 1;
+        d.refresh_options();
+        host.allies[0].st.dialog = Some(d);
         let level = host.net_level().unwrap();
         let raw = host.snapshot_bytes(1, &[], &[], false).unwrap();
         let mut rng = crate::rng::Rng::new(std::env::var("FUZZ_SEED").ok().and_then(|v| v.parse().ok()).unwrap_or(1234));

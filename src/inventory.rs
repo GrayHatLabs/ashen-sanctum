@@ -333,8 +333,8 @@ impl Game {
 
     /// Joined (online.rs): moving about the bag is done here; anything that changes it goes to the host.
     fn inv_remote(&mut self, act: Option<InvAct>, sel: Cell, holding: Option<usize>) {
-        use crate::net::proto::{cell_out, ToHost, BAG_SORT, BAG_STORE, BAG_TOSS, BAG_USE};
-        let mut send = |g: &mut Game, m: ToHost| {
+        use crate::net::proto::{cell_out, ToHost, BAG_CLOSE, BAG_JEWEL, BAG_SORT, BAG_STORE, BAG_TOSS, BAG_USE};
+        let send = |g: &mut Game, m: ToHost| {
             if let Some(q) = g.remote.as_mut() {
                 q.push(m);
             }
@@ -352,7 +352,13 @@ impl Game {
                 }
             }
             (_, Some(InvAct::Select(c))) => ui.sel = c,
-            (_, Some(InvAct::Close)) => self.inv = None,
+            (_, Some(InvAct::Close)) => {
+                let trading = ui.shop || ui.jewel;
+                self.inv = None;
+                if trading {
+                    send(self, ToHost::Bag { op: BAG_CLOSE, cell: (0, 0) });
+                }
+            }
             (_, Some(InvAct::Use)) if matches!(sel, Cell::Bag(_)) && self.sel_item(sel).map_or(false, |it| it.gem().is_some()) => {
                 let Cell::Bag(i) = sel else { return };
                 if let Some(ui) = self.inv.as_mut() {
@@ -361,7 +367,9 @@ impl Game {
                 self.say("PICK AN ITEM WITH A FREE SOCKET".into());
             }
             (_, Some(a)) => {
+                let jewel = self.inv.as_ref().map_or(false, |u| u.jewel);
                 let op = match a {
+                    InvAct::Use if jewel => BAG_JEWEL,
                     InvAct::Use => BAG_USE,
                     InvAct::Toss => BAG_TOSS,
                     InvAct::Store => BAG_STORE,

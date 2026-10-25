@@ -122,11 +122,18 @@ impl Hosting {
                 }
                 Event::Act { peer, act } => {
                     let Some(k) = self.slot_of(peer) else { continue };
-                    if !g.as_hero(k, |g| g.remote_act(&act)) {
+                    let out = g.as_hero(k, |g| g.remote_act(&act));
+                    if !out.ok {
                         self.peers[k].2 += 1;
                         if self.peers[k].2 > MAX_STRIKES {
                             self.host.kick(peer, "BAD INPUT");
                         }
+                    }
+                    if let Some((shop, jewel)) = out.opened {
+                        self.host.send(peer, &ToClient::OpenBag { shop, jewel });
+                    }
+                    if let Some(s) = out.said {
+                        self.host.send(peer, &ToClient::Say(s));
                     }
                 }
                 Event::Chat { peer, text } => {
@@ -179,6 +186,12 @@ impl Hosting {
             }
             if fl.len() < 64 {
                 fl.extend(fresh.iter().cloned());
+            }
+        }
+        // What each joiner's hero was told.
+        for (k, p) in self.peers.iter().enumerate() {
+            for s in std::mem::take(&mut g.allies[k].said) {
+                self.host.send(p.0, &ToClient::Say(s));
             }
         }
         if g.tick % SNAP_EVERY == 0 {
@@ -256,8 +269,19 @@ impl Joined {
                     // Where everything is drawn now, so it can glide to where the host says it is.
                     let was: std::collections::HashMap<u32, (f32, f32)> = g.mobs.iter().map(|m| (m.uid, (m.x, m.y))).collect();
                     let heroes_was: Vec<(f32, f32)> = std::iter::once((g.p.x, g.p.y)).chain(g.allies.iter().map(|a| (a.st.p.x, a.st.p.y))).collect();
+                    // Your pick in a conversation is yours; the host's copy only says which conversation.
+                    let picked = g.dialog.as_ref().map(|d| (d.name, d.page, d.sel));
                     if !g.apply_snapshot(&b, self.me) {
                         return Some("THE HOST SENT BAD DATA".into());
+                    }
+                    if let (Some((name, page, sel)), Some(d)) = (picked, g.dialog.as_mut()) {
+                        if d.name == name && d.page == page {
+                            d.sel = sel.min(d.options.len().saturating_sub(1));
+                        }
+                    }
+                    // While the bag is open on a trader, the host's conversation is over.
+                    if g.inv.is_some() {
+                        g.dialog = None;
                     }
                     self.mob_goals.clear();
                     for m in g.mobs.iter_mut() {
@@ -286,6 +310,18 @@ impl Joined {
                     }
                 }
                 ToClient::Welcome { you, .. } if (1..=7).contains(&you) => self.me = you,
+                ToClient::OpenBag { shop, jewel } => {
+                    g.dialog = None;
+                    g.open_inventory();
+                    if let Some(ui) = g.inv.as_mut() {
+                        (ui.shop, ui.jewel) = (shop, jewel);
+                    }
+                }
+                ToClient::Say(text) => {
+                    if let Some(t) = crate::net::proto::clean_chat(&text) {
+                        g.say(t);
+                    }
+                }
                 ToClient::Chat { from, text } => {
                     let text = crate::net::proto::clean_chat(&text).unwrap_or_default();
                     let from = crate::net::proto::clean_name(&from);
@@ -307,7 +343,22 @@ impl Joined {
             g.remote = Some(vec![]);
         }
         let pressed = |now: bool, before: bool| now && !before;
-        if g.inv.is_some() {
+        if g.dialog.is_some() && g.inv.is_none() {
+            // Talking: pick here, the host does it.
+            let choose = pressed(inp.confirm, g.prev.confirm) || pressed(inp.cast, g.prev.cast);
+            let click = pressed(inp.lmb, g.prev.lmb);
+            let back = Input { back: inp.back || inp.cancel, ..inp.clone() };
+            match g.dialog_input(&back, choose, click) {
+                Some((Some(i), _)) if i < 256 => {
+                    let _ = self.link.send(&ToHost::Talk { pick: i as u8 });
+                }
+                Some((None, _)) => {
+                    let _ = self.link.send(&ToHost::TalkClose);
+                    g.dialog = None;
+                }
+                _ => {}
+            }
+        } else if g.inv.is_some() {
             let (pc, pl) = (pressed(inp.confirm, g.prev.confirm) || pressed(inp.cast, g.prev.cast), pressed(inp.lmb, g.prev.lmb));
             g.update_inventory(inp, pc, pl);
         } else if g.tree.is_some() {
@@ -318,7 +369,7 @@ impl Joined {
         } else if inp.skills && !g.prev.skills {
             g.open_tree();
         }
-        let busy = g.inv.is_some() || g.tree.is_some();
+        let busy = g.inv.is_some() || g.tree.is_some() || g.dialog.is_some();
         for m in g.remote.as_mut().map(std::mem::take).unwrap_or_default() {
             let _ = self.link.send(&m);
         }
@@ -380,17 +431,61 @@ pub fn merge_hero(own: &str, from_host: &str) -> Option<String> {
 }
 
 impl Game {
+    /// For the tests: just whether the action was well-formed.
+    #[cfg(test)]
+    fn remote_act_ok(&mut self, m: &ToHost) -> bool {
+        self.remote_act(m).ok
+    }
+}
+
+/// What a joiner's action came to: well-formed or not, a trader or jeweler opened (shop, jeweler), and
+/// what the hero was told.
+pub struct ActOut {
+    pub ok: bool,
+    pub opened: Option<(bool, bool)>,
+    pub said: Option<String>,
+}
+
+/// Conversation choices a joiner may make. Not: travelling (the host leads the party), quitting or changing the
+/// host's game or settings, rifts and arenas (they move everyone).
+fn joiner_may(a: crate::story::Act) -> bool {
+    use crate::story::Act::*;
+    matches!(a, Next | Close | Buy(_) | Respec(_) | Shop | Jewel | Combine | Ember(_) | Side(_) | BuyStock(_) | Pact(_) | Court(_) | Rival(_) | Rekindle(_))
+}
+
+impl Game {
     /// A joiner's bag or skill-tree action, for the active hero (as_hero): checked, then done just as the
     /// hero's own screen would. False if it was malformed (counted against the joiner).
-    pub fn remote_act(&mut self, m: &ToHost) -> bool {
+    pub fn remote_act(&mut self, m: &ToHost) -> ActOut {
         use crate::inventory::{Cell, InvAct, InvUi};
         use crate::net::proto::*;
-        // The host's own open bag is set aside while the joiner's action runs on a bag screen of its own.
+        // The host's own open bag, words and journey are set aside while the joiner's action runs.
         let keep_inv = self.inv.take();
         let keep_tree = self.tree.take();
+        let keep_msg = self.message.take();
+        let keep_travel = self.pending_travel.take();
         let in_town = self.safe.map_or(false, |(x0, y0, x1, y1)| self.p.x >= x0 && self.p.x <= x1 && self.p.y >= y0 && self.p.y <= y1);
+        // The trader or jeweler counts only near where it was opened.
+        let near_shop = self.hero_shop.filter(|&(x, y, _)| (self.p.x - x).powi(2) + (self.p.y - y).powi(2) <= 16.0);
+        let shelf = near_shop.filter(|s| !s.2).map(|_| self.shop_stock.len());
+        let mut opened = None;
         let ok = match *m {
-            ToHost::Bag { op, cell } => match (cell_in(cell), op) {
+            ToHost::Bag { op: BAG_CLOSE, .. } => {
+                self.hero_shop = None;
+                true
+            }
+            ToHost::Bag { op: BAG_JEWEL, cell } => match cell_in(cell, None) {
+                Some(c) if near_shop.map_or(false, |s| s.2) && matches!(c, Cell::Bag(_) | Cell::Worn(_)) => {
+                    let mut ui = InvUi::at(c);
+                    ui.jewel = true;
+                    self.inv = Some(ui);
+                    self.inv_apply(Some(InvAct::Use), c, true, None);
+                    true
+                }
+                Some(_) => true,
+                None => false,
+            },
+            ToHost::Bag { op, cell } => match (cell_in(cell, shelf), op) {
                 (Some(c), BAG_USE | BAG_TOSS | BAG_STORE | BAG_SORT) => {
                     // The stash is only there in town.
                     if (op == BAG_STORE || matches!(c, Cell::Stash(_))) && !in_town {
@@ -402,14 +497,16 @@ impl Game {
                             BAG_STORE => InvAct::Store,
                             _ => InvAct::Sort,
                         };
-                        self.inv = Some(InvUi::at(c));
+                        let mut ui = InvUi::at(c);
+                        ui.shop = shelf.is_some();
+                        self.inv = Some(ui);
                         self.inv_apply(Some(act), c, false, None);
                         true
                     }
                 }
                 _ => false,
             },
-            ToHost::Gem { from, to } => match cell_in(to) {
+            ToHost::Gem { from, to } => match cell_in(to, None) {
                 Some(c) if (from as usize) < crate::items::BAG && matches!(c, Cell::Bag(_) | Cell::Worn(_)) => {
                     self.inv = Some(InvUi::at(c));
                     self.inv_apply(Some(InvAct::Select(c)), c, false, Some(from as usize));
@@ -428,11 +525,41 @@ impl Game {
                     _ => false,
                 }
             }
+            ToHost::Talk { pick } => match self.dialog.as_ref().and_then(|d| d.options.get(pick as usize)).map(|o| o.1) {
+                Some(act) if joiner_may(act) => {
+                    if let Some(d) = self.dialog.as_mut() {
+                        d.sel = pick as usize;
+                    }
+                    self.dialog_act(Some(act));
+                    // A trader's shelf or the jeweler's bench opened: on the joiner's screen, not here.
+                    if let Some(ui) = self.inv.take() {
+                        self.hero_shop = Some((self.p.x, self.p.y, ui.jewel));
+                        opened = Some((ui.shop, ui.jewel));
+                    }
+                    true
+                }
+                Some(_) => {
+                    self.say("THE HOST LEADS THE PARTY: ASK THEM".into());
+                    true
+                }
+                // No such option, or no conversation: malformed.
+                None => false,
+            },
+            ToHost::TalkClose => {
+                if self.dialog.is_some() {
+                    self.dialog_act(Some(crate::story::Act::Close));
+                }
+                true
+            }
             _ => false,
         };
+        let said = self.message.take().map(|m| m.0);
         self.inv = keep_inv;
         self.tree = keep_tree;
-        ok
+        self.message = keep_msg;
+        // A joiner's choice never moves the party (the host leads).
+        self.pending_travel = keep_travel;
+        ActOut { ok, opened, said }
     }
 
     /// A joiner's hero (from its save) joins the party. Refused if it can't be read, isn't sane, or doesn't
@@ -529,7 +656,7 @@ mod tests {
         let name = it.name.clone();
         g.allies[k].st.p.gear.bag = vec![None; crate::items::BAG];
         g.allies[k].st.p.gear.bag[4] = Some(it);
-        assert!(g.as_hero(k, |g| g.remote_act(&ToHost::Bag { op: BAG_USE, cell: (CELL_BAG, 4) })));
+        assert!(g.as_hero(k, |g| g.remote_act_ok(&ToHost::Bag { op: BAG_USE, cell: (CELL_BAG, 4) })));
         assert!(g.allies[k].st.p.gear.worn.iter().flatten().any(|w| w.name == name), "worn now");
         assert!(g.inv.is_some(), "the host's own bag is still open");
         // Learning a skill of the joiner's class.
@@ -537,7 +664,7 @@ mod tests {
         let idx = crate::skills::ALL.iter().position(|x| *x == s).unwrap() as u16;
         g.allies[k].st.p.skills.points = 3;
         let before = g.allies[k].st.p.skills.rank(s);
-        assert!(g.as_hero(k, |g| g.remote_act(&ToHost::Skill { op: SKILL_LEARN, skill: idx })));
+        assert!(g.as_hero(k, |g| g.remote_act_ok(&ToHost::Skill { op: SKILL_LEARN, skill: idx })));
         assert!(g.allies[k].st.p.skills.rank(s) > before || g.allies[k].st.p.skills.points < 3, "learned (or refused by the game's own rules)");
         // Nonsense is refused: other classes' skills, cells that don't exist, unknown actions, the shop.
         let other = crate::skills::ALL.iter().position(|x| *x == crate::skills::Class::Sorceress.tree()[0]).unwrap() as u16;
@@ -551,11 +678,11 @@ mod tests {
             ToHost::Gem { from: 999, to: (CELL_BAG, 0) },
             ToHost::Chat("x".into()),
         ] {
-            assert!(!g.as_hero(k, |g| g.remote_act(&m)), "{m:?} refused");
+            assert!(!g.as_hero(k, |g| g.remote_act_ok(&m)), "{m:?} refused");
         }
         // The stash is only there in town.
         g.allies[k].st.p.x = -500.0;
-        assert!(g.as_hero(k, |g| g.remote_act(&ToHost::Bag { op: BAG_STORE, cell: (CELL_BAG, 0) })), "well-formed, but nothing happens out of town");
+        assert!(g.as_hero(k, |g| g.remote_act_ok(&ToHost::Bag { op: BAG_STORE, cell: (CELL_BAG, 0) })), "well-formed, but nothing happens out of town");
     }
 
     #[test]
@@ -641,6 +768,47 @@ gold=9
         assert!(out.confirm && line.is_none());
         drop(session);
         let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn a_joiner_talks_trades_and_cant_steer_the_hosts_game() {
+        use crate::net::proto::*;
+        use crate::story::{Act, Dialog};
+        let mut g = Game::new(7, crate::gfx::SH_WIDE);
+        g.set_class(crate::skills::Class::Sorceress);
+        let k = g.add_ally(crate::skills::Class::Valkyrie, "BRYNJA");
+        g.allies[k].st.p.gold = 100_000;
+        // The trader's conversation, for the joiner's hero.
+        let mut d = Dialog::new("GERTA", &["WARES?"]);
+        d.last_options = vec![("TRADE".into(), Act::Shop), ("QUIT THE HOST'S GAME".into(), Act::QuitGame), ("TRAVEL".into(), Act::Travel(crate::world::LevelId::Frostmarch)), ("PLAYERS".into(), Act::CyclePlayers)];
+        d.refresh_options();
+        g.allies[k].st.dialog = Some(d);
+        let players = crate::binds::players();
+        // Not allowed: quitting, travelling, settings. Nothing happens to the host, the conversation stays open.
+        for pick in [1u8, 2, 3] {
+            let out = g.as_hero(k, |g| g.remote_act(&ToHost::Talk { pick }));
+            assert!(out.ok && out.opened.is_none());
+        }
+        assert!(!g.exit && !g.quit && g.pending_travel.is_none() && crate::binds::players() == players, "the host's game is untouched");
+        assert!(g.as_hero(k, |g| !g.remote_act(&ToHost::Talk { pick: 40 }).ok), "no such option");
+        // Trading: the shelf opens for the joiner, not on the host's screen.
+        let out = g.as_hero(k, |g| g.remote_act(&ToHost::Talk { pick: 0 }));
+        assert_eq!(out.opened, Some((true, false)));
+        assert!(g.inv.is_none(), "the host's screen stays as it was");
+        assert!(!g.shop_stock.is_empty());
+        // Buying from the shelf, near the trader.
+        let bag_before = g.allies[k].st.p.gear.bag.iter().flatten().count();
+        let gold_before = g.allies[k].st.p.gold;
+        assert!(g.as_hero(k, |g| g.remote_act(&ToHost::Bag { op: BAG_USE, cell: (CELL_SHOP, 0) }).ok));
+        assert!(g.allies[k].st.p.gear.bag.iter().flatten().count() > bag_before && g.allies[k].st.p.gold < gold_before, "bought");
+        // Walk off and the shelf is gone: the shop cell isn't a real one any more.
+        g.allies[k].st.p.x += 10.0;
+        assert!(g.as_hero(k, |g| !g.remote_act(&ToHost::Bag { op: BAG_USE, cell: (CELL_SHOP, 0) }).ok));
+        // No jeweler's bench was opened: jeweler actions do nothing.
+        assert!(g.as_hero(k, |g| g.remote_act(&ToHost::Bag { op: BAG_JEWEL, cell: (CELL_BAG, 0) }).ok));
+        // Closing the bag ends the trade.
+        assert!(g.as_hero(k, |g| g.remote_act(&ToHost::Bag { op: BAG_CLOSE, cell: (0, 0) }).ok));
+        assert!(g.allies[k].st.shop.is_none());
     }
 
     #[test]
@@ -930,8 +1098,10 @@ pub fn step(session: &mut Option<Session>, game: &mut Game, inp: &Input) {
             h.after(game);
         }
         Some(Session::Join { joined, .. }) => {
-            // Esc leaves the game. Anything the host sent that the game can't take ends the session, not the game.
-            let why = if inp.cancel || inp.quit_ask {
+            // Esc leaves the game (out of conversations and the bag: there it closes them). Anything the host sent
+            // that the game can't take ends the session, not the game.
+            let open = game.dialog.is_some() || game.inv.is_some() || game.tree.is_some();
+            let why = if (inp.cancel && !open) || inp.quit_ask {
                 Some("LEFT THE GAME".to_string())
             } else {
                 std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| joined.frame(game, inp))).unwrap_or_else(|_| Some("THE HOST SENT SOMETHING THE GAME COULDN'T TAKE".into()))

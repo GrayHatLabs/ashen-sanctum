@@ -467,6 +467,8 @@ plays in the host's world; monsters scale with the party like Players 1-8.
   A host whose key later changes is refused.
 - Your hero keeps the levels, gold, gear and skills it earns in someone else's game; your own quests and
   waypoints stay yours (your save is backed up to `.bak` before it's updated). **Esc** leaves.
+- Joiners talk to people, trade, use the jeweler and take on side quests; the host leads the party (waypoints,
+  rifts and arenas are the host's to take, and everyone goes).
 - **Enter** opens a chat line (Enter sends, Esc cancels); the last few lines show above the bar.
 - Each player gets **their own loot**; experience from kills nearby is shared. No PvP. Hardcore heroes play only
   in hardcore games.

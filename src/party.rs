@@ -63,6 +63,12 @@ pub struct HeroState {
     pub links: Vec<crate::inquisitor::ChainLinkFx>,
     pub whips: Vec<crate::inquisitor::Whip>,
     pub binds: Vec<crate::inquisitor::BindFx>,
+    /// Who the hero is talking to (a joiner reads it on their own screen).
+    pub dialog: Option<crate::story::Dialog>,
+    /// A trader's shelf or the jeweler's bench opened for this hero: where it stood, and whether it's the
+    /// jeweler. Shop and jeweler actions from a joiner count only near there (online.rs).
+    #[serde(skip)]
+    pub shop: Option<(f32, f32, bool)>,
 }
 
 impl HeroState {
@@ -120,6 +126,8 @@ impl HeroState {
             links: vec![],
             whips: vec![],
             binds: vec![],
+            dialog: None,
+            shop: None,
         }
     }
 }
@@ -133,6 +141,8 @@ pub struct Ally {
     pub target: Option<(f32, f32)>,
     /// Seconds until a fallen ally gets up again beside the leader.
     pub respawn: f32,
+    /// What this hero was told (its own messages), for its player's screen.
+    pub said: Vec<String>,
 }
 
 /// How near a kill a hero must be to share its experience and get their own drops (tiles).
@@ -204,6 +214,8 @@ impl Game {
         swap(&mut self.links, &mut a.links);
         swap(&mut self.whips, &mut a.whips);
         swap(&mut self.binds, &mut a.binds);
+        swap(&mut self.dialog, &mut a.dialog);
+        swap(&mut self.hero_shop, &mut a.shop);
     }
 
     /// Runs `f` with ally `k` as the active hero.
@@ -217,7 +229,7 @@ impl Game {
     /// A new ally of this class, standing beside the leader. Returns its index in `allies`.
     pub fn add_ally(&mut self, class: crate::skills::Class, name: &str) -> usize {
         let (lx, ly) = (self.p.x, self.p.y);
-        self.allies.push(Ally { st: HeroState::new(), inp: Input::default(), target: None, respawn: 0.0 });
+        self.allies.push(Ally { st: HeroState::new(), inp: Input::default(), target: None, respawn: 0.0, said: vec![] });
         let k = self.allies.len() - 1;
         let spot = self.ally_spot(lx, ly, k);
         self.as_hero(k, |g| {
@@ -281,7 +293,8 @@ impl Game {
             let mut inp = std::mem::take(&mut self.allies[k].inp);
             let target = self.allies[k].target.take();
             let (lx, ly) = (self.p.x, self.p.y);
-            let keep = (self.message.take(), self.notice.take(), self.pending_travel.take(), self.dialog.take());
+            // The leader's own words, journey and screens are put aside while an ally runs.
+            let keep = (self.message.take(), self.notice.take(), self.pending_travel.take(), self.inv.take(), self.tree.take());
             let spot = self.ally_spot(lx, ly, k);
             let mut respawn = self.allies[k].respawn;
             self.as_hero(k, |g| {
@@ -310,7 +323,20 @@ impl Game {
                         }
                         let pressed = |now: bool, before: bool| now && !before;
                         let (p_cast, p_lmb) = (pressed(inp.cast, g.prev.cast), pressed(inp.lmb, g.prev.lmb));
-                        g.update_player(&inp, p_cast, p_lmb);
+                        if g.dialog.is_some() {
+                            // Talking: a joiner chooses over the network (online.rs); a test bot just backs out.
+                            if inp.back || inp.cancel {
+                                g.dialog_act(Some(crate::story::Act::Close));
+                            }
+                        } else {
+                            g.update_player(&inp, p_cast, p_lmb);
+                        }
+                        // A shop counts only while the hero stays near it.
+                        if let Some((sx, sy, _)) = g.hero_shop {
+                            if (g.p.x - sx).powi(2) + (g.p.y - sy).powi(2) > 16.0 {
+                                g.hero_shop = None;
+                            }
+                        }
                     }
                 }
                 g.trail.push_back((g.p.x, g.p.y));
@@ -318,12 +344,17 @@ impl Game {
                     g.trail.pop_front();
                 }
                 g.update_hero_fx();
-                g.dialog = None;
                 g.pending_travel = None;
+                // Screens it opened (a bag clicked on the bar) aren't the leader's.
+                g.inv = None;
+                g.tree = None;
                 g.prev = inp;
             });
             self.allies[k].respawn = respawn;
-            (self.message, self.notice, self.pending_travel, self.dialog) = keep;
+            if let Some((m, _)) = self.message.take() {
+                self.allies[k].said.push(m);
+            }
+            (self.message, self.notice, self.pending_travel, self.inv, self.tree) = keep;
         }
     }
 

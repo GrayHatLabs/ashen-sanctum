@@ -287,7 +287,7 @@ fn serve(
                     }
                     true
                 }
-                a @ (ToHost::Bag { .. } | ToHost::Gem { .. } | ToHost::Skill { .. }) => tx.send(Event::Act { peer, act: a }).is_ok(),
+                a @ (ToHost::Bag { .. } | ToHost::Gem { .. } | ToHost::Skill { .. } | ToHost::Talk { .. } | ToHost::TalkClose) => tx.send(Event::Act { peer, act: a }).is_ok(),
                 ToHost::Bye => {
                     bye_seen.store(true, Ordering::Relaxed);
                     false

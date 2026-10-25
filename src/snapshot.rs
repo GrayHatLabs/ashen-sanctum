@@ -50,6 +50,11 @@ fn ally_act(bot: &mut Bot, g: &Game, t: u32, leader: (f32, f32)) -> Input {
     if g.state != State::Playing {
         return inp;
     }
+    // Talked to someone in passing (the cast button talks in town): walk on.
+    if g.dialog.is_some() {
+        inp.back = true;
+        return inp;
+    }
     inp.potion_hp = g.p.hp / g.p.max_hp < 0.4 && t % 30 == 0;
     inp.potion_mp = g.p.mana < 6.0 && t % 30 == 0;
     if g.p.food < 45.0 && t % 30 == 0 && (g.bag_meals() > 0 || g.p.vial >= 1.0) {

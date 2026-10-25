@@ -344,6 +344,7 @@ impl Quest {
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub enum Ware {
     HealthPotion,
     ManaPotion,
@@ -365,6 +366,7 @@ impl Ware {
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub enum Act {
     Next,
     Close,
@@ -420,8 +422,10 @@ pub enum Act {
     Arena(u8),
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Dialog {
-    pub name: &'static str,
+    #[serde(with = "crate::net::intern::static_str")]
+    pub name: crate::net::intern::Text,
     pub pages: Vec<String>,
     pub page: usize,
     pub options: Vec<(String, Act)>,

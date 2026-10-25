@@ -875,6 +875,8 @@ pub struct Game {
     pub(crate) remote: Option<Vec<crate::net::proto::ToHost>>,
     /// Online chat: the last few lines, each with how long it stays on screen (online.rs draws them).
     pub(crate) chat_log: Vec<(String, f32)>,
+    /// The active hero's open trader or jeweler (party.rs `HeroState::shop`).
+    pub(crate) hero_shop: Option<(f32, f32, bool)>,
     pub(crate) cur_hero: usize,
     pub(crate) party_level: LevelId,
     pub(crate) prev: Input,
@@ -1020,6 +1022,7 @@ impl Game {
             allies: vec![],
             remote: None,
             chat_log: vec![],
+            hero_shop: None,
             cur_hero: 0,
             party_level: LevelId::Overworld,
             prev: Input::default(),
@@ -2458,11 +2461,19 @@ impl Game {
 
     /// Conversation controls: up/down or the mouse pick an option, cast / confirm / click chooses.
     fn update_dialog(&mut self, inp: &Input, choose: bool, click: bool) {
+        if let Some((_, act)) = self.dialog_input(inp, choose, click) {
+            self.dialog_act(Some(act));
+        }
+    }
+
+    /// Conversation controls without their effect: moves the pick, and returns what was chosen (its option
+    /// number, or None for backing out) and what it does. Joined, it's sent to the host (online.rs).
+    pub(crate) fn dialog_input(&mut self, inp: &Input, choose: bool, click: bool) -> Option<(Option<usize>, Act)> {
         let up = inp.move_y < -0.5 && self.prev.move_y >= -0.5;
         let down = inp.move_y > 0.5 && self.prev.move_y <= 0.5;
         let mut act = None;
         {
-            let d = self.dialog.as_mut().unwrap();
+            let d = self.dialog.as_mut()?;
             let n = d.options.len().max(1);
             if up {
                 d.sel = (d.sel + n - 1) % n;
@@ -2481,12 +2492,17 @@ impl Game {
             }
             if choose || (click && hovered.is_some()) {
                 let sel = if click { hovered.unwrap_or(d.sel) } else { d.sel };
-                act = d.options.get(sel).map(|o| o.1);
+                act = d.options.get(sel).map(|o| (Some(sel), o.1));
             }
             if inp.back {
-                act = Some(Act::Close);
+                act = Some((None, Act::Close));
             }
         }
+        act
+    }
+
+    /// What a conversation choice does (the host runs this for joiners too, for the choices they may make).
+    pub(crate) fn dialog_act(&mut self, act: Option<Act>) {
         match act {
             Some(Act::Next) => {
                 let d = self.dialog.as_mut().unwrap();
