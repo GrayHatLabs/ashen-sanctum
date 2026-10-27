@@ -226,7 +226,7 @@ impl Hosting {
 
 impl Drop for Hosting {
     fn drop(&mut self) {
-        crate::binds::set_players_quiet(self.players_before);
+        crate::binds::clear_players_here();
     }
 }
 
@@ -341,7 +341,7 @@ impl Joined {
                         return Some("THE HOST SENT BAD DATA".into());
                     }
                 }
-                ToClient::Welcome { you, .. } if (1..=7).contains(&you) => self.me = you,
+                ToClient::Welcome { you, .. } if you <= 7 => self.me = you,
                 ToClient::OpenBag { shop, jewel } => {
                     g.dialog = None;
                     g.open_inventory();
@@ -506,6 +506,12 @@ pub struct ActOut {
     pub said: Option<String>,
 }
 
+/// What a leader on the login server may choose besides: going places (the whole party goes).
+fn leader_may(a: crate::story::Act) -> bool {
+    use crate::story::Act::*;
+    matches!(a, Travel(_) | OpenRift(_) | Arena(_) | Duel | NextDifficulty)
+}
+
 /// Conversation choices a joiner may make. Not: travelling (the host leads the party), quitting or changing the
 /// host's game or settings, rifts and arenas (they move everyone).
 fn joiner_may(a: crate::story::Act) -> bool {
@@ -517,6 +523,11 @@ impl Game {
     /// A joiner's bag or skill-tree action, for the active hero (as_hero): checked, then done just as the
     /// hero's own screen would. False if it was malformed (counted against the joiner).
     pub fn remote_act(&mut self, m: &ToHost) -> ActOut {
+        self.remote_act_as(m, false)
+    }
+
+    /// The same, for the party's leader on the login server (who may also travel: everyone goes).
+    pub fn remote_act_as(&mut self, m: &ToHost, leader: bool) -> ActOut {
         use crate::inventory::{Cell, InvAct, InvUi};
         use crate::net::proto::*;
         // The host's own open bag, words and journey are set aside while the joiner's action runs.
@@ -586,7 +597,7 @@ impl Game {
                 }
             }
             ToHost::Talk { pick } => match self.dialog.as_ref().and_then(|d| d.options.get(pick as usize)).map(|o| o.1) {
-                Some(act) if joiner_may(act) => {
+                Some(act) if joiner_may(act) || (leader && leader_may(act)) => {
                     if let Some(d) = self.dialog.as_mut() {
                         d.sel = pick as usize;
                     }
@@ -617,8 +628,10 @@ impl Game {
         self.inv = keep_inv;
         self.tree = keep_tree;
         self.message = keep_msg;
-        // A joiner's choice never moves the party (the host leads).
-        self.pending_travel = keep_travel;
+        // A joiner's choice never moves the party (the host leads); the leader's does.
+        if !leader {
+            self.pending_travel = keep_travel;
+        }
         ActOut { ok, opened, said }
     }
 

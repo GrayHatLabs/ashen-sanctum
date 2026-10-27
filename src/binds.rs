@@ -110,8 +110,14 @@ static LARGE: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new
 /// (Online play will set it from the real count.)
 static PLAYERS: std::sync::atomic::AtomicU8 = std::sync::atomic::AtomicU8::new(1);
 
+thread_local! {
+    /// The party's size for the world on this thread (set by hosting, the server's rooms and the test bot);
+    /// otherwise the Players setting. Each server room has its own thread, so its own count.
+    static HERE: std::cell::Cell<Option<u8>> = const { std::cell::Cell::new(None) };
+}
+
 pub fn players() -> u8 {
-    PLAYERS.load(std::sync::atomic::Ordering::Relaxed).clamp(1, 8)
+    HERE.with(|h| h.get()).unwrap_or_else(|| PLAYERS.load(std::sync::atomic::Ordering::Relaxed)).clamp(1, 8)
 }
 
 pub fn set_players(n: u8) {
@@ -121,7 +127,12 @@ pub fn set_players(n: u8) {
 
 /// For the test bot (ASHEN_PLAYERS): set, but don't save over the player's settings.
 pub fn set_players_quiet(n: u8) {
-    PLAYERS.store(n.clamp(1, 8), std::sync::atomic::Ordering::Relaxed);
+    HERE.with(|h| h.set(Some(n.clamp(1, 8))));
+}
+
+/// Back to the Players setting on this thread.
+pub fn clear_players_here() {
+    HERE.with(|h| h.set(None));
 }
 
 /// The next setting round (1, 2, ... 8, 1).

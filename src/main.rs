@@ -218,6 +218,10 @@ fn main() -> Result<(), String> {
         }
         return Ok(());
     }
+    // The login server: no window, no sound (server/mod.rs; Docker runs this).
+    if args.iter().any(|a| a == "--server") {
+        std::process::exit(server::run(&args));
+    }
     if let Some(i) = args.iter().position(|a| a == "--snapshot" || a == "--selftest") {
         let dir = args.get(i + 1).map(String::as_str).filter(|d| !d.starts_with("--"));
         let dir = if args[i] == "--snapshot" { Some(dir.unwrap_or("snapshots")) } else { None };

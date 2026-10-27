@@ -281,6 +281,27 @@ impl Game {
         crate::binds::players().saturating_sub(self.allies.len() as u8).max(1)
     }
 
+    /// The leader (the active hero) leaves: the first ally takes its place. Its loot goes; everyone after it
+    /// moves up a number. (The login server: online play with no host at the keyboard.)
+    pub fn promote_first_ally(&mut self) {
+        if self.allies.is_empty() {
+            return;
+        }
+        self.pickups.retain(|p| p.owner != 0);
+        for p in self.pickups.iter_mut() {
+            if p.owner != crate::game::ANY {
+                p.owner -= 1;
+            }
+        }
+        for m in self.mobs.iter_mut() {
+            m.target = m.target.saturating_sub(1);
+        }
+        let mut st = std::mem::replace(&mut self.allies[0].st, HeroState::new());
+        self.swap_with(&mut st);
+        self.lead_seq = self.allies[0].seq;
+        self.allies.remove(0);
+    }
+
     /// Where every hero stands: (x, y, alive). Index 0 is the active hero.
     pub fn hero_spots(&self) -> Vec<(f32, f32, bool)> {
         let mut v = vec![(self.p.x, self.p.y, matches!(self.state, State::Playing | State::Victory(_)))];

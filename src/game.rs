@@ -684,11 +684,10 @@ pub struct Stats {
 }
 
 /// The art, unpacked once per run and shared by every Game (a new hero from the menu, the tests).
-fn shared_art() -> std::rc::Rc<Art> {
-    thread_local! {
-        static ART: std::cell::OnceCell<std::rc::Rc<Art>> = const { std::cell::OnceCell::new() };
-    }
-    ART.with(|a| a.get_or_init(|| std::rc::Rc::new(Art::load())).clone())
+fn shared_art() -> std::sync::Arc<Art> {
+    // Once per program, shared by every world (the login server runs several, one to a thread).
+    static ART: std::sync::OnceLock<std::sync::Arc<Art>> = std::sync::OnceLock::new();
+    ART.get_or_init(|| std::sync::Arc::new(Art::load())).clone()
 }
 
 /// A trip to another level, waiting a frame for the loading card.
@@ -704,7 +703,7 @@ pub enum Travel {
 pub struct Game {
     pub(crate) rng: Rng,
     /// Shared by every game this run (unpacking it takes seconds on a handheld: once is enough).
-    pub art: std::rc::Rc<Art>,
+    pub art: std::sync::Arc<Art>,
     pub p: Player,
     // ---- the current level (swapped in and out of `parked`) ----
     pub level: LevelId,
@@ -879,6 +878,8 @@ pub struct Game {
     pub(crate) hero_shop: Option<(f32, f32, bool)>,
     /// Joined: the latest of your inputs the host had, as of the last snapshot (online.rs predicts past it).
     pub(crate) net_ack: u32,
+    /// The login server: the leader's latest input (the leader is a player over the network there).
+    pub(crate) lead_seq: u32,
     pub(crate) cur_hero: usize,
     pub(crate) party_level: LevelId,
     pub(crate) prev: Input,
@@ -1026,6 +1027,7 @@ impl Game {
             chat_log: vec![],
             hero_shop: None,
             net_ack: 0,
+            lead_seq: 0,
             cur_hero: 0,
             party_level: LevelId::Overworld,
             prev: Input::default(),
@@ -2156,7 +2158,7 @@ impl Game {
         (crate::gfx::SW as f32 * 0.5, ((self.view_h - HUD_H) as f32 * 0.5 + 18.0).round())
     }
 
-    fn respawn(&mut self) {
+    pub(crate) fn respawn(&mut self) {
         // A rival who beat you takes their cut first (extras.rs).
         self.rival_won();
         self.stats.deaths += 1;

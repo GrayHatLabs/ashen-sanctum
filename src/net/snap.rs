@@ -193,7 +193,7 @@ impl Game {
             sfx,
             floaters,
             shop: if shop_open { Some(&self.shop_stock) } else { None },
-            ack: if hero == 0 { 0 } else { self.allies.get(hero as usize - 1).map_or(0, |a| a.seq) },
+            ack: if hero == 0 { self.lead_seq } else { self.allies.get(hero as usize - 1).map_or(0, |a| a.seq) },
         };
         let packed = if compress { pack(&out) } else { postcard::to_stdvec(&out).ok() };
         drop(out);

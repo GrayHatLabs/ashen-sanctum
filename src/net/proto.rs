@@ -348,3 +348,66 @@ mod tests {
         assert!(check_hello(PROTOCOL, env!("CARGO_PKG_VERSION"), "ROWAN", &"x".repeat(MAX_HERO + 1)).is_err());
     }
 }
+
+// ------------------------------------------------------------------ the login server (src/server)
+
+/// Player → login server, before a game (the game's own messages are `ToHost`).
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+pub enum ToServer {
+    Hello { protocol: u32, version: String },
+    Register { name: String, password: String, invite: String },
+    Login { name: String, password: String },
+    /// Your heroes on the server.
+    Heroes,
+    /// A new hero: class (its number in skills::ALL_CLASSES), name, hardcore.
+    NewHero { class: u8, name: String, hardcore: bool },
+    DeleteHero { slot: u8 },
+    /// The games open now.
+    Games,
+    /// Start a game with this hero (its world is the hero's: its act and quests).
+    CreateGame { name: String, password: String, hero: u8 },
+    JoinGame { game: u32, password: String, hero: u8 },
+    /// Still here (the menus send it now and then, so an idle lobby connection isn't closed).
+    Ping,
+}
+
+/// A hero on the server, as the list shows it.
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+pub struct ServerHero {
+    pub slot: u8,
+    pub name: String,
+    pub class: u8,
+    pub clvl: u32,
+    pub act: u8,
+    pub hardcore: bool,
+    pub fallen: bool,
+}
+
+/// A game on the server, as the list shows it.
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+pub struct GameInfo {
+    pub id: u32,
+    pub name: String,
+    pub players: u8,
+    pub locked: bool,
+    pub hardcore: bool,
+    pub act: u8,
+}
+
+/// Login server → player, before a game.
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+pub enum FromServer {
+    /// The server's name, and whether registering needs an invite code.
+    Hello { name: String, invite: bool },
+    LoggedIn { name: String },
+    Refused(String),
+    Heroes(Vec<ServerHero>),
+    Games(Vec<GameInfo>),
+    /// You're in that game (hero `you` of its party); from here on it's the game's messages (`ToClient`).
+    Joined { you: u8, host_name: String },
+}
+
+/// Game names: 1-24 of the game's printable characters.
+pub fn clean_game_name(s: &str) -> Option<String> {
+    clean_chat(s).filter(|t| t.chars().count() <= 24)
+}
