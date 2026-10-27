@@ -298,6 +298,8 @@ mod tests {
                 let _ = i.check((0.0, 0.0));
             }
             let _ = decode::<ToClient>(&b);
+            let _ = decode::<ToServer>(&b);
+            let _ = decode::<FromServer>(&b);
         }
         // A huge declared length with no data behind it.
         assert_eq!(decode::<ToHost>(&[2, 0xff, 0xff, 0xff, 0xff, 0x0f]), None);

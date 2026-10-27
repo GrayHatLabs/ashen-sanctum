@@ -474,6 +474,13 @@ plays in the host's world; monsters scale with the party like Players 1-8.
   in hardcore games.
 - Command line: `--host [port]`, `--join ADDRESS`, `--password WORD`, `--trust` (trust a new host's key).
 
+**Login server:** **Play Online**, then **Use a Server**:
+1. Type the server's address and check its key.
+2. Log in, or register (with an invite code if the server asks).
+3. Make heroes that live on the server, then create or join a game from the list.
+
+The server runs every game, so nobody needs to open a port except whoever runs the server. Run your own with Docker: [docker/README.md](docker/README.md).
+
 **Security:** TLS 1.3 only (rustls), the host's key pinned on first use, an optional game password (checked in
 constant time, five wrong tries lock an address out for a minute), connection and rate limits, and the host checks
 every input and action a joiner sends. Details in [docs/ONLINE_PLAN.md](docs/ONLINE_PLAN.md).

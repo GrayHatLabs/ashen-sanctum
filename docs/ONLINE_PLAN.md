@@ -197,6 +197,22 @@ An independent review of `src/net/` and `src/online.rs` found 11 issues; all are
   - The host leads all travel.
 - **Movement prediction.** Keys and the stick move a joiner's hero at once. Each snapshot carries the last input the host applied (`ack`), and the joiner replays its unconfirmed steps on top, working off differences (snapping if over 2.5 tiles). The host holds a joiner's last input between packets, and one-shot buttons are used once.
 
+### Phase 3: built (2026-10-27)
+
+- **`ashensanctum --server`** (`src/server/`): accounts (`accounts.rs`), the lobby on each connection (`mod.rs`), and game rooms on their own threads (`room.rs`).
+  - Every hero is a remote player. The first player leads (and may travel); the next takes over if the leader leaves.
+  - Heroes are saved to their account (hero only) every minute and on leaving. Hardcore deaths are saved as fallen.
+- **Accounts:**
+  - Passwords hashed with Argon2id (OWASP settings), with the same answer and the same work for unknown names.
+  - Locks after failed logins (per account, growing; and per address), sign-up limits, an optional invite code.
+  - At most two hashes at once. Files keyed by account number and written atomically; deleted heroes are kept in `deleted/`.
+- **Limits:**
+  - Connections per address and in all, a 10 s handshake deadline, and a 60 s lobby idle timeout (clients ping every 15 s).
+  - 3 failed logins per connection, 12 hero or game changes a minute, a maximum number of games, 8 players a game, and one hero in one game at a time.
+- **Docker** (`docker/`): runs as a non-root user with a read-only root, no capabilities, no-new-privileges, memory and process limits, rotated logs, and a named data volume.
+- **In the game:** Play Online, then Use a Server (`src/lobby_ui.rs`).
+- **Shared art:** decoded once per process and shared between rooms (`Arc`). The party size is per thread, so each room scales its own monsters.
+
 ## Order of work and size
 
 1. Phase 1: several sessions. It touches most of game.rs and the class files; the tests and bot keep it safe.
