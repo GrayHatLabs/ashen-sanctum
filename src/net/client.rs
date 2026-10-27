@@ -221,12 +221,12 @@ pub fn lobby(addr: &str, dir: &Path) -> Result<Lobby, JoinError> {
 }
 
 impl Lobby {
-    /// Sends a request and waits (up to 15 s) for its answer.
+    /// Sends a request and waits (up to 8 s) for its answer.
     pub fn ask(&mut self, m: &proto::ToServer) -> Result<proto::FromServer, String> {
         let b = proto::encode(m).ok_or_else(|| "TOO LONG".to_string())?;
         conn::Wire::send(&mut self.s, &b).map_err(|_| "LOST CONNECTION".to_string())?;
         self.last_sent = Instant::now();
-        let f = next_frame(&mut self.s, &mut self.reader, Instant::now() + Duration::from_secs(15)).map_err(|e| match e {
+        let f = next_frame(&mut self.s, &mut self.reader, Instant::now() + Duration::from_secs(8)).map_err(|e| match e {
             JoinError::Unreachable(w) | JoinError::Refused(w) => w,
             _ => "LOST CONNECTION".into(),
         })?;

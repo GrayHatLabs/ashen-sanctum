@@ -31,7 +31,7 @@ const IP_TRIES: u32 = 20;
 const IP_WINDOW: Duration = Duration::from_secs(600);
 /// New accounts per address an hour, and in all.
 const SIGNUPS_PER_IP: usize = 3;
-const SIGNUPS_PER_HOUR: usize = 30;
+const SIGNUPS_PER_HOUR: usize = 200;
 /// The one answer for a failed login, whatever the reason.
 pub const BAD_LOGIN: &str = "WRONG NAME OR PASSWORD";
 
@@ -208,26 +208,34 @@ impl Accounts {
 
 /// Registers a new account. The store is locked only around reading and writing it, never while hashing.
 pub fn register(store: &Mutex<Accounts>, name: &str, password: &str, invite: &str, ip: IpAddr) -> Result<u64, &'static str> {
-    if !name_ok(name) {
-        return Err("NAMES ARE 3-16 LETTERS, NUMBERS, _ OR -");
-    }
-    if !password_ok(password) {
-        return Err("PASSWORDS ARE 8-128 CHARACTERS");
-    }
     {
         let mut a = store.lock().unwrap_or_else(|e| e.into_inner());
+        let key = format!("register|{ip}");
+        if a.ip_locked(ip) || a.name_locked(&key) {
+            return Err("TOO MANY TRIES. WAIT A WHILE");
+        }
+        // The invite before anything else (so nothing about names can be learned without it).
         if let Some(code) = &a.invite {
             // Compared in constant time, as hashes (so the length doesn't show either).
             let differs = crate::net::tls::hash(code.as_bytes()).iter().zip(crate::net::tls::hash(invite.as_bytes()).iter()).fold(0u8, |acc, (x, y)| acc | (x ^ y));
             if differs != 0 {
+                a.note_fail(&key, ip);
                 return Err("THAT INVITE CODE ISN'T RIGHT");
             }
+        }
+        if !name_ok(name) {
+            return Err("NAMES ARE 3-16 LETTERS, NUMBERS, _ OR -");
+        }
+        if !password_ok(password) {
+            return Err("PASSWORDS ARE 8-128 CHARACTERS");
         }
         a.signups.retain(|(_, t)| t.elapsed() < Duration::from_secs(3600));
         if a.signups.iter().filter(|(i, _)| *i == ip).count() >= SIGNUPS_PER_IP || a.signups.len() >= SIGNUPS_PER_HOUR {
             return Err("TOO MANY NEW ACCOUNTS. TRY AGAIN LATER");
         }
         if a.users.iter().any(|u| u.name.eq_ignore_ascii_case(name)) {
+            // Asking about names counts as a failed try (they can't be listed quickly).
+            a.note_fail(&key, ip);
             return Err("THAT NAME IS TAKEN");
         }
     }
@@ -250,7 +258,8 @@ pub fn register(store: &Mutex<Accounts>, name: &str, password: &str, invite: &st
 
 /// Logs in: the account's number and name, or the one answer for anything wrong.
 pub fn login(store: &Mutex<Accounts>, name: &str, password: &str, ip: IpAddr) -> Result<(u64, String), &'static str> {
-    let key = name.to_ascii_lowercase();
+    // Locked per account *and* address: guessing from one place doesn't lock the owner out from theirs.
+    let key = format!("{}|{ip}", name.to_ascii_lowercase());
     let user = {
         let a = store.lock().unwrap_or_else(|e| e.into_inner());
         if a.ip_locked(ip) || a.name_locked(&key) {
@@ -284,6 +293,20 @@ pub fn login(store: &Mutex<Accounts>, name: &str, password: &str, ip: IpAddr) ->
 }
 
 impl Accounts {
+    /// The hero files (no lock needed to use them: each is written atomically, and the server's reservation
+    /// set keeps two writers off one hero).
+    pub fn files(&self) -> HeroFiles {
+        HeroFiles { dir: self.dir.clone() }
+    }
+}
+
+/// Heroes on disk: heroes/<account number>/<slot>.txt.
+#[derive(Clone)]
+pub struct HeroFiles {
+    dir: PathBuf,
+}
+
+impl HeroFiles {
     fn hero_dir(&self, id: u64) -> PathBuf {
         self.dir.join("heroes").join(id.to_string())
     }
@@ -326,9 +349,9 @@ impl Accounts {
         std::fs::rename(d.join(format!("{slot}.txt")), gone.join(format!("{slot}-{stamp}.txt")))
     }
 
-    /// A free hero slot.
-    pub fn free_slot(&self, id: u64) -> Option<u8> {
-        (0..HERO_SLOTS).find(|&s| !self.hero_dir(id).join(format!("{s}.txt")).exists())
+    /// A free hero slot (and not one being made right now: `taken`).
+    pub fn free_slot(&self, id: u64, taken: &std::collections::HashSet<(u64, u8)>) -> Option<u8> {
+        (0..HERO_SLOTS).find(|&s| !taken.contains(&(id, s)) && !self.hero_dir(id).join(format!("{s}.txt")).exists())
     }
 }
 
@@ -372,7 +395,10 @@ mod tests {
         for _ in 0..TRIES {
             assert_eq!(login(&store, "isolde", "a bad guess", ip), Err(BAD_LOGIN));
         }
-        assert_eq!(login(&store, "isolde", "the real password", ip), Err("TOO MANY TRIES. WAIT A WHILE"), "locked even with the right one");
+        assert_eq!(login(&store, "isolde", "the real password", ip), Err("TOO MANY TRIES. WAIT A WHILE"), "locked from there, even with the right one");
+        // ...but not for the owner somewhere else (review: anyone could lock any account out).
+        let home: IpAddr = "10.0.0.9".parse().unwrap();
+        assert!(login(&store, "isolde", "the real password", home).is_ok(), "the owner still gets in from their own address");
         // Another address can't make more than three accounts an hour.
         let other: IpAddr = "10.0.0.3".parse().unwrap();
         for n in ["Ada1", "Ada2", "Ada3"] {
@@ -395,11 +421,11 @@ mod tests {
     #[test]
     fn heroes_are_kept_per_account_and_deleting_keeps_a_copy() {
         let d = tmp("heroes");
-        let a = Accounts::open(&d, None).unwrap();
+        let a = Accounts::open(&d, None).unwrap().files();
         a.save_hero(7, 0, "name=ROWAN\n").unwrap();
         assert_eq!(a.hero(7, 0).as_deref(), Some("name=ROWAN\n"));
         assert_eq!(a.hero(8, 0), None, "another account's slot is its own");
-        assert_eq!(a.free_slot(7), Some(1));
+        assert_eq!(a.free_slot(7, &Default::default()), Some(1));
         assert!(a.save_hero(7, 99, "x").is_err());
         a.delete_hero(7, 0).unwrap();
         assert_eq!(a.hero(7, 0), None);

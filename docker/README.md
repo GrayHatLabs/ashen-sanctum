@@ -18,8 +18,9 @@ cp docker/.env.example docker/.env
 ```
 
 Edit `docker/.env`:
-- `ASHEN_INVITE`: a code people need to register. Make it long and give it only to your friends.
-  Left empty, anyone who can reach the server can make an account.
+- `ASHEN_INVITE`: a code people need to register. Make it long (12 characters or more) and give it only to
+  your friends. The server won't start with the example's placeholder. Left empty, anyone who can reach the
+  server can make an account.
 - `ASHEN_SERVER_NAME`: what players see.
 
 ## 3. Start it

@@ -212,6 +212,7 @@ impl LobbyUi {
     fn refresh_heroes(&mut self) {
         if let Some(FromServer::Heroes(h)) = self.ask(&ToServer::Heroes) {
             self.heroes = h;
+            self.heroes.truncate(crate::server::accounts::HERO_SLOTS as usize);
             self.hero = self.hero.min(self.heroes.len().saturating_sub(1));
         }
     }
@@ -220,6 +221,7 @@ impl LobbyUi {
         self.fetched = self.t;
         if let Some(FromServer::Games(g)) = self.ask(&ToServer::Games) {
             self.games = g;
+            self.games.truncate(64);
         }
     }
 
@@ -371,7 +373,8 @@ impl LobbyUi {
                 } else if confirm {
                     if let Some(h) = self.heroes.get(self.hero) {
                         let slot = h.slot;
-                        if let Some(FromServer::Heroes(list)) = self.ask(&ToServer::DeleteHero { slot }) {
+                        if let Some(FromServer::Heroes(mut list)) = self.ask(&ToServer::DeleteHero { slot }) {
+                            list.truncate(crate::server::accounts::HERO_SLOTS as usize);
                             self.heroes = list;
                         }
                     }
@@ -393,7 +396,8 @@ impl LobbyUi {
                 } else if confirm && self.sel == 3 {
                     if self.hero_name.trim().is_empty() {
                         self.say("GIVE YOUR HERO A NAME");
-                    } else if let Some(FromServer::Heroes(list)) = self.ask(&ToServer::NewHero { class: self.class as u8, name: self.hero_name.clone(), hardcore: self.hardcore }) {
+                    } else if let Some(FromServer::Heroes(mut list)) = self.ask(&ToServer::NewHero { class: self.class as u8, name: self.hero_name.clone(), hardcore: self.hardcore }) {
+                        list.truncate(crate::server::accounts::HERO_SLOTS as usize);
                         self.heroes = list;
                         self.go(Screen_::Heroes);
                     }
@@ -512,7 +516,7 @@ impl LobbyUi {
                 for (k, hh) in heroes.iter().enumerate() {
                     let class = crate::skills::ALL_CLASSES.get(hh.class as usize).map_or("?", |c| c.name());
                     let tag = if hh.fallen { "  FALLEN" } else if hh.hardcore { "  HARDCORE" } else { "" };
-                    let label = format!("{}  LEVEL {} {}  ACT {}{tag}", hh.name, hh.clvl, class, hh.act + 1);
+                    let label = format!("{}  LEVEL {} {}  ACT {}{tag}", hh.name, hh.clvl, class, hh.act.saturating_add(1));
                     self.button(scr, &label, cx, 46 + k as i32 * 22, 380, k);
                 }
                 let y = 52 + heroes.len() as i32 * 22;
@@ -545,7 +549,7 @@ impl LobbyUi {
                 scr.text(&format!("PLAYING AS {hero}"), cx, 38, rgb(0xd8c090), Align::Center, 1);
                 let games = self.games.clone();
                 for (k, g) in games.iter().enumerate().take(8) {
-                    let label = format!("{}  {}/8  ACT {}{}{}", g.name, g.players, g.act + 1, if g.locked { "  LOCKED" } else { "" }, if g.hardcore { "  HARDCORE" } else { "" });
+                    let label = format!("{}  {}/8  ACT {}{}{}", g.name, g.players, g.act.saturating_add(1), if g.locked { "  LOCKED" } else { "" }, if g.hardcore { "  HARDCORE" } else { "" });
                     self.button(scr, &label, cx, 54 + k as i32 * 22, 380, k);
                 }
                 if games.is_empty() {

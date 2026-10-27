@@ -213,6 +213,25 @@ An independent review of `src/net/` and `src/online.rs` found 11 issues; all are
 - **In the game:** Play Online, then Use a Server (`src/lobby_ui.rs`).
 - **Shared art:** decoded once per process and shared between rooms (`Arc`). The party size is per thread, so each room scales its own monsters.
 
+### Security review of phase 3 (2026-10-27)
+
+An independent review of the login server found 11 issues; all are fixed and tested:
+1. **Hardcore deaths weren't saved** (the hero-only merge dropped `fallen`). A fallen hero is now saved `fallen=1`.
+2. **One hero could be in two games at once** (a check-then-act race, letting items be duplicated).
+   - Heroes are reserved in one shared set, under one lock, before they go anywhere. Making and deleting heroes use the same reservation.
+   - An account can only have one session at a time.
+3. **A room that panicked held its heroes and slot forever.** Rooms and connections are now guarded: everyone is saved if possible, released, and the room ends.
+4. **Connections not logged in could hold every slot.** They now have 45 s to log in, get at most half the slots, and the lobby times out after 30 s idle.
+5. **Registering let names be listed and invite codes guessed quickly.** The invite is checked first; failures count (3 per connection) and lock the address.
+6. **Logged-in requests had no limits.** They're now limited (4 a second, 8 at once); wrong game passwords close the connection after 5; hero files are read and written outside the accounts lock.
+7. **A join that timed out left a ghost hero.** The room now undoes the join if the answer can't be delivered.
+8. **Anyone could lock an account out.** Logins now lock per (account, address).
+9. **Limits:** sign-ups are 200 an hour in all (3 per address); connections are at most 200.
+10. **A hostile server could freeze the game's server screens.** The game caps the lists from a server, adds without overflowing, and waits at most 8 s.
+11. **Passwords and the example code.**
+    - Debug output never shows passwords or codes.
+    - The server refuses to start with the example's placeholder invite code or one under 12 characters.
+
 ## Order of work and size
 
 1. Phase 1: several sessions. It touches most of game.rs and the class files; the tests and bot keep it safe.

@@ -19,8 +19,8 @@ pub const MAX_HERO: usize = 96 * 1024;
 /// How far from its hero a joiner may aim (tiles): the screen is about 20 across.
 pub const MAX_AIM: f32 = 24.0;
 
-/// Joiner → host.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+/// Joiner → host. (Its Debug hides the password: see below.)
+#[derive(Serialize, Deserialize, Clone, PartialEq)]
 pub enum ToHost {
     /// The first message, and only then.
     Hello { protocol: u32, version: String, name: String, hero: String, password: String },
@@ -353,8 +353,9 @@ mod tests {
 
 // ------------------------------------------------------------------ the login server (src/server)
 
-/// Player → login server, before a game (the game's own messages are `ToHost`).
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+/// Player → login server, before a game (the game's own messages are `ToHost`). (Its Debug hides passwords
+/// and codes: see below.)
+#[derive(Serialize, Deserialize, Clone, PartialEq)]
 pub enum ToServer {
     Hello { protocol: u32, version: String },
     Register { name: String, password: String, invite: String },
@@ -371,6 +372,40 @@ pub enum ToServer {
     JoinGame { game: u32, password: String, hero: u8 },
     /// Still here (the menus send it now and then, so an idle lobby connection isn't closed).
     Ping,
+}
+
+/// Passwords and codes never show in debug output (a log line or a test failure).
+impl std::fmt::Debug for ToHost {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ToHost::Hello { protocol, version, name, .. } => write!(f, "Hello {{ protocol: {protocol}, version: {version:?}, name: {name:?}, hero: .., password: .. }}"),
+            ToHost::Input(i) => write!(f, "Input({i:?})"),
+            ToHost::Chat(t) => write!(f, "Chat({} chars)", t.len()),
+            ToHost::Bye => write!(f, "Bye"),
+            ToHost::Bag { op, cell } => write!(f, "Bag {{ op: {op}, cell: {cell:?} }}"),
+            ToHost::Gem { from, to } => write!(f, "Gem {{ from: {from}, to: {to:?} }}"),
+            ToHost::Skill { op, skill } => write!(f, "Skill {{ op: {op}, skill: {skill} }}"),
+            ToHost::Talk { pick } => write!(f, "Talk {{ pick: {pick} }}"),
+            ToHost::TalkClose => write!(f, "TalkClose"),
+        }
+    }
+}
+
+impl std::fmt::Debug for ToServer {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ToServer::Hello { protocol, version } => write!(f, "Hello {{ protocol: {protocol}, version: {version:?} }}"),
+            ToServer::Register { name, .. } => write!(f, "Register {{ name: {name:?}, password: .., invite: .. }}"),
+            ToServer::Login { name, .. } => write!(f, "Login {{ name: {name:?}, password: .. }}"),
+            ToServer::Heroes => write!(f, "Heroes"),
+            ToServer::NewHero { class, name, hardcore } => write!(f, "NewHero {{ class: {class}, name: {name:?}, hardcore: {hardcore} }}"),
+            ToServer::DeleteHero { slot } => write!(f, "DeleteHero {{ slot: {slot} }}"),
+            ToServer::Games => write!(f, "Games"),
+            ToServer::CreateGame { name, hero, .. } => write!(f, "CreateGame {{ name: {name:?}, password: .., hero: {hero} }}"),
+            ToServer::JoinGame { game, hero, .. } => write!(f, "JoinGame {{ game: {game}, password: .., hero: {hero} }}"),
+            ToServer::Ping => write!(f, "Ping"),
+        }
+    }
 }
 
 /// A hero on the server, as the list shows it.

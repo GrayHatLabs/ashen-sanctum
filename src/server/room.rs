@@ -4,7 +4,8 @@
 //! every minute and when they leave.
 #![forbid(unsafe_code)]
 
-use super::accounts::Accounts;
+use super::accounts::HeroFiles;
+use std::collections::HashSet;
 use crate::game::{Floater, Game, Input, Sfx, State};
 use crate::net::proto::{NetInput, ToClient, ToHost};
 use std::sync::atomic::{AtomicBool, AtomicU8, Ordering};
@@ -48,8 +49,6 @@ pub struct RoomHandle {
     pub hardcore: bool,
     pub act: u8,
     pub players: Arc<AtomicU8>,
-    /// Which heroes are in it (account, slot): one hero can't be in two places.
-    pub heroes: Arc<Mutex<Vec<(u64, u8)>>>,
     pub tx: std::sync::mpsc::Sender<RoomEvent>,
     pub ended: Arc<AtomicBool>,
 }
@@ -70,8 +69,10 @@ struct Peer {
 struct Room {
     g: Game,
     peers: Vec<Peer>,
-    accounts: Arc<Mutex<Accounts>>,
-    heroes: Arc<Mutex<Vec<(u64, u8)>>>,
+    files: HeroFiles,
+    /// The server's heroes in play (account, slot): reserved by the lobby before a hero comes here, released
+    /// here when it leaves (review 2026-10-27: one hero in two games duplicated items).
+    busy: Arc<Mutex<HashSet<(u64, u8)>>>,
     players: Arc<AtomicU8>,
     sent_level: Option<crate::world::LevelId>,
     /// The leader's held input and aim.
@@ -122,10 +123,14 @@ impl Room {
     /// Saves player `i`'s hero to its account (only the hero; its own world stays as stored).
     fn save(&mut self, i: usize) {
         let text = self.hero_text(i);
+        let fallen = if i == 0 { self.g.fallen } else { self.g.allies.get(i - 1).map_or(false, |a| a.st.fallen) };
         let p = &self.peers[i];
-        if let Some(merged) = crate::online::merge_hero(&p.stored, &text) {
-            let a = self.accounts.lock().unwrap_or_else(|e| e.into_inner());
-            let _ = a.save_hero(p.account, p.slot, &merged);
+        if let Some(mut merged) = crate::online::merge_hero(&p.stored, &text) {
+            // Death is for good: a hardcore hero that fell here is saved fallen (merge_hero keeps only hero lines).
+            if fallen {
+                merged = merged.lines().filter(|l| !l.starts_with("fallen=")).map(|l| format!("{l}\n")).collect::<String>() + "fallen=1\n";
+            }
+            let _ = self.files.save_hero(p.account, p.slot, &merged);
         }
     }
 
@@ -149,9 +154,15 @@ impl Room {
         match joined {
             Ok(i) => {
                 let leader = if first { r.name.clone() } else { self.peers[0].name.clone() };
-                let _ = r.reply.send(Ok((i as u8, leader)));
+                if r.reply.send(Ok((i as u8, leader))).is_err() {
+                    // The player stopped waiting: no ghost hero (and its reservation goes).
+                    if i > 0 {
+                        self.g.remove_ally(i - 1);
+                    }
+                    self.busy.lock().unwrap_or_else(|e| e.into_inner()).remove(&(r.account, r.slot));
+                    return;
+                }
                 self.peers.push(Peer { peer: r.peer, account: r.account, slot: r.slot, name: r.name.clone(), out: r.out, strikes: 0, chat: (5.0, Instant::now()), events: (vec![], vec![]), stored: r.hero });
-                self.heroes.lock().unwrap_or_else(|e| e.into_inner()).push((r.account, r.slot));
                 if let Some(lv) = self.g.net_level() {
                     let _ = self.send(i, &ToClient::Level(lv));
                 }
@@ -159,6 +170,8 @@ impl Room {
                 self.rescale();
             }
             Err(why) => {
+                // Not in: the hero's free again.
+                self.busy.lock().unwrap_or_else(|e| e.into_inner()).remove(&(r.account, r.slot));
                 let _ = r.reply.send(Err(why.to_string()));
             }
         }
@@ -183,7 +196,7 @@ impl Room {
             self.g.remove_ally(i - 1);
         }
         let p = self.peers.remove(i);
-        self.heroes.lock().unwrap_or_else(|e| e.into_inner()).retain(|h| *h != (p.account, p.slot));
+        self.busy.lock().unwrap_or_else(|e| e.into_inner()).remove(&(p.account, p.slot));
         let leader = self.peers.first().map(|p| p.name.clone()).unwrap_or_default();
         for j in i.min(self.peers.len())..self.peers.len() {
             let _ = self.send(j, &ToClient::Welcome { you: j as u8, host_name: leader.clone() });
@@ -349,25 +362,32 @@ impl Room {
 }
 
 /// Starts a room's thread. It runs until its last player leaves.
-pub fn spawn(id: u32, name: String, password: Option<[u8; 32]>, hardcore: bool, act: u8, accounts: Arc<Mutex<Accounts>>, seed: u64) -> std::io::Result<RoomHandle> {
+#[allow(clippy::too_many_arguments)]
+pub fn spawn(id: u32, name: String, password: Option<[u8; 32]>, hardcore: bool, act: u8, files: HeroFiles, busy: Arc<Mutex<HashSet<(u64, u8)>>>, seed: u64) -> std::io::Result<RoomHandle> {
     let (tx, rx) = std::sync::mpsc::channel::<RoomEvent>();
     let players = Arc::new(AtomicU8::new(0));
-    let heroes = Arc::new(Mutex::new(vec![]));
     let ended = Arc::new(AtomicBool::new(false));
     {
-        let (players, heroes, ended) = (players.clone(), heroes.clone(), ended.clone());
+        let (players, ended) = (players.clone(), ended.clone());
         std::thread::Builder::new().name(format!("room-{id}")).spawn(move || {
             let g = Game::new(seed, crate::gfx::SH_WIDE);
-            let mut room = Room { g, peers: vec![], accounts, heroes, players, sent_level: None, lead: (Input::default(), None) };
-            run(&mut room, rx);
-            // Everyone's saved on the way out.
+            let mut room = Room { g, peers: vec![], files, busy: busy.clone(), players, sent_level: None, lead: (Input::default(), None) };
+            // A room that breaks (a panic) mustn't take its players' heroes with it: whatever happened, everyone is
+            // saved if it can be, released, and the room counts as ended (review 2026-10-27).
+            let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| run(&mut room, rx)));
             for i in 0..room.peers.len() {
-                room.save(i);
+                let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| room.save(i)));
+            }
+            {
+                let mut b = busy.lock().unwrap_or_else(|e| e.into_inner());
+                for p in &room.peers {
+                    b.remove(&(p.account, p.slot));
+                }
             }
             ended.store(true, Ordering::Relaxed);
         })?;
     }
-    Ok(RoomHandle { id, name, password, hardcore, act, players, heroes, tx, ended })
+    Ok(RoomHandle { id, name, password, hardcore, act, players, tx, ended })
 }
 
 fn run(room: &mut Room, rx: Receiver<RoomEvent>) {
@@ -395,5 +415,35 @@ fn run(room: &mut Room, rx: Receiver<RoomEvent>) {
             // Too far behind (a slow machine): don't try to catch up all at once.
             next = now;
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_hardcore_hero_that_falls_is_saved_fallen() {
+        let dir = std::env::temp_dir().join(format!("ashen_room_{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        let files = super::super::accounts::Accounts::open(&dir, None).unwrap().files();
+        // The hero as stored: hardcore, alive.
+        let mut g = Game::new(5, crate::gfx::SH_WIDE);
+        g.set_class(crate::skills::Class::Valkyrie);
+        g.hardcore = true;
+        let stored = crate::save::to_text(&g);
+        files.save_hero(1, 0, &stored).unwrap();
+        let busy = Arc::new(Mutex::new(HashSet::from([(1u64, 0u8)])));
+        let (out, _rx) = std::sync::mpsc::sync_channel(64);
+        let mut room = Room { g, peers: vec![], files: files.clone(), busy: busy.clone(), players: Arc::new(AtomicU8::new(0)), sent_level: None, lead: (Input::default(), None) };
+        room.peers.push(Peer { peer: 1, account: 1, slot: 0, name: "BRYNJA".into(), out, strikes: 0, chat: (5.0, Instant::now()), events: (vec![], vec![]), stored });
+        // It falls.
+        room.g.p.hp = 0.0;
+        room.g.state = State::Dead(0.0);
+        room.tick();
+        let saved = files.hero(1, 0).unwrap();
+        assert!(saved.lines().any(|l| l == "fallen=1"), "saved fallen");
+        assert!(room.peers.is_empty() && !busy.lock().unwrap().contains(&(1, 0)), "gone, and released");
+        let _ = std::fs::remove_dir_all(&dir);
     }
 }
