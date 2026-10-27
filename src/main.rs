@@ -17,6 +17,7 @@ mod liquid;
 mod party;
 mod net;
 mod online;
+mod lobby_ui;
 mod server;
 mod menu;
 mod mobs;
@@ -383,6 +384,9 @@ fn main() -> Result<(), String> {
     let mut session: Option<online::Session> = None;
     // A chat line being typed (online only).
     let mut chat_line: Option<String> = None;
+    // The login server's screens (lobby_ui.rs), and whether they're up.
+    let mut lobby: Option<lobby_ui::LobbyUi> = None;
+    let mut lobby_up = false;
     let (mut cheat_level, mut cheat_loot) = (false, false);
     let mut back_down: Option<Instant> = None;
 
@@ -595,6 +599,21 @@ fn main() -> Result<(), String> {
             inp.cheat_loot = cheat_loot;
             inp.cycle = cycle;
             inp.slot = slot;
+            if lobby_up {
+                match lobby.as_mut().and_then(|l| l.update(&inp)) {
+                    Some(lobby_ui::LobbyOut::Back) => {
+                        (lobby, lobby_up) = (None, false);
+                        menu = Some(menu::Menu::new(save::list_heroes()));
+                    }
+                    Some(lobby_ui::LobbyOut::Play(link)) => {
+                        lobby_up = false;
+                        game = Game::new(seed, view_h);
+                        game.say(format!("JOINED {}'S GAME", link.host_name));
+                        session = Some(online::Session::Server { joined: online::Joined::new(link) });
+                    }
+                    None => {}
+                }
+            } else {
             match menu.as_mut() {
                 Some(m) => {
                     if let Some(out) = m.update(&inp) {
@@ -607,7 +626,15 @@ fn main() -> Result<(), String> {
                     }
                     let inp = online::chat_keys(&mut chat_line, &mut session, &mut game, &inp);
                     online::step(&mut session, &mut game, &inp);
+                    // Out of a server game: back to its screens (logged in again).
+                    if session.is_none() {
+                        if let Some(l) = lobby.as_mut() {
+                            l.back_from_game();
+                            lobby_up = true;
+                        }
+                    }
                 }
+            }
             }
             backspace = false;
             wheel = 0;
@@ -709,6 +736,11 @@ fn main() -> Result<(), String> {
                     }
                 }
             }
+            Some(menu::MenuOut::Server) => {
+                menu = None;
+                lobby = Some(lobby_ui::LobbyUi::new(String::new()));
+                lobby_up = true;
+            }
             Some(menu::MenuOut::Online(ask)) => {
                 online_ask = ask;
                 if let Some(m) = menu.as_mut() {
@@ -746,6 +778,11 @@ fn main() -> Result<(), String> {
         }
         match menu.as_mut() {
             Some(m) => m.draw(&mut scr, &game.art),
+            None if lobby_up => {
+                if let Some(l) = lobby.as_mut() {
+                    l.draw(&mut scr, &game.art);
+                }
+            }
             None if !online::may_save(&session) => {
                 // Joined: the host's world is drawn. If something it sent can't be drawn, leave rather than crash.
                 let drew = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| game.draw(&mut scr))).is_ok();
@@ -755,7 +792,7 @@ fn main() -> Result<(), String> {
             }
             None => game.draw(&mut scr),
         }
-        if menu.is_none() {
+        if menu.is_none() && !lobby_up {
             online::draw_chat(&mut scr, &game, &chat_line);
         }
         if let (Some(m), false) = (inp.mouse, handheld) {

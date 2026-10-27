@@ -835,6 +835,15 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         shot(&mut m, scr, "menu_online_host");
         m.ask_trust("192.168.1.20".into(), [0x4c; 32]);
         shot(&mut m, scr, "menu_online_trust");
+        // The login server's screens (lobby_ui.rs).
+        for (k, which) in ["address", "login", "heroes", "games"].iter().enumerate() {
+            let mut l = crate::lobby_ui::LobbyUi::new("192.168.1.50".into());
+            if k > 0 {
+                l.debug_screen(which);
+            }
+            l.draw(scr, &g.art);
+            write_bmp(&format!("{d}/server_{which}.bmp"), scr).expect("write snapshot");
+        }
     }
     // The class select screen, then the vampire at work in the crypt.
     {

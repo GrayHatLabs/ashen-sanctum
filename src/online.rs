@@ -985,6 +985,8 @@ gold=9
 pub enum Session {
     Host(Hosting),
     Join { joined: Joined, home: Box<Game> },
+    /// In a game on a login server (lobby_ui.rs): the hero is the server's, nothing to save here.
+    Server { joined: Joined },
 }
 
 /// Online play asked for on the command line: `--host [port]`, `--join ADDRESS`, `--password WORD`,
@@ -1137,7 +1139,7 @@ pub fn chat_keys(line: &mut Option<String>, session: &mut Option<Session>, game:
                 *line = None;
                 match session {
                     Some(Session::Host(h)) => h.say_all(game, &said),
-                    Some(Session::Join { joined, .. }) => {
+                    Some(Session::Join { joined, .. }) | Some(Session::Server { joined }) => {
                         if crate::net::proto::clean_chat(&said).is_some() {
                             let _ = joined.link.send(&ToHost::Chat(said));
                         }
@@ -1184,7 +1186,7 @@ pub fn step(session: &mut Option<Session>, game: &mut Game, inp: &Input) {
             game.update(inp);
             h.after(game);
         }
-        Some(Session::Join { joined, .. }) => {
+        Some(Session::Join { joined, .. }) | Some(Session::Server { joined }) => {
             // Esc leaves the game (out of conversations and the bag: there it closes them). Anything the host sent
             // that the game can't take ends the session, not the game.
             let open = game.dialog.is_some() || game.inv.is_some() || game.tree.is_some();
@@ -1202,7 +1204,7 @@ pub fn step(session: &mut Option<Session>, game: &mut Game, inp: &Input) {
 
 /// Is the game on screen yours to save? (Not while joined: that's the host's world.)
 pub fn may_save(session: &Option<Session>) -> bool {
-    !matches!(session, Some(Session::Join { .. }))
+    !matches!(session, Some(Session::Join { .. }) | Some(Session::Server { .. }))
 }
 
 /// Ends the session. Joined: back to your own game, with your hero as the host last had it (your save is
@@ -1231,6 +1233,12 @@ pub fn leave(session: &mut Option<Session>, game: &mut Game, why: &str) {
                 }
             }
             *game = home;
+            game.say(why.to_string());
+        }
+        Some(Session::Server { joined }) => {
+            // The server keeps the hero; back to a blank world (the server's screens come back up).
+            drop(joined);
+            *game = Game::new(game.world_seed(), game.view_h);
             game.say(why.to_string());
         }
         Some(Session::Host(h)) => drop(h),

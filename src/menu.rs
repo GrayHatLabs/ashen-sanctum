@@ -42,6 +42,8 @@ pub enum MenuOut {
     Trust(String, [u8; 32]),
     /// Host or join (once a hero is picked).
     Online(crate::online::Ask),
+    /// Play on a login server (lobby_ui.rs).
+    Server,
 }
 
 /// The classes on the create screen: (name, portrait, two lines, colour, playable, in-game sheet).
@@ -135,7 +137,7 @@ impl Menu {
     fn items(&self) -> usize {
         match self.stage {
             Stage::Title => 4,
-            Stage::Online => 3,
+            Stage::Online => 4,
             Stage::NetSetup => 4,
             Stage::Trust => 2,
             Stage::Heroes => self.heroes.len() + 3,
@@ -243,7 +245,10 @@ impl Menu {
                 }
             }
             Stage::Online => {
-                if back || (confirm && self.sel == 2) {
+                if confirm && self.sel == 2 {
+                    return Some(MenuOut::Server);
+                }
+                if back || (confirm && self.sel == 3) {
                     self.go(Stage::Title);
                     self.sel = 1;
                     return None;
@@ -706,14 +711,15 @@ impl Menu {
             Stage::Online => {
                 self.button(scr, "HOST A GAME", w / 2, 86, 220, 0, true);
                 self.button(scr, "JOIN A GAME", w / 2, 112, 220, 1, true);
-                self.button(scr, "BACK", w / 2, 138, 220, 2, true);
+                self.button(scr, "USE A SERVER", w / 2, 138, 220, 2, true);
+                self.button(scr, "BACK", w / 2, 164, 220, 3, true);
                 let lines = [
                     "UP TO EIGHT HEROES IN ONE WORLD. THE HOST'S WORLD IS THE ONE YOU PLAY IN.",
                     "YOUR HERO COMES WITH YOU, AND KEEPS WHAT IT FINDS AND LEARNS THERE.",
                     "EVERYONE GETS THEIR OWN LOOT. EVERYTHING IS ENCRYPTED.",
                 ];
                 for (k, l) in lines.iter().enumerate() {
-                    scr.text(l, w / 2, 176 + k as i32 * 14, rgb(0xa09080), Align::Center, 1);
+                    scr.text(l, w / 2, 202 + k as i32 * 14, rgb(0xa09080), Align::Center, 1);
                 }
             }
             Stage::NetSetup => {
