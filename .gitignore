@@ -3,3 +3,6 @@
 /snapshots/
 log.txt
 /music/
+
+# The login server's settings (invite code)
+docker/.env

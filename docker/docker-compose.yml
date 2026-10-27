@@ -1,0 +1,43 @@
+# The Ashen Sanctum login server. From the repository's top folder:
+#   docker compose -f docker/docker-compose.yml up -d --build
+# Settings go in docker/.env (copy docker/.env.example). See docker/README.md.
+name: ashen-sanctum
+
+services:
+  ashen-server:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: ashen-sanctum-server
+    container_name: ashen-server
+    restart: unless-stopped
+    ports:
+      - "${ASHEN_PORT:-4747}:4747"
+    volumes:
+      # Accounts, heroes and the server's key (back this up).
+      - ashen-data:/data
+    environment:
+      ASHEN_SERVER_NAME: "${ASHEN_SERVER_NAME:-ASHEN SANCTUM}"
+      # Set this to require an invite code to register (recommended).
+      ASHEN_INVITE: "${ASHEN_INVITE:-}"
+      ASHEN_MAX_GAMES: "${ASHEN_MAX_GAMES:-6}"
+      ASHEN_MAX_PLAYERS: "${ASHEN_MAX_PLAYERS:-32}"
+    # Locked down: no root, nothing writable but /data and a small /tmp, no extra privileges.
+    user: "10001:10001"
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 1g
+    pids_limit: 256
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  ashen-data:

@@ -3,3 +3,4 @@
 *.gptk text eol=lf
 *.bin binary
 android/gradlew text eol=lf
+docker/* text eol=lf

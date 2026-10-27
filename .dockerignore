@@ -1,0 +1,12 @@
+target
+dist
+snapshots
+snapshots_tall
+android
+music
+port
+tools
+docs
+.git
+docker/.env
+*.bak
