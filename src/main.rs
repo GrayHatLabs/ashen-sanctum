@@ -17,6 +17,7 @@ mod liquid;
 mod party;
 mod net;
 mod online;
+mod server;
 mod menu;
 mod mobs;
 mod music;

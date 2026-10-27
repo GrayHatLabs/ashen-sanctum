@@ -22,6 +22,8 @@ rustls = { version = "0.23", default-features = false, features = ["ring", "std"
 rcgen = { version = "0.13", default-features = false, features = ["ring", "crypto"] }
 sha2 = "0.10"
 postcard = { version = "1", default-features = false, features = ["use-std"] }
+# The login server (src/server): passwords hashed with Argon2id.
+argon2 = { version = "0.5", default-features = false, features = ["alloc", "password-hash"] }
 
 [build-dependencies]
 winresource = "0.1"
