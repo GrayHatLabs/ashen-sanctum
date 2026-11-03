@@ -11,7 +11,7 @@ The files for the page are in this folder:
 |---|---|
 | **Title** | `Ashen Sanctum` |
 | **Project URL** | `https://grayhatlabs.itch.io/ashen-sanctum` |
-| **Short description or tagline** | `A gothic isometric action RPG in the spirit of Diablo II: eight heroes, seven acts, online co-op for up to 8 players.` (116 characters; the limit is 120) |
+| **Short description or tagline** | `A gothic isometric action RPG in the spirit of Diablo II: eight heroes, seven acts, online co-op for up to 8 players.` (117 characters; the limit is 120) |
 | **Classification** | Games |
 | **Kind of project** | Downloadable |
 | **Release status** | Released (or *In development* if you'd rather) |
