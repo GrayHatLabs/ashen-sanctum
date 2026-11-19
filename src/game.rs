@@ -882,6 +882,9 @@ pub struct Game {
     pub(crate) lead_seq: u32,
     /// Joined: the time to the host and back, in milliseconds (online.rs measures it; drawn by the minimap).
     pub(crate) net_ping: Option<u32>,
+    /// An item changed hands between heroes: send everyone's hero copy now (not at the next sync), so leaving
+    /// straight after can't keep a given item too.
+    pub(crate) sync_heroes: bool,
     pub(crate) cur_hero: usize,
     pub(crate) party_level: LevelId,
     pub(crate) prev: Input,
@@ -1031,6 +1034,7 @@ impl Game {
             net_ack: 0,
             lead_seq: 0,
             net_ping: None,
+            sync_heroes: false,
             cur_hero: 0,
             party_level: LevelId::Overworld,
             prev: Input::default(),

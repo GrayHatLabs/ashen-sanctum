@@ -353,7 +353,7 @@ impl Room {
                 self.leave(i, "LOST CONNECTION");
             }
         }
-        if self.g.tick % SAVE_EVERY == 0 {
+        if self.g.tick % SAVE_EVERY == 0 || std::mem::take(&mut self.g.sync_heroes) {
             for i in 0..self.peers.len() {
                 self.save(i);
             }

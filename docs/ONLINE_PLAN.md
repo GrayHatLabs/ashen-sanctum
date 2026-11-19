@@ -264,3 +264,7 @@ New dependencies: `bincode` or `postcard` (phase 2); `argon2`, `rustls` (phase 3
 - **Login server**: one session per account still, but a new login now stops the older one (and waits up
   to 3 s for it to go) instead of being refused, so a dropped player gets straight back in. `Joined`
   replies say which game, for rejoining.
+- **Giving**: GIVE (Q / L1) in the bag hands the picked bag item to the nearest standing hero within 5 tiles,
+  if their bag has room. One-sided (the receiver only gains), so there's nothing to accept and no trade to
+  scam. Everyone's hero copy is sent at once after a give, so leaving straight after can't keep the item too.
+  A full two-sided trade window can come later if wanted.

@@ -47,6 +47,8 @@ pub const BAG_SORT: u8 = 3;
 pub const BAG_JEWEL: u8 = 4;
 /// Closed the bag (leaves the trader or jeweler).
 pub const BAG_CLOSE: u8 = 5;
+/// Hands a bag item to the nearest other hero (who only gains: nothing to accept).
+pub const BAG_GIVE: u8 = 6;
 pub const CELL_SHOP: u8 = 3;
 pub const CELL_WORN: u8 = 0;
 pub const CELL_BAG: u8 = 1;

@@ -1440,6 +1440,19 @@ fn staged(d: &str, h: i32, scr: &mut Screen) {
         crate::online::draw_chat(scr, &g, &Some("ON MY WAY".into()));
         write_bmp(&format!("{d}/coop_chat.bmp"), scr).expect("write snapshot");
         g.chat_log.clear();
+        // Giving (inventory.rs): the bag open beside an ally, GIVE lit.
+        let keep_bag = g.p.gear.bag.clone();
+        let mut grng = crate::rng::Rng::new(11);
+        g.p.gear.bag[0] = Some(crate::items::roll(6, crate::items::Rarity::Rare, &mut grng));
+        g.update(&Input { inv: true, ..Input::default() });
+        if let Some(ui) = g.inv.as_mut() {
+            ui.sel = crate::inventory::Cell::Bag(0);
+        }
+        save(&mut g, scr, "coop_give");
+        g.update(&Input { potion_hp: true, ..Input::default() });
+        save(&mut g, scr, "coop_gave");
+        g.inv = None;
+        g.p.gear.bag = keep_bag;
         g.allies.clear();
         // Water and lava (liquid.rs): stand by the first pool found.
         for (id, name) in [

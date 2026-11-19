@@ -25,6 +25,8 @@ pub enum InvAct {
     Store,
     /// Sort the bag (R1, or the button).
     Sort,
+    /// Hand the item to the nearest other hero in the party.
+    Give,
     Close,
 }
 
@@ -319,6 +321,9 @@ impl Game {
         if inp.cycle {
             act = Some(InvAct::Sort);
         }
+        if inp.potion_hp && !ui.shop && !ui.jewel && matches!(ui.sel, Cell::Bag(_)) {
+            act = Some(InvAct::Give);
+        }
         if inp.inv || inp.cancel || inp.back || inp.skills {
             act = Some(InvAct::Close);
         }
@@ -333,7 +338,7 @@ impl Game {
 
     /// Joined (online.rs): moving about the bag is done here; anything that changes it goes to the host.
     fn inv_remote(&mut self, act: Option<InvAct>, sel: Cell, holding: Option<usize>) {
-        use crate::net::proto::{cell_out, ToHost, BAG_CLOSE, BAG_JEWEL, BAG_SORT, BAG_STORE, BAG_TOSS, BAG_USE};
+        use crate::net::proto::{cell_out, ToHost, BAG_CLOSE, BAG_GIVE, BAG_JEWEL, BAG_SORT, BAG_STORE, BAG_TOSS, BAG_USE};
         let send = |g: &mut Game, m: ToHost| {
             if let Some(q) = g.remote.as_mut() {
                 q.push(m);
@@ -373,6 +378,7 @@ impl Game {
                     InvAct::Use => BAG_USE,
                     InvAct::Toss => BAG_TOSS,
                     InvAct::Store => BAG_STORE,
+                    InvAct::Give => BAG_GIVE,
                     _ => BAG_SORT,
                 };
                 match cell_out(sel) {
@@ -439,12 +445,50 @@ impl Game {
             }
             Some(InvAct::Toss) => self.toss(sel),
             Some(InvAct::Store) => self.store(sel),
+            Some(InvAct::Give) => self.give(sel),
             Some(InvAct::Close) => self.inv = None,
             Some(InvAct::Sort) => {
                 self.p.gear.sort_bag();
                 self.sfx.push(Sfx::Pickup);
             }
             None => {}
+        }
+    }
+
+    /// The nearest other hero standing up, within 5 tiles (an index into `allies`).
+    pub(crate) fn give_to(&self) -> Option<usize> {
+        self.allies
+            .iter()
+            .enumerate()
+            .filter(|(_, a)| matches!(a.st.state, crate::game::State::Playing))
+            .map(|(i, a)| (i, (a.st.p.x - self.p.x).powi(2) + (a.st.p.y - self.p.y).powi(2)))
+            .filter(|&(_, d)| d <= 25.0)
+            .min_by(|a, b| a.1.total_cmp(&b.1))
+            .map(|(i, _)| i)
+    }
+
+    /// Hands a bag item to the nearest other hero: straight into their bag, if it has room.
+    fn give(&mut self, c: Cell) {
+        let Cell::Bag(i) = c else { return };
+        if self.p.gear.bag.get(i).map_or(true, |s| s.is_none()) {
+            return;
+        }
+        let Some(k) = self.give_to() else {
+            return self.say("NO ONE NEAR ENOUGH TO GIVE IT TO".into());
+        };
+        let Some(it) = self.p.gear.bag[i].take() else { return };
+        let (to, what) = (self.allies[k].st.hero_name.clone(), it.name.clone());
+        match self.allies[k].st.p.gear.add(it) {
+            Ok(_) => {
+                self.sfx.push(Sfx::Pickup);
+                self.save_due = true;
+                self.sync_heroes = true;
+                self.say(format!("GAVE {} TO {}", what.to_uppercase(), to.to_uppercase()));
+            }
+            Err(it) => {
+                self.p.gear.bag[i] = Some(it);
+                self.say(format!("{}'S BAG IS FULL", to.to_uppercase()));
+            }
         }
     }
 
@@ -716,6 +760,9 @@ impl Game {
         let mut buttons: Vec<(&str, InvAct, bool)> = vec![(use_label, InvAct::Use, has), (toss_label, InvAct::Toss, has)];
         if in_town && !shop && !jewel && !matches!(sel, Cell::Stash(_)) {
             buttons.push(("STASH (Y/E)", InvAct::Store, has));
+        }
+        if !shop && !jewel && matches!(sel, Cell::Bag(_)) && !self.allies.is_empty() {
+            buttons.push(("GIVE (Q/L1)", InvAct::Give, has && self.give_to().is_some()));
         }
         buttons.push(("SORT (R1)", InvAct::Sort, true));
         buttons.push(("CLOSE (I/START)", InvAct::Close, true));

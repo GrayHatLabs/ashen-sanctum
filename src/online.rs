@@ -215,7 +215,7 @@ impl Hosting {
                 }
             }
         }
-        if g.tick % SAVE_EVERY == 0 {
+        if g.tick % SAVE_EVERY == 0 || std::mem::take(&mut g.sync_heroes) {
             for (k, p) in self.peers.iter().enumerate() {
                 let text = g.as_hero(k, |g| crate::save::to_text(g));
                 self.host.send(p.0, &ToClient::Hero(text));
@@ -651,6 +651,12 @@ impl Game {
                 None => false,
             },
             ToHost::Bag { op, cell } => match (cell_in(cell, shelf), op) {
+                (Some(c @ Cell::Bag(_)), BAG_GIVE) if shelf.is_none() => {
+                    self.inv = Some(InvUi::at(c));
+                    self.inv_apply(Some(InvAct::Give), c, false, None);
+                    true
+                }
+                (Some(_), BAG_GIVE) => true,
                 (Some(c), BAG_USE | BAG_TOSS | BAG_STORE | BAG_SORT) => {
                     // The stash is only there in town.
                     if (op == BAG_STORE || matches!(c, Cell::Stash(_))) && !in_town {
@@ -809,6 +815,36 @@ impl Game {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_joiner_gives_an_item_to_the_hero_beside_them() {
+        use crate::net::proto::*;
+        let mut g = Game::new(7, crate::gfx::SH_WIDE);
+        g.set_class(crate::skills::Class::Sorceress);
+        let k = g.add_ally(crate::skills::Class::Valkyrie, "BRYNJA");
+        g.p.gear.bag = vec![None; crate::items::BAG];
+        g.allies[k].st.p.gear.bag = vec![None; crate::items::BAG];
+        g.allies[k].st.p.gear.bag[2] = Some(crate::items::potion_item(true));
+        // Beside the host: it moves into the host's bag, and everyone's copy is sent at once.
+        assert!(g.as_hero(k, |g| g.remote_act_ok(&ToHost::Bag { op: BAG_GIVE, cell: (CELL_BAG, 2) })));
+        assert!(g.allies[k].st.p.gear.bag[2].is_none(), "given away");
+        assert_eq!(g.p.gear.bag.iter().flatten().count(), 1, "the host has it");
+        assert!(g.sync_heroes);
+        // Too far: it stays put.
+        g.sync_heroes = false;
+        g.allies[k].st.p.gear.bag[2] = Some(crate::items::potion_item(false));
+        g.allies[k].st.p.x = g.p.x + 20.0;
+        assert!(g.as_hero(k, |g| g.remote_act_ok(&ToHost::Bag { op: BAG_GIVE, cell: (CELL_BAG, 2) })));
+        assert!(g.allies[k].st.p.gear.bag[2].is_some() && !g.sync_heroes, "no one near");
+        // A full bag: it stays put too.
+        g.allies[k].st.p.x = g.p.x + 1.0;
+        let full = crate::items::potion_item(true);
+        g.p.gear.bag = vec![Some(full); crate::items::BAG];
+        assert!(g.as_hero(k, |g| g.remote_act_ok(&ToHost::Bag { op: BAG_GIVE, cell: (CELL_BAG, 2) })));
+        assert!(g.allies[k].st.p.gear.bag[2].is_some(), "the host's bag was full");
+        // Only bag items (not worn gear or the stash).
+        assert!(g.as_hero(k, |g| g.remote_act_ok(&ToHost::Bag { op: BAG_GIVE, cell: (CELL_WORN, 0) })));
+    }
 
     #[test]
     fn a_joiners_bag_and_skill_actions_are_checked_then_done() {
