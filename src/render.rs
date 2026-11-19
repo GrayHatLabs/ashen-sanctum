@@ -1691,6 +1691,52 @@ impl Game {
     /// D2-style automap overlay: explored walls projected isometrically, centred on the player.
     /// The minimap: a small window on the map around you, top right (explored ground, roads, walls, the ways in and
     /// out, the waypoint, people, bosses, you).
+    /// The party (online): each other hero's name, level, life and mana down the left, as in Diablo II. A hero
+    /// that's down is greyed; one off the screen has an arrow pointing their way.
+    fn draw_party(&self, scr: &mut Screen) {
+        if self.allies.is_empty() {
+            return;
+        }
+        let (fw, fh) = (128, 22);
+        let top = 50;
+        for (k, a) in self.allies.iter().enumerate().take(7) {
+            let p = &a.st.p;
+            let y = top + k as i32 * (fh + 3);
+            let down = !matches!(a.st.state, crate::game::State::Playing | crate::game::State::Victory(_));
+            scr.blend(4, y, fw, fh, BLACK, 0.6);
+            let class = crate::skills::ALL_CLASSES.iter().position(|c| *c == p.skills.class).unwrap_or(0);
+            let col = if down { rgb(0x707070) } else { rgb(crate::menu::CLASSES[class].4) };
+            let mut name = a.st.hero_name.clone();
+            name.truncate(12);
+            scr.text(&name, 8, y + 3, col, Align::Left, 1);
+            scr.text(&format!("{}", p.clvl), fw, y + 3, if down { rgb(0x707070) } else { rgb(0xc0b090) }, Align::Right, 1);
+            // Life, and the class's power under it.
+            let bw = fw - 8;
+            let life = if p.max_hp > 0.0 { (p.hp / p.max_hp).clamp(0.0, 1.0) } else { 0.0 };
+            let mana = if p.max_mana > 0.0 { (p.mana / p.max_mana).clamp(0.0, 1.0) } else { 0.0 };
+            scr.fill(8, y + 13, bw, 4, rgb(0x200808));
+            scr.fill(8, y + 13, (bw as f32 * life).ceil() as i32, 4, if down { rgb(0x505050) } else { rgb(0xc02020) });
+            scr.fill(8, y + 18, bw, 2, rgb(0x080818));
+            scr.fill(8, y + 18, (bw as f32 * mana).ceil() as i32, 2, rgb(0x3060d0));
+            if down {
+                scr.text("DOWN", fw / 2 + 4, y + 3, rgb(0xe07050), Align::Center, 1);
+            }
+            // Off the screen: which way they are.
+            let (dx, dy) = (p.x - self.p.x, p.y - self.p.y);
+            if dx * dx + dy * dy > 14.0 * 14.0 {
+                let (sx, sy) = crate::iso::to_screen(dx, dy);
+                let l = (sx * sx + sy * sy).sqrt().max(0.01);
+                let (ux, uy) = (sx / l, sy / l);
+                let (cx, cy) = (fw + 12, y + fh / 2);
+                for t in 0..5 {
+                    let r = t as f32;
+                    scr.fill(cx + (ux * r) as i32, cy + (uy * r) as i32, 2, 2, col);
+                }
+                scr.fill(cx + (ux * 5.0) as i32 - 1, cy + (uy * 5.0) as i32 - 1, 3, 3, col);
+            }
+        }
+    }
+
     fn draw_minimap(&self, scr: &mut Screen) {
         let (bw, bh) = (104, 68);
         let (bx, by) = (scr.w - bw - 6, 40);
@@ -2659,6 +2705,12 @@ impl Game {
         if let Some((t, col)) = self.errand_log() {
             let y = if self.side_log().is_some() { 38 } else { 27 };
             scr.text(&t, 6, y, col, Align::Left, 1);
+        }
+        self.draw_party(scr);
+        // Joined: the time to the host and back, under the minimap.
+        if let Some(ms) = self.net_ping {
+            let col = if ms < 80 { rgb(0x80c080) } else if ms < 160 { rgb(0xd0c060) } else { rgb(0xe07050) };
+            scr.text(&format!("PING {ms}"), w - 8, 112, col, Align::Right, 1);
         }
         // In the Ember Wyrm's lair: how close it is to waking, and the sack.
         if let Some((noise, awake, sack)) = self.wyrm_hud() {

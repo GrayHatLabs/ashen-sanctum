@@ -880,6 +880,8 @@ pub struct Game {
     pub(crate) net_ack: u32,
     /// The login server: the leader's latest input (the leader is a player over the network there).
     pub(crate) lead_seq: u32,
+    /// Joined: the time to the host and back, in milliseconds (online.rs measures it; drawn by the minimap).
+    pub(crate) net_ping: Option<u32>,
     pub(crate) cur_hero: usize,
     pub(crate) party_level: LevelId,
     pub(crate) prev: Input,
@@ -1028,6 +1030,7 @@ impl Game {
             hero_shop: None,
             net_ack: 0,
             lead_seq: 0,
+            net_ping: None,
             cur_hero: 0,
             party_level: LevelId::Overworld,
             prev: Input::default(),

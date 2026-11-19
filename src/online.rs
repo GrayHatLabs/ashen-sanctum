@@ -230,6 +230,12 @@ impl Drop for Hosting {
     }
 }
 
+/// How to get back into a game after the connection drops (given the latest copy of your hero, if any).
+pub type Reconnect = std::sync::Arc<dyn Fn(Option<String>) -> Result<Link, String> + Send + Sync>;
+
+/// How long to keep trying after a drop, and the waits between tries.
+const RETRY_WAITS: [u64; 7] = [0, 1, 2, 4, 6, 10, 15];
+
 /// Joined to someone else's game.
 pub struct Joined {
     pub link: Link,
@@ -248,13 +254,53 @@ pub struct Joined {
     pred: std::collections::VecDeque<(u32, f32, f32)>,
     own: Option<(f32, f32)>,
     corr: (f32, f32),
+    /// When each recent input went out (its number), for the ping.
+    sent: std::collections::VecDeque<(u32, std::time::Instant)>,
+    ping: Option<f32>,
     hero_goals: Vec<(f32, f32)>,
+    /// Getting back in after a drop: how, and the attempt under way (on its own thread).
+    reconnect: Option<Reconnect>,
+    retry: Option<std::thread::JoinHandle<Result<Link, String>>>,
+    /// When it last got back in: a few times a couple of minutes at most (two places playing one account
+    /// would otherwise push each other out for ever).
+    rejoins: Vec<std::time::Instant>,
 }
 
 impl Joined {
     pub fn new(link: Link) -> Joined {
         let me = link.you;
-        Joined { link, me, seq: 0, has_level: false, hero: None, mob_goals: Default::default(), hero_goals: vec![], levels_at: vec![], pred: Default::default(), own: None, corr: (0.0, 0.0) }
+        Joined { link, me, seq: 0, has_level: false, hero: None, mob_goals: Default::default(), hero_goals: vec![], levels_at: vec![], pred: Default::default(), own: None, corr: (0.0, 0.0), sent: Default::default(), ping: None, reconnect: None, retry: None, rejoins: vec![] }
+    }
+
+    /// The same, able to get back in if the connection drops.
+    pub fn reconnecting(mut self, how: Reconnect) -> Joined {
+        self.reconnect = Some(how);
+        self
+    }
+
+    /// A drop (not a goodbye or a refusal): try to get back in, on another thread so the screen carries on.
+    fn start_retry(&mut self) -> bool {
+        let Some(how) = self.reconnect.clone() else { return false };
+        self.rejoins.retain(|t| t.elapsed() < std::time::Duration::from_secs(120));
+        if self.rejoins.len() >= 3 {
+            return false;
+        }
+        let hero = self.hero.clone();
+        self.retry = std::thread::Builder::new()
+            .name("rejoin".into())
+            .spawn(move || {
+                let mut last = String::from("LOST CONNECTION");
+                for w in RETRY_WAITS {
+                    std::thread::sleep(std::time::Duration::from_secs(w));
+                    match how(hero.clone()) {
+                        Ok(l) => return Ok(l),
+                        Err(e) => last = e,
+                    }
+                }
+                Err(last)
+            })
+            .ok();
+        self.retry.is_some()
     }
 
     /// One frame: take in what the host sent, show it, and send your controls. Returns why it ended, if it did.
@@ -323,8 +369,20 @@ impl Joined {
                             }
                         }
                     }
-                    // Your own hero: where the host has it, plus the steps you've taken that it hasn't had yet.
+                    // The ping: from sending the input the host just said it had, to now (smoothed).
                     let ack = g.net_ack;
+                    while let Some(&(s, t)) = self.sent.front() {
+                        if s > ack {
+                            break;
+                        }
+                        self.sent.pop_front();
+                        if s == ack {
+                            let ms = t.elapsed().as_secs_f32() * 1000.0;
+                            self.ping = Some(self.ping.map_or(ms, |p| p * 0.8 + ms * 0.2));
+                            g.net_ping = self.ping.map(|p| p.round() as u32);
+                        }
+                    }
+                    // Your own hero: where the host has it, plus the steps you've taken that it hasn't had yet.
                     while self.pred.front().map_or(false, |&(s, ..)| s <= ack) {
                         self.pred.pop_front();
                     }
@@ -367,7 +425,39 @@ impl Joined {
                 _ => {}
             }
         }
+        // Getting back in after a drop: the world waits, the screen says so.
+        if let Some(h) = self.retry.take() {
+            if !h.is_finished() {
+                self.retry = Some(h);
+                if g.message.as_ref().map_or(true, |m| m.0 != "CONNECTION LOST: RECONNECTING...") {
+                    g.say("CONNECTION LOST: RECONNECTING...".into());
+                }
+                g.tick = g.tick.wrapping_add(1);
+                g.client_frame();
+                return None;
+            }
+            match h.join() {
+                Ok(Ok(link)) => {
+                    self.me = link.you;
+                    self.link = link;
+                    self.has_level = false;
+                    (self.own, self.corr) = (None, (0.0, 0.0));
+                    self.pred.clear();
+                    self.sent.clear();
+                    self.rejoins.push(std::time::Instant::now());
+                    g.say("RECONNECTED".into());
+                }
+                Ok(Err(why)) => return Some(format!("COULDN'T RECONNECT: {why}")),
+                Err(_) => return Some("LOST CONNECTION".into()),
+            }
+        }
         if let Some(why) = self.link.ended() {
+            // A drop (the connection just ended: not a goodbye from the host, which comes as a message): try to
+            // get back in.
+            let dropped = matches!(why.as_str(), "LOST CONNECTION" | "THE HOST STOPPED ANSWERING" | "DISCONNECTED");
+            if dropped && self.start_retry() {
+                return None;
+            }
             return Some(why);
         }
         // The bag and the skill tree open here; what they change is sent to the host.
@@ -411,6 +501,10 @@ impl Joined {
         self.seq = self.seq.wrapping_add(1);
         let target = inp.mouse.map(|m| g.mouse_world(m));
         let _ = self.link.send(&ToHost::Input(NetInput::from_input(self.seq, inp, target)));
+        self.sent.push_back((self.seq, std::time::Instant::now()));
+        while self.sent.len() > 240 {
+            self.sent.pop_front();
+        }
         // Your own step, taken at once (keys or stick: the host walks the same way). Clicked walks follow the
         // host's path, so they aren't predicted.
         if let Some((mut x, mut y)) = self.own {
@@ -1052,10 +1146,18 @@ pub fn start(ask: &mut Ask, game: &mut Game) -> Option<Session> {
         match crate::net::client::join(&addr, &dir, &game.hero_name, &hero, &ask.password) {
             Ok(link) => {
                 let host = link.host_name.clone();
+                // Back in after a drop: the same address, name and password, with the hero as the host last had it.
+                let (addr2, dir2, name2, pw2, hero2) = (addr.clone(), dir.clone(), game.hero_name.clone(), ask.password.clone(), hero.clone());
+                let again: Reconnect = std::sync::Arc::new(move |latest: Option<String>| {
+                    crate::net::client::join(&addr2, &dir2, &name2, latest.as_deref().unwrap_or(&hero2), &pw2).map_err(|e| match e {
+                        crate::net::client::JoinError::Refused(w) | crate::net::client::JoinError::Unreachable(w) => w,
+                        _ => "THE HOST'S KEY CHANGED".into(),
+                    })
+                });
                 let mirror = Game::new(game.world_seed(), game.view_h);
                 let home = std::mem::replace(game, mirror);
                 game.say(format!("JOINED {host}'S GAME"));
-                return Some(Session::Join { joined: Joined::new(link), home: Box::new(home) });
+                return Some(Session::Join { joined: Joined::new(link).reconnecting(again), home: Box::new(home) });
             }
             Err(crate::net::client::JoinError::Unknown(fp)) if tries == 1 && ask.trust.as_deref() == Some(&crate::net::tls::show(&fp).replace(' ', "")) => {
                 let _ = crate::net::tls::trust(&dir, &crate::net::tls::host_key(&addr), &fp);

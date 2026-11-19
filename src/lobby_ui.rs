@@ -26,8 +26,8 @@ enum Screen_ {
 pub enum LobbyOut {
     /// Back to the title.
     Back,
-    /// In a game: play it.
-    Play(Link),
+    /// In a game: play it (and how to get back in if the connection drops).
+    Play(Link, crate::online::Reconnect),
 }
 
 pub struct LobbyUi {
@@ -227,8 +227,25 @@ impl LobbyUi {
 
     fn enter(&mut self, m: ToServer) -> Option<LobbyOut> {
         let lobby = self.lobby.take()?;
+        let (hero, password) = match &m {
+            ToServer::JoinGame { hero, password, .. } | ToServer::CreateGame { hero, password, .. } => (*hero, password.clone()),
+            _ => (0, String::new()),
+        };
         match lobby.enter(&m) {
-            Ok(link) => Some(LobbyOut::Play(link)),
+            Ok((link, game)) => {
+                // Back into the same game, logging in again (the server stops the dropped session).
+                let (addr, name, pw) = (self.addr.clone(), self.name.clone(), self.password.clone());
+                let again: crate::online::Reconnect = std::sync::Arc::new(move |_| {
+                    let mut l = crate::net::client::lobby(&addr, &crate::save::dir()).map_err(|e| format!("{e:?}"))?;
+                    match l.ask(&ToServer::Login { name: name.clone(), password: pw.clone() }) {
+                        Ok(FromServer::LoggedIn { .. }) => {}
+                        Ok(FromServer::Refused(w)) => return Err(w),
+                        _ => return Err("COULDN'T LOG IN".into()),
+                    }
+                    l.enter(&ToServer::JoinGame { game, password: password.clone(), hero }).map(|(link, _)| link).map_err(|e| e.1)
+                });
+                Some(LobbyOut::Play(link, again))
+            }
             Err((back, why)) => {
                 self.say(&why);
                 self.lobby = back;

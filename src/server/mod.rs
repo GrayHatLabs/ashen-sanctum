@@ -76,8 +76,9 @@ struct Shared {
     files: HeroFiles,
     /// Heroes in play or being changed (account, slot): one place at a time.
     busy: Arc<Mutex<HashSet<(u64, u8)>>>,
-    /// Accounts logged in now: one session each.
-    online: Mutex<HashSet<u64>>,
+    /// Accounts logged in now, and the stop switch of each one's connection: one session each (a new login
+    /// stops the old one: a player whose connection dropped gets straight back in).
+    online: Mutex<HashMap<u64, Arc<AtomicBool>>>,
     rooms: Mutex<Vec<RoomHandle>>,
     next_room: AtomicU32,
     conns: Mutex<HashMap<IpAddr, usize>>,
@@ -132,7 +133,7 @@ pub fn serve(cfg: Config, ready: Option<SyncSender<(u16, [u8; 32])>>) -> std::io
         accounts: Arc::new(Mutex::new(accounts)),
         files,
         busy: Arc::new(Mutex::new(HashSet::new())),
-        online: Mutex::new(HashSet::new()),
+        online: Mutex::new(HashMap::new()),
         rooms: Mutex::new(vec![]),
         next_room: AtomicU32::new(1),
         conns: Mutex::new(HashMap::new()),
@@ -164,12 +165,12 @@ pub fn serve(cfg: Config, ready: Option<SyncSender<(u16, [u8; 32])>>) -> std::io
         let (cfg, shared2) = (tls_cfg.clone(), shared.clone());
         let ip = addr.ip();
         let spawned = std::thread::Builder::new().name(format!("conn-{peer}")).spawn(move || {
-            let mut guard = Guard { shared: &shared2, ip, unauth: true, account: None, game: None, peer };
+            let mut guard = Guard { shared: &shared2, ip, unauth: true, account: None, game: None, peer, stop: Arc::new(AtomicBool::new(false)) };
             // Whatever happens in there (a panic included), the guard gives back what the connection held.
             let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| connection(peer, tcp, addr, cfg, &mut guard)));
         });
         if spawned.is_err() {
-            let mut g = Guard { shared: &shared, ip, unauth: true, account: None, game: None, peer };
+            let mut g = Guard { shared: &shared, ip, unauth: true, account: None, game: None, peer, stop: Arc::new(AtomicBool::new(false)) };
             g.account = None;
         }
     }
@@ -186,6 +187,8 @@ struct Guard<'a> {
     /// In a room: its events channel, to say the player's gone.
     game: Option<mpsc::Sender<RoomEvent>>,
     peer: u32,
+    /// Stops this connection (a newer login to the same account).
+    stop: Arc<AtomicBool>,
 }
 
 impl Guard<'_> {
@@ -209,7 +212,11 @@ impl Drop for Guard<'_> {
             *u = u.saturating_sub(1);
         }
         if let Some(id) = self.account {
-            lock(&self.shared.online).remove(&id);
+            // Only this connection's own entry (a newer login may have taken the account's place already).
+            let mut on = lock(&self.shared.online);
+            if on.get(&id).map_or(false, |s| Arc::ptr_eq(s, &self.stop)) {
+                on.remove(&id);
+            }
         }
         let mut total = lock(&self.shared.total);
         *total = total.saturating_sub(1);
@@ -268,7 +275,7 @@ fn connection(peer: u32, tcp: TcpStream, addr: SocketAddr, cfg: Arc<rustls::Serv
     let mut stage = Stage::Start;
     let mut strikes = 0u32;
     let mut tally = Tally { bad_logins: 0, bad_registers: 0, bad_game_pw: 0, changes: vec![], req: (REQ_BURST, Instant::now()) };
-    let stop = AtomicBool::new(false);
+    let stop = guard.stop.clone();
     let ended = conn::pump(&mut tls, LOBBY, &out_rx, &stop, |f| {
         // Deadlines: the hello, then logging in (pinging doesn't put it off).
         if matches!(stage, Stage::Start) && started.elapsed() > HELLO_WITHIN {
@@ -350,9 +357,26 @@ fn unreserve(shared: &Shared, id: u64, slot: u8) {
     lock(&shared.busy).remove(&(id, slot));
 }
 
-/// A session for this account (one at a time). False if it's already on.
-fn take_session(shared: &Shared, id: u64) -> bool {
-    lock(&shared.online).insert(id)
+/// A session for this account: one at a time, so an older one (a dropped connection, or another place) is
+/// stopped first, and given up to 3 s to go. False if it wouldn't.
+fn take_session(shared: &Shared, id: u64, mine: &Arc<AtomicBool>) -> bool {
+    if let Some(old) = lock(&shared.online).get(&id) {
+        old.store(true, Ordering::Relaxed);
+    }
+    let until = Instant::now() + Duration::from_secs(3);
+    loop {
+        {
+            let mut on = lock(&shared.online);
+            if !on.contains_key(&id) {
+                on.insert(id, mine.clone());
+                return true;
+            }
+        }
+        if Instant::now() > until {
+            return false;
+        }
+        std::thread::sleep(Duration::from_millis(20));
+    }
 }
 
 /// One lobby message. False ends the connection.
@@ -379,7 +403,7 @@ fn lobby(m: ToServer, peer: u32, ip: IpAddr, stage: &mut Stage, tally: &mut Tall
         }
         (_, Stage::Start) => false,
         (ToServer::Register { name, password, invite }, Stage::Lobby { who: None }) => match accounts::register(&shared.accounts, &name, &password, &invite, ip) {
-            Ok(id) if take_session(shared, id) => {
+            Ok(id) if take_session(shared, id, &guard.stop.clone()) => {
                 log(&format!("new account {id} from {ip}"));
                 guard.logged_in(id);
                 *stage = Stage::Lobby { who: Some((id, name.clone())) };
@@ -398,7 +422,7 @@ fn lobby(m: ToServer, peer: u32, ip: IpAddr, stage: &mut Stage, tally: &mut Tall
         },
         (ToServer::Login { name, password }, Stage::Lobby { who: None }) => match accounts::login(&shared.accounts, &name, &password, ip) {
             Ok((id, name)) => {
-                if !take_session(shared, id) {
+                if !take_session(shared, id, &guard.stop.clone()) {
                     refuse("THAT ACCOUNT IS ALREADY PLAYING");
                     return true;
                 }
@@ -594,7 +618,7 @@ fn join(shared: &Shared, stage: &mut Stage, tally: &mut Tally, peer: u32, id: u6
     }
     match rrx.recv_timeout(Duration::from_secs(10)) {
         Ok(Ok((you, host_name))) => {
-            reply(&FromServer::Joined { you, host_name });
+            reply(&FromServer::Joined { you, host_name, game });
             *stage = Stage::Game { tx };
         }
         // The room gave the reservation back itself.
@@ -680,7 +704,7 @@ clvl=1
             accounts: Arc::new(Mutex::new(accounts)),
             files,
             busy: Arc::new(Mutex::new(HashSet::new())),
-            online: Mutex::new(HashSet::new()),
+            online: Mutex::new(HashMap::new()),
             rooms: Mutex::new(vec![]),
             next_room: AtomicU32::new(1),
             conns: Mutex::new(HashMap::new()),
@@ -699,9 +723,19 @@ clvl=1
         assert!(!reserve(&shared, 3, 0));
         unreserve(&shared, 3, 0);
         assert!(reserve(&shared, 3, 0), "free again once given back");
-        // And one session per account.
-        assert!(take_session(&shared, 3));
-        assert!(!take_session(&shared, 3));
+        // And one session per account: a second login stops the first (its connection then lets go).
+        let (first, second) = (Arc::new(AtomicBool::new(false)), Arc::new(AtomicBool::new(false)));
+        assert!(take_session(&shared, 3, &first));
+        let waiter = std::thread::scope(|s| {
+            let h = s.spawn(|| take_session(&shared, 3, &second));
+            // The first connection sees its stop switch and ends.
+            while !first.load(Ordering::Relaxed) {
+                std::thread::sleep(Duration::from_millis(5));
+            }
+            lock(&shared.online).remove(&3);
+            h.join().unwrap()
+        });
+        assert!(waiter && first.load(Ordering::Relaxed));
         let _ = std::fs::remove_dir_all(&data);
     }
 
@@ -726,11 +760,12 @@ clvl=1
         let mut a = player(&addr, &cd, fp, "Rowan", 5);
         let mut probe = lobby(&addr, &cd).unwrap();
         assert!(matches!(probe.ask(&ToServer::Login { name: "rowan".into(), password: "wrong password".into() }), Ok(FromServer::Refused(w)) if w == accounts::BAD_LOGIN));
-        // One session per account: Rowan is already on.
-        assert!(matches!(probe.ask(&ToServer::Login { name: "rowan".into(), password: "a long password".into() }), Ok(FromServer::Refused(w)) if w == "THAT ACCOUNT IS ALREADY PLAYING"));
-        drop(probe);
+        // One session per account: logging in again pushes out the older one (a dropped connection gets back in).
+        assert!(matches!(probe.ask(&ToServer::Login { name: "rowan".into(), password: "a long password".into() }), Ok(FromServer::LoggedIn { .. })));
+        assert!(a.ask(&ToServer::Heroes).is_err(), "the older session was closed");
+        let mut a = probe;
         // Rowan makes a game; Ada sees it and joins.
-        let link_a = a.enter(&ToServer::CreateGame { name: "CRYPT RUN".into(), password: "pw".into(), hero: 0 }).map_err(|e| e.1).expect("made a game");
+        let (link_a, made) = a.enter(&ToServer::CreateGame { name: "CRYPT RUN".into(), password: "pw".into(), hero: 0 }).map_err(|e| e.1).expect("made a game");
         assert_eq!(link_a.you, 0, "the maker leads");
         let mut b = player(&addr, &cd, fp, "Ada", 2);
         let games = match b.ask(&ToServer::Games) {
@@ -747,8 +782,9 @@ clvl=1
             }
             _ => panic!("a wrong game password must be refused"),
         };
-        let link_b = b.enter(&ToServer::JoinGame { game: gid, password: "pw".into(), hero: 0 }).map_err(|e| e.1).expect("joined");
+        let (link_b, joined) = b.enter(&ToServer::JoinGame { game: gid, password: "pw".into(), hero: 0 }).map_err(|e| e.1).expect("joined");
         assert_eq!(link_b.you, 1);
+        assert!(joined == gid && made == gid, "both told which game");
         // Both play: their worlds come from the server, and Ada's hero walks there.
         let (mut ga, mut gb) = (crate::game::Game::new(1, crate::gfx::SH_WIDE), crate::game::Game::new(2, crate::gfx::SH_WIDE));
         let (mut ja, mut jb) = (crate::online::Joined::new(link_a), crate::online::Joined::new(link_b));
@@ -769,6 +805,42 @@ clvl=1
         assert_eq!(gb.p.skills.class, crate::skills::ALL_CLASSES[2]);
         assert!(ga.allies.iter().any(|h| h.st.p.skills.class == crate::skills::ALL_CLASSES[2]), "Rowan sees Ada");
         assert!((gb.p.x - start.0).abs() + (gb.p.y - start.1).abs() > 1.0, "Ada walked");
+        // Ada's connection drops (her account logs in somewhere else, which pushes the game connection out);
+        // her game gets back in by itself, into the same game as the same hero.
+        let (addr2, cd2) = (addr.clone(), cd.clone());
+        let again: crate::online::Reconnect = std::sync::Arc::new(move |_| {
+            let mut l = lobby(&addr2, &cd2).map_err(|e| format!("{e:?}"))?;
+            match l.ask(&ToServer::Login { name: "ada".into(), password: "a long password".into() }) {
+                Ok(FromServer::LoggedIn { .. }) => {}
+                other => return Err(format!("{other:?}")),
+            }
+            l.enter(&ToServer::JoinGame { game: gid, password: "pw".into(), hero: 0 }).map(|(l, _)| l).map_err(|e| e.1)
+        });
+        jb = jb.reconnecting(again);
+        let mut other = lobby(&addr, &cd).unwrap();
+        assert!(matches!(other.ask(&ToServer::Login { name: "ada".into(), password: "a long password".into() }), Ok(FromServer::LoggedIn { .. })));
+        let mut said_lost = false;
+        let mut back = false;
+        for _ in 0..600 {
+            ja.frame(&mut ga, &idle);
+            assert_eq!(jb.frame(&mut gb, &idle), None, "Ada stays in the game");
+            let m = gb.message.as_ref().map(|m| m.0.clone()).unwrap_or_default();
+            said_lost |= m == "CONNECTION LOST: RECONNECTING...";
+            if said_lost && m == "RECONNECTED" {
+                back = true;
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(17));
+        }
+        assert!(said_lost && back, "Ada reconnected");
+        drop(other);
+        for _ in 0..60 {
+            ja.frame(&mut ga, &idle);
+            jb.frame(&mut gb, &idle);
+            std::thread::sleep(Duration::from_millis(17));
+        }
+        assert_eq!(gb.p.skills.class, crate::skills::ALL_CLASSES[2], "the same hero");
+        assert_eq!(ga.allies.len(), 1, "Rowan sees one Ada, not two");
         // Rowan leaves: Ada leads now.
         drop(ja);
         let mut led = false;

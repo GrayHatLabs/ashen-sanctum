@@ -441,7 +441,7 @@ pub enum FromServer {
     Heroes(Vec<ServerHero>),
     Games(Vec<GameInfo>),
     /// You're in that game (hero `you` of its party); from here on it's the game's messages (`ToClient`).
-    Joined { you: u8, host_name: String },
+    Joined { you: u8, host_name: String, game: u32 },
 }
 
 /// Game names: 1-24 of the game's printable characters.

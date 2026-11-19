@@ -242,13 +242,14 @@ impl Lobby {
         proto::encode(&proto::ToServer::Ping).map_or(false, |b| conn::Wire::send(&mut self.s, &b).is_ok())
     }
 
-    /// Joins (or makes) a game: from then on the connection is the game's. On a refusal the lobby comes back.
-    pub fn enter(mut self, m: &proto::ToServer) -> Result<Link, (Option<Lobby>, String)> {
+    /// Joins (or makes) a game: from then on the connection is the game's (and which game it is). On a refusal
+    /// the lobby comes back.
+    pub fn enter(mut self, m: &proto::ToServer) -> Result<(Link, u32), (Option<Lobby>, String)> {
         match self.ask(m) {
-            Ok(proto::FromServer::Joined { you, host_name }) if you <= 7 => {
+            Ok(proto::FromServer::Joined { you, host_name, game }) if you <= 7 => {
                 let host = proto::clean_name(&host_name).unwrap_or_else(|| "HOST".into());
                 let reader = std::mem::replace(&mut self.reader, conn::FrameReader::new(1));
-                start_link(self.s, reader, you, host).map_err(|_| (None, "LOST CONNECTION".to_string()))
+                start_link(self.s, reader, you, host).map(|l| (l, game)).map_err(|_| (None, "LOST CONNECTION".to_string()))
             }
             Ok(proto::FromServer::Refused(why)) => Err((Some(self), proto::clean_chat(&why).unwrap_or_default())),
             Ok(_) => Err((Some(self), "THE SERVER SENT NONSENSE".into())),

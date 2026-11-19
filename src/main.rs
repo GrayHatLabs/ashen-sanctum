@@ -605,11 +605,11 @@ fn main() -> Result<(), String> {
                         (lobby, lobby_up) = (None, false);
                         menu = Some(menu::Menu::new(save::list_heroes()));
                     }
-                    Some(lobby_ui::LobbyOut::Play(link)) => {
+                    Some(lobby_ui::LobbyOut::Play(link, again)) => {
                         lobby_up = false;
                         game = Game::new(seed, view_h);
                         game.say(format!("JOINED {}'S GAME", link.host_name));
-                        session = Some(online::Session::Server { joined: online::Joined::new(link) });
+                        session = Some(online::Session::Server { joined: online::Joined::new(link).reconnecting(again) });
                     }
                     None => {}
                 }

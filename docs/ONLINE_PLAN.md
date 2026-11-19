@@ -252,3 +252,15 @@ New dependencies: `bincode` or `postcard` (phase 2); `argon2`, `rustls` (phase 3
 5. **Login server hosting: decide later.** Build it to run anywhere in Docker on Linux (a cloud VPS or the TrueNAS).
 6. **Heroes:** hosted games among friends use your **normal saved heroes**; the login server uses
    **separate server-stored heroes** that can't be edited.
+
+### Online polish (2026-11-19)
+
+- **Party frames**: allies down the left side (name in class colour, level, life and mana, DOWN when fallen,
+  an arrow toward any ally more than 14 tiles away).
+- **Ping**: measured from sending an input to the host acknowledging it, smoothed; shown under the minimap.
+- **Reconnect**: when a joined game's connection drops (not a goodbye or a refusal), it keeps trying for about
+  40 s on its own thread, then carries on in the same game as the same hero. At most 3 rejoins every
+  2 minutes, so two places playing one account can't push each other out for ever.
+- **Login server**: one session per account still, but a new login now stops the older one (and waits up
+  to 3 s for it to go) instead of being refused, so a dropped player gets straight back in. `Joined`
+  replies say which game, for rejoining.
