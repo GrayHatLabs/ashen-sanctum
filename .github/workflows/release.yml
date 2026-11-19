@@ -80,11 +80,13 @@ jobs:
   macos:
     # Both Mac architectures are built on an Apple Silicon runner, glued into one universal binary, and wrapped in
     # an .app bundle with the game's icon.
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      # Pinned: Rust 1.100 broke sdl2-sys 0.37's bundled build (it copies into a deps folder that moved).
+      - uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: 1.99.1
           targets: aarch64-apple-darwin,x86_64-apple-darwin
       - uses: Swatinem/rust-cache@v2
         with:
@@ -185,8 +187,10 @@ jobs:
           SM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
           yes | "$SM" --licenses > /dev/null || true
           "$SM" --install "platforms;android-34" "build-tools;34.0.0" "ndk;26.3.11579264" > /dev/null
-      - uses: dtolnay/rust-toolchain@stable
+      # Pinned: Rust 1.100 broke sdl2-sys 0.37's bundled build (it copies into a deps folder that moved).
+      - uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: 1.99.1
           targets: aarch64-linux-android,x86_64-linux-android
       - uses: Swatinem/rust-cache@v2
         with:
