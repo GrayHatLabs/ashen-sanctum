@@ -8,7 +8,7 @@
 use serde::{Deserialize, Serialize};
 
 /// Bumped whenever a message changes shape; both ends must agree.
-pub const PROTOCOL: u32 = 1;
+pub const PROTOCOL: u32 = 2;
 /// The TCP port a host listens on unless told otherwise.
 pub const DEFAULT_PORT: u16 = 4747;
 /// Hero names: 1-16 of A-Z, 0-9, space, ' and -.
